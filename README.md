@@ -1,34 +1,47 @@
 # flutter_html_widget
 
-A Flutter widget for rendering basic html tags as Flutter widgets.
+A Flutter widget for rendering static html tags as Flutter widgets.
 
 ## Installing:
 
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html_widget: ^0.0.1
+      flutter_html_widget: ^0.1.0
 
 ## Usage:
 
-    HtmlWidget(
-      data: yourHTMLString,
-      // Optional parameters
-      // padding: EdgeInsetsGeometry.all(8.0),
-      // backgroundColor: Colors.blue,
+    Html(
+      data: """
+        <div>
+          <h1>Demo Page</h1>
+          <p>This is a fantastic nonexistent product that you should buy!</p>
+          <h2>Pricing</h2>
+          <p>Lorem ipsum <b>dolor</b> sit amet.</p>
+          <h2>The Team</h2>
+          <p>There isn't <i>really</i> a team...</p>
+          <h2>Installation</h2>
+          <p>You <u>cannot</u> install a nonexistent product!</p>
+        </div>
+      """,
+      //Optional parameters:
+      padding: EdgeInsets.all(8.0),
+      backgroundColor: Colors.white70,
     )
 
-## Supported HTML Tags:
+## Currently Supported HTML Tags:
 
-* `b`
-* `body`
-* `div`
-* `i`
-* `u`
+ * `b`
+ * `body`
+ * `div`
+ * `i`
+ * `p`
+ * `u`
+ * `h1` - `h6`
 
 Here are a list of elements that this package will never support: 
 
-* `script`
+ * `script`
 
 ## Why this package?
 
