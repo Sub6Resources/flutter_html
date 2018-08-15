@@ -1,3 +1,7 @@
+## [0.3.1] - August 15, 2018:
+
+* Fixed issue where `p` was not rendered with the `defaultTextStyle`.
+
 ## [0.3.0] - August 15, 2018:
 
 * Adds support for `abbr`, `address`, `article`, `aside`, `blockquote`, `br`, `cite`, `code`, `data`, `dd`, 

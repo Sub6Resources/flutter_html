@@ -430,6 +430,7 @@ class HtmlParser {
           return RichText(
               text: TextSpan(
             children: _parseInlineElement(node),
+            style: defaultTextStyle,
           ));
         case "pre":
           return Padding(

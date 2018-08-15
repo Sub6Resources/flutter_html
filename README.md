@@ -7,7 +7,7 @@ A Flutter widget for rendering static html tags as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.3.0
+      flutter_html: ^0.3.1
 
 ## Currently Supported HTML Tags:
 
@@ -59,7 +59,7 @@ Add the following to your `pubspec.yaml` file:
  * `samp`
  * `section`
  * `small`
- * `span`,
+ * `span`
  * `strong`
  * `template`
  * `time`
