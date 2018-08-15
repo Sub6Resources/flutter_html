@@ -1,4 +1,4 @@
-# flutter_html_widget
+# flutter_html
 
 A Flutter widget for rendering static html tags as Flutter widgets.
 
@@ -7,9 +7,34 @@ A Flutter widget for rendering static html tags as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html_widget: ^0.1.0
+      flutter_html: ^0.1.1
 
-## Usage:
+## Currently Supported HTML Tags:
+
+ * `b`
+ * `body`
+ * `div`
+ * `em`
+ * `h1` - `h6`
+ * `i`
+ * `p`
+ * `strong`
+ * `u`
+
+Here are a list of elements that this package will never support: 
+
+ * `script`
+ * `iframe`
+ 
+> Note: Unsupported tags will not be rendered
+
+## Why this package?
+
+This package is designed with simplicity in mind. Flutter currently does not support rendering of web content
+into the widget tree. This package is designed to be a reasonable alternative for rendering static web content
+until official support is added.
+
+## Example Usage:
 
     Html(
       data: """
@@ -27,24 +52,5 @@ Add the following to your `pubspec.yaml` file:
       //Optional parameters:
       padding: EdgeInsets.all(8.0),
       backgroundColor: Colors.white70,
+      defaultTextStyle: TextStyle(color: Colors.black),
     )
-
-## Currently Supported HTML Tags:
-
- * `b`
- * `body`
- * `div`
- * `i`
- * `p`
- * `u`
- * `h1` - `h6`
-
-Here are a list of elements that this package will never support: 
-
- * `script`
-
-## Why this package?
-
-This package is designed with simplicity in mind. Flutter currently does not support rendering of web content
-into the widget tree. This package is designed to be a reasonable alternative for rendering static web content
-until official support is added.

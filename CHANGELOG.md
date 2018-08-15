@@ -1,3 +1,9 @@
+## [0.1.1] - August 14, 2018:
+
+* Fixed `b` to be bold, not italic...
+* Adds support for `em`, and `strong`
+* Add support for a default `TextStyle`
+
 ## [0.1.0] - August 14, 2018:
 
 * Renamed widget from `HtmlWidget` to `Html`

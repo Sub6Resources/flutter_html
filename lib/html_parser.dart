@@ -3,10 +3,15 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 
 class HtmlParser {
+  HtmlParser({this.defaultTextStyle = const TextStyle(color: Colors.black)});
+
+  final TextStyle defaultTextStyle;
+
   static const _supportedElements = [
     "b",
     "body",
     "div",
+    "em",
     "h1",
     "h2",
     "h3",
@@ -15,11 +20,12 @@ class HtmlParser {
     "h6",
     "i",
     "p",
-    "u"
+    "strong",
+    "u",
   ];
 
   ///Parses an html string and returns a list of widgets that represent the body of your html document.
-  static List<Widget> parse(String data) {
+  List<Widget> parse(String data) {
     List<Widget> widgetList = new List<Widget>();
 
     dom.Document document = parser.parse(data);
@@ -27,7 +33,7 @@ class HtmlParser {
     return widgetList;
   }
 
-  static Widget _parseNode(dom.Node node) {
+  Widget _parseNode(dom.Node node) {
     if (node is dom.Element) {
       print("Found ${node.localName}");
       if (!_supportedElements.contains(node.localName)) {
@@ -36,10 +42,12 @@ class HtmlParser {
       switch (node.localName) {
         case "b":
           return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: HtmlTextStyles.italics,
-          ));
+              text: TextSpan(children: [
+            TextSpan(
+              children: _parseInlineElement(node),
+              style: TextStyle(fontWeight: FontWeight.bold),
+            )
+          ], style: defaultTextStyle));
         case "body":
           return Column(
             children: _parseNodeList(node.nodes),
@@ -50,89 +58,149 @@ class HtmlParser {
             children: _parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
+        case "em":
+          return RichText(
+              text: TextSpan(
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontStyle: FontStyle.italic,
+                  ))
+            ],
+            style: defaultTextStyle,
+          ));
         case "h1":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: TextStyle(
-              fontSize: 28.0,
-              fontWeight: FontWeight.bold,
-            ),
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontSize: 28.0,
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
           ));
         case "h2":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: TextStyle(
-              fontSize: 21.0,
-              fontWeight: FontWeight.bold,
-            ),
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontSize: 21.0,
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
           ));
         case "h3":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: TextStyle(
-              fontSize: 16.0,
-              fontWeight: FontWeight.bold,
-            ),
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontSize: 16.0,
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
           ));
         case "h4":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: TextStyle(
-              fontSize: 14.0,
-              fontWeight: FontWeight.bold,
-            ),
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontSize: 14.0,
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
           ));
         case "h5":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: TextStyle(
-              fontSize: 12.0,
-              fontWeight: FontWeight.bold,
-            ),
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontSize: 12.0,
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
           ));
         case "h6":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: TextStyle(
-              fontSize: 10.0,
-              fontWeight: FontWeight.bold,
-            ),
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontSize: 10.0,
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
           ));
         case "i":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: HtmlTextStyles.italics,
+            children: [
+              TextSpan(
+                children: _parseInlineElement(node),
+                style: TextStyle(fontStyle: FontStyle.italic),
+              )
+            ],
+            style: defaultTextStyle,
           ));
         case "p":
           return RichText(
               text: TextSpan(
             children: _parseInlineElement(node),
           ));
+        case "strong":
+          return RichText(
+              text: TextSpan(
+            children: [
+              TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                  ))
+            ],
+            style: defaultTextStyle,
+          ));
         case "u":
           return RichText(
               text: TextSpan(
-            children: _parseInlineElement(node),
-            style: HtmlTextStyles.underline,
+            children: [
+              TextSpan(
+                children: _parseInlineElement(node),
+                style: TextStyle(
+                  decoration: TextDecoration.underline,
+                ),
+              )
+            ],
+            style: defaultTextStyle,
           ));
       }
     } else if (node is dom.Text) {
-      if(node.text.trim() == "") {
+      if (node.text.trim() == "") {
         return Container();
       }
       print("Plain Text Node: '${node.text}'");
-      return Text(node.text);
+      return Text(node.text, style: defaultTextStyle);
     }
     return Container();
   }
 
-  static List<Widget> _parseNodeList(List<dom.Node> nodeList) {
+  List<Widget> _parseNodeList(List<dom.Node> nodeList) {
     return nodeList.map((node) {
       return _parseNode(node);
     }).toList();
@@ -140,6 +208,7 @@ class HtmlParser {
 
   static const _supportedInlineElements = [
     "b",
+    "em",
     "h1",
     "h2",
     "h3",
@@ -148,10 +217,11 @@ class HtmlParser {
     "h6",
     "i",
     "p",
-    "u"
+    "strong",
+    "u",
   ];
 
-  static List<TextSpan> _parseInlineElement(dom.Element element) {
+  List<TextSpan> _parseInlineElement(dom.Element element) {
     List<TextSpan> textSpanList = new List<TextSpan>();
 
     element.nodes.forEach((node) {
@@ -163,7 +233,12 @@ class HtmlParser {
           switch (node.localName) {
             case "b":
               textSpanList.add(TextSpan(
-                  style: HtmlTextStyles.bold,
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: _parseInlineElement(node)));
+              break;
+            case "em":
+              textSpanList.add(TextSpan(
+                  style: TextStyle(fontStyle: FontStyle.italic),
                   children: _parseInlineElement(node)));
               break;
             case "h1":
@@ -216,15 +291,20 @@ class HtmlParser {
               break;
             case "i":
               textSpanList.add(TextSpan(
-                  style: HtmlTextStyles.italics,
+                  style: TextStyle(fontStyle: FontStyle.italic),
                   children: _parseInlineElement(node)));
               break;
             case "p":
               textSpanList.add(TextSpan(children: _parseInlineElement(node)));
               break;
+            case "strong":
+              textSpanList.add(TextSpan(
+                  style: TextStyle(fontWeight: FontWeight.bold),
+                  children: _parseInlineElement(node)));
+              break;
             case "u":
               textSpanList.add(TextSpan(
-                  style: HtmlTextStyles.underline,
+                  style: TextStyle(decoration: TextDecoration.underline),
                   children: _parseInlineElement(node)));
               break;
           }
@@ -237,11 +317,4 @@ class HtmlParser {
 
     return textSpanList;
   }
-}
-
-///A class to hold static TextSpan styles
-class HtmlTextStyles {
-  static const bold = TextStyle(fontWeight: FontWeight.bold);
-  static const italics = TextStyle(fontStyle: FontStyle.italic);
-  static const underline = TextStyle(decoration: TextDecoration.underline);
 }

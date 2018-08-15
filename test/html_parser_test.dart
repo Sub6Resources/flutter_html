@@ -5,7 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 void main() {
   test('Checks that `parse` does not throw an exception', () {
-    final elementList = HtmlParser.parse("<b>Bold Text</b>");
+    final elementList = HtmlParser().parse("<b>Bold Text</b>");
     expect(elementList, isNotNull);
   });
 
@@ -113,6 +113,7 @@ void main() {
           //Optional parameters:
           padding: EdgeInsets.all(8.0),
           backgroundColor: Colors.white70,
+          defaultTextStyle: TextStyle(color: Colors.black),
         ),
       ),
     ));
