@@ -1,3 +1,7 @@
+## [0.4.1] - August 15, 2018:
+
+* Fixed issue with images not loading when inside of `p` tag (#6)
+
 ## [0.4.0] - August 15, 2018:
 
 * Adds support for `table`, `tbody`, `tfoot`, `thead`, `tr`, `td`, `th`, and `caption`
