@@ -1,13 +1,13 @@
 # flutter_html
 
-A Flutter widget for rendering static html tags as Flutter widgets.
+A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 60 different html tags!)
 
 ## Installing:
 
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.3.1
+      flutter_html: ^0.4.0
 
 ## Currently Supported HTML Tags:
 
@@ -19,6 +19,7 @@ Add the following to your `pubspec.yaml` file:
  * `blockquote`
  * `body`
  * `br`
+ * `caption`
  * `cite`
  * `code`
  * `data`
@@ -61,8 +62,15 @@ Add the following to your `pubspec.yaml` file:
  * `small`
  * `span`
  * `strong`
+ * `table`
+ * `tbody`
+ * `td`
  * `template`
+ * `tfoot`
+ * `th`
+ * `thead`
  * `time`
+ * `tr`
  * `u`
  * `var`
  
@@ -79,22 +87,12 @@ Add the following to your `pubspec.yaml` file:
  * `audio`
  * `bdi`
  * `bdo`
- * `caption`
- * `col`
- * `colgroup`
  * `details`
  * `source`
  * `sub`
  * `summary`
  * `sup`
  * `svg`
- * `table`
- * `tbody`
- * `td`
- * `tfoot`
- * `th`
- * `thead`
- * `tr`
  * `track`
  * `video`
  * `wbr`
@@ -115,6 +113,8 @@ Add the following to your `pubspec.yaml` file:
  * `big` (deprecated)
  * `button`
  * `canvas`
+ * `col`
+ * `colgroup`
  * `datalist`
  * `dialog`
  * `dir` (deprecated)

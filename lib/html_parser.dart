@@ -17,6 +17,7 @@ class HtmlParser {
     "blockquote",
     "body",
     "br",
+    "caption",
     "cite",
     "code",
     "data",
@@ -42,7 +43,7 @@ class HtmlParser {
     "img",
     "ins",
     "kbd",
-    "li", //partial
+    "li",
     "main",
     "mark",
     "nav",
@@ -60,8 +61,15 @@ class HtmlParser {
     "small",
     "span",
     "strong",
+    "table",
+    "tbody",
+    "td",
     "template",
+    "tfoot",
+    "th",
+    "thead",
     "time",
+    "tr",
     "u",
     "ul", //partial
     "var",
@@ -150,6 +158,11 @@ class HtmlParser {
           );
         case "br":
           return Container(height: 14.0);
+        case "caption":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.center,
+          );
         case "cite":
           return RichText(
               text: TextSpan(
@@ -536,14 +549,49 @@ class HtmlParser {
             ],
             style: defaultTextStyle,
           ));
+        case "table":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.start,
+          );
+        case "tbody":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.start,
+          );
+        case "td":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.center,
+          );
         case "template":
           return Container();
+        case "tfoot":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.start,
+          );
+        case "th":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.center,
+          );
+        case "thead":
+          return Column(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.start,
+          );
         case "time":
           return RichText(
               text: TextSpan(
             children: _parseInlineElement(node),
             style: defaultTextStyle,
           ));
+        case "tr":
+          return Row(
+            children: _parseNodeList(node.nodes),
+            crossAxisAlignment: CrossAxisAlignment.center,
+          );
         case "u":
           return RichText(
               text: TextSpan(

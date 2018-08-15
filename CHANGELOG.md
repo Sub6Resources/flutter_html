@@ -1,3 +1,7 @@
+## [0.4.0] - August 15, 2018:
+
+* Adds support for `table`, `tbody`, `tfoot`, `thead`, `tr`, `td`, `th`, and `caption`
+
 ## [0.3.1] - August 15, 2018:
 
 * Fixed issue where `p` was not rendered with the `defaultTextStyle`.
