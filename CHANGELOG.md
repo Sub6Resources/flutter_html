@@ -1,8 +1,21 @@
+## [0.3.0] - August 15, 2018:
+
+* Adds support for `abbr`, `address`, `article`, `aside`, `blockquote`, `br`, `cite`, `code`, `data`, `dd`, 
+`del`, `dfn`, `dl`, `dt`, `figcaption`, `figure`, `footer`, `header`, `hr`, `img`, `ins`, `kbd`, `li`,
+`main`, `mark`, `nav`, `noscript`, `pre`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `section`, `small`, `span`,
+`template`, `time`, and `var`
+
+* Adds partial support for `a`, `ol`, and `ul`
+
+## [0.2.0] - August 14, 2018:
+
+* Adds support for `img`.
+
 ## [0.1.1] - August 14, 2018:
 
 * Fixed `b` to be bold, not italic...
 * Adds support for `em`, and `strong`
-* Add support for a default `TextStyle`
+* Adds support for a default `TextStyle`
 
 ## [0.1.0] - August 14, 2018:
 
