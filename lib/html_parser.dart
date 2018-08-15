@@ -441,7 +441,7 @@ class HtmlParser {
           );
         case "p":
           return Padding(
-            padding: EdgeInsets.only(bottom: 10.0),
+            padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
             child: Column(
               children: _parseNodeList(node.nodes),
               crossAxisAlignment: CrossAxisAlignment.start,
