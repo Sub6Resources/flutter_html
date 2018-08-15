@@ -440,11 +440,13 @@ class HtmlParser {
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "p":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Padding(
+            padding: EdgeInsets.only(bottom: 10.0),
+            child: Column(
+              children: _parseNodeList(node.nodes),
+              crossAxisAlignment: CrossAxisAlignment.start,
+            ),
+          );
         case "pre":
           return Padding(
             padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
