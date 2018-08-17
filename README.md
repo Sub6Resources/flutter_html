@@ -175,4 +175,7 @@ until official support is added.
       padding: EdgeInsets.all(8.0),
       backgroundColor: Colors.white70,
       defaultTextStyle: TextStyle(color: Colors.black),
+      onLinkTap: (url) {
+        // open url in a webview
+      }
     )
