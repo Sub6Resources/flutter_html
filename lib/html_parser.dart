@@ -3,9 +3,13 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 
 class HtmlParser {
-  HtmlParser({this.defaultTextStyle = const TextStyle(color: Colors.black)});
+  HtmlParser({
+    this.defaultTextStyle = const TextStyle(color: Colors.black),
+    this.onLinkTap
+  });
 
   final TextStyle defaultTextStyle;
+  final Function onLinkTap;
 
   static const _supportedElements = [
     "a",
@@ -92,18 +96,27 @@ class HtmlParser {
       }
       switch (node.localName) {
         case "a":
-          return RichText(
+          return GestureDetector(
+            child: RichText(
               text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                ),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+              children: [
+                TextSpan(
+                  children: _parseInlineElement(node),
+                  style: TextStyle(
+                    decoration: TextDecoration.underline,
+                  ),
+                )
+              ],
+              style: defaultTextStyle,
+            ),
+          ),
+          onTap: () {
+            if (node.attributes.containsKey('href')) {
+              String url = node.attributes['href'];
+              onLinkTap(url);
+            }
+          }
+        );
         case "abbr":
           return RichText(
               text: TextSpan(
