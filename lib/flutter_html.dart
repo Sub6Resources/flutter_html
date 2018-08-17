@@ -9,13 +9,15 @@ class Html extends StatelessWidget {
       @required this.data,
       this.padding,
       this.backgroundColor,
-      this.defaultTextStyle = const TextStyle(color: Colors.black)})
+      this.defaultTextStyle = const TextStyle(color: Colors.black),
+      this.onLinkTap})
       : super(key: key);
 
   final String data;
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
+  final Function onLinkTap;
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +26,7 @@ class Html extends StatelessWidget {
       color: backgroundColor,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
-        children: HtmlParser(defaultTextStyle: defaultTextStyle).parse(data),
+        children: HtmlParser(defaultTextStyle: defaultTextStyle, onLinkTap: onLinkTap).parse(data),
       ),
     );
   }
