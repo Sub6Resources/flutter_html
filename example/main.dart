@@ -21,7 +21,7 @@ void main() {
           //Optional parameters:
           padding: EdgeInsets.all(8.0),
           backgroundColor: Colors.white70,
-          defaultTextStyle: TextStyle(color: Colors.black),
+          defaultTextStyle: TextStyle(fontFamily: 'serif'),
         ),
       ),
     ),

@@ -3,9 +3,9 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 
 class HtmlParser {
-  HtmlParser({this.defaultTextStyle = const TextStyle(color: Colors.black)});
+  HtmlParser({@required this.width});
 
-  final TextStyle defaultTextStyle;
+  final double width;
 
   static const _supportedElements = [
     "a",
@@ -92,268 +92,262 @@ class HtmlParser {
       }
       switch (node.localName) {
         case "a":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                ),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+                decoration: TextDecoration.underline,
+                color: Colors.blueAccent,
+                decorationColor: Colors.blueAccent),
+          );
         case "abbr":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                  decorationStyle: TextDecorationStyle.dotted,
-                ),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.underline,
+              decorationStyle: TextDecorationStyle.dotted,
+            ),
+          );
         case "address":
-          return RichText(
-              text: TextSpan(children: [
-            TextSpan(
-              children: _parseInlineElement(node),
-              style: TextStyle(fontStyle: FontStyle.italic),
-            )
-          ], style: defaultTextStyle));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
         case "article":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "aside":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "b":
-          return RichText(
-              text: TextSpan(children: [
-            TextSpan(
-              children: _parseInlineElement(node),
-              style: TextStyle(fontWeight: FontWeight.bold),
-            )
-          ], style: defaultTextStyle));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "blockquote":
           return Padding(
-              padding: EdgeInsets.fromLTRB(40.0, 14.0, 40.0, 14.0),
-              child: Column(
+            padding: EdgeInsets.fromLTRB(40.0, 14.0, 40.0, 14.0),
+            child: Container(
+              width: width,
+              child: Wrap(
                 children: _parseNodeList(node.nodes),
-                crossAxisAlignment: CrossAxisAlignment.start,
-              ));
+              ),
+            ),
+          );
         case "body":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "br":
-          return Container(height: 14.0);
+          if (node.previousElementSibling != null &&
+              node.previousElementSibling.localName == "br") {
+            return Container(width: width, height: 14.0);
+          }
+          return Container(width: width);
         case "caption":
-          return Column(
+          return Wrap(
             children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.center,
           );
         case "cite":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
         case "code":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontFamily: 'monospace',
+            ),
+          );
         case "data":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
         case "dd":
           return Padding(
               padding: EdgeInsets.only(left: 40.0),
-              child: Column(
-                children: _parseNodeList(node.nodes),
-                crossAxisAlignment: CrossAxisAlignment.start,
+              child: Container(
+                width: width,
+                child: Wrap(
+                  children: _parseNodeList(node.nodes),
+                ),
               ));
         case "del":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.lineThrough,
+            ),
+          );
         case "dfn":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
         case "div":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "dl":
           return Padding(
-              padding: EdgeInsets.only(top: 16.0, bottom: 16.0),
+              padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.start,
               ));
         case "dt":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
         case "em":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontStyle: FontStyle.italic,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
         case "figcaption":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
         case "figure":
           return Padding(
               padding: EdgeInsets.fromLTRB(40.0, 14.0, 40.0, 14.0),
               child: Column(
                 children: _parseNodeList(node.nodes),
-                crossAxisAlignment: CrossAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
               ));
         case "footer":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "h1":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 28.0,
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: const TextStyle(
+              fontSize: 28.0,
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "h2":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 21.0,
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: const TextStyle(
+              fontSize: 21.0,
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "h3":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 16.0,
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: const TextStyle(
+              fontSize: 16.0,
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "h4":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 14.0,
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: const TextStyle(
+              fontSize: 14.0,
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "h5":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: const TextStyle(
+              fontSize: 12.0,
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "h6":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 10.0,
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: const TextStyle(
+              fontSize: 10.0,
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "header":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "hr":
           return Padding(
@@ -364,75 +358,71 @@ class HtmlParser {
             ),
           );
         case "i":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(fontStyle: FontStyle.italic),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
         case "img":
           return Image.network(node.attributes['src']);
         case "ins":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                ),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.underline,
+            ),
+          );
         case "kbd":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontFamily: 'monospace',
+            ),
+          );
         case "li":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+          );
         case "main":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "mark":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(
-                    color: Colors.black, background: _getPaint(Colors.yellow)),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: TextStyle(
+              color: Colors.black,
+              background: _getPaint(Colors.yellow),
+            ),
+          );
         case "nav":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "noscript":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "ol":
           return Column(
@@ -442,115 +432,95 @@ class HtmlParser {
         case "p":
           return Padding(
             padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
-            child: Column(
-              children: _parseNodeList(node.nodes),
-              crossAxisAlignment: CrossAxisAlignment.start,
+            child: Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
             ),
           );
         case "pre":
           return Padding(
-            padding: const EdgeInsets.only(top: 14.0, bottom: 14.0),
-            child: RichText(
-                text: TextSpan(
-              children: [
-                TextSpan(
-                    children: _parseInlineElement(node),
-                    style: TextStyle(
-                      fontFamily: 'monospace',
-                    ))
-              ],
-              style: defaultTextStyle,
-            )),
+            padding: const EdgeInsets.all(14.0),
+            child: DefaultTextStyle.merge(
+              child: Text(node.innerHtml),
+              style: const TextStyle(
+                fontFamily: 'monospace',
+              ),
+            ),
           );
         case "q":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(text: "\""),
-              TextSpan(
-                children: _parseInlineElement(node),
-              ),
-              TextSpan(text: "\"")
-            ],
-            style: defaultTextStyle,
-          ));
+          List<Widget> children = List<Widget>();
+          children.add(Text("\""));
+          children.addAll(_parseNodeList(node.nodes));
+          children.add(Text("\""));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: children,
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
         case "rp":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
-        case "rt":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
-        case "ruby":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
-        case "s":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    decoration: TextDecoration.lineThrough,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
-        case "samp":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontFamily: 'monospace',
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
-        case "section":
-          return Column(
+          return Wrap(
             children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.start,
+          );
+        case "rt":
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
+        case "ruby":
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
+        case "s":
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.lineThrough,
+            ),
+          );
+        case "samp":
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontFamily: 'monospace',
+            ),
+          );
+        case "section":
+          return Container(
+            width: width,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "small":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontSize: 10.0,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontSize: 10.0,
+            ),
+          );
         case "span":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
         case "strong":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                  children: _parseInlineElement(node),
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                  ))
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
+          );
         case "table":
           return Column(
             children: _parseNodeList(node.nodes),
@@ -562,11 +532,11 @@ class HtmlParser {
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "td":
-          return Column(
+          return Row(
             children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.center,
           );
         case "template":
+          //Not usually displayed in HTML
           return Container();
         case "tfoot":
           return Column(
@@ -574,9 +544,13 @@ class HtmlParser {
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "th":
-          return Column(
-            children: _parseNodeList(node.nodes),
-            crossAxisAlignment: CrossAxisAlignment.center,
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontWeight: FontWeight.bold,
+            ),
           );
         case "thead":
           return Column(
@@ -584,52 +558,53 @@ class HtmlParser {
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "time":
-          return RichText(
-              text: TextSpan(
-            children: _parseInlineElement(node),
-            style: defaultTextStyle,
-          ));
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
         case "tr":
           return Row(
             children: _parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.center,
           );
         case "u":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                ),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.underline,
+            ),
+          );
         case "ul":
           return Column(
             children: _parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "var":
-          return RichText(
-              text: TextSpan(
-            children: [
-              TextSpan(
-                children: _parseInlineElement(node),
-                style: TextStyle(fontStyle: FontStyle.italic),
-              )
-            ],
-            style: defaultTextStyle,
-          ));
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontStyle: FontStyle.italic,
+            ),
+          );
       }
     } else if (node is dom.Text) {
+      //We don't need to worry about rendering extra whitespace
       if (node.text.trim() == "") {
         return Container();
       }
-      print("Plain Text Node: '${node.text}'");
-      return Text(node.text, style: defaultTextStyle);
+
+      print("Plain Text Node: '${trimStringHtml(node.text)}'");
+      String finalText = trimStringHtml(node.text);
+      //Temp fix for https://github.com/flutter/flutter/issues/736
+      if (finalText.endsWith(" ")) {
+        return Container(
+            padding: EdgeInsets.only(right: 2.0), child: Text(finalText));
+      } else {
+        return Text(finalText);
+      }
     }
     return Container();
   }
@@ -640,293 +615,17 @@ class HtmlParser {
     }).toList();
   }
 
-  static const _supportedInlineElements = [
-    "a",
-    "abbr",
-    "address",
-    "b",
-    "br",
-    "cite",
-    "code",
-    "data",
-    "dfn",
-    "dt",
-    "em",
-    "figcaption",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "i",
-    "ins",
-    "kbd",
-    "mark",
-    "p",
-    "pre",
-    "q",
-    "rp",
-    "rt",
-    "ruby",
-    "s",
-    "samp",
-    "small",
-    "span",
-    "strong",
-    "time",
-    "u",
-    "var",
-  ];
-
-  List<TextSpan> _parseInlineElement(dom.Element element) {
-    List<TextSpan> textSpanList = new List<TextSpan>();
-
-    element.nodes.forEach((node) {
-      if (node is dom.Element) {
-        print("Found inline ${node.localName}");
-        if (!_supportedInlineElements.contains(node.localName)) {
-          textSpanList.add(TextSpan(text: node.text));
-        } else {
-          switch (node.localName) {
-            case "a":
-              textSpanList.add(TextSpan(
-                style: TextStyle(decoration: TextDecoration.underline),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "abbr":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  decoration: TextDecoration.underline,
-                  decorationStyle: TextDecorationStyle.dotted,
-                ),
-                children: _parseInlineElement(node),
-              ));
-              break;
-              break;
-            case "address":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontWeight: FontWeight.bold),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "b":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontWeight: FontWeight.bold),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "br":
-              textSpanList.add(TextSpan(
-                text: "\n",
-              ));
-              break;
-            case "cite":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontStyle: FontStyle.italic),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "code":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontFamily: 'monospace'),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "data":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "del":
-              textSpanList.add(TextSpan(
-                style: TextStyle(decoration: TextDecoration.lineThrough),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "dfn":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontStyle: FontStyle.italic),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "dt":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "em":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontStyle: FontStyle.italic),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "figcaption":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "h1":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  fontSize: 28.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ));
-              break;
-            case "h2":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  fontSize: 21.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ));
-              break;
-            case "h3":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  fontSize: 16.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ));
-              break;
-            case "h4":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  fontSize: 14.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ));
-              break;
-            case "h5":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  fontSize: 12.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ));
-              break;
-            case "h6":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                  fontSize: 10.0,
-                  fontWeight: FontWeight.bold,
-                ),
-              ));
-              break;
-            case "i":
-              textSpanList.add(TextSpan(
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                  children: _parseInlineElement(node)));
-              break;
-            case "ins":
-              textSpanList.add(TextSpan(
-                  style: TextStyle(decoration: TextDecoration.underline),
-                  children: _parseInlineElement(node)));
-              break;
-            case "kbd":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontFamily: 'monospace'),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "mark":
-              textSpanList.add(TextSpan(
-                style: TextStyle(
-                    color: Colors.black, background: _getPaint(Colors.yellow)),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "p":
-              textSpanList.add(TextSpan(children: _parseInlineElement(node)));
-              break;
-            case "pre":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontFamily: 'monospace'),
-              ));
-              break;
-            case "q":
-              textSpanList.add(TextSpan(
-                children: [
-                  TextSpan(text: "\""),
-                  TextSpan(children: _parseInlineElement(node)),
-                  TextSpan(text: "\""),
-                ],
-              ));
-              break;
-            case "rp":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "rt":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "ruby":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "s":
-              textSpanList.add(TextSpan(
-                style: TextStyle(decoration: TextDecoration.lineThrough),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "samp":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontFamily: 'monospace'),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "small":
-              textSpanList.add(TextSpan(
-                style: TextStyle(fontSize: 10.0),
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "span":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "strong":
-              textSpanList.add(TextSpan(
-                  style: TextStyle(fontWeight: FontWeight.bold),
-                  children: _parseInlineElement(node)));
-              break;
-            case "time":
-              textSpanList.add(TextSpan(
-                children: _parseInlineElement(node),
-              ));
-              break;
-            case "u":
-              textSpanList.add(TextSpan(
-                  style: TextStyle(decoration: TextDecoration.underline),
-                  children: _parseInlineElement(node)));
-              break;
-            case "var":
-              textSpanList.add(TextSpan(
-                  style: TextStyle(fontStyle: FontStyle.italic),
-                  children: _parseInlineElement(node)));
-              break;
-          }
-        }
-      } else {
-        print("Text Node: '${node.text}'");
-        textSpanList.add(TextSpan(text: node.text));
-      }
-    });
-
-    return textSpanList;
-  }
-
   Paint _getPaint(Color color) {
     Paint paint = new Paint();
     paint.color = color;
     return paint;
+  }
+
+  String trimStringHtml(String stringToTrim) {
+    stringToTrim = stringToTrim.replaceAll("\n", "");
+    while (stringToTrim.indexOf("  ") != -1) {
+      stringToTrim = stringToTrim.replaceAll("  ", " ");
+    }
+    return stringToTrim;
   }
 }

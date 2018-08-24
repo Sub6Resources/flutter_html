@@ -5,7 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 void main() {
   test('Checks that `parse` does not throw an exception', () {
-    final elementList = HtmlParser().parse("<b>Bold Text</b>");
+    final elementList = HtmlParser(width: 42.0).parse("<b>Bold Text</b>");
     expect(elementList, isNotNull);
   });
 
@@ -72,7 +72,7 @@ void main() {
       ),
     ));
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(3));
   });
 
   testWidgets('Tests that the header elements (h1-h6) get rendered correctly',
@@ -87,36 +87,5 @@ void main() {
     ));
 
     expect(find.byType(RichText), findsNWidgets(6));
-  });
-
-  testWidgets('Tests the provided example', (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data: """
-          <div>
-            <h1>Demo Page</h1>
-            <p>This is a fantastic nonexistent product that you should buy!</p>
-            <h2>Pricing</h2>
-            <p>Lorem ipsum <b>dolor</b> sit amet.</p>
-            <h2>The Team</h2>
-            <p>There isn't <i>really</i> a team...</p>
-            <h2>Installation</h2>
-            <p>You <u>cannot</u> install a nonexistent product!</p>
-          </div>
-          """,
-          //Optional parameters:
-          padding: EdgeInsets.all(8.0),
-          backgroundColor: Colors.white70,
-          defaultTextStyle: TextStyle(color: Colors.black),
-        ),
-      ),
-    ));
-
-    //Expect one RichText for each of the children of <div>
-    expect(find.byType(RichText), findsNWidgets(8));
-
-    //Expect 3. One created by Html widget as part of the container, one for the <body>, and one for the <div>
-    expect(find.byType(Column), findsNWidgets(3));
   });
 }
