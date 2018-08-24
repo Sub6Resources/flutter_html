@@ -7,7 +7,7 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.4.1
+      flutter_html: ^0.5.0
 
 ## Currently Supported HTML Tags:
 
@@ -174,5 +174,5 @@ until official support is added.
       //Optional parameters:
       padding: EdgeInsets.all(8.0),
       backgroundColor: Colors.white70,
-      defaultTextStyle: TextStyle(color: Colors.black),
+      defaultTextStyle: TextStyle(fontFamily: 'serif'),
     )

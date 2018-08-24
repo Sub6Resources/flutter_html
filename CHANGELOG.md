@@ -1,3 +1,8 @@
+## [0.5.0] - August 23, 2018:
+
+* Major refactor that makes entire tree a Widget and eliminates the need to distinguish between inline and block elements.
+* Fixed #7, #9, #10, and #11.
+
 ## [0.4.1] - August 15, 2018:
 
 * Fixed issue with images not loading when inside of `p` tag (#6)

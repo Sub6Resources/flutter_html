@@ -19,12 +19,18 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final double width = MediaQuery.of(context).size.width;
+
     return Container(
       padding: padding,
       color: backgroundColor,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: HtmlParser(defaultTextStyle: defaultTextStyle).parse(data),
+      width: width,
+      child: DefaultTextStyle.merge(
+        style: defaultTextStyle,
+        child: Wrap(
+          alignment: WrapAlignment.start,
+          children: HtmlParser(width: width).parse(data),
+        ),
       ),
     );
   }
