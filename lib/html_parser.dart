@@ -167,8 +167,12 @@ class HtmlParser {
           }
           return Container(width: width);
         case "caption":
-          return Wrap(
-            children: _parseNodeList(node.nodes),
+          return Container(
+            width: width,
+            child: Wrap(
+              alignment: WrapAlignment.center,
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "cite":
           return DefaultTextStyle.merge(
@@ -532,8 +536,15 @@ class HtmlParser {
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "td":
-          return Row(
-            children: _parseNodeList(node.nodes),
+          int colspan = 1;
+          if (node.attributes['colspan'] != null) {
+            colspan = int.tryParse(node.attributes['colspan']);
+          }
+          return Expanded(
+            flex: colspan,
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
           );
         case "template":
           //Not usually displayed in HTML
@@ -544,9 +555,17 @@ class HtmlParser {
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "th":
+          int colspan = 1;
+          if (node.attributes['colspan'] != null) {
+            colspan = int.tryParse(node.attributes['colspan']);
+          }
           return DefaultTextStyle.merge(
-            child: Wrap(
-              children: _parseNodeList(node.nodes),
+            child: Expanded(
+              flex: colspan,
+              child: Wrap(
+                alignment: WrapAlignment.center,
+                children: _parseNodeList(node.nodes),
+              ),
             ),
             style: const TextStyle(
               fontWeight: FontWeight.bold,

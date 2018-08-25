@@ -1,11 +1,15 @@
+## [0.5.1] - August 25, 2018:
+
+* Fixed issue with table rows not lining up correctly ([#4](https://github.com/Sub6Resources/flutter_html/issues/4))
+
 ## [0.5.0] - August 23, 2018:
 
 * Major refactor that makes entire tree a Widget and eliminates the need to distinguish between inline and block elements.
-* Fixed #7, #9, #10, and #11.
+* Fixed [#7](https://github.com/Sub6Resources/flutter_html/issues/7), [#9](https://github.com/Sub6Resources/flutter_html/issues/9), [#10](https://github.com/Sub6Resources/flutter_html/issues/10), and [#11](https://github.com/Sub6Resources/flutter_html/issues/11).
 
 ## [0.4.1] - August 15, 2018:
 
-* Fixed issue with images not loading when inside of `p` tag (#6)
+* Fixed issue with images not loading when inside of `p` tag ([#6](https://github.com/Sub6Resources/flutter_html/issues/6))
 
 ## [0.4.0] - August 15, 2018:
 
