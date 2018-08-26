@@ -14,6 +14,8 @@ class HtmlParser {
     "article",
     "aside",
     "b",
+    "bdi",
+    "bdo",
     "blockquote",
     "body",
     "br",
@@ -142,6 +144,25 @@ class HtmlParser {
             style: const TextStyle(
               fontWeight: FontWeight.bold,
             ),
+          );
+        case "bdi":
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
+        case "bdo":
+          if (node.attributes["dir"] != null) {
+            return Directionality(
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+              textDirection: node.attributes["dir"] == "rtl"
+                  ? TextDirection.rtl
+                  : TextDirection.ltr,
+            );
+          }
+          //Direction attribute is required, just render the text normally now.
+          return Wrap(
+            children: _parseNodeList(node.nodes),
           );
         case "blockquote":
           return Padding(

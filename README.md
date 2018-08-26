@@ -8,7 +8,7 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.5.1
+      flutter_html: ^0.5.2
 
 ## Currently Supported HTML Tags:
 
@@ -17,6 +17,8 @@ Add the following to your `pubspec.yaml` file:
  * `article`
  * `aside`
  * `b`
+ * `bdi`
+ * `bdo`
  * `blockquote`
  * `body`
  * `br`
@@ -86,8 +88,6 @@ Add the following to your `pubspec.yaml` file:
 > These are elements that are planned, but present a specific challenge that makes them somewhat difficult to implement.
 
  * `audio`
- * `bdi`
- * `bdo`
  * `details`
  * `source`
  * `sub`

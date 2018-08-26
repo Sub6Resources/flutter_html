@@ -1,3 +1,7 @@
+## [0.5.2] - August 25, 2018:
+
+* Adds support for `bdi` and `bdo`
+
 ## [0.5.1] - August 25, 2018:
 
 * Fixed issue with table rows not lining up correctly ([#4](https://github.com/Sub6Resources/flutter_html/issues/4))
