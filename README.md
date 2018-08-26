@@ -8,7 +8,7 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.5.2
+      flutter_html: ^0.5.3
 
 ## Currently Supported HTML Tags:
 
@@ -64,6 +64,7 @@ Add the following to your `pubspec.yaml` file:
  * `section`
  * `small`
  * `span`
+ * `strike` (legacy html tag)
  * `strong`
  * `table`
  * `tbody`
@@ -74,6 +75,7 @@ Add the following to your `pubspec.yaml` file:
  * `thead`
  * `time`
  * `tr`
+ * `tt` (legacy html tag)
  * `u`
  * `var`
  
@@ -114,6 +116,7 @@ Add the following to your `pubspec.yaml` file:
  * `big` (deprecated)
  * `button`
  * `canvas`
+ * `center` (deprecated)
  * `col`
  * `colgroup`
  * `datalist`
@@ -144,11 +147,9 @@ Add the following to your `pubspec.yaml` file:
  * `progress`
  * `script`
  * `select` (`form` elements are outside the scope of this package)
- * `strike` (deprecated)
  * `style`
  * `textarea` (`form` elements are outside the scope of this package)
  * `title` (`head` elements are not rendered)
- * `tt` (deprecated)
  
 
 ## Why this package?

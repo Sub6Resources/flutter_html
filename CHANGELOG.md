@@ -1,3 +1,7 @@
+## [0.5.3] - August 25, 2018:
+
+* Adds support for `strike`, and `tt`.
+
 ## [0.5.2] - August 25, 2018:
 
 * Adds support for `bdi` and `bdo`

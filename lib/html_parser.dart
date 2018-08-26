@@ -62,6 +62,7 @@ class HtmlParser {
     "section",
     "small",
     "span",
+    "strike",
     "strong",
     "table",
     "tbody",
@@ -72,6 +73,7 @@ class HtmlParser {
     "thead",
     "time",
     "tr",
+    "tt",
     "u",
     "ul", //partial
     "var",
@@ -537,6 +539,15 @@ class HtmlParser {
           return Wrap(
             children: _parseNodeList(node.nodes),
           );
+        case "strike":
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.lineThrough,
+            ),
+          );
         case "strong":
           return DefaultTextStyle.merge(
             child: Wrap(
@@ -605,6 +616,15 @@ class HtmlParser {
           return Row(
             children: _parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.center,
+          );
+        case "tt":
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontFamily: 'monospace',
+            ),
           );
         case "u":
           return DefaultTextStyle.merge(
