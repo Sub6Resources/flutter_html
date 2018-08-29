@@ -3,9 +3,13 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 
 class HtmlParser {
-  HtmlParser({@required this.width});
+  HtmlParser({
+    @required this.width,
+    this.onLinkTap,
+  });
 
   final double width;
+  final Function onLinkTap;
 
   static const _supportedElements = [
     "a",
@@ -96,14 +100,22 @@ class HtmlParser {
       }
       switch (node.localName) {
         case "a":
-          return DefaultTextStyle.merge(
-            child: Wrap(
-              children: _parseNodeList(node.nodes),
+          return GestureDetector(
+            child: DefaultTextStyle.merge(
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+              style: const TextStyle(
+                  decoration: TextDecoration.underline,
+                  color: Colors.blueAccent,
+                  decorationColor: Colors.blueAccent),
             ),
-            style: const TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blueAccent,
-                decorationColor: Colors.blueAccent),
+            onTap: () {
+              if (node.attributes.containsKey('href')) {
+                String url = node.attributes['href'];
+                onLinkTap(url);
+              }
+            }
           );
         case "abbr":
           return DefaultTextStyle.merge(
