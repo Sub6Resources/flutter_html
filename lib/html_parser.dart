@@ -111,7 +111,7 @@ class HtmlParser {
                   decorationColor: Colors.blueAccent),
             ),
             onTap: () {
-              if (node.attributes.containsKey('href')) {
+              if (node.attributes.containsKey('href') && onLinkTap != null) {
                 String url = node.attributes['href'];
                 onLinkTap(url);
               }
