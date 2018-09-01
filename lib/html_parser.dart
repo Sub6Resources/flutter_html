@@ -101,22 +101,21 @@ class HtmlParser {
       switch (node.localName) {
         case "a":
           return GestureDetector(
-            child: DefaultTextStyle.merge(
-              child: Wrap(
-                children: _parseNodeList(node.nodes),
+              child: DefaultTextStyle.merge(
+                child: Wrap(
+                  children: _parseNodeList(node.nodes),
+                ),
+                style: const TextStyle(
+                    decoration: TextDecoration.underline,
+                    color: Colors.blueAccent,
+                    decorationColor: Colors.blueAccent),
               ),
-              style: const TextStyle(
-                  decoration: TextDecoration.underline,
-                  color: Colors.blueAccent,
-                  decorationColor: Colors.blueAccent),
-            ),
-            onTap: () {
-              if (node.attributes.containsKey('href') && onLinkTap != null) {
-                String url = node.attributes['href'];
-                onLinkTap(url);
-              }
-            }
-          );
+              onTap: () {
+                if (node.attributes.containsKey('href') && onLinkTap != null) {
+                  String url = node.attributes['href'];
+                  onLinkTap(url);
+                }
+              });
         case "abbr":
           return DefaultTextStyle.merge(
             child: Wrap(

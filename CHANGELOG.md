@@ -1,3 +1,7 @@
+## [0.5.4] - August 31, 2018:
+
+* Adds `onLinkTap` callback.
+
 ## [0.5.3] - August 25, 2018:
 
 * Adds support for `strike`, and `tt`.
