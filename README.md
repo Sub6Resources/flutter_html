@@ -8,18 +8,20 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.5.4
+      flutter_html: ^0.5.5
 
 ## Currently Supported HTML Tags:
 
  * `a`
  * `abbr`
+ * `acronym`
  * `address`
  * `article`
  * `aside`
  * `b`
  * `bdi`
  * `bdo`
+ * `big`
  * `blockquote`
  * `body`
  * `br`
@@ -65,7 +67,7 @@ Add the following to your `pubspec.yaml` file:
  * `section`
  * `small`
  * `span`
- * `strike` (legacy html tag)
+ * `strike`
  * `strong`
  * `table`
  * `tbody`
@@ -76,7 +78,7 @@ Add the following to your `pubspec.yaml` file:
  * `thead`
  * `time`
  * `tr`
- * `tt` (legacy html tag)
+ * `tt`
  * `u`
  * `var`
  

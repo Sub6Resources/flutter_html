@@ -1,3 +1,7 @@
+## [0.5.5] - September 4, 2018:
+
+* Adds support for `acronym`, and `big`.
+
 ## [0.5.4] - August 31, 2018:
 
 * Adds `onLinkTap` callback.

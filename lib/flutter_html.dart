@@ -10,7 +10,7 @@ class Html extends StatelessWidget {
     this.padding,
     this.backgroundColor,
     this.defaultTextStyle = const TextStyle(color: Colors.black),
-    this.onLinkTap
+    this.onLinkTap,
   }) : super(key: key);
 
   final String data;

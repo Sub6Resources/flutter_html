@@ -14,12 +14,14 @@ class HtmlParser {
   static const _supportedElements = [
     "a",
     "abbr",
+    "acronym",
     "address",
     "article",
     "aside",
     "b",
     "bdi",
     "bdo",
+    "big",
     "blockquote",
     "body",
     "br",
@@ -126,6 +128,16 @@ class HtmlParser {
               decorationStyle: TextDecorationStyle.dotted,
             ),
           );
+        case "acronym":
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              decoration: TextDecoration.underline,
+              decorationStyle: TextDecorationStyle.dotted,
+            ),
+          );
         case "address":
           return DefaultTextStyle.merge(
             child: Wrap(
@@ -176,6 +188,15 @@ class HtmlParser {
           //Direction attribute is required, just render the text normally now.
           return Wrap(
             children: _parseNodeList(node.nodes),
+          );
+        case "big":
+          return DefaultTextStyle.merge(
+            child: Wrap(
+              children: _parseNodeList(node.nodes),
+            ),
+            style: const TextStyle(
+              fontSize: 20.0,
+            ),
           );
         case "blockquote":
           return Padding(
