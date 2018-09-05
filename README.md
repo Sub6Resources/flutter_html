@@ -1,14 +1,14 @@
 # flutter_html
 [![pub package](https://img.shields.io/pub/v/flutter_html.svg)](https://pub.dartlang.org/packages/flutter_html)
 
-A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 60 different html tags!)
+A Flutter widget for rendering static html tags as Flutter widgets. (Will render 70 different html tags!)
 
 ## Installing:
 
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.5.5
+      flutter_html: ^0.5.6
 
 ## Currently Supported HTML Tags:
 
@@ -85,6 +85,7 @@ Add the following to your `pubspec.yaml` file:
 ### Partially supported elements:
 > These are common elements that aren't yet fully supported, but won't be ignored and will still render.
 
+ * `center`
  * `ol` 
  * `ul`
  

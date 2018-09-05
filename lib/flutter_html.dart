@@ -11,6 +11,7 @@ class Html extends StatelessWidget {
     this.backgroundColor,
     this.defaultTextStyle = const TextStyle(color: Colors.black),
     this.onLinkTap,
+    this.renderNewlines = false,
   }) : super(key: key);
 
   final String data;
@@ -18,6 +19,7 @@ class Html extends StatelessWidget {
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
   final Function onLinkTap;
+  final bool renderNewlines;
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +33,11 @@ class Html extends StatelessWidget {
         style: defaultTextStyle,
         child: Wrap(
           alignment: WrapAlignment.start,
-          children: HtmlParser(width: width, onLinkTap: onLinkTap).parse(data),
+          children: HtmlParser(
+            width: width,
+            onLinkTap: onLinkTap,
+            renderNewlines: renderNewlines,
+          ).parse(data),
         ),
       ),
     );

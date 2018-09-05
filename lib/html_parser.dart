@@ -6,10 +6,12 @@ class HtmlParser {
   HtmlParser({
     @required this.width,
     this.onLinkTap,
+    this.renderNewlines,
   });
 
   final double width;
   final Function onLinkTap;
+  final bool renderNewlines;
 
   static const _supportedElements = [
     "a",
@@ -27,6 +29,7 @@ class HtmlParser {
     "br",
     "caption",
     "cite",
+    "center",
     "code",
     "data",
     "dd",
@@ -89,6 +92,11 @@ class HtmlParser {
   List<Widget> parse(String data) {
     List<Widget> widgetList = new List<Widget>();
 
+    if (renderNewlines) {
+      print("Before: $data");
+      data = data.replaceAll("\n", "<br />");
+      print("After: $data");
+    }
     dom.Document document = parser.parse(data);
     widgetList.add(_parseNode(document.body));
     return widgetList;
@@ -216,8 +224,7 @@ class HtmlParser {
             ),
           );
         case "br":
-          if (node.previousElementSibling != null &&
-              node.previousElementSibling.localName == "br") {
+          if (_isNotFirstBreakTag(node)) {
             return Container(width: width, height: 14.0);
           }
           return Container(width: width);
@@ -229,6 +236,13 @@ class HtmlParser {
               children: _parseNodeList(node.nodes),
             ),
           );
+        case "center":
+          return Container(
+              width: width,
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+                alignment: WrapAlignment.center,
+              ));
         case "cite":
           return DefaultTextStyle.merge(
             child: Wrap(
@@ -719,5 +733,27 @@ class HtmlParser {
       stringToTrim = stringToTrim.replaceAll("  ", " ");
     }
     return stringToTrim;
+  }
+
+  bool _isNotFirstBreakTag(dom.Node node) {
+    int index = node.parentNode.nodes.indexOf(node);
+    if (index == 0) {
+      if (node.parentNode == null) {
+        return false;
+      }
+      return _isNotFirstBreakTag(node.parentNode);
+    } else if (node.parentNode.nodes[index - 1] is dom.Element) {
+      if ((node.parentNode.nodes[index - 1] as dom.Element).localName == "br") {
+        return true;
+      }
+      return false;
+    } else if (node.parentNode.nodes[index - 1] is dom.Text) {
+      if ((node.parentNode.nodes[index - 1] as dom.Text).text.trim() == "") {
+        return _isNotFirstBreakTag(node.parentNode.nodes[index - 1]);
+      } else {
+        return false;
+      }
+    }
+    return false;
   }
 }

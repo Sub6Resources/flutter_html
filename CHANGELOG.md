@@ -1,3 +1,7 @@
+## [0.5.6] - September 4, 2018:
+
+* Adds partial support for `center` and a `renderNewlines` property on the `Html` widget.
+
 ## [0.5.5] - September 4, 2018:
 
 * Adds support for `acronym`, and `big`.
