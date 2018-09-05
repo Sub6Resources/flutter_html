@@ -1,3 +1,8 @@
+## [0.6.0] - September 4, 2018:
+
+* Update README.md and example
+* GitHub version 0.6.0 milestone reached
+
 ## [0.5.6] - September 4, 2018:
 
 * Adds partial support for `center` and a `renderNewlines` property on the `Html` widget.
