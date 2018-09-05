@@ -1,3 +1,7 @@
+## [0.6.1] - September 4, 2018:
+
+* Fixed minor typo
+
 ## [0.6.0] - September 4, 2018:
 
 * Update README.md and example
