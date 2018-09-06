@@ -6,7 +6,7 @@ class HtmlParser {
   HtmlParser({
     @required this.width,
     this.onLinkTap,
-    this.renderNewlines,
+    this.renderNewlines = false,
   });
 
   final double width;
@@ -440,7 +440,19 @@ class HtmlParser {
             ),
           );
         case "img":
-          return Image.network(node.attributes['src']);
+          if (node.attributes['src'] != null) {
+            return Image.network(node.attributes['src']);
+          } else if (node.attributes['alt'] != null) {
+            //Temp fix for https://github.com/flutter/flutter/issues/736
+            if (node.attributes['alt'].endsWith(" ")) {
+              return Container(
+                  padding: EdgeInsets.only(right: 2.0),
+                  child: Text(node.attributes['alt']));
+            } else {
+              return Text(node.attributes['alt']);
+            }
+          }
+          return Container();
         case "ins":
           return DefaultTextStyle.merge(
             child: Wrap(

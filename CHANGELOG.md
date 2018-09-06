@@ -1,3 +1,8 @@
+## [0.6.2] - September 5, 2018:
+
+* Adds check for `img src` before trying to load it.
+* Adds support for `img alt` attribute.
+
 ## [0.6.1] - September 4, 2018:
 
 * Fixed minor typo
