@@ -474,8 +474,11 @@ class HtmlParser {
         case "li":
           return Container(
             width: width,
-            child: Wrap(
-              children: _parseNodeList(node.nodes),
+            child: Row(
+              children: <Widget>[
+                Text('•'),
+                Wrap(children: _parseNodeList(node.nodes)),
+              ],
             ),
           );
         case "main":
