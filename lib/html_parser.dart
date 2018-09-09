@@ -476,8 +476,10 @@ class HtmlParser {
             width: width,
             child: Row(
               children: <Widget>[
-                Text('•'),
-                Wrap(children: _parseNodeList(node.nodes)),
+                Container(
+                    child: Text('•'),
+                    padding: EdgeInsets.symmetric(horizontal: 4.0)),
+                Wrap(children: _parseNodeList(node.nodes))
               ],
             ),
           );
