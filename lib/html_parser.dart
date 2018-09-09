@@ -488,7 +488,7 @@ class HtmlParser {
           }
           return Container(
             width: width,
-            child: Row(
+            child: Wrap(
               children: <Widget>[
                 mark,
                 Wrap(children: _parseNodeList(node.nodes))
