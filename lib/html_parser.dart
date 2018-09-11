@@ -2,16 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 
+typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
+
 class HtmlParser {
   HtmlParser({
     @required this.width,
     this.onLinkTap,
     this.renderNewlines = false,
+    this.customRender,
   });
 
   final double width;
   final Function onLinkTap;
   final bool renderNewlines;
+  final CustomRender customRender;
 
   static const _supportedElements = [
     "a",
@@ -93,9 +97,14 @@ class HtmlParser {
     List<Widget> widgetList = new List<Widget>();
 
     if (renderNewlines) {
-      print("Before: $data");
+      assert(() {
+        print("Before: $data");
+        return true;
+      }());
       data = data.replaceAll("\n", "<br />");
-      print("After: $data");
+      assert(() {
+        print("After: $data");
+      }());
     }
     dom.Document document = parser.parse(data);
     widgetList.add(_parseNode(document.body));
@@ -103,11 +112,24 @@ class HtmlParser {
   }
 
   Widget _parseNode(dom.Node node) {
+    if (customRender != null) {
+      final Widget customWidget =
+          customRender(node, _parseNodeList(node.nodes));
+      if (customWidget != null) {
+        return customWidget;
+      }
+    }
+
     if (node is dom.Element) {
-      print("Found ${node.localName}");
+      assert(() {
+        print("Found ${node.localName}");
+        return true;
+      }());
+
       if (!_supportedElements.contains(node.localName)) {
         return Container();
       }
+
       switch (node.localName) {
         case "a":
           return GestureDetector(
