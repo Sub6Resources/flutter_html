@@ -472,10 +472,27 @@ class HtmlParser {
             ),
           );
         case "li":
+          String type = node.parent.localName; // Parent type; usually ol or ul
+          EdgeInsets markPadding = EdgeInsets.symmetric(horizontal: 4.0);
+          Widget mark;
+          switch (type) {
+            case "ul":
+              mark = Container(child: Text('•'), padding: markPadding);
+              break;
+            case "ol": //TODO Use index as mark
+              mark = Container(child: Text('•'), padding: markPadding);
+              break;
+            default: //Fallback to middle dot
+              mark = Container(width: 0.0, height: 0.0);
+              break;
+          }
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: <Widget>[
+                mark,
+                Wrap(children: _parseNodeList(node.nodes))
+              ],
             ),
           );
         case "main":
