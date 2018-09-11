@@ -1,3 +1,7 @@
+## [0.7.0] - September 10, 2018:
+
+* Adds full support for `ul`
+
 ## [0.6.2] - September 5, 2018:
 
 * Adds check for `img src` before trying to load it.
