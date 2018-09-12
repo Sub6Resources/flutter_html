@@ -728,8 +728,11 @@ class HtmlParser {
       }
     } else if (node is dom.Text) {
       //We don't need to worry about rendering extra whitespace
-      if (node.text.trim() == "") {
-        return Container();
+      if (node.text.trim() == "" && node.text.indexOf(" ") == -1) {
+        return Wrap();
+      }
+      if (node.text.trim() == "" && node.text.indexOf(" ") != -1) {
+        node.text = " ";
       }
 
       print("Plain Text Node: '${trimStringHtml(node.text)}'");
@@ -742,7 +745,7 @@ class HtmlParser {
         return Text(finalText);
       }
     }
-    return Container();
+    return Wrap();
   }
 
   List<Widget> _parseNodeList(List<dom.Node> nodeList) {

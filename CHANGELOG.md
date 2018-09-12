@@ -1,6 +1,11 @@
+## [0.7.1] - September 11, 2018:
+
+* Fixes issue with text nodes that contain only a space. ([#24](https://github.com/Sub6Resources/flutter_html/issues/24))
+* Fixes typo in README.md from 0.7.0.
+
 ## [0.7.0] - September 10, 2018:
 
-* Adds full support for `ul`
+* Adds full support for `ul` and `ol`
 
 ## [0.6.2] - September 5, 2018:
 
