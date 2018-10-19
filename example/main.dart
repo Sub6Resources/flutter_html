@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:html/dom.dart' as dom;
 
 void main() => runApp(new MyApp());
 
@@ -120,6 +121,14 @@ class _MyHomePageState extends State<MyHomePage> {
             padding: EdgeInsets.all(8.0),
             onLinkTap: (url) {
               print("Opening $url...");
+            },
+            customRender: (node, children) {
+              if (node is dom.Element) {
+                switch (node.localName) {
+                  case "custom_tag":
+                    return Column(children: children);
+                }
+              }
             },
           ),
         ),

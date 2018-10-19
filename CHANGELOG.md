@@ -1,3 +1,8 @@
+## [0.8.0] - October 18, 2018:
+
+* Adds custom tag callback
+* Logging no longer shows up in production.
+
 ## [0.7.1] - September 11, 2018:
 
 * Fixes issue with text nodes that contain only a space. ([#24](https://github.com/Sub6Resources/flutter_html/issues/24))
