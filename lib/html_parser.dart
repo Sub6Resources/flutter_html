@@ -3,6 +3,7 @@ import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
+typedef OnLinkTap = void Function(String url);
 
 class HtmlParser {
   HtmlParser({
@@ -13,7 +14,7 @@ class HtmlParser {
   });
 
   final double width;
-  final Function onLinkTap;
+  final OnLinkTap onLinkTap;
   final bool renderNewlines;
   final CustomRender customRender;
 
