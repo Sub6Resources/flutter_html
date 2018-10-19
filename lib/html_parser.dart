@@ -98,14 +98,7 @@ class HtmlParser {
     List<Widget> widgetList = new List<Widget>();
 
     if (renderNewlines) {
-      assert(() {
-        debugPrint("Before: $data");
-        return true;
-      }());
       data = data.replaceAll("\n", "<br />");
-      assert(() {
-        debugPrint("After: $data");
-      }());
     }
     dom.Document document = parser.parse(data);
     widgetList.add(_parseNode(document.body));

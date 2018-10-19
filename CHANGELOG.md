@@ -1,3 +1,7 @@
+## [0.8.1] - October 19, 2018:
+
+* Adds `typedef` for `onLinkTap` function.
+
 ## [0.8.0] - October 18, 2018:
 
 * Adds custom tag callback
