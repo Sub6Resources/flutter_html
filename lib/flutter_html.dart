@@ -19,7 +19,7 @@ class Html extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
-  final Function onLinkTap;
+  final OnLinkTap onLinkTap;
   final bool renderNewlines;
 
   /// Either return a custom widget for specific node types or return null to
