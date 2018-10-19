@@ -99,12 +99,12 @@ class HtmlParser {
 
     if (renderNewlines) {
       assert(() {
-        print("Before: $data");
+        debugPrint("Before: $data");
         return true;
       }());
       data = data.replaceAll("\n", "<br />");
       assert(() {
-        print("After: $data");
+        debugPrint("After: $data");
       }());
     }
     dom.Document document = parser.parse(data);
@@ -123,7 +123,7 @@ class HtmlParser {
 
     if (node is dom.Element) {
       assert(() {
-        print("Found ${node.localName}");
+        debugPrint("Found ${node.localName}");
         return true;
       }());
 
@@ -758,7 +758,7 @@ class HtmlParser {
         node.text = " ";
       }
 
-      print("Plain Text Node: '${trimStringHtml(node.text)}'");
+      debugPrint("Plain Text Node: '${trimStringHtml(node.text)}'");
       String finalText = trimStringHtml(node.text);
       //Temp fix for https://github.com/flutter/flutter/issues/736
       if (finalText.endsWith(" ")) {
