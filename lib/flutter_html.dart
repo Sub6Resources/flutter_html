@@ -12,6 +12,7 @@ class Html extends StatelessWidget {
     this.defaultTextStyle = const TextStyle(color: Colors.black),
     this.onLinkTap,
     this.renderNewlines = false,
+    this.customRender,
   }) : super(key: key);
 
   final String data;
@@ -20,6 +21,10 @@ class Html extends StatelessWidget {
   final TextStyle defaultTextStyle;
   final Function onLinkTap;
   final bool renderNewlines;
+
+  /// Either return a custom widget for specific node types or return null to
+  /// fallback to the default rendering.
+  final CustomRender customRender;
 
   @override
   Widget build(BuildContext context) {
@@ -37,6 +42,7 @@ class Html extends StatelessWidget {
             width: width,
             onLinkTap: onLinkTap,
             renderNewlines: renderNewlines,
+            customRender: customRender,
           ).parse(data),
         ),
       ),
