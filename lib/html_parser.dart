@@ -4,6 +4,7 @@ import 'package:html/dom.dart' as dom;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
+typedef ParseNodeFunction = List<Widget> Function(List<dom.Node> nodeList);
 
 class HtmlParser {
   HtmlParser({
@@ -39,6 +40,7 @@ class HtmlParser {
     "data",
     "dd",
     "del",
+    "details",
     "dfn",
     "div",
     "dl",
@@ -294,6 +296,8 @@ class HtmlParser {
               decoration: TextDecoration.lineThrough,
             ),
           );
+        case "details":
+          return DetailsWidget(node, _parseNodeList);
         case "dfn":
           return DefaultTextStyle.merge(
             child: Wrap(
@@ -798,5 +802,47 @@ class HtmlParser {
       }
     }
     return false;
+  }
+}
+
+class DetailsWidget extends StatefulWidget {
+  final ParseNodeFunction parseFunc;
+  final dom.Element node;
+  DetailsWidget(this.node, this.parseFunc);
+  _DetailsWidgetState createState() => _DetailsWidgetState();
+}
+
+class _DetailsWidgetState extends State<DetailsWidget> {
+  dom.Node _summaryNode;
+  bool _isOpen = false;
+
+  void initState() {
+    super.initState();
+    _summaryNode = widget.node.children
+        .firstWhere((el) => el.localName == "summary", orElse: () => null);
+    _isOpen = _summaryNode != null
+        ? _summaryNode.attributes.containsKey("open")
+        : false;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            setState(() {
+              _isOpen = !_isOpen;
+            });
+          },
+          child: Text(_summaryNode != null ? _summaryNode.text : ""),
+        ),
+        Wrap(
+          children:
+              _isOpen ? widget.parseFunc(widget.node.nodes) : [Container()],
+        )
+      ],
+    );
   }
 }
