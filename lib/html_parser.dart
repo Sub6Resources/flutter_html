@@ -484,7 +484,7 @@ class HtmlParser {
           );
         case "li":
           String type = node.parent.localName; // Parent type; usually ol or ul
-          const EdgeInsets markPadding = EdgeInsets.symmetric(horizontal: 4.0);
+          const EdgeInsets markPadding = EdgeInsets.symmetric(horizontal: 7.0);
           Widget mark;
           switch (type) {
             case "ul":
@@ -498,15 +498,17 @@ class HtmlParser {
               mark = Container(width: 0.0, height: 0.0);
               break;
           }
-          return Container(
-            width: width,
-            child: Wrap(
-              children: <Widget>[
-                mark,
-                Wrap(children: _parseNodeList(node.nodes))
-              ],
-            ),
-          );
+          return Padding(
+              padding: EdgeInsets.symmetric(vertical: 8.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  mark,
+                  Expanded(
+                    child: Wrap(children: _parseNodeList(node.nodes)),
+                  )
+                ],
+              ));
         case "main":
           return Container(
             width: width,
