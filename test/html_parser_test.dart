@@ -5,7 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 void main() {
   test('Checks that `parse` does not throw an exception', () {
-    final elementList = HtmlParser(width: 42.0).parse("<b>Bold Text</b>");
+    final elementList = HtmlOldParser(width: 42.0).parse("<b>Bold Text</b>");
     expect(elementList, isNotNull);
   });
 
