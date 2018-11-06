@@ -117,13 +117,12 @@ class ParseContext {
   }
 }
 
-class HtmlRichTextParser {
+class HtmlRichTextParser extends StatelessWidget{
   HtmlRichTextParser({
     @required this.width,
     this.onLinkTap,
     this.renderNewlines = false,
-    this.customRender,
-    this.context,
+    this.html,
   });
 
   final double indentSize = 10.0;
@@ -131,8 +130,7 @@ class HtmlRichTextParser {
   final double width;
   final onLinkTap;
   final bool renderNewlines;
-  final CustomRender customRender;
-  final BuildContext context;
+  final String html;
 
   // style elements set a default style
   // for all child nodes
@@ -210,7 +208,10 @@ class HtmlRichTextParser {
   }
 
   // Parses an html string and returns a list of RichText widgets that represent the body of your html document.
-  List<Widget> parse(String data) {
+
+  @override
+  Widget build(BuildContext context) {
+    String data = html;
 
     if (renderNewlines) {
       data = data.replaceAll("\n", "<br />");
@@ -229,7 +230,7 @@ class HtmlRichTextParser {
     // _parseNode(body, parseContext);
 
     // eliminate empty widgets
-    List<Widget> retval = [];
+    List<Widget> children = [];
     widgetList.forEach((dynamic w){
       if (w is BlockText) {
         if (w.child.text == null) return;
@@ -239,9 +240,12 @@ class HtmlRichTextParser {
       } else if (w is LinkTextSpan) {
         if (w.text.isEmpty && w.children.isEmpty) return;
       }
-      retval.add(w);
+      children.add(w);
     });
-    return retval;
+
+    return Column(
+      children: children,
+    );
   }
 
   // THE WORKHORSE FUNCTION!!
@@ -492,8 +496,10 @@ class HtmlRichTextParser {
           case "li":
             String leadingChar = parseContext.listChar;
             if (parseContext.blockType == 'ol') {
-              nextContext.listCount += 1;
-              leadingChar = nextContext.listCount.toString() + '.';
+              // nextContext will handle nodes under this 'li'
+              // but we want to increment the count at this level
+              parseContext.listCount += 1;
+              leadingChar = parseContext.listCount.toString() + '.';
             }
             BlockText blockText = BlockText(
               margin:EdgeInsets.only(left: parseContext.indentLevel * indentSize, top:3.0),
@@ -651,18 +657,20 @@ class HtmlRichTextParser {
 
 
 
-class HtmlOldParser {
+class HtmlOldParser extends StatelessWidget {
   HtmlOldParser({
     @required this.width,
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
+    this.html,
   });
 
   final double width;
   final OnLinkTap onLinkTap;
   final bool renderNewlines;
   final CustomRender customRender;
+  final String html;
 
   static const _supportedElements = [
     "a",
@@ -738,6 +746,14 @@ class HtmlOldParser {
     "ul", //partial
     "var",
   ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      alignment: WrapAlignment.start,
+      children: parse(html),
+    );
+  }
 
   ///Parses an html string and returns a list of widgets that represent the body of your html document.
   List<Widget> parse(String data) {

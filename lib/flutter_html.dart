@@ -9,7 +9,7 @@ class Html extends StatelessWidget {
     @required this.data,
     this.padding,
     this.backgroundColor,
-    this.defaultTextStyle = const TextStyle(color: Colors.black),
+    this.defaultTextStyle,
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
@@ -37,22 +37,20 @@ class Html extends StatelessWidget {
       color: backgroundColor,
       width: width,
       child: DefaultTextStyle.merge(
-        style: defaultTextStyle,
-        child: Wrap(
-          alignment: WrapAlignment.start,
-          children: (useRichText)
-          ? HtmlRichTextParser(
-            width: width,
-            onLinkTap: onLinkTap,
-            renderNewlines: renderNewlines,
-            customRender: customRender,
-          ).parse(data)
-          : HtmlOldParser(
-            width: width,
-            onLinkTap: onLinkTap,
-            renderNewlines: renderNewlines,
-            customRender: customRender,
-          ).parse(data),
+        style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
+        child: (useRichText)
+        ? HtmlRichTextParser(
+          width: width,
+          onLinkTap: onLinkTap,
+          renderNewlines: renderNewlines,
+          html: data,
+        )
+        : HtmlOldParser(
+          width: width,
+          onLinkTap: onLinkTap,
+          renderNewlines: renderNewlines,
+          customRender: customRender,
+          html: data,
         ),
       ),
     );
