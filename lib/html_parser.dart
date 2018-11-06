@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
+import 'package:flutter_html/widgets/widgets_lib.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
-typedef ParseNodeFunction = List<Widget> Function(List<dom.Node> nodeList);
 
 class HtmlParser {
   HtmlParser({
@@ -802,47 +802,5 @@ class HtmlParser {
       }
     }
     return false;
-  }
-}
-
-class DetailsWidget extends StatefulWidget {
-  final ParseNodeFunction parseFunc;
-  final dom.Element node;
-  DetailsWidget(this.node, this.parseFunc);
-  _DetailsWidgetState createState() => _DetailsWidgetState();
-}
-
-class _DetailsWidgetState extends State<DetailsWidget> {
-  dom.Node _summaryNode;
-  bool _isOpen = false;
-
-  void initState() {
-    super.initState();
-    _summaryNode = widget.node.children
-        .firstWhere((el) => el.localName == "summary", orElse: () => null);
-    _isOpen = _summaryNode != null
-        ? _summaryNode.attributes.containsKey("open")
-        : false;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        GestureDetector(
-          onTap: () {
-            setState(() {
-              _isOpen = !_isOpen;
-            });
-          },
-          child: Text(_summaryNode != null ? _summaryNode.text : ""),
-        ),
-        Wrap(
-          children:
-              _isOpen ? widget.parseFunc(widget.node.nodes) : [Container()],
-        )
-      ],
-    );
   }
 }

@@ -117,9 +117,12 @@ class _MyHomePageState extends State<MyHomePage> {
           <h1>Third header</h1>
           <div>Fourth div</div>
           <details>
-            <Summary open>Details summary</summary>
-            <p>Nested P1 of details</p>
-            <p>Nested P2 of details</p>
+            <summary open><h2>Details summary</h2></summary>
+            <ul>
+              <li>Details 1</li>
+              <li>Details 2</li>
+              <li>Details 3</li>
+            </ul>
           </details>
   """,
             //Optional parameters:
