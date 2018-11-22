@@ -498,12 +498,24 @@ class HtmlParser {
               mark = Container(width: 0.0, height: 0.0);
               break;
           }
+//           return Container(
+//             width: width,
+//             child: Wrap(
+//               children: <Widget>[
+//                 mark,
+//                 Wrap(children: _parseNodeList(node.nodes))
+//               ],
+//             ),
+//           );
           return Container(
-            width: width,
-            child: Wrap(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
                 mark,
-                Wrap(children: _parseNodeList(node.nodes))
+                Container(
+                  width: width / 1.2,
+                    child: Wrap(
+                        children: _parseNodeList(node.nodes)))
               ],
             ),
           );
