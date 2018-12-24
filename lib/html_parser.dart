@@ -4,6 +4,8 @@ import 'package:html/dom.dart' as dom;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
+const OFFSET_TAGS_FONT_SIZE_FACTOR = 0.7; //The ratio of the parent font for each of the offset tags: sup or sub
+const BLOCK_SPACING = 14.0;  //The default spacing between block elements. Can be customized by the new verticalSpacing property
 
 class HtmlParser {
   HtmlParser({
@@ -11,12 +13,14 @@ class HtmlParser {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
-  });
+    blockSpacing
+  }) : this.blockSpacing = blockSpacing ?? BLOCK_SPACING;
 
   final double width;
   final OnLinkTap onLinkTap;
   final bool renderNewlines;
   final CustomRender customRender;
+  final double blockSpacing;
 
   static const _supportedElements = [
     "a",
@@ -78,6 +82,8 @@ class HtmlParser {
     "span",
     "strike",
     "strong",
+    "sub",
+    "sup",
     "table",
     "tbody",
     "td",
@@ -108,7 +114,7 @@ class HtmlParser {
   Widget _parseNode(dom.Node node) {
     if (customRender != null) {
       final Widget customWidget =
-          customRender(node, _parseNodeList(node.nodes));
+      customRender(node, _parseNodeList(node.nodes));
       if (customWidget != null) {
         return customWidget;
       }
@@ -170,6 +176,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -177,6 +184,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -219,10 +227,11 @@ class HtmlParser {
           );
         case "blockquote":
           return Padding(
-            padding: EdgeInsets.fromLTRB(40.0, 14.0, 40.0, 14.0),
+            padding: EdgeInsets.fromLTRB(40.0, BLOCK_SPACING, 40.0, BLOCK_SPACING),
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -231,18 +240,20 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
         case "br":
           if (_isNotFirstBreakTag(node)) {
-            return Container(width: width, height: 14.0);
+            return Container(width: width, height: BLOCK_SPACING);
           }
           return Container(width: width);
         case "caption":
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               alignment: WrapAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
@@ -251,6 +262,7 @@ class HtmlParser {
           return Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
                 alignment: WrapAlignment.center,
               ));
@@ -282,6 +294,7 @@ class HtmlParser {
               child: Container(
                 width: width,
                 child: Wrap(
+                  crossAxisAlignment: WrapCrossAlignment.center,
                   children: _parseNodeList(node.nodes),
                 ),
               ));
@@ -307,12 +320,13 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
         case "dl":
           return Padding(
-              padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
+              padding: EdgeInsets.only(top: BLOCK_SPACING, bottom: BLOCK_SPACING),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -336,7 +350,7 @@ class HtmlParser {
           );
         case "figure":
           return Padding(
-              padding: EdgeInsets.fromLTRB(40.0, 14.0, 40.0, 14.0),
+              padding: EdgeInsets.fromLTRB(40.0, BLOCK_SPACING, 40.0, BLOCK_SPACING),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -345,6 +359,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -353,6 +368,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -366,6 +382,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -379,6 +396,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -392,6 +410,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -405,6 +424,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -418,6 +438,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -430,6 +451,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -501,9 +523,13 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: <Widget>[
                 mark,
-                Wrap(children: _parseNodeList(node.nodes))
+                Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: _parseNodeList(node.nodes)
+                )
               ],
             ),
           );
@@ -511,6 +537,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -528,6 +555,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -535,6 +563,8 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
+              alignment: WrapAlignment.start,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -545,17 +575,19 @@ class HtmlParser {
           );
         case "p":
           return Padding(
-            padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
+            padding: EdgeInsets.only(top: BLOCK_SPACING, bottom: BLOCK_SPACING),
             child: Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                alignment: WrapAlignment.start, //@ominibyte Added this for when the line breaks. I think it looks better
                 children: _parseNodeList(node.nodes),
               ),
             ),
           );
         case "pre":
           return Padding(
-            padding: const EdgeInsets.all(14.0),
+            padding: const EdgeInsets.all(BLOCK_SPACING),
             child: DefaultTextStyle.merge(
               child: Text(node.innerHtml),
               style: const TextStyle(
@@ -610,6 +642,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
@@ -644,6 +677,53 @@ class HtmlParser {
               fontWeight: FontWeight.bold,
             ),
           );
+        case "sub":
+        case "sup":
+        //Use builder to capture the parent font to inherit the font styles
+          return Builder(builder: (BuildContext context){
+            final DefaultTextStyle parent = DefaultTextStyle.of(context);
+            TextStyle parentStyle = parent.style;
+
+            var painter = new TextPainter(text: new TextSpan(text: node.text, style: parentStyle,), textDirection: TextDirection.ltr);
+            painter.layout();
+            //print(painter.size);
+
+            //Get the height from the default text
+            var height = painter.size.height * 1.35; //compute a higher height for the text to increase the offset of the Positioned text
+
+            painter = new TextPainter(text: new TextSpan(text: node.text, style: parentStyle.merge(TextStyle(fontSize: parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR)),), textDirection: TextDirection.ltr);
+            painter.layout();
+            //print(painter.size);
+
+            //Get the width from the reduced/positioned text
+            var width = painter.size.width;
+
+            //print("Width: $width, Height: $height");
+
+            return DefaultTextStyle.merge(
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
+                children: [
+                  Stack(
+                    fit: StackFit.loose,
+                    children: [
+                      //The Stack needs a non-positioned object for the next widget to respect the space so we create
+                      //a sized box to fill the required space
+                      SizedBox(width: width, height: height,),
+                      DefaultTextStyle.merge(
+                        child: Positioned(
+                          child: Wrap(children: _parseNodeList(node.nodes)),
+                          bottom: node.localName == "sub" ? 0 : null,
+                          top: node.localName == "sub" ? null : 0,
+                        ),
+                        style: TextStyle(fontSize: parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR),
+                      )
+                    ],
+                  )
+                ],
+              ),
+            );
+          });
         case "table":
           return Column(
             children: _parseNodeList(node.nodes),
@@ -662,11 +742,12 @@ class HtmlParser {
           return Expanded(
             flex: colspan,
             child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.center,
               children: _parseNodeList(node.nodes),
             ),
           );
         case "template":
-          //Not usually displayed in HTML
+        //Not usually displayed in HTML
           return Container();
         case "tfoot":
           return Column(
@@ -682,6 +763,7 @@ class HtmlParser {
             child: Expanded(
               flex: colspan,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 alignment: WrapAlignment.center,
                 children: _parseNodeList(node.nodes),
               ),
@@ -743,7 +825,7 @@ class HtmlParser {
         return Wrap();
       }
       if (node.text.trim() == "" && node.text.indexOf(" ") != -1) {
-        node.text = " ";
+        node.text = "";//@ominibyte Looks better without the space
       }
 
       String finalText = trimStringHtml(node.text);

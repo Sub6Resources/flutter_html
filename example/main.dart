@@ -63,29 +63,31 @@ class _MyHomePageState extends State<MyHomePage> {
       <p>There isn't <i>really</i> a team...</p>
       <h2>Installation</h2>
       <p>You <u>cannot</u> install a nonexistent product!</p>
+      <h2>Don't ask me to find <em>x</em> in</h2>
+      <p>log<sub>2</sub>(<em>x</em><sup>2</sup> - 6<em>x</em>) = 3 + log<sub>2</sub>(1 - <em>x</em>)</p>
       <div id="bdi_test">
-      <h3><code>bdi</code> and <code>bdo</code> Test:</h3>
-      <p>
-      In the example below, usernames are shown along with the number of points in a contest.
-      If the bdi element is not supported in the browser, the username of the Arabic user would confuse the text (the bidirectional algorithm would put the colon and the number "90" next to the word "User" rather than next to the word "points").
-      </p>
-      
-      <ul>
-       <li>User <bdi>hrefs</bdi>: 60 points</li>
-       <li>User <bdi>jdoe</bdi>: 80 points</li>
-       <li>User <bdi>إيان</bdi>: 90 points</li>
-       <bdo dir="rtl">Swapped!</bdo>
-       <bdo dir="ltr">This text will go left to right!</bdo>
-       <bdo dir="rtl">With bdi: User <bdi>إيان</bdi>: 90 points</bdo>
-       <bdo dir="rtl">Without bdi: User إيان: 90 points</bdo>
-       <bdo dir="ltr">ltr w/ bdi: User <bdi>إيان</bdi>: 90 points</bdo>
-       <bdo dir="ltr">ltr w/o bdi: User إيان: 90 points</bdo>
-      </ul>
+        <h3><code>bdi</code> and <code>bdo</code> Test:</h3>
+        <p>
+        In the example below, usernames are shown along with the number of points in a contest.
+        If the bdi element is not supported in the browser, the username of the Arabic user would confuse the text (the bidirectional algorithm would put the colon and the number "90" next to the word "User" rather than next to the word "points").
+        </p>
+        
+        <ul>
+         <li>User <bdi>hrefs</bdi>: 60 points</li>
+         <li>User <bdi>jdoe</bdi>: 80 points</li>
+         <li>User <bdi>إيان</bdi>: 90 points</li>
+         <bdo dir="rtl">Swapped!</bdo>
+         <bdo dir="ltr">This text will go left to right!</bdo>
+         <bdo dir="rtl">With bdi: User <bdi>إيان</bdi>: 90 points</bdo>
+         <bdo dir="rtl">Without bdi: User إيان: 90 points</bdo>
+         <bdo dir="ltr">ltr w/ bdi: User <bdi>إيان</bdi>: 90 points</bdo>
+         <bdo dir="ltr">ltr w/o bdi: User إيان: 90 points</bdo>
+        </ul>
       </div>
             <div>
               <table>
               <caption>This is the table's caption</caption>
-                <tr><th>Head 1</th><th>Head 2</th><th>Head 3</th></tr>
+                <tr><th>Head 1<sup>*</sup></th><th>Head 2</th><th>Head 3</th></tr>
                 <tr><td>Data 1</td><td>Long Data 2</td><td>Really, realllllly, long data 3</td></tr>
                 <tr><td>Data 1</td><td>Long <b>Data</b> 2</td><td>Really, realllllly, long data 3</td></tr>
                 <tr><td>Data 1</td><td>Long Data 2</td><td>Really, realllllly, long data 3</td></tr>

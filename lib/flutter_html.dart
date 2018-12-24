@@ -13,6 +13,7 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
+    this.blockSpacing,
   }) : super(key: key);
 
   final String data;
@@ -21,6 +22,7 @@ class Html extends StatelessWidget {
   final TextStyle defaultTextStyle;
   final OnLinkTap onLinkTap;
   final bool renderNewlines;
+  final double blockSpacing;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -39,10 +41,11 @@ class Html extends StatelessWidget {
         child: Wrap(
           alignment: WrapAlignment.start,
           children: HtmlParser(
-            width: width,
-            onLinkTap: onLinkTap,
-            renderNewlines: renderNewlines,
-            customRender: customRender,
+              width: width,
+              onLinkTap: onLinkTap,
+              renderNewlines: renderNewlines,
+              customRender: customRender,
+              blockSpacing: blockSpacing
           ).parse(data),
         ),
       ),
