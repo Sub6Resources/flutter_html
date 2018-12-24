@@ -227,7 +227,7 @@ class HtmlParser {
           );
         case "blockquote":
           return Padding(
-            padding: EdgeInsets.fromLTRB(40.0, BLOCK_SPACING, 40.0, BLOCK_SPACING),
+            padding: EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
             child: Container(
               width: width,
               child: Wrap(
@@ -246,7 +246,7 @@ class HtmlParser {
           );
         case "br":
           if (_isNotFirstBreakTag(node)) {
-            return Container(width: width, height: BLOCK_SPACING);
+            return Container(width: width, height: blockSpacing);
           }
           return Container(width: width);
         case "caption":
@@ -326,7 +326,7 @@ class HtmlParser {
           );
         case "dl":
           return Padding(
-              padding: EdgeInsets.only(top: BLOCK_SPACING, bottom: BLOCK_SPACING),
+              padding: EdgeInsets.only(top: blockSpacing, bottom: blockSpacing),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,7 +350,7 @@ class HtmlParser {
           );
         case "figure":
           return Padding(
-              padding: EdgeInsets.fromLTRB(40.0, BLOCK_SPACING, 40.0, BLOCK_SPACING),
+              padding: EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -575,7 +575,7 @@ class HtmlParser {
           );
         case "p":
           return Padding(
-            padding: EdgeInsets.only(top: BLOCK_SPACING, bottom: BLOCK_SPACING),
+            padding: EdgeInsets.only(top: blockSpacing, bottom: blockSpacing),
             child: Container(
               width: width,
               child: Wrap(
@@ -587,7 +587,7 @@ class HtmlParser {
           );
         case "pre":
           return Padding(
-            padding: const EdgeInsets.all(BLOCK_SPACING),
+            padding: EdgeInsets.all(blockSpacing),
             child: DefaultTextStyle.merge(
               child: Text(node.innerHtml),
               style: const TextStyle(
