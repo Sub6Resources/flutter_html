@@ -75,6 +75,9 @@ Check out the official Flutter WebView package here: https://pub.dartlang.org/pa
           switch(node.localName) {
             case "video": return Chewie(...);
             case "custom_tag": return CustomWidget(...);
+            // You can also pass node children to another Html widget
+            case "another_custom_tag": 
+                return AnotherCustomWidget(child: Html.fromNodeList(nodeList: node.nodes));
           }
         }
       },
