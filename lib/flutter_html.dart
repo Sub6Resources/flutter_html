@@ -2,6 +2,7 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:html/dom.dart' as dom;
 
 class Html extends StatelessWidget {
   Html({
@@ -13,9 +14,23 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
-  }) : super(key: key);
+  })  : this.nodeList = null,
+        super(key: key);
+
+  Html.fromNodeList({
+    Key key,
+    @required this.nodeList,
+    this.padding,
+    this.backgroundColor,
+    this.defaultTextStyle = const TextStyle(color: Colors.black),
+    this.onLinkTap,
+    this.renderNewlines = false,
+    this.customRender,
+  })  : this.data = null,
+        super(key: key);
 
   final String data;
+  final List<dom.Node> nodeList;
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
@@ -30,6 +45,16 @@ class Html extends StatelessWidget {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 
+    ///ONLY ONE OF data or node list MUST be not null!
+    assert((data == null) ^ (nodeList == null));
+
+    HtmlParser parser = HtmlParser(
+      width: width,
+      onLinkTap: onLinkTap,
+      renderNewlines: renderNewlines,
+      customRender: customRender,
+    );
+
     return Container(
       padding: padding,
       color: backgroundColor,
@@ -38,12 +63,8 @@ class Html extends StatelessWidget {
         style: defaultTextStyle,
         child: Wrap(
           alignment: WrapAlignment.start,
-          children: HtmlParser(
-            width: width,
-            onLinkTap: onLinkTap,
-            renderNewlines: renderNewlines,
-            customRender: customRender,
-          ).parse(data),
+          children:
+              data != null ? parser.parse(data) : parser.parseNodeList(nodeList),
         ),
       ),
     );

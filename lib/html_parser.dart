@@ -108,7 +108,7 @@ class HtmlParser {
   Widget _parseNode(dom.Node node) {
     if (customRender != null) {
       final Widget customWidget =
-          customRender(node, _parseNodeList(node.nodes));
+          customRender(node, parseNodeList(node.nodes));
       if (customWidget != null) {
         return customWidget;
       }
@@ -124,7 +124,7 @@ class HtmlParser {
           return GestureDetector(
               child: DefaultTextStyle.merge(
                 child: Wrap(
-                  children: _parseNodeList(node.nodes),
+                  children: parseNodeList(node.nodes),
                 ),
                 style: const TextStyle(
                     decoration: TextDecoration.underline,
@@ -140,7 +140,7 @@ class HtmlParser {
         case "abbr":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.underline,
@@ -150,7 +150,7 @@ class HtmlParser {
         case "acronym":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.underline,
@@ -160,7 +160,7 @@ class HtmlParser {
         case "address":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontStyle: FontStyle.italic,
@@ -170,20 +170,20 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "aside":
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "b":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -191,13 +191,13 @@ class HtmlParser {
           );
         case "bdi":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "bdo":
           if (node.attributes["dir"] != null) {
             return Directionality(
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
               textDirection: node.attributes["dir"] == "rtl"
                   ? TextDirection.rtl
@@ -206,12 +206,12 @@ class HtmlParser {
           }
           //Direction attribute is required, just render the text normally now.
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "big":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontSize: 20.0,
@@ -223,7 +223,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
           );
@@ -231,7 +231,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "br":
@@ -244,20 +244,20 @@ class HtmlParser {
             width: width,
             child: Wrap(
               alignment: WrapAlignment.center,
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "center":
           return Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
                 alignment: WrapAlignment.center,
               ));
         case "cite":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontStyle: FontStyle.italic,
@@ -266,7 +266,7 @@ class HtmlParser {
         case "code":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontFamily: 'monospace',
@@ -274,7 +274,7 @@ class HtmlParser {
           );
         case "data":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "dd":
           return Padding(
@@ -282,13 +282,13 @@ class HtmlParser {
               child: Container(
                 width: width,
                 child: Wrap(
-                  children: _parseNodeList(node.nodes),
+                  children: parseNodeList(node.nodes),
                 ),
               ));
         case "del":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.lineThrough,
@@ -297,7 +297,7 @@ class HtmlParser {
         case "dfn":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontStyle: FontStyle.italic,
@@ -307,24 +307,24 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "dl":
           return Padding(
               padding: EdgeInsets.only(top: 14.0, bottom: 14.0),
               child: Column(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.start,
               ));
         case "dt":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "em":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontStyle: FontStyle.italic,
@@ -332,20 +332,20 @@ class HtmlParser {
           );
         case "figcaption":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "figure":
           return Padding(
               padding: EdgeInsets.fromLTRB(40.0, 14.0, 40.0, 14.0),
               child: Column(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.center,
               ));
         case "footer":
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "h1":
@@ -353,7 +353,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -366,7 +366,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -379,7 +379,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -392,7 +392,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -405,7 +405,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -418,7 +418,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -430,7 +430,7 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "hr":
@@ -444,7 +444,7 @@ class HtmlParser {
         case "i":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontStyle: FontStyle.italic,
@@ -467,7 +467,7 @@ class HtmlParser {
         case "ins":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.underline,
@@ -476,7 +476,7 @@ class HtmlParser {
         case "kbd":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontFamily: 'monospace',
@@ -503,7 +503,7 @@ class HtmlParser {
             child: Wrap(
               children: <Widget>[
                 mark,
-                Wrap(children: _parseNodeList(node.nodes))
+                Wrap(children: parseNodeList(node.nodes))
               ],
             ),
           );
@@ -511,13 +511,13 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "mark":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: TextStyle(
               color: Colors.black,
@@ -528,19 +528,19 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "noscript":
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "ol":
           return Column(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "p":
@@ -549,7 +549,7 @@ class HtmlParser {
             child: Container(
               width: width,
               child: Wrap(
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
           );
@@ -566,7 +566,7 @@ class HtmlParser {
         case "q":
           List<Widget> children = List<Widget>();
           children.add(Text("\""));
-          children.addAll(_parseNodeList(node.nodes));
+          children.addAll(parseNodeList(node.nodes));
           children.add(Text("\""));
           return DefaultTextStyle.merge(
             child: Wrap(
@@ -578,20 +578,20 @@ class HtmlParser {
           );
         case "rp":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "rt":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "ruby":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "s":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.lineThrough,
@@ -600,7 +600,7 @@ class HtmlParser {
         case "samp":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontFamily: 'monospace',
@@ -610,13 +610,13 @@ class HtmlParser {
           return Container(
             width: width,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "small":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontSize: 10.0,
@@ -624,12 +624,12 @@ class HtmlParser {
           );
         case "span":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "strike":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.lineThrough,
@@ -638,7 +638,7 @@ class HtmlParser {
         case "strong":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontWeight: FontWeight.bold,
@@ -646,12 +646,12 @@ class HtmlParser {
           );
         case "table":
           return Column(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "tbody":
           return Column(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "td":
@@ -662,7 +662,7 @@ class HtmlParser {
           return Expanded(
             flex: colspan,
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
           );
         case "template":
@@ -670,7 +670,7 @@ class HtmlParser {
           return Container();
         case "tfoot":
           return Column(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "th":
@@ -683,7 +683,7 @@ class HtmlParser {
               flex: colspan,
               child: Wrap(
                 alignment: WrapAlignment.center,
-                children: _parseNodeList(node.nodes),
+                children: parseNodeList(node.nodes),
               ),
             ),
             style: const TextStyle(
@@ -692,22 +692,22 @@ class HtmlParser {
           );
         case "thead":
           return Column(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "time":
           return Wrap(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
           );
         case "tr":
           return Row(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.center,
           );
         case "tt":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontFamily: 'monospace',
@@ -716,7 +716,7 @@ class HtmlParser {
         case "u":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               decoration: TextDecoration.underline,
@@ -724,13 +724,13 @@ class HtmlParser {
           );
         case "ul":
           return Column(
-            children: _parseNodeList(node.nodes),
+            children: parseNodeList(node.nodes),
             crossAxisAlignment: CrossAxisAlignment.start,
           );
         case "var":
           return DefaultTextStyle.merge(
             child: Wrap(
-              children: _parseNodeList(node.nodes),
+              children: parseNodeList(node.nodes),
             ),
             style: const TextStyle(
               fontStyle: FontStyle.italic,
@@ -758,7 +758,8 @@ class HtmlParser {
     return Wrap();
   }
 
-  List<Widget> _parseNodeList(List<dom.Node> nodeList) {
+  ///Parses dom dom.node list and returns a list of widgets that represent the body of your html document.
+  List<Widget> parseNodeList(List<dom.Node> nodeList) {
     return nodeList.map((node) {
       return _parseNode(node);
     }).toList();
