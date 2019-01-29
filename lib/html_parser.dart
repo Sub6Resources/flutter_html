@@ -251,6 +251,7 @@ class HtmlParser {
           return Container(
               width: width,
               child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.center,
                 children: _parseNodeList(node.nodes),
                 alignment: WrapAlignment.center,
               ));
