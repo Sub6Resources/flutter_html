@@ -102,6 +102,7 @@ class ParseContext {
   String blockType; // blockType can be 'p', 'div', 'ul', 'ol', 'blockquote'
   bool condenseWhitespace = true;
   bool spansOnly = false;
+  bool inBlock = false;
   TextStyle childStyle;
 
   ParseContext(
@@ -113,6 +114,7 @@ class ParseContext {
       this.blockType,
       this.condenseWhitespace = true,
       this.spansOnly = false,
+      this.inBlock = false,
       this.childStyle}) {
     childStyle = childStyle ?? TextStyle();
   }
@@ -126,6 +128,7 @@ class ParseContext {
     blockType = parseContext.blockType;
     condenseWhitespace = parseContext.condenseWhitespace;
     spansOnly = parseContext.spansOnly;
+    inBlock = parseContext.inBlock;
     childStyle = parseContext.childStyle ?? TextStyle();
   }
 }
@@ -298,14 +301,14 @@ class HtmlRichTextParser extends StatelessWidget {
         return;
       }
 
-      // empty strings of whitespace might be significant or not, condense it by default
-      if (node.text.trim() == "" &&
-          node.text.indexOf(" ") != -1 &&
-          parseContext.condenseWhitespace) {
-        node.text = " ";
-      }
+      // if (node.text.trim() == "" &&
+      //     node.text.indexOf(" ") != -1 &&
+      //     parseContext.condenseWhitespace) {
+      //   node.text = " ";
+      // }
 
       // we might want to preserve internal whitespace
+      // empty strings of whitespace might be significant or not, condense it by default
       String finalText = parseContext.condenseWhitespace
           ? condenseHtmlWhitespace(node.text)
           : node.text;
@@ -314,6 +317,9 @@ class HtmlRichTextParser extends StatelessWidget {
       if (!(parseContext.parentElement is TextSpan ||
           parseContext.parentElement is LinkTextSpan))
         finalText = finalText.trim();
+
+      // if the finalText is actually empty, just return
+      if (finalText.isEmpty) return;
 
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
@@ -326,10 +332,48 @@ class HtmlRichTextParser extends StatelessWidget {
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
 
+      // the parseContext might actually be a block level style element, so we
+      // need to honor the indent and styling specified by that block style.
+      // e.g. ol, ul, blockquote
+      bool treatLikeBlock =
+          ['blockquote', 'ul', 'ol'].indexOf(parseContext.blockType) != -1;
+
       // if there is no parentElement, contain the span in a BlockText
       if (parseContext.parentElement == null) {
+        // if this is inside a context that should be treated like a block
+        // but the context is not actually a block, create a block
+        // and append it to the root widget tree
+        if (treatLikeBlock) {
+          Decoration decoration;
+          if (parseContext.blockType == 'blockquote') {
+            decoration = BoxDecoration(
+              border:
+                  Border(left: BorderSide(color: Colors.black38, width: 2.0)),
+            );
+            parseContext.childStyle = parseContext.childStyle.merge(TextStyle(
+              fontStyle: FontStyle.italic,
+            ));
+          }
+          BlockText blockText = BlockText(
+            margin: EdgeInsets.only(
+                top: 8.0,
+                bottom: 8.0,
+                left: parseContext.indentLevel * indentSize),
+            padding: EdgeInsets.all(2.0),
+            decoration: decoration,
+            child: RichText(
+              textAlign: TextAlign.left,
+              text: span,
+            ),
+          );
+          parseContext.rootWidgetList.add(blockText);
+        } else {
+          parseContext.rootWidgetList
+              .add(BlockText(child: RichText(text: span)));
+        }
+
+        // this allows future items to be added as children
         parseContext.parentElement = span;
-        parseContext.rootWidgetList.add(BlockText(child: RichText(text: span)));
 
         // if the parent is a LinkTextSpan, keep the main attributes of that span going.
       } else if (parseContext.parentElement is LinkTextSpan) {
@@ -348,6 +392,7 @@ class HtmlRichTextParser extends StatelessWidget {
       }
       return;
     }
+
     // OTHER ELEMENT NODES
     else if (node is dom.Element) {
       assert(() {
@@ -460,6 +505,7 @@ class HtmlRichTextParser extends StatelessWidget {
                   child: RichText(text: span),
                 );
                 parseContext.rootWidgetList.add(blockElement);
+                nextContext.inBlock = true;
               }
               nextContext.childStyle = linkStyle;
               nextContext.parentElement = span;
@@ -559,6 +605,7 @@ class HtmlRichTextParser extends StatelessWidget {
             parseContext.rootWidgetList.add(blockText);
             nextContext.parentElement = blockText.child.text;
             nextContext.spansOnly = true;
+            nextContext.inBlock = true;
             break;
 
           case "h1":
@@ -614,10 +661,11 @@ class HtmlRichTextParser extends StatelessWidget {
               ));
             }
             BlockText blockText = BlockText(
-              margin: EdgeInsets.symmetric(vertical: 8.0),
-              padding: EdgeInsets.only(
-                left: parseContext.indentLevel * indentSize,
-              ),
+              margin: EdgeInsets.only(
+                  top: 8.0,
+                  bottom: 8.0,
+                  left: parseContext.indentLevel * indentSize),
+              padding: EdgeInsets.all(2.0),
               decoration: decoration,
               child: RichText(
                 textAlign: textAlign,
@@ -631,6 +679,7 @@ class HtmlRichTextParser extends StatelessWidget {
             parseContext.rootWidgetList.add(blockText);
             nextContext.parentElement = blockText.child.text;
             nextContext.spansOnly = true;
+            nextContext.inBlock = true;
         }
       }
 
