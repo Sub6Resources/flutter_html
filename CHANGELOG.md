@@ -1,3 +1,7 @@
+## [0.9.0] - January 31, 2019:
+
+* Adds an alternate `RichText` parser and `useRichText` parameter. ([#37](https://github.com/Sub6Resources/flutter_html/pull/37))
+
 ## [0.8.2] - November 1, 2018:
 
 * Removes debug prints.

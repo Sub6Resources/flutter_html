@@ -8,7 +8,7 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.8.2
+      flutter_html: ^0.9.0
 
 ## Currently Supported HTML Tags:
 `a`, `abbr`, `acronym`, `address`, `article`, `aside`, `b`, `bdi`, `bdo`, `big`, `blockquote`, `body`, `br`, `caption`, `cite`, `code`, `data`, `dd`, `del`, `dfn`, `div`, `dl`, `dt`, `em`, `figcaption`, `figure`, `footer`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `header`, `hr`, `i`, `img`, `ins`, `kbd`, `li`, `main`, `mark`, `nav`, `noscript`, `ol`, `p`, `pre`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `section`, `small`, `span`, `strike`, `strong`, `table`, `tbody`, `td`, `template`, `tfoot`, `th`, `thead`, `time`, `tr`, `tt`, `u`, `ul`, `var`
@@ -73,3 +73,9 @@ until official support is added.
         }
       },
     )
+
+## `useRichText` parameter
+
+This package has a known issue where text does not wrap correctly. Setting `useRichText` to true fixes the issue
+by using an alternate parser. The alternate parser, however, does not support the `customRender` callback, and several elements
+supported by the default parser are not supported by the alternate parser.
