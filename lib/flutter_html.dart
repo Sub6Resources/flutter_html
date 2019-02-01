@@ -13,6 +13,7 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
+    this.blockSpacing,
     this.useRichText = false,
   }) : super(key: key);
 
@@ -22,6 +23,7 @@ class Html extends StatelessWidget {
   final TextStyle defaultTextStyle;
   final OnLinkTap onLinkTap;
   final bool renderNewlines;
+  final double blockSpacing;
   final bool useRichText;
 
   /// Either return a custom widget for specific node types or return null to
@@ -51,6 +53,7 @@ class Html extends StatelessWidget {
                 renderNewlines: renderNewlines,
                 customRender: customRender,
                 html: data,
+                blockSpacing: blockSpacing,
               ),
       ),
     );
