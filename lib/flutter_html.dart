@@ -39,19 +39,19 @@ class Html extends StatelessWidget {
       child: DefaultTextStyle.merge(
         style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
         child: (useRichText)
-        ? HtmlRichTextParser(
-          width: width,
-          onLinkTap: onLinkTap,
-          renderNewlines: renderNewlines,
-          html: data,
-        )
-        : HtmlOldParser(
-          width: width,
-          onLinkTap: onLinkTap,
-          renderNewlines: renderNewlines,
-          customRender: customRender,
-          html: data,
-        ),
+            ? HtmlRichTextParser(
+                width: width,
+                onLinkTap: onLinkTap,
+                renderNewlines: renderNewlines,
+                html: data,
+              )
+            : HtmlOldParser(
+                width: width,
+                onLinkTap: onLinkTap,
+                renderNewlines: renderNewlines,
+                customRender: customRender,
+                html: data,
+              ),
       ),
     );
   }
