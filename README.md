@@ -40,6 +40,12 @@ This package is designed with simplicity in mind. Flutter currently does not sup
 into the widget tree. This package is designed to be a reasonable alternative for rendering static web content
 until official support is added.
 
+### Update:
+The official Flutter WebView package has been created and is in a developer preview. It's not stable yet, so I'll continue to support this project at least until webview_flutter hits 1.0.0.
+
+Check out the official Flutter WebView package here: https://pub.dartlang.org/packages/webview_flutter
+
+
 ## Example Usage:
 
     Html(
