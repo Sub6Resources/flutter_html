@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:html/parser.dart' as parser;
@@ -571,8 +573,13 @@ class HtmlRichTextParser extends StatelessWidget {
             break;
           case "img":
             if (node.attributes['src'] != null) {
-              parseContext.rootWidgetList
-                  .add(Image.network(node.attributes['src']));
+              if(node.attributes['src'].startsWith("data:image") && node.attributes['src'].contains("base64,")) {
+                parseContext.rootWidgetList
+                    .add(Image.memory(base64.decode(node.attributes['src'].split("base64,")[1].trim())));
+              } else {
+                parseContext.rootWidgetList
+                    .add(Image.network(node.attributes['src']));
+              }
             } else if (node.attributes['alt'] != null) {
               parseContext.rootWidgetList.add(BlockText(
                   margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
@@ -1236,6 +1243,9 @@ class HtmlOldParser extends StatelessWidget {
           );
         case "img":
           if (node.attributes['src'] != null) {
+            if(node.attributes['src'].startsWith("data:image") && node.attributes['src'].contains("base64,")) {
+              return Image.memory(base64.decode(node.attributes['src'].split("base64,")[1].trim()));
+            }
             return Image.network(node.attributes['src']);
           } else if (node.attributes['alt'] != null) {
             //Temp fix for https://github.com/flutter/flutter/issues/736

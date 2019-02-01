@@ -1,3 +1,7 @@
+## [0.9.3] - January 31, 2019:
+
+* Adds support for base64 encoded images
+
 ## [0.9.2] - January 31, 2019:
 
 * Adds partial support for deprecated `font` tag.
