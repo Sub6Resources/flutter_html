@@ -1,3 +1,8 @@
+## [0.9.1] - January 31, 2019:
+
+* Adds full support for `sub` and `sup`. ([#46](https://github.com/Sub6Resources/flutter_html/pull/46))
+* Fixes weak warning caught by Pub analysis ([#54](https://github.com/Sub6Resources/flutter_html/issues/54))
+
 ## [0.9.0] - January 31, 2019:
 
 * Adds an alternate `RichText` parser and `useRichText` parameter. ([#37](https://github.com/Sub6Resources/flutter_html/pull/37))

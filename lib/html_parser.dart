@@ -5,7 +5,8 @@ import 'package:html/dom.dart' as dom;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
-const OFFSET_TAGS_FONT_SIZE_FACTOR = 0.7; //The ratio of the parent font for each of the offset tags: sup or sub
+const OFFSET_TAGS_FONT_SIZE_FACTOR =
+    0.7; //The ratio of the parent font for each of the offset tags: sup or sub
 
 class LinkTextSpan extends TextSpan {
   // Beware!
@@ -757,7 +758,7 @@ class HtmlOldParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
-    this.blockSpacing = 14.0,
+    this.blockSpacing,
     this.html,
   });
 
@@ -868,7 +869,7 @@ class HtmlOldParser extends StatelessWidget {
   Widget _parseNode(dom.Node node) {
     if (customRender != null) {
       final Widget customWidget =
-      customRender(node, _parseNodeList(node.nodes));
+          customRender(node, _parseNodeList(node.nodes));
       if (customWidget != null) {
         return customWidget;
       }
@@ -981,7 +982,8 @@ class HtmlOldParser extends StatelessWidget {
           );
         case "blockquote":
           return Padding(
-            padding: EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
+            padding:
+                EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
             child: Container(
               width: width,
               child: Wrap(
@@ -1104,7 +1106,8 @@ class HtmlOldParser extends StatelessWidget {
           );
         case "figure":
           return Padding(
-              padding: EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
+              padding:
+                  EdgeInsets.fromLTRB(40.0, blockSpacing, 40.0, blockSpacing),
               child: Column(
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -1282,8 +1285,7 @@ class HtmlOldParser extends StatelessWidget {
                 mark,
                 Wrap(
                     crossAxisAlignment: WrapCrossAlignment.center,
-                    children: _parseNodeList(node.nodes)
-                )
+                    children: _parseNodeList(node.nodes))
               ],
             ),
           );
@@ -1334,7 +1336,7 @@ class HtmlOldParser extends StatelessWidget {
               width: width,
               child: Wrap(
                 crossAxisAlignment: WrapCrossAlignment.center,
-                alignment: WrapAlignment.start, //@ominibyte Added this for when the line breaks. I think it looks better
+                alignment: WrapAlignment.start,
                 children: _parseNodeList(node.nodes),
               ),
             ),
@@ -1433,19 +1435,32 @@ class HtmlOldParser extends StatelessWidget {
           );
         case "sub":
         case "sup":
-        //Use builder to capture the parent font to inherit the font styles
-          return Builder(builder: (BuildContext context){
+          //Use builder to capture the parent font to inherit the font styles
+          return Builder(builder: (BuildContext context) {
             final DefaultTextStyle parent = DefaultTextStyle.of(context);
             TextStyle parentStyle = parent.style;
 
-            var painter = new TextPainter(text: new TextSpan(text: node.text, style: parentStyle,), textDirection: TextDirection.ltr);
+            var painter = new TextPainter(
+                text: new TextSpan(
+                  text: node.text,
+                  style: parentStyle,
+                ),
+                textDirection: TextDirection.ltr);
             painter.layout();
             //print(painter.size);
 
             //Get the height from the default text
-            var height = painter.size.height * 1.35; //compute a higher height for the text to increase the offset of the Positioned text
+            var height = painter.size.height *
+                1.35; //compute a higher height for the text to increase the offset of the Positioned text
 
-            painter = new TextPainter(text: new TextSpan(text: node.text, style: parentStyle.merge(TextStyle(fontSize: parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR)),), textDirection: TextDirection.ltr);
+            painter = new TextPainter(
+                text: new TextSpan(
+                  text: node.text,
+                  style: parentStyle.merge(TextStyle(
+                      fontSize:
+                          parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR)),
+                ),
+                textDirection: TextDirection.ltr);
             painter.layout();
             //print(painter.size);
 
@@ -1463,14 +1478,19 @@ class HtmlOldParser extends StatelessWidget {
                     children: [
                       //The Stack needs a non-positioned object for the next widget to respect the space so we create
                       //a sized box to fill the required space
-                      SizedBox(width: width, height: height,),
+                      SizedBox(
+                        width: width,
+                        height: height,
+                      ),
                       DefaultTextStyle.merge(
                         child: Positioned(
                           child: Wrap(children: _parseNodeList(node.nodes)),
                           bottom: node.localName == "sub" ? 0 : null,
                           top: node.localName == "sub" ? null : 0,
                         ),
-                        style: TextStyle(fontSize: parentStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR),
+                        style: TextStyle(
+                            fontSize: parentStyle.fontSize *
+                                OFFSET_TAGS_FONT_SIZE_FACTOR),
                       )
                     ],
                   )
@@ -1501,7 +1521,7 @@ class HtmlOldParser extends StatelessWidget {
             ),
           );
         case "template":
-        //Not usually displayed in HTML
+          //Not usually displayed in HTML
           return Container();
         case "tfoot":
           return Column(
@@ -1579,7 +1599,7 @@ class HtmlOldParser extends StatelessWidget {
         return Wrap();
       }
       if (node.text.trim() == "" && node.text.indexOf(" ") != -1) {
-        node.text = "";//@ominibyte Looks better without the space
+        node.text = " ";
       }
 
       String finalText = trimStringHtml(node.text);

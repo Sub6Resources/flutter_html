@@ -13,7 +13,7 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
-    this.blockSpacing,
+    this.blockSpacing = 14.0,
     this.useRichText = false,
   }) : super(key: key);
 
