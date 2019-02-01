@@ -46,13 +46,13 @@ class LinkBlock extends Container {
   // final OnLinkTap onLinkTap;
   final List<Widget> children;
 
-  LinkBlock(
-      {String url,
-      EdgeInsets padding,
-      EdgeInsets margin,
-      OnLinkTap onLinkTap,
-      List<Widget> this.children})
-      : super(
+  LinkBlock({
+    String url,
+    EdgeInsets padding,
+    EdgeInsets margin,
+    OnLinkTap onLinkTap,
+    this.children,
+  }) : super(
             padding: padding,
             margin: margin,
             child: GestureDetector(
