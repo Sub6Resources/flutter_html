@@ -1,3 +1,7 @@
+## [0.8.2] - November 1, 2018:
+
+* Removes debug prints.
+
 ## [0.8.1] - October 19, 2018:
 
 * Adds `typedef` for `onLinkTap` function.
