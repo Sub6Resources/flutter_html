@@ -16,7 +16,7 @@ Add the following to your `pubspec.yaml` file:
 ### Partially supported elements:
 > These are common elements that aren't yet fully supported, but won't be ignored and will still render somewhat correctly.
 
-`center`
+`center`, `font`
  
 ### List of _planned_ supported elements:
 > These are elements that are planned, but present a specific challenge that makes them somewhat difficult to implement.
@@ -31,7 +31,7 @@ Add the following to your `pubspec.yaml` file:
 
 > Note: These unsupported tags will just be ignored.
 
-`applet`, `area`, `base`, `basefont`, `button`, `canvas`, `col`, `colgroup`, `datalist`, `dialog`, `dir`, `embed`, `font`, `fieldset`, `form`, `frame`, `frameset`, `head`, `iframe`, `input`, `label`, `legend`, `link`, `map`, `meta`, `meter`, `noframe`, `object`, `optgroup`, `option`, `output`, `param`, `picture`, `progress`, `script`, `select`, `style`, `textarea`, `title`
+`applet`, `area`, `base`, `basefont`, `button`, `canvas`, `col`, `colgroup`, `datalist`, `dialog`, `dir`, `embed`, `fieldset`, `form`, `frame`, `frameset`, `head`, `iframe`, `input`, `label`, `legend`, `link`, `map`, `meta`, `meter`, `noframe`, `object`, `optgroup`, `option`, `output`, `param`, `picture`, `progress`, `script`, `select`, `style`, `textarea`, `title`
  
 
 ## Why this package?

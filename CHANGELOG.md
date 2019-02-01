@@ -1,3 +1,7 @@
+## [0.9.2] - January 31, 2019:
+
+* Adds partial support for deprecated `font` tag.
+
 ## [0.9.1] - January 31, 2019:
 
 * Adds full support for `sub` and `sup`. ([#46](https://github.com/Sub6Resources/flutter_html/pull/46))

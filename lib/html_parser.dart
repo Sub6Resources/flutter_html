@@ -797,6 +797,7 @@ class HtmlOldParser extends StatelessWidget {
     "em",
     "figcaption",
     "figure",
+    "font",
     "footer",
     "h1",
     "h2",
@@ -1112,6 +1113,10 @@ class HtmlOldParser extends StatelessWidget {
                 children: _parseNodeList(node.nodes),
                 crossAxisAlignment: CrossAxisAlignment.center,
               ));
+        case "font":
+          return Wrap(
+            children: _parseNodeList(node.nodes),
+          );
         case "footer":
           return Container(
             width: width,
