@@ -896,11 +896,6 @@ class HtmlOldParser extends StatelessWidget {
     }
 
     if (node is dom.Element) {
-      assert(() {
-        // debugPrint("Found ${node.localName}");
-        return true;
-      }());
-
       if (!_supportedElements.contains(node.localName)) {
         return Container();
       }
@@ -1532,7 +1527,6 @@ class HtmlOldParser extends StatelessWidget {
         node.text = " ";
       }
 
-      // debugPrint("Plain Text Node: '${trimStringHtml(node.text)}'");
       String finalText = trimStringHtml(node.text);
       //Temp fix for https://github.com/flutter/flutter/issues/736
       if (finalText.endsWith(" ")) {
