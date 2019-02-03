@@ -89,32 +89,4 @@ void main() {
 
     expect(find.byType(RichText), findsNWidgets(6));
   });
-
-  testWidgets('Tests that elements can be rendered from nodeList',
-      (WidgetTester tester) async {
-    Widget _testCustomRenderer(dom.Node node, List<Widget> children) {
-      if (node is dom.Element) {
-        switch (node.localName) {
-          case "header":
-            return Padding(
-                padding: EdgeInsets.symmetric(horizontal: 0, vertical: 10),
-                child: Html.fromNodeList(
-                  nodeList: node.nodes,
-                  customRender: _testCustomRenderer,
-                ));
-        }
-      }
-    }
-    await tester.pumpWidget(MaterialApp(
-      home: Scaffold(
-        body: Html(
-          data: "<header><b>bold text</b></header>",
-          customRender: _testCustomRenderer,
-        ),
-      ),
-    ));
-
-    expect(find.byType(Padding), findsOneWidget);
-    expect(find.text("bold text"), findsOneWidget);
-  });
 }
