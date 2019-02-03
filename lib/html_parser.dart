@@ -175,6 +175,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "br",
     "table",
     "tbody",
+    "caption",
     "td",
     "tfoot",
     "th",
@@ -401,7 +402,7 @@ class HtmlRichTextParser extends StatelessWidget {
     // OTHER ELEMENT NODES
     else if (node is dom.Element) {
       assert(() {
-        // debugPrint("Found ${node.localName}");
+        debugPrint("Found ${node.localName}");
         // debugPrint(node.outerHtml);
         return true;
       }());
@@ -532,26 +533,15 @@ class HtmlRichTextParser extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[],
             );
-            nextContext.rootWidgetList.add(nextContext.parentElement);
+            nextContext.rootWidgetList.add(Container(
+                margin: EdgeInsets.symmetric(vertical: 12.0),
+                child: nextContext.parentElement));
             break;
 
-          // we don't handle tbody or thead elements separately for now
+          // we don't handle tbody, thead, or tfoot elements separately for now
           case "tbody":
           case "thead":
-            break;
-
-          // caption elements throw us off
-          case "caption":
-            RichText text =
-                RichText(text: TextSpan(text: '', children: <TextSpan>[]));
-            Row row = Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                text,
-              ],
-            );
-            nextContext.parentElement.children.add(row);
-            nextContext.parentElement = text.text;
+          case "tfoot":
             break;
 
           case "td":
@@ -560,11 +550,15 @@ class HtmlRichTextParser extends StatelessWidget {
             if (node.attributes['colspan'] != null) {
               colspan = int.tryParse(node.attributes['colspan']);
             }
+            nextContext.childStyle = nextContext.childStyle.merge(TextStyle(
+                fontWeight: (node.localName == 'th')
+                    ? FontWeight.bold
+                    : FontWeight.normal));
             RichText text =
                 RichText(text: TextSpan(text: '', children: <TextSpan>[]));
             Expanded cell = Expanded(
               flex: colspan,
-              child: text,
+              child: Container(padding: EdgeInsets.all(1.0), child: text),
             );
             nextContext.parentElement.children.add(cell);
             nextContext.parentElement = text.text;
@@ -577,6 +571,27 @@ class HtmlRichTextParser extends StatelessWidget {
             );
             nextContext.parentElement.children.add(row);
             nextContext.parentElement = row;
+            break;
+
+          // treat captions like a row with one expanded cell
+          case "caption":
+            // create the row
+            Row row = Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[],
+            );
+
+            // create an expanded cell
+            RichText text = RichText(
+                textAlign: TextAlign.center,
+                textScaleFactor: 1.2,
+                text: TextSpan(text: '', children: <TextSpan>[]));
+            Expanded cell = Expanded(
+              child: Container(padding: EdgeInsets.all(2.0), child: text),
+            );
+            row.children.add(cell);
+            nextContext.parentElement.children.add(row);
+            nextContext.parentElement = text.text;
             break;
         }
       }
