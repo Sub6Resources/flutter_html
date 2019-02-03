@@ -304,23 +304,24 @@ class HtmlRichTextParser extends StatelessWidget {
 
       // we might want to preserve internal whitespace
       // empty strings of whitespace might be significant or not, condense it by default
-      String finalText = parseContext.condenseWhitespace
-          ? condenseHtmlWhitespace(node.text)
-          : node.text;
+      String finalText = node.text;
+      if (parseContext.condenseWhitespace) {
+        finalText = condenseHtmlWhitespace(node.text);
 
-      // if this is part of a string of spans, we will preserve leading
-      // and trailing whitespace unless the previous character is whitespace
-      if (parseContext.parentElement == null)
-        finalText = finalText.trimLeft();
-      else if (parseContext.parentElement is TextSpan ||
-          parseContext.parentElement is LinkTextSpan) {
-        String lastString = parseContext.parentElement.text ?? '';
-        if (!parseContext.parentElement.children.isEmpty) {
-          lastString = parseContext.parentElement.children.last.text;
+        // if this is part of a string of spans, we will preserve leading
+        // and trailing whitespace unless the previous character is whitespace
+        if (parseContext.parentElement == null)
+          finalText = finalText.trimLeft();
+        else if (parseContext.parentElement is TextSpan ||
+            parseContext.parentElement is LinkTextSpan) {
+          String lastString = parseContext.parentElement.text ?? '';
+          if (!parseContext.parentElement.children.isEmpty) {
+            lastString = parseContext.parentElement.children.last.text;
+          }
+          if (lastString == '' ||
+              lastString.endsWith(' ') ||
+              lastString.endsWith('\n')) finalText = finalText.trimLeft();
         }
-        if (lastString == '' ||
-            lastString.endsWith(' ') ||
-            lastString.endsWith('\n')) finalText = finalText.trimLeft();
       }
 
       // if the finalText is actually empty, just return
@@ -403,7 +404,7 @@ class HtmlRichTextParser extends StatelessWidget {
     // OTHER ELEMENT NODES
     else if (node is dom.Element) {
       assert(() {
-        debugPrint("Found ${node.localName}");
+        // debugPrint("Found ${node.localName}");
         // debugPrint(node.outerHtml);
         return true;
       }());
