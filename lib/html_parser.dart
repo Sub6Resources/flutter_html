@@ -318,8 +318,9 @@ class HtmlRichTextParser extends StatelessWidget {
         if (!parseContext.parentElement.children.isEmpty) {
           lastString = parseContext.parentElement.children.last.text;
         }
-        if (lastString.endsWith(' ') || lastString.endsWith('\n'))
-          finalText = finalText.trimLeft();
+        if (lastString == '' ||
+            lastString.endsWith(' ') ||
+            lastString.endsWith('\n')) finalText = finalText.trimLeft();
       }
 
       // if the finalText is actually empty, just return
