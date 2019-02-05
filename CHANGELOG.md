@@ -1,3 +1,7 @@
+## [0.9.4] - February 5, 2019:
+
+* Fixes `table` error in `RichText` parser. ([#58](https://github.com/Sub6Resources/flutter_html/issues/58))
+
 ## [0.9.3] - January 31, 2019:
 
 * Adds support for base64 encoded images
