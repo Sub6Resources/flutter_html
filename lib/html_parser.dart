@@ -179,6 +179,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "br",
     "table",
     "tbody",
+    "caption",
     "td",
     "tfoot",
     "th",
@@ -300,30 +301,35 @@ class HtmlRichTextParser extends StatelessWidget {
     // a text only node is a child of a tag with no inner html
     if (node is dom.Text) {
       // WHITESPACE CONSIDERATIONS ---
-      // truly empty nodes, should just be ignored
+      // truly empty nodes should just be ignored
       if (node.text.trim() == "" && node.text.indexOf(" ") == -1) {
         return;
       }
 
-      // if (node.text.trim() == "" &&
-      //     node.text.indexOf(" ") != -1 &&
-      //     parseContext.condenseWhitespace) {
-      //   node.text = " ";
-      // }
-
       // we might want to preserve internal whitespace
       // empty strings of whitespace might be significant or not, condense it by default
-      String finalText = parseContext.condenseWhitespace
-          ? condenseHtmlWhitespace(node.text)
-          : node.text;
+      String finalText = node.text;
+      if (parseContext.condenseWhitespace) {
+        finalText = condenseHtmlWhitespace(node.text);
 
-      // if this is part of a string of spans, we will preserve leading and trailing whitespace
-      if (!(parseContext.parentElement is TextSpan ||
-          parseContext.parentElement is LinkTextSpan))
-        finalText = finalText.trim();
+        // if this is part of a string of spans, we will preserve leading
+        // and trailing whitespace unless the previous character is whitespace
+        if (parseContext.parentElement == null)
+          finalText = finalText.trimLeft();
+        else if (parseContext.parentElement is TextSpan ||
+            parseContext.parentElement is LinkTextSpan) {
+          String lastString = parseContext.parentElement.text ?? '';
+          if (!parseContext.parentElement.children.isEmpty) {
+            lastString = parseContext.parentElement.children.last.text ?? '';
+          }
+          if (lastString == '' ||
+              lastString.endsWith(' ') ||
+              lastString.endsWith('\n')) finalText = finalText.trimLeft();
+        }
+      }
 
       // if the finalText is actually empty, just return
-      if (finalText.isEmpty) return;
+      if (finalText.trim().isEmpty) return;
 
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
@@ -376,7 +382,7 @@ class HtmlRichTextParser extends StatelessWidget {
               .add(BlockText(child: RichText(text: span)));
         }
 
-        // this allows future items to be added as children
+        // this allows future items to be added as children of this item
         parseContext.parentElement = span;
 
         // if the parent is a LinkTextSpan, keep the main attributes of that span going.
@@ -391,8 +397,10 @@ class HtmlRichTextParser extends StatelessWidget {
         ));
 
         // if the parent is a normal span, just add this to that list
-      } else {
+      } else if (!(parseContext.parentElement.children is List<Widget>)) {
         parseContext.parentElement.children.add(span);
+      } else {
+        // Doing nothing... we shouldn't ever get here
       }
       return;
     }
@@ -525,14 +533,21 @@ class HtmlRichTextParser extends StatelessWidget {
             break;
 
           case "table":
-          case "tbody":
-          case "thead":
             // new block, so clear out the parent element
             parseContext.parentElement = null;
             nextContext.parentElement = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[],
             );
-            nextContext.rootWidgetList.add(nextContext.parentElement);
+            nextContext.rootWidgetList.add(Container(
+                margin: EdgeInsets.symmetric(vertical: 12.0),
+                child: nextContext.parentElement));
+            break;
+
+          // we don't handle tbody, thead, or tfoot elements separately for now
+          case "tbody":
+          case "thead":
+          case "tfoot":
             break;
 
           case "td":
@@ -541,20 +556,48 @@ class HtmlRichTextParser extends StatelessWidget {
             if (node.attributes['colspan'] != null) {
               colspan = int.tryParse(node.attributes['colspan']);
             }
+            nextContext.childStyle = nextContext.childStyle.merge(TextStyle(
+                fontWeight: (node.localName == 'th')
+                    ? FontWeight.bold
+                    : FontWeight.normal));
+            RichText text =
+                RichText(text: TextSpan(text: '', children: <TextSpan>[]));
             Expanded cell = Expanded(
               flex: colspan,
-              child: Wrap(),
+              child: Container(padding: EdgeInsets.all(1.0), child: text),
             );
             nextContext.parentElement.children.add(cell);
-            nextContext.parentElement = cell.child;
+            nextContext.parentElement = text.text;
             break;
 
           case "tr":
             Row row = Row(
               crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[],
             );
             nextContext.parentElement.children.add(row);
             nextContext.parentElement = row;
+            break;
+
+          // treat captions like a row with one expanded cell
+          case "caption":
+            // create the row
+            Row row = Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[],
+            );
+
+            // create an expanded cell
+            RichText text = RichText(
+                textAlign: TextAlign.center,
+                textScaleFactor: 1.2,
+                text: TextSpan(text: '', children: <TextSpan>[]));
+            Expanded cell = Expanded(
+              child: Container(padding: EdgeInsets.all(2.0), child: text),
+            );
+            row.children.add(cell);
+            nextContext.parentElement.children.add(row);
+            nextContext.parentElement = text.text;
             break;
         }
       }
