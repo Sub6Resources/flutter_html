@@ -193,8 +193,8 @@ class HtmlRichTextParser extends StatelessWidget {
   // is found inside another block level element,
   // we simply treat it as a new block level element
   static const _supportedBlockElements = [
-    "article"
-        "body",
+    "article",
+    "body",
     "center",
     "dd",
     "dfn",
