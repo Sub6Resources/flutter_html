@@ -260,7 +260,8 @@ class HtmlRichTextParser extends StatelessWidget {
     );
 
     // ignore the top level "body"
-    body.nodes.forEach((dom.Node node) => _parseNode(node, parseContext));
+    body.nodes
+        .forEach((dom.Node node) => _parseNode(node, parseContext, context));
     // _parseNode(body, parseContext);
 
     // filter out empty widgets
@@ -297,7 +298,8 @@ class HtmlRichTextParser extends StatelessWidget {
   // function can add child nodes to the parent if it should
   //
   // each iteration creates a new parseContext as a copy of the previous one if it needs to
-  void _parseNode(dom.Node node, ParseContext parseContext) {
+  void _parseNode(
+      dom.Node node, ParseContext parseContext, BuildContext buildContext) {
     // TEXT ONLY NODES
     // a text only node is a child of a tag with no inner html
     if (node is dom.Text) {
@@ -619,9 +621,27 @@ class HtmlRichTextParser extends StatelessWidget {
             if (node.attributes['src'] != null) {
               if (node.attributes['src'].startsWith("data:image") &&
                   node.attributes['src'].contains("base64,")) {
+                precacheImage(
+                  MemoryImage(
+                    base64.decode(
+                      node.attributes['src'].split("base64,")[1].trim(),
+                    ),
+                  ),
+                  buildContext,
+                  onError: (_, stacktrace) {
+                    print(stacktrace);
+                  },
+                );
                 parseContext.rootWidgetList.add(Image.memory(base64.decode(
                     node.attributes['src'].split("base64,")[1].trim())));
               } else {
+                precacheImage(
+                  NetworkImage(node.attributes['src']),
+                  buildContext,
+                  onError: (_, stacktrace) {
+                    print(stacktrace);
+                  },
+                );
                 parseContext.rootWidgetList
                     .add(Image.network(node.attributes['src']));
               }
@@ -738,7 +758,7 @@ class HtmlRichTextParser extends StatelessWidget {
       }
 
       node.nodes.forEach((dom.Node childNode) {
-        _parseNode(childNode, nextContext);
+        _parseNode(childNode, nextContext, buildContext);
       });
     }
   }
