@@ -15,6 +15,10 @@ class Html extends StatelessWidget {
     this.customRender,
     this.blockSpacing = 14.0,
     this.useRichText = false,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   }) : super(key: key);
 
   final String data;
@@ -25,6 +29,7 @@ class Html extends StatelessWidget {
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
+  final TextStyle linkStyle;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -46,6 +51,7 @@ class Html extends StatelessWidget {
                 onLinkTap: onLinkTap,
                 renderNewlines: renderNewlines,
                 html: data,
+                linkStyle: linkStyle,
               )
             : HtmlOldParser(
                 width: width,
@@ -54,6 +60,7 @@ class Html extends StatelessWidget {
                 customRender: customRender,
                 html: data,
                 blockSpacing: blockSpacing,
+                linkStyle: linkStyle,
               ),
       ),
     );

@@ -144,6 +144,10 @@ class HtmlRichTextParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   });
 
   final double indentSize = 10.0;
@@ -152,6 +156,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final onLinkTap;
   final bool renderNewlines;
   final String html;
+  final TextStyle linkStyle;
 
   // style elements set a default style
   // for all child nodes
@@ -497,13 +502,9 @@ class HtmlRichTextParser extends StatelessWidget {
               nextContext.parentElement = linkContainer;
               nextContext.rootWidgetList.add(linkContainer);
             } else {
-              TextStyle linkStyle = parseContext.childStyle.merge(TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blueAccent,
-                decorationColor: Colors.blueAccent,
-              ));
+              TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
               LinkTextSpan span = LinkTextSpan(
-                style: linkStyle,
+                style: _linkStyle,
                 url: url,
                 onLinkTap: onLinkTap,
                 children: <TextSpan>[],
@@ -812,6 +813,10 @@ class HtmlOldParser extends StatelessWidget {
     this.customRender,
     this.blockSpacing,
     this.html,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   });
 
   final double width;
@@ -820,6 +825,7 @@ class HtmlOldParser extends StatelessWidget {
   final CustomRender customRender;
   final double blockSpacing;
   final String html;
+  final TextStyle linkStyle;
 
   static const _supportedElements = [
     "a",
@@ -940,10 +946,7 @@ class HtmlOldParser extends StatelessWidget {
                 child: Wrap(
                   children: _parseNodeList(node.nodes),
                 ),
-                style: const TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blueAccent,
-                    decorationColor: Colors.blueAccent),
+                style: linkStyle,
               ),
               onTap: () {
                 if (node.attributes.containsKey('href') && onLinkTap != null) {
