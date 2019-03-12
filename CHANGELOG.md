@@ -1,3 +1,9 @@
+## [0.9.5] - March 11, 2019:
+
+* Add support for `span` in `RichText` parser. ([#61](https://github.com/Sub6Resources/flutter_html/issues/61))
+* Adds `linkStyle` attribute. ([#70](https://github.com/Sub6Resources/flutter_html/pull/70))
+* Adds tests for `header`, `hr`, and `i` ([#62](https://github.com/Sub6Resources/flutter_html/issues/62))
+
 ## [0.9.4] - February 5, 2019:
 
 * Fixes `table` error in `RichText` parser. ([#58](https://github.com/Sub6Resources/flutter_html/issues/58))

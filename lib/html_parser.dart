@@ -173,7 +173,8 @@ class HtmlRichTextParser extends StatelessWidget {
     "acronym",
     "ol",
     "ul",
-    "blockquote"
+    "blockquote",
+    "span",
   ];
 
   // specialty elements require unique handling
@@ -475,6 +476,9 @@ class HtmlRichTextParser extends StatelessWidget {
           case "blockquote":
             nextContext.indentLevel += 1;
             nextContext.blockType = 'blockquote';
+            break;
+          case "span":
+            //No additional styles
             break;
         }
         nextContext.childStyle = childStyle;
@@ -1275,10 +1279,7 @@ class HtmlOldParser extends StatelessWidget {
         case "hr":
           return Padding(
             padding: EdgeInsets.only(top: 7.0, bottom: 7.0),
-            child: Container(
-              height: 0.0,
-              decoration: BoxDecoration(border: Border.all()),
-            ),
+            child: Divider(height: 1.0, color: Colors.black38),
           );
         case "i":
           return DefaultTextStyle.merge(
