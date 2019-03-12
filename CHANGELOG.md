@@ -1,3 +1,7 @@
+## [0.9.6] - March 11, 2019:
+
+* Fix whitespace issue. ([#59](https://github.com/Sub6Resources/flutter_html/issues/59))
+
 ## [0.9.5] - March 11, 2019:
 
 * Add support for `span` in `RichText` parser. ([#61](https://github.com/Sub6Resources/flutter_html/issues/61))

@@ -329,14 +329,14 @@ class HtmlRichTextParser extends StatelessWidget {
           if (!parseContext.parentElement.children.isEmpty) {
             lastString = parseContext.parentElement.children.last.text ?? '';
           }
-          if (lastString == '' ||
-              lastString.endsWith(' ') ||
-              lastString.endsWith('\n')) finalText = finalText.trimLeft();
+          if (lastString.endsWith(' ') || lastString.endsWith('\n')) {
+            finalText = finalText.trimLeft();
+          }
         }
       }
 
-      // if the finalText is actually empty, just return
-      if (finalText.trim().isEmpty) return;
+      // if the finalText is actually empty, just return (unless it's just a space)
+      if (finalText.trim().isEmpty && finalText != " ") return;
 
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
