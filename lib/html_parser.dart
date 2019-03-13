@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
-import 'package:flutter_html/html_types.dart';
+import 'package:flutter_html/html_elements.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
@@ -1741,11 +1741,48 @@ class HtmlParser extends StatelessWidget {
 
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
   static StyledElement lexDomTree(dom.Document html) {
-    //TODO
+    StyledElement tree = StyledElement();
+
+    html.nodes.forEach((node) {
+      tree.children.add(_recursiveLexer(node));
+    });
+
+    return tree;
+  }
+
+  static StyledElement _recursiveLexer(dom.Node node) {
+    List<StyledElement> children = List<StyledElement>();
+
+    node.nodes.forEach((childNode) {
+      children.add(_recursiveLexer(childNode));
+    });
+
+    if (node is dom.Element) {
+      if (STYLED_ELEMENTS.contains(node.localName)) {
+        return parseStyledElement(node, children);
+      } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
+        return parseInteractableElement(node, children);
+      } else if (BLOCK_ELEMENTS.contains(node.localName)) {
+        return BlockElement(
+          name: node.localName,
+          children: children,
+          block: parseBlockElementBlock(node),
+        );
+      } else if (CONTENT_ELEMENTS.contains(node.localName)) {
+        return parseContentElement(node);
+      } else {
+        return EmptyContentElement();
+      }
+    } else if (node is dom.Text) {
+      return TextContentElement(text: node.text);
+    } else {
+      return EmptyContentElement();
+    }
   }
 
   /// [cleanTree] optimizes the [StyledElement] tree so all [BlockElement]s are
-  /// on the first level and redundant levels are collapsed.
+  /// on the first level, redundant levels are collapsed, and empty elements are
+  /// removed.
   static StyledElement cleanTree(StyledElement tree) {
     //TODO
   }
