@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
 import 'package:html/parser.dart' as parser;
 import 'package:html/dom.dart' as dom;
+import 'package:flutter_html/html_types.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
@@ -1721,4 +1722,49 @@ class HtmlOldParser extends StatelessWidget {
     }
     return false;
   }
+}
+
+class HtmlParser extends StatelessWidget {
+  final String html;
+
+  HtmlParser(this.html);
+
+  @override
+  Widget build(BuildContext context) {
+    return parseTree(context, lexDomTree(parseHTML(html)));
+  }
+
+  /// [parseHTML] converts a string to a DOM document using the dart `html` library.
+  static dom.Document parseHTML(String data) {
+    return parser.parse(data);
+  }
+
+  /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
+  static StyledElement lexDomTree(dom.Document html) {
+    //TODO
+  }
+
+  /// [cleanTree] optimizes the [StyledElement] tree so all [BlockElement]s are
+  /// on the first level and redundant levels are collapsed.
+  static StyledElement cleanTree(StyledElement tree) {
+    //TODO
+  }
+
+  /// [parseTree] converts a tree of [StyledElement]s to a Flutter [Widget] tree.
+  static Widget parseTree(BuildContext context, StyledElement tree) {
+    //TODO
+  }
+}
+
+/// A [CustomRenderer] is used to render html tags in your own way or implement unsupported tags.
+class CustomRenderer {
+  final String name;
+  final Widget Function(BuildContext context) render;
+  final ElementType renderAs;
+
+  CustomRenderer(
+    this.name, {
+    this.render,
+    this.renderAs,
+  });
 }
