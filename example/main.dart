@@ -121,6 +121,11 @@ class _MyHomePageState extends State<MyHomePage> {
   """,
             //Optional parameters:
             padding: EdgeInsets.all(8.0),
+            linkStyle: const TextStyle(
+              color: Colors.redAccent,
+              decorationColor: Colors.redAccent,
+              decoration: TextDecoration.underline,
+            ),
             onLinkTap: (url) {
               print("Opening $url...");
             },

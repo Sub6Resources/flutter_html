@@ -145,6 +145,10 @@ class HtmlRichTextParser extends StatelessWidget {
     this.renderNewlines = false,
     this.html,
     this.onImageError,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   });
 
   final double indentSize = 10.0;
@@ -154,6 +158,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final bool renderNewlines;
   final String html;
   final ImageErrorListener onImageError;
+  final TextStyle linkStyle;
 
   // style elements set a default style
   // for all child nodes
@@ -170,7 +175,8 @@ class HtmlRichTextParser extends StatelessWidget {
     "acronym",
     "ol",
     "ul",
-    "blockquote"
+    "blockquote",
+    "span",
   ];
 
   // specialty elements require unique handling
@@ -327,14 +333,14 @@ class HtmlRichTextParser extends StatelessWidget {
           if (!parseContext.parentElement.children.isEmpty) {
             lastString = parseContext.parentElement.children.last.text ?? '';
           }
-          if (lastString == '' ||
-              lastString.endsWith(' ') ||
-              lastString.endsWith('\n')) finalText = finalText.trimLeft();
+          if (lastString.endsWith(' ') || lastString.endsWith('\n')) {
+            finalText = finalText.trimLeft();
+          }
         }
       }
 
-      // if the finalText is actually empty, just return
-      if (finalText.trim().isEmpty) return;
+      // if the finalText is actually empty, just return (unless it's just a space)
+      if (finalText.trim().isEmpty && finalText != " ") return;
 
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
@@ -475,6 +481,9 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.indentLevel += 1;
             nextContext.blockType = 'blockquote';
             break;
+          case "span":
+            //No additional styles
+            break;
         }
         nextContext.childStyle = childStyle;
       }
@@ -501,13 +510,9 @@ class HtmlRichTextParser extends StatelessWidget {
               nextContext.parentElement = linkContainer;
               nextContext.rootWidgetList.add(linkContainer);
             } else {
-              TextStyle linkStyle = parseContext.childStyle.merge(TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blueAccent,
-                decorationColor: Colors.blueAccent,
-              ));
+              TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
               LinkTextSpan span = LinkTextSpan(
-                style: linkStyle,
+                style: _linkStyle,
                 url: url,
                 onLinkTap: onLinkTap,
                 children: <TextSpan>[],
@@ -831,6 +836,10 @@ class HtmlOldParser extends StatelessWidget {
     this.blockSpacing,
     this.html,
     this.onImageError,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   });
 
   final double width;
@@ -840,6 +849,7 @@ class HtmlOldParser extends StatelessWidget {
   final double blockSpacing;
   final String html;
   final ImageErrorListener onImageError;
+  final TextStyle linkStyle;
 
   static const _supportedElements = [
     "a",
@@ -960,10 +970,7 @@ class HtmlOldParser extends StatelessWidget {
                 child: Wrap(
                   children: _parseNodeList(node.nodes),
                 ),
-                style: const TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blueAccent,
-                    decorationColor: Colors.blueAccent),
+                style: linkStyle,
               ),
               onTap: () {
                 if (node.attributes.containsKey('href') && onLinkTap != null) {
@@ -1292,10 +1299,7 @@ class HtmlOldParser extends StatelessWidget {
         case "hr":
           return Padding(
             padding: EdgeInsets.only(top: 7.0, bottom: 7.0),
-            child: Container(
-              height: 0.0,
-              decoration: BoxDecoration(border: Border.all()),
-            ),
+            child: Divider(height: 1.0, color: Colors.black38),
           );
         case "i":
           return DefaultTextStyle.merge(

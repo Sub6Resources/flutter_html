@@ -16,6 +16,10 @@ class Html extends StatelessWidget {
     this.blockSpacing = 14.0,
     this.useRichText = false,
     this.onImageError,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   }) : super(key: key);
 
   final String data;
@@ -27,6 +31,7 @@ class Html extends StatelessWidget {
   final double blockSpacing;
   final bool useRichText;
   final ImageErrorListener onImageError;
+  final TextStyle linkStyle;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -49,6 +54,7 @@ class Html extends StatelessWidget {
                 renderNewlines: renderNewlines,
                 html: data,
                 onImageError: onImageError,
+                linkStyle: linkStyle,
               )
             : HtmlOldParser(
                 width: width,
@@ -58,6 +64,7 @@ class Html extends StatelessWidget {
                 html: data,
                 blockSpacing: blockSpacing,
                 onImageError: onImageError,
+                linkStyle: linkStyle,
               ),
       ),
     );
