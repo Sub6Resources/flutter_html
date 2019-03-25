@@ -57,6 +57,7 @@ class Html extends StatelessWidget {
                 customRender: customRender,
                 html: data,
                 blockSpacing: blockSpacing,
+                onImageError: onImageError,
               ),
       ),
     );

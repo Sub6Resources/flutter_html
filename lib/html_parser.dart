@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:html/parser.dart' as parser;
+import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as parser;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef OnLinkTap = void Function(String url);
@@ -830,6 +830,7 @@ class HtmlOldParser extends StatelessWidget {
     this.customRender,
     this.blockSpacing,
     this.html,
+    this.onImageError,
   });
 
   final double width;
@@ -838,6 +839,7 @@ class HtmlOldParser extends StatelessWidget {
   final CustomRender customRender;
   final double blockSpacing;
   final String html;
+  final ImageErrorListener onImageError;
 
   static const _supportedElements = [
     "a",
@@ -1305,24 +1307,39 @@ class HtmlOldParser extends StatelessWidget {
             ),
           );
         case "img":
-          if (node.attributes['src'] != null) {
-            if (node.attributes['src'].startsWith("data:image") &&
-                node.attributes['src'].contains("base64,")) {
-              return Image.memory(base64
-                  .decode(node.attributes['src'].split("base64,")[1].trim()));
-            }
-            return Image.network(node.attributes['src']);
-          } else if (node.attributes['alt'] != null) {
-            //Temp fix for https://github.com/flutter/flutter/issues/736
-            if (node.attributes['alt'].endsWith(" ")) {
-              return Container(
-                  padding: EdgeInsets.only(right: 2.0),
-                  child: Text(node.attributes['alt']));
-            } else {
-              return Text(node.attributes['alt']);
-            }
-          }
-          return Container();
+          return Builder(
+            builder: (BuildContext context) {
+              if (node.attributes['src'] != null) {
+                if (node.attributes['src'].startsWith("data:image") &&
+                    node.attributes['src'].contains("base64,")) {
+                  precacheImage(
+                    MemoryImage(base64.decode(
+                        node.attributes['src'].split("base64,")[1].trim())),
+                    context,
+                    onError: onImageError,
+                  );
+                  return Image.memory(base64.decode(
+                      node.attributes['src'].split("base64,")[1].trim()));
+                }
+                precacheImage(
+                  NetworkImage(node.attributes['src']),
+                  context,
+                  onError: onImageError,
+                );
+                return Image.network(node.attributes['src']);
+              } else if (node.attributes['alt'] != null) {
+                //Temp fix for https://github.com/flutter/flutter/issues/736
+                if (node.attributes['alt'].endsWith(" ")) {
+                  return Container(
+                      padding: EdgeInsets.only(right: 2.0),
+                      child: Text(node.attributes['alt']));
+                } else {
+                  return Text(node.attributes['alt']);
+                }
+              }
+              return Container();
+            },
+          );
         case "ins":
           return DefaultTextStyle.merge(
             child: Wrap(
