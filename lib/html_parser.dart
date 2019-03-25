@@ -144,6 +144,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
+    this.onImageError,
   });
 
   final double indentSize = 10.0;
@@ -152,6 +153,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final onLinkTap;
   final bool renderNewlines;
   final String html;
+  final ImageErrorListener onImageError;
 
   // style elements set a default style
   // for all child nodes
@@ -628,9 +630,7 @@ class HtmlRichTextParser extends StatelessWidget {
                     ),
                   ),
                   buildContext,
-                  onError: (_, stacktrace) {
-                    print(stacktrace);
-                  },
+                  onError: onImageError,
                 );
                 parseContext.rootWidgetList.add(Image.memory(base64.decode(
                     node.attributes['src'].split("base64,")[1].trim())));
@@ -638,9 +638,7 @@ class HtmlRichTextParser extends StatelessWidget {
                 precacheImage(
                   NetworkImage(node.attributes['src']),
                   buildContext,
-                  onError: (_, stacktrace) {
-                    print(stacktrace);
-                  },
+                  onError: onImageError,
                 );
                 parseContext.rootWidgetList
                     .add(Image.network(node.attributes['src']));
