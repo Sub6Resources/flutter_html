@@ -11,6 +11,7 @@ class Html extends StatelessWidget {
     this.backgroundColor,
     this.defaultTextStyle,
     this.onLinkTap,
+    this.fillWidth = true,
     this.renderNewlines = false,
     this.customRender,
     this.blockSpacing = 14.0,
@@ -26,6 +27,7 @@ class Html extends StatelessWidget {
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
   final OnLinkTap onLinkTap;
+  final bool fillWidth;
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
@@ -42,12 +44,11 @@ class Html extends StatelessWidget {
     return Container(
       padding: padding,
       color: backgroundColor,
-      width: width,
+      width: fillWidth ? width : null,
       child: DefaultTextStyle.merge(
         style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
         child: (useRichText)
             ? HtmlRichTextParser(
-                width: width,
                 onLinkTap: onLinkTap,
                 renderNewlines: renderNewlines,
                 html: data,

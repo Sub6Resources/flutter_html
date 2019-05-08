@@ -84,15 +84,15 @@ class BlockText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: double.infinity,
         padding: this.padding,
         margin: this.margin,
         decoration: this.decoration,
         child: Row(
+          mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             leadingChar.isNotEmpty ? Text(leadingChar) : Container(),
-            Expanded(child: child),
+            Flexible(child: child),
           ],
         ));
   }
@@ -140,9 +140,9 @@ class ParseContext {
 
 class HtmlRichTextParser extends StatelessWidget {
   HtmlRichTextParser({
-    @required this.width,
     this.onLinkTap,
     this.renderNewlines = false,
+    this.fillWidth = true,
     this.html,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
@@ -152,9 +152,9 @@ class HtmlRichTextParser extends StatelessWidget {
 
   final double indentSize = 10.0;
 
-  final double width;
   final onLinkTap;
   final bool renderNewlines;
+  final bool fillWidth;
   final String html;
   final TextStyle linkStyle;
 
@@ -286,6 +286,7 @@ class HtmlRichTextParser extends StatelessWidget {
     });
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: children,
     );
   }
