@@ -6,6 +6,8 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
+typedef CustomTextStyle = TextStyle Function(dom.Node node, TextStyle baseStyle);
+typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
@@ -144,11 +146,14 @@ class HtmlRichTextParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
+    this.customTextStyle,
+    this.customEdgeInsets,
     this.onImageError,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
-        decorationColor: Colors.blueAccent),
+        decorationColor: Colors.blueAccent,
+    ),
   });
 
   final double indentSize = 10.0;
@@ -157,6 +162,8 @@ class HtmlRichTextParser extends StatelessWidget {
   final onLinkTap;
   final bool renderNewlines;
   final String html;
+  final CustomTextStyle customTextStyle;
+  final CustomEdgeInsets customEdgeInsets;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
 
@@ -485,6 +492,14 @@ class HtmlRichTextParser extends StatelessWidget {
             //No additional styles
             break;
         }
+
+        if (customTextStyle != null) {
+          final TextStyle customStyle = customTextStyle(node, childStyle);
+          if (customStyle != null) {
+            childStyle = customStyle;
+          }
+        }
+
         nextContext.childStyle = childStyle;
       }
 
@@ -619,6 +634,11 @@ class HtmlRichTextParser extends StatelessWidget {
         parseContext.parentElement = null;
         TextAlign textAlign = TextAlign.left;
 
+        EdgeInsets _customEdgeInsets;
+        if (customEdgeInsets != null) {
+          _customEdgeInsets = customEdgeInsets(node);
+        }
+
         switch (node.localName) {
           case "hr":
             parseContext.rootWidgetList
@@ -738,10 +758,8 @@ class HtmlRichTextParser extends StatelessWidget {
               ));
             }
             BlockText blockText = BlockText(
-              margin: EdgeInsets.only(
-                  top: 8.0,
-                  bottom: 8.0,
-                  left: parseContext.indentLevel * indentSize),
+              margin: _customEdgeInsets ??
+                  EdgeInsets.only(top: 8.0, bottom: 8.0, left: parseContext.indentLevel * indentSize),
               padding: EdgeInsets.all(2.0),
               decoration: decoration,
               child: RichText(
