@@ -9,7 +9,7 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.9.4
+      flutter_html: ^0.9.7
 
 ## Currently Supported HTML Tags:
 `a`, `abbr`, `acronym`, `address`, `article`, `aside`, `b`, `bdi`, `bdo`, `big`, `blockquote`, `body`, `br`, `caption`, `cite`, `code`, `data`, `dd`, `del`, `dfn`, `div`, `dl`, `dt`, `em`, `figcaption`, `figure`, `footer`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `header`, `hr`, `i`, `img`, `ins`, `kbd`, `li`, `main`, `mark`, `nav`, `noscript`, `ol`, `p`, `pre`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `section`, `small`, `span`, `strike`, `strong`, `sub`, `sup`, `table`, `tbody`, `td`, `template`, `tfoot`, `th`, `thead`, `time`, `tr`, `tt`, `u`, `ul`, `var`
@@ -68,6 +68,9 @@ Check out the official Flutter WebView package here: https://pub.dartlang.org/pa
       padding: EdgeInsets.all(8.0),
       backgroundColor: Colors.white70,
       defaultTextStyle: TextStyle(fontFamily: 'serif'),
+      linkStyle: const TextStyle(
+        color: Colors.redAccent,
+      ),
       onLinkTap: (url) {
         // open url in a webview
       },
@@ -85,4 +88,4 @@ Check out the official Flutter WebView package here: https://pub.dartlang.org/pa
 
 This package has a known issue where text does not wrap correctly. Setting `useRichText` to true fixes the issue
 by using an alternate parser. The alternate parser, however, does not support the `customRender` callback, and several elements
-supported by the default parser are not supported by the alternate parser.
+supported by the default parser are not supported by the alternate parser (see [#61](https://github.com/Sub6Resources/flutter_html/issues/61) for a list).

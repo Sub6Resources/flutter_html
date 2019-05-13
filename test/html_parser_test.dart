@@ -4,8 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 void main() {
-
-  testWidgets("Check that default parser does not fail on empty data", (tester) async {
+  testWidgets("Check that default parser does not fail on empty data",
+      (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -17,7 +17,8 @@ void main() {
     );
   });
 
-  testWidgets("Check that RichText parser does not fail on empty data", (tester) async {
+  testWidgets("Check that RichText parser does not fail on empty data",
+      (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
@@ -59,7 +60,8 @@ void main() {
     expect(find.byType(RichText), findsOneWidget);
   });
 
-  testWidgets("Check that tapping on the `a` tag calls the callback", (tester) async {
+  testWidgets("Check that tapping on the `a` tag calls the callback",
+      (tester) async {
     String html = "<a href='https://github.com'>Test link</a>";
     String urlTapped;
 
@@ -79,7 +81,9 @@ void main() {
     expect(urlTapped, "https://github.com");
   });
 
-  testWidgets("Check that tapping on the `a` tag calls the callback `RichText` parser", (tester) async {
+  testWidgets(
+      "Check that tapping on the `a` tag calls the callback `RichText` parser",
+      (tester) async {
     String html = "<a href='https://github.com'>Test link</a>";
     String urlTapped;
 
@@ -112,7 +116,6 @@ void main() {
       ),
     );
 
-
     expect(find.text("Abbreviation"), findsOneWidget);
 
     await tester.pumpWidget(
@@ -139,7 +142,6 @@ void main() {
         ),
       ),
     );
-
 
     expect(find.text("Acronym"), findsOneWidget);
 
@@ -168,7 +170,6 @@ void main() {
       ),
     );
 
-
     expect(find.text("Address"), findsOneWidget);
 
     //Not supported in `RichText` parser.
@@ -196,7 +197,6 @@ void main() {
         ),
       ),
     );
-
 
     expect(find.text("Article"), findsOneWidget);
 
@@ -1004,4 +1004,90 @@ void main() {
     expect(find.byType(BlockText), findsOneWidget);
   });
 
+  testWidgets("Check that `header` tag renders", (tester) async {
+    String html = "<header>header</header>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("header"), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(BlockText), findsOneWidget);
+  });
+
+  testWidgets("Check that `hr` tag renders", (tester) async {
+    String html = "<hr />";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(Divider), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(Divider), findsOneWidget);
+  });
+
+  testWidgets("Check that `i` tag renders", (tester) async {
+    String html = "<i>i</i>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("i"), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
+  });
 }

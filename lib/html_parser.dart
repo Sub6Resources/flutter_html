@@ -1,9 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter/material.dart';
 import 'package:flutter/gestures.dart';
-import 'package:html/parser.dart' as parser;
+import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:html/parser.dart' as parser;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef CustomTextStyle = TextStyle Function(dom.Node node, TextStyle baseStyle);
@@ -148,6 +148,12 @@ class HtmlRichTextParser extends StatelessWidget {
     this.html,
     this.customTextStyle,
     this.customEdgeInsets,
+    this.onImageError,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent,
+    ),
   });
 
   final double indentSize = 10.0;
@@ -158,6 +164,8 @@ class HtmlRichTextParser extends StatelessWidget {
   final String html;
   final CustomTextStyle customTextStyle;
   final CustomEdgeInsets customEdgeInsets;
+  final ImageErrorListener onImageError;
+  final TextStyle linkStyle;
 
   // style elements set a default style
   // for all child nodes
@@ -174,7 +182,8 @@ class HtmlRichTextParser extends StatelessWidget {
     "acronym",
     "ol",
     "ul",
-    "blockquote"
+    "blockquote",
+    "span",
   ];
 
   // specialty elements require unique handling
@@ -266,7 +275,8 @@ class HtmlRichTextParser extends StatelessWidget {
     );
 
     // ignore the top level "body"
-    body.nodes.forEach((dom.Node node) => _parseNode(node, parseContext));
+    body.nodes
+        .forEach((dom.Node node) => _parseNode(node, parseContext, context));
     // _parseNode(body, parseContext);
 
     // filter out empty widgets
@@ -303,7 +313,8 @@ class HtmlRichTextParser extends StatelessWidget {
   // function can add child nodes to the parent if it should
   //
   // each iteration creates a new parseContext as a copy of the previous one if it needs to
-  void _parseNode(dom.Node node, ParseContext parseContext) {
+  void _parseNode(
+      dom.Node node, ParseContext parseContext, BuildContext buildContext) {
     // TEXT ONLY NODES
     // a text only node is a child of a tag with no inner html
     if (node is dom.Text) {
@@ -329,14 +340,14 @@ class HtmlRichTextParser extends StatelessWidget {
           if (!parseContext.parentElement.children.isEmpty) {
             lastString = parseContext.parentElement.children.last.text ?? '';
           }
-          if (lastString == '' ||
-              lastString.endsWith(' ') ||
-              lastString.endsWith('\n')) finalText = finalText.trimLeft();
+          if (lastString.endsWith(' ') || lastString.endsWith('\n')) {
+            finalText = finalText.trimLeft();
+          }
         }
       }
 
-      // if the finalText is actually empty, just return
-      if (finalText.trim().isEmpty) return;
+      // if the finalText is actually empty, just return (unless it's just a space)
+      if (finalText.trim().isEmpty && finalText != " ") return;
 
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
@@ -477,6 +488,9 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.indentLevel += 1;
             nextContext.blockType = 'blockquote';
             break;
+          case "span":
+            //No additional styles
+            break;
         }
 
         if (customTextStyle != null) {
@@ -511,13 +525,9 @@ class HtmlRichTextParser extends StatelessWidget {
               nextContext.parentElement = linkContainer;
               nextContext.rootWidgetList.add(linkContainer);
             } else {
-              TextStyle linkStyle = parseContext.childStyle.merge(TextStyle(
-                decoration: TextDecoration.underline,
-                color: Colors.blueAccent,
-                decorationColor: Colors.blueAccent,
-              ));
+              TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
               LinkTextSpan span = LinkTextSpan(
-                style: linkStyle,
+                style: _linkStyle,
                 url: url,
                 onLinkTap: onLinkTap,
                 children: <TextSpan>[],
@@ -638,9 +648,23 @@ class HtmlRichTextParser extends StatelessWidget {
             if (node.attributes['src'] != null) {
               if (node.attributes['src'].startsWith("data:image") &&
                   node.attributes['src'].contains("base64,")) {
+                precacheImage(
+                  MemoryImage(
+                    base64.decode(
+                      node.attributes['src'].split("base64,")[1].trim(),
+                    ),
+                  ),
+                  buildContext,
+                  onError: onImageError,
+                );
                 parseContext.rootWidgetList.add(Image.memory(base64.decode(
                     node.attributes['src'].split("base64,")[1].trim())));
               } else {
+                precacheImage(
+                  NetworkImage(node.attributes['src']),
+                  buildContext,
+                  onError: onImageError,
+                );
                 parseContext.rootWidgetList
                     .add(Image.network(node.attributes['src']));
               }
@@ -755,7 +779,7 @@ class HtmlRichTextParser extends StatelessWidget {
       }
 
       node.nodes.forEach((dom.Node childNode) {
-        _parseNode(childNode, nextContext);
+        _parseNode(childNode, nextContext, buildContext);
       });
     }
   }
@@ -829,6 +853,11 @@ class HtmlOldParser extends StatelessWidget {
     this.customRender,
     this.blockSpacing,
     this.html,
+    this.onImageError,
+    this.linkStyle = const TextStyle(
+        decoration: TextDecoration.underline,
+        color: Colors.blueAccent,
+        decorationColor: Colors.blueAccent),
   });
 
   final double width;
@@ -837,6 +866,8 @@ class HtmlOldParser extends StatelessWidget {
   final CustomRender customRender;
   final double blockSpacing;
   final String html;
+  final ImageErrorListener onImageError;
+  final TextStyle linkStyle;
 
   static const _supportedElements = [
     "a",
@@ -957,10 +988,7 @@ class HtmlOldParser extends StatelessWidget {
                 child: Wrap(
                   children: _parseNodeList(node.nodes),
                 ),
-                style: const TextStyle(
-                    decoration: TextDecoration.underline,
-                    color: Colors.blueAccent,
-                    decorationColor: Colors.blueAccent),
+                style: linkStyle,
               ),
               onTap: () {
                 if (node.attributes.containsKey('href') && onLinkTap != null) {
@@ -1289,10 +1317,7 @@ class HtmlOldParser extends StatelessWidget {
         case "hr":
           return Padding(
             padding: EdgeInsets.only(top: 7.0, bottom: 7.0),
-            child: Container(
-              height: 0.0,
-              decoration: BoxDecoration(border: Border.all()),
-            ),
+            child: Divider(height: 1.0, color: Colors.black38),
           );
         case "i":
           return DefaultTextStyle.merge(
@@ -1304,24 +1329,39 @@ class HtmlOldParser extends StatelessWidget {
             ),
           );
         case "img":
-          if (node.attributes['src'] != null) {
-            if (node.attributes['src'].startsWith("data:image") &&
-                node.attributes['src'].contains("base64,")) {
-              return Image.memory(base64
-                  .decode(node.attributes['src'].split("base64,")[1].trim()));
-            }
-            return Image.network(node.attributes['src']);
-          } else if (node.attributes['alt'] != null) {
-            //Temp fix for https://github.com/flutter/flutter/issues/736
-            if (node.attributes['alt'].endsWith(" ")) {
-              return Container(
-                  padding: EdgeInsets.only(right: 2.0),
-                  child: Text(node.attributes['alt']));
-            } else {
-              return Text(node.attributes['alt']);
-            }
-          }
-          return Container();
+          return Builder(
+            builder: (BuildContext context) {
+              if (node.attributes['src'] != null) {
+                if (node.attributes['src'].startsWith("data:image") &&
+                    node.attributes['src'].contains("base64,")) {
+                  precacheImage(
+                    MemoryImage(base64.decode(
+                        node.attributes['src'].split("base64,")[1].trim())),
+                    context,
+                    onError: onImageError,
+                  );
+                  return Image.memory(base64.decode(
+                      node.attributes['src'].split("base64,")[1].trim()));
+                }
+                precacheImage(
+                  NetworkImage(node.attributes['src']),
+                  context,
+                  onError: onImageError,
+                );
+                return Image.network(node.attributes['src']);
+              } else if (node.attributes['alt'] != null) {
+                //Temp fix for https://github.com/flutter/flutter/issues/736
+                if (node.attributes['alt'].endsWith(" ")) {
+                  return Container(
+                      padding: EdgeInsets.only(right: 2.0),
+                      child: Text(node.attributes['alt']));
+                } else {
+                  return Text(node.attributes['alt']);
+                }
+              }
+              return Container();
+            },
+          );
         case "ins":
           return DefaultTextStyle.merge(
             child: Wrap(
