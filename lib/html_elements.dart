@@ -13,10 +13,13 @@ const INTERACTABLE_ELEMENTS = [
 ];
 
 const BLOCK_ELEMENTS = [
+  "body",
   "div",
+  "html",
 ];
 
 const CONTENT_ELEMENTS = [
+  "head",
   "img",
 ];
 

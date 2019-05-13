@@ -1731,7 +1731,7 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return parseTree(context, lexDomTree(parseHTML(html)));
+    return parseTree(context, cleanTree(lexDomTree(parseHTML(html))));
   }
 
   /// [parseHTML] converts a string to a DOM document using the dart `html` library.
@@ -1741,7 +1741,10 @@ class HtmlParser extends StatelessWidget {
 
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
   static StyledElement lexDomTree(dom.Document html) {
-    StyledElement tree = StyledElement();
+    StyledElement tree = StyledElement(
+      name: "[Tree Root]",
+      children: new List<StyledElement>(),
+    );
 
     html.nodes.forEach((node) {
       tree.children.add(_recursiveLexer(node));
@@ -1784,7 +1787,7 @@ class HtmlParser extends StatelessWidget {
   /// on the first level, redundant levels are collapsed, and empty elements are
   /// removed.
   static StyledElement cleanTree(StyledElement tree) {
-    //TODO
+    return tree; //For now, just pass data through. TODO optimize tree
   }
 
   /// [parseTree] converts a tree of [StyledElement]s to a Flutter [Widget] tree.

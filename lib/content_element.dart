@@ -35,7 +35,13 @@ class ImageContentElement extends ContentElement {
   }) : super(name: name, style: style);
 }
 
-class EmptyContentElement extends ContentElement {}
+class EmptyContentElement extends ContentElement {
+  EmptyContentElement({
+    String name = "empty"
+  }): super(
+    name: name,
+  );
+}
 
 ContentElement parseContentElement(dom.Element element) {
   switch (element.localName) {
@@ -47,6 +53,6 @@ ContentElement parseContentElement(dom.Element element) {
       );
       break;
     default:
-      return EmptyContentElement();
+      return EmptyContentElement(name: element.localName);
   }
 }

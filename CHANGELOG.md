@@ -1,3 +1,6 @@
+## [0.10.0] - UNRELEASED
+* Adds support for a new parser, which resolves several major issues.
+
 ## [0.9.6] - March 11, 2019:
 
 * Fix whitespace issue. ([#59](https://github.com/Sub6Resources/flutter_html/issues/59))

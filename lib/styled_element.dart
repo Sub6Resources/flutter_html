@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_elements.dart';
 import 'package:html/dom.dart' as dom;
@@ -9,10 +10,19 @@ class StyledElement {
   Style style;
 
   StyledElement({
-    this.name,
+    this.name = "[[[No name]]]",
     this.children,
     this.style,
   });
+
+  @override
+  String toString() {
+    String selfData = "$name [Children: ${children?.length ?? 0}] <Style: $style>";
+    children?.forEach((child) {
+      selfData += "\n - ${child.toString()}";
+    });
+    return selfData;
+  }
 }
 
 StyledElement parseStyledElement(dom.Element element,
@@ -40,4 +50,9 @@ class Style {
   Style({
     this.textStyle
   });
+
+  @override
+  String toString() {
+    return "(Text Style: ($textStyle),)";
+  }
 }
