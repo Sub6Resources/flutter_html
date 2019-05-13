@@ -1,6 +1,9 @@
-## [0.9.7] - March 26, 2019:
+## [0.9.7] - May 13, 2019:
 
 * Added onImageError callback
+* Added custom textstyle and edgeinsets callback ([#72](https://github.com/Sub6Resources/flutter_html/pull/72))
+* Update dependency versions ([#84](https://github.com/Sub6Resources/flutter_html/issues/84))
+* Fixes #82 and #86
 
 ## [0.9.6] - March 11, 2019:
 

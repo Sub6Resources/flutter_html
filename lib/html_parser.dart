@@ -6,7 +6,10 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
-typedef CustomTextStyle = TextStyle Function(dom.Node node, TextStyle baseStyle);
+typedef CustomTextStyle = TextStyle Function(
+  dom.Node node,
+  TextStyle baseStyle,
+);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 
@@ -150,9 +153,9 @@ class HtmlRichTextParser extends StatelessWidget {
     this.customEdgeInsets,
     this.onImageError,
     this.linkStyle = const TextStyle(
-        decoration: TextDecoration.underline,
-        color: Colors.blueAccent,
-        decorationColor: Colors.blueAccent,
+      decoration: TextDecoration.underline,
+      color: Colors.blueAccent,
+      decorationColor: Colors.blueAccent,
     ),
   });
 
@@ -274,10 +277,8 @@ class HtmlRichTextParser extends StatelessWidget {
       childStyle: DefaultTextStyle.of(context).style,
     );
 
-    // ignore the top level "body"
-    body.nodes
-        .forEach((dom.Node node) => _parseNode(node, parseContext, context));
-    // _parseNode(body, parseContext);
+    // don't ignore the top level "body"
+    _parseNode(body, parseContext, context);
 
     // filter out empty widgets
     List<Widget> children = [];
@@ -425,12 +426,6 @@ class HtmlRichTextParser extends StatelessWidget {
 
     // OTHER ELEMENT NODES
     else if (node is dom.Element) {
-      assert(() {
-        // debugPrint("Found ${node.localName}");
-        // debugPrint(node.outerHtml);
-        return true;
-      }());
-
       if (!_supportedElements.contains(node.localName)) {
         return;
       }
@@ -759,7 +754,10 @@ class HtmlRichTextParser extends StatelessWidget {
             }
             BlockText blockText = BlockText(
               margin: _customEdgeInsets ??
-                  EdgeInsets.only(top: 8.0, bottom: 8.0, left: parseContext.indentLevel * indentSize),
+                  EdgeInsets.only(
+                      top: 8.0,
+                      bottom: 8.0,
+                      left: parseContext.indentLevel * indentSize),
               padding: EdgeInsets.all(2.0),
               decoration: decoration,
               child: RichText(
