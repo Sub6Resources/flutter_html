@@ -1,3 +1,7 @@
+## [0.9.7] - March 26, 2019:
+
+* Added onImageError callback
+
 ## [0.9.6] - March 11, 2019:
 
 * Fix whitespace issue. ([#59](https://github.com/Sub6Resources/flutter_html/issues/59))

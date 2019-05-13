@@ -15,6 +15,7 @@ class Html extends StatelessWidget {
     this.customRender,
     this.blockSpacing = 14.0,
     this.useRichText = false,
+    this.onImageError,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
@@ -29,6 +30,7 @@ class Html extends StatelessWidget {
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
+  final ImageErrorListener onImageError;
   final TextStyle linkStyle;
 
   /// Either return a custom widget for specific node types or return null to
@@ -51,6 +53,7 @@ class Html extends StatelessWidget {
                 onLinkTap: onLinkTap,
                 renderNewlines: renderNewlines,
                 html: data,
+                onImageError: onImageError,
                 linkStyle: linkStyle,
               )
             : HtmlOldParser(
@@ -60,6 +63,7 @@ class Html extends StatelessWidget {
                 customRender: customRender,
                 html: data,
                 blockSpacing: blockSpacing,
+                onImageError: onImageError,
                 linkStyle: linkStyle,
               ),
       ),
