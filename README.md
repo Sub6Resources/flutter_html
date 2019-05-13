@@ -1,5 +1,5 @@
 # flutter_html
-[![pub package](https://img.shields.io/pub/v/flutter_html.svg)](https://pub.dartlang.org/packages/flutter_html)
+[![pub package](https://img.shields.io/pub/v/flutter_html.svg)](https://pub.dev/packages/flutter_html)
 [![CircleCI](https://circleci.com/gh/Sub6Resources/flutter_html.svg?style=svg)](https://circleci.com/gh/Sub6Resources/flutter_html)
 
 A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
