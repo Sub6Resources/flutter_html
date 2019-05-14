@@ -1817,11 +1817,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (BLOCK_ELEMENTS.contains(node.localName)) {
-        return BlockElement(
-          name: node.localName,
-          children: children,
-          block: parseBlockElementBlock(node),
-        );
+        return parseBlockElement(node, children);
       } else if (CONTENT_ELEMENTS.contains(node.localName)) {
         return parseContentElement(node);
       } else {
@@ -1835,15 +1831,20 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [cleanTree] optimizes the [StyledElement] tree so all [BlockElement]s are
-  /// on the first level, redundant levels are collapsed, and empty elements are
-  /// removed.
+  /// on the first level, redundant levels are collapsed, empty elements are
+  /// removed, and lists are converted to StyledElements.
   static StyledElement cleanTree(StyledElement tree) {
     return tree; //For now, just pass data through. TODO optimize tree
   }
 
   /// [parseTree] converts a tree of [StyledElement]s to a Flutter [Widget] tree.
   static Widget parseTree(BuildContext context, StyledElement tree) {
-    //TODO
+    //TODO convert StyledElement tree to a Widget tree.
+    return Text(
+      tree.toString(),
+      softWrap: false,
+      style: TextStyle(fontFamily: 'Monospace'),
+    );
   }
 }
 

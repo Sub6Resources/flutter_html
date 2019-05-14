@@ -1,4 +1,4 @@
-## [0.10.0] - UNRELEASED
+## [1.0.0] - UNRELEASED
 * Adds support for a new parser, which resolves several major issues.
 
 ## [0.9.7] - May 13, 2019:

@@ -17,6 +17,7 @@ class Html extends StatelessWidget {
     this.customTextStyle,
     this.blockSpacing = 14.0,
     this.useRichText = false,
+    this.useFancyNewParser = false,
     this.onImageError,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
@@ -32,6 +33,7 @@ class Html extends StatelessWidget {
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
+  final bool useFancyNewParser;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
 
@@ -62,16 +64,20 @@ class Html extends StatelessWidget {
                 onImageError: onImageError,
                 linkStyle: linkStyle,
               )
-            : HtmlOldParser(
-                width: width,
-                onLinkTap: onLinkTap,
-                renderNewlines: renderNewlines,
-                customRender: customRender,
-                html: data,
-                blockSpacing: blockSpacing,
-                onImageError: onImageError,
-                linkStyle: linkStyle,
-              ),
+            : (useFancyNewParser)
+                ? HtmlParser(
+                    data,
+                  )
+                : HtmlOldParser(
+                    width: width,
+                    onLinkTap: onLinkTap,
+                    renderNewlines: renderNewlines,
+                    customRender: customRender,
+                    html: data,
+                    blockSpacing: blockSpacing,
+                    onImageError: onImageError,
+                    linkStyle: linkStyle,
+                  ),
       ),
     );
   }

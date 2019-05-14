@@ -8,7 +8,7 @@ import 'package:html/dom.dart' as dom;
 abstract class ContentElement extends StyledElement {
   ContentElement({
     String name,
-    dynamic style,
+    Style style,
   }) : super(name: name, children: null, style: style);
 }
 
@@ -17,7 +17,7 @@ class TextContentElement extends ContentElement {
   final String text;
 
   TextContentElement({
-    dynamic style,
+    Style style,
     this.text,
   }) : super(name: "text", style: style);
 }
