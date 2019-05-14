@@ -13,8 +13,11 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
+    this.customEdgeInsets,
+    this.customTextStyle,
     this.blockSpacing = 14.0,
     this.useRichText = false,
+    this.onImageError,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
@@ -29,11 +32,14 @@ class Html extends StatelessWidget {
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
+  final ImageErrorListener onImageError;
   final TextStyle linkStyle;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
   final CustomRender customRender;
+  final CustomEdgeInsets customEdgeInsets;
+  final CustomTextStyle customTextStyle;
 
   @override
   Widget build(BuildContext context) {
@@ -50,7 +56,10 @@ class Html extends StatelessWidget {
                 width: width,
                 onLinkTap: onLinkTap,
                 renderNewlines: renderNewlines,
+                customEdgeInsets: customEdgeInsets,
+                customTextStyle: customTextStyle,
                 html: data,
+                onImageError: onImageError,
                 linkStyle: linkStyle,
               )
             : HtmlOldParser(
@@ -60,6 +69,7 @@ class Html extends StatelessWidget {
                 customRender: customRender,
                 html: data,
                 blockSpacing: blockSpacing,
+                onImageError: onImageError,
                 linkStyle: linkStyle,
               ),
       ),
