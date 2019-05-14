@@ -176,6 +176,7 @@ class HtmlRichTextParser extends StatelessWidget {
   static const _supportedStyleElements = [
     "b",
     "i",
+    "address",
     "em",
     "strong",
     "code",
@@ -446,6 +447,7 @@ class HtmlRichTextParser extends StatelessWidget {
                 childStyle.merge(TextStyle(fontWeight: FontWeight.bold));
             break;
           case "i":
+          case "address":
           case "em":
             childStyle =
                 childStyle.merge(TextStyle(fontStyle: FontStyle.italic));

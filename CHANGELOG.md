@@ -1,3 +1,7 @@
+## [0.9.8] - May 14, 2019:
+
+* Add support for `address` tag in `RichText` parser.
+
 ## [0.9.7] - May 13, 2019:
 
 * Added onImageError callback
