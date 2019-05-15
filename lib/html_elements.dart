@@ -8,9 +8,37 @@ const STYLED_ELEMENTS = [
   "acronym",
   "address",
   "b",
+  "bdi",
+  "bdo",
+  "big",
+  "cite",
+  "code",
+  "data",
+  "del",
+  "dfn",
+  "em",
+  "font",
   "i",
+  "ins",
+  "kbd",
+  "mark",
+  "q",
+  "rp",
+  "rt",
+  "ruby",
+  "s",
+  "samp",
+  "small",
   "span",
+  "strike",
+  "strong",
+  "sub",
+  "sup",
+  "time",
+  "tt",
   "u",
+  "var",
+  "wbr",
 ];
 
 const INTERACTABLE_ELEMENTS = [
@@ -18,8 +46,17 @@ const INTERACTABLE_ELEMENTS = [
 ];
 
 const BLOCK_ELEMENTS = [
+  "article",
+  "aside",
+  "blockquote",
   "body",
+  "br",
+  "dd",
   "div",
+  "dl",
+  "dt",
+  "figcaption",
+  "figure",
   "footer",
   "h1",
   "h2",
@@ -28,16 +65,27 @@ const BLOCK_ELEMENTS = [
   "h5",
   "h6",
   "header",
+  "hr",
   "html",
   "li",
+  "main",
+  "nav",
+  "noscript",
   "ol",
   "p",
+  "pre",
+  "section",
+  "table",
+  "tbody",
+  "tfoot",
+  "thead",
   "ul",
 ];
 
 const CONTENT_ELEMENTS = [
   "head",
   "img",
+  "template",
 ];
 
 enum ElementType {
@@ -48,37 +96,36 @@ enum ElementType {
 }
 
 /**
-  Here is a list of elements which are not currently supported (but have planned support):
+  Here is a list of elements with planned support:
     a         - i [x]
     abbr      - s [x]
     acronym   - s [x]
-    address   - s [ ]
+    address   - s [x]
     audio     - c [ ]
-    article   - b [ ]
-    aside     - b [ ]
+    article   - b [x]
+    aside     - b [x]
     b         - s [x]
-    bdi       - s [ ]
-    bdo       - s [ ]
-    big       - s [ ]
-    blockquote- b [ ]
+    bdi       - s [x]
+    bdo       - s [x]
+    big       - s [x]
+    blockquote- b [x]
     body      - b [x]
-    br        - b [ ]
+    br        - b [x]
     caption   - b [ ]
     center    - b [ ]
-    cite      - s [ ]
-    code      - s [ ]
-    data      - s [ ]
-    dd        - c [ ]
-    del       - s [ ]
-    details   - b [ ]
-    dfn       - s [ ]
+    cite      - s [x]
+    code      - s [x]
+    data      - s [x]
+    dd        - b [x]
+    del       - s [x]
+    dfn       - s [x]
     div       - b [x]
-    dl        -   [ ]
-    dt        -   [ ]
-    em        -   [ ]
-    figcaption-   [ ]
-    figure    -   [ ]
-    font      -   [ ]
+    dl        - b [x]
+    dt        - b [x]
+    em        - s [x]
+    figcaption- b [x]
+    figure    - b [x]
+    font      - s [x]
     footer    - b [x]
     h1        - b [x]
     h2        - b [x]
@@ -86,51 +133,51 @@ enum ElementType {
     h4        - b [x]
     h5        - b [x]
     h6        - b [x]
+    head      - e [x]
     header    - b [x]
-    hr        - c?[ ]
+    hr        - b [x]
     html      - b [x]
     i         - s [x]
     img       - c [x]
-    ins       - s [ ]
-    kbd       -   [ ]
+    ins       - s [x]
+    kbd       - s [x]
     li        - b [x]
-    main      -   [ ]
-    mark      -   [ ]
-    nav       -   [ ]
-    noscript  - b [ ]
-    ol        - b [x]
+    main      - b [x]
+    mark      - s [x]
+    nav       - b [x]
+    noscript  - b [x]
+    ol        - b [x] post
     p         - b [x]
-    pre       - s [ ]
-    q         -   [ ]
-    rp        -   [ ]
-    rt        -   [ ]
-    ruby      -   [ ]
-    s         -   [ ]
-    samp      -   [ ]
-    section   -   [ ]
-    small     - s [ ]
-    source    -   [ ]
+    pre       - b [x]
+    q         - s [x] post
+    rp        - s [x]
+    rt        - s [x]
+    ruby      - s [x]
+    s         - s [x]
+    samp      - s [x]
+    section   - b [x]
+    small     - s [x]
+    source    -   [-] child of content
     span      - s [x]
-    strike    - s [ ]
-    strong    - s [ ]
-    sub       - s [ ]
-    summary   - b [ ]
-    sup       - s [ ]
+    strike    - s [x]
+    strong    - s [x]
+    sub       - s [x]
+    sup       - s [x]
     svg       - c [ ]
-    table     - b [ ]
-    tbody     - b [ ]
-    td        -   [ ]
-    template  -   [ ]
-    tfoot     - b [ ]
-    th        -   [ ]
-    thead     - b [ ]
-    time      -   [ ]
-    tr        - b [ ]
-    track     -   [ ]
-    tt        -   [ ]
+    table     - b [x]
+    tbody     - b [x]
+    td        - s [ ]
+    template  - e [x]
+    tfoot     - b [x]
+    th        - s [ ]
+    thead     - b [x]
+    time      - s [x]
+    tr        - ? [ ]
+    track     -   [-] child of content
+    tt        - s [x]
     u         - s [x]
-    ul        - b [x]
-    var       -   [ ]
+    ul        - b [x] post
+    var       - s [x]
     video     - c [ ]
-    wbr       -   [ ]
+    wbr       - s [x]
  */

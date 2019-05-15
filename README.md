@@ -22,7 +22,7 @@ Add the following to your `pubspec.yaml` file:
 ### List of _planned_ supported elements:
 > These are elements that are planned, but present a specific challenge that makes them somewhat difficult to implement.
 
-`audio`, `details`, `source`, `summary`, `svg`, `track`, `video`, `wbr`
+`audio`, `source`, `svg`, `track`, `video`, `wbr`
 
 ### List of elements that I don't plan on implementing:
 
@@ -32,7 +32,7 @@ Add the following to your `pubspec.yaml` file:
 
 > Note: These unsupported tags will just be ignored.
 
-`applet`, `area`, `base`, `basefont`, `button`, `canvas`, `col`, `colgroup`, `datalist`, `dialog`, `dir`, `embed`, `fieldset`, `form`, `frame`, `frameset`, `head`, `iframe`, `input`, `label`, `legend`, `link`, `map`, `meta`, `meter`, `noframe`, `object`, `optgroup`, `option`, `output`, `param`, `picture`, `progress`, `script`, `select`, `style`, `textarea`, `title`
+`applet`, `area`, `base`, `basefont`, `button`, `canvas`, `col`, `colgroup`, `datalist`, `details`, `dialog`, `dir`, `embed`, `fieldset`, `form`, `frame`, `frameset`, `head`, `iframe`, `input`, `label`, `legend`, `link`, `map`, `meta`, `meter`, `noframe`, `object`, `optgroup`, `option`, `output`, `param`, `picture`, `progress`, `script`, `select`, `style`, `summary`, `textarea`, `title`
  
 
 ## Why this package?

@@ -71,8 +71,14 @@ BlockElement parseBlockElement(dom.Element node, List<StyledElement> children) {
     case "h6":
       blockElement.style = Style(textStyle: TextStyle(fontSize: 18.0));
       break;
+    case "hr":
+      blockElement.style = Style(border: Border(bottom: BorderSide(width: 1.0)));
+      break;
     case "ol":
       blockElement.style = Style(indentChildren: true, listCharacter: (i) => "$i.");
+      break;
+    case "pre":
+      blockElement.style = Style(textStyle: TextStyle(fontFamily: 'Monospace'), preserveWhitespace: true);
       break;
     case "ul":
       blockElement.style = Style(indentChildren: true, listCharacter: (i) => ".");
@@ -82,19 +88,42 @@ BlockElement parseBlockElement(dom.Element node, List<StyledElement> children) {
   return blockElement;
 }
 
+//TODO all of these margin values need to be customizable and researched to be made more accurate to life.
 Block parseBlockElementBlock(dom.Element element) {
   switch (element.localName) {
+    case "blockquote":
+      return const Block(
+        margin: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 40.0),
+      );
+    case "dd":
+      return const Block(
+        margin: const EdgeInsets.only(left: 40.0),
+      );
     case "div":
       return const Block(
         margin: const EdgeInsets.symmetric(vertical: 14.0),
       );
-      break;
+    case "dl":
+      return const Block(
+        margin: const EdgeInsets.symmetric(vertical: 14.0),
+      );
+    case "figure":
+      return const Block(
+        margin: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 40.0),
+      );
+    case "hr":
+      return const Block(
+        margin: const EdgeInsets.symmetric(vertical: 7.0),
+      );
     case "p":
+      return const Block(
+        margin: const EdgeInsets.symmetric(vertical: 14.0),
+      );
+    case "pre":
       return const Block(
         margin: const EdgeInsets.symmetric(vertical: 14.0),
       );
     default:
       return const Block();
-      break;
   }
 }

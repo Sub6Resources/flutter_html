@@ -20,6 +20,11 @@ class TextContentElement extends ContentElement {
     Style style,
     this.text,
   }) : super(name: "text", style: style);
+
+  @override
+  String toString() {
+    return "\"${text.replaceAll("\n", "\\n").trim()}\"";
+  }
 }
 
 /// [ImageContentElement] is a [ContentElement] with an image as its content.
