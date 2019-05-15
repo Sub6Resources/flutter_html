@@ -10,11 +10,19 @@ abstract class ContentElement extends StyledElement {
     String name,
     Style style,
   }) : super(name: name, children: null, style: style);
+
+  static List<String> parseContentSources(List<dom.Element> elements) {
+    return elements
+        .where((element) => element.localName == 'source')
+        .map((element) {
+      return element.attributes['src'];
+    }).toList();
+  }
 }
 
 /// [TextContentElement] is a [ContentElement] with plaintext as its content.
 class TextContentElement extends ContentElement {
-  final String text;
+  String text;
 
   TextContentElement({
     Style style,
@@ -23,7 +31,7 @@ class TextContentElement extends ContentElement {
 
   @override
   String toString() {
-    return "\"${text.replaceAll("\n", "\\n").trim()}\"";
+    return "\"${text.replaceAll("\n", "\\n")}\"";
   }
 }
 
@@ -40,23 +48,77 @@ class ImageContentElement extends ContentElement {
   }) : super(name: name, style: style);
 }
 
+/// [AudioContentElement] is a [ContentElement] with an audio file as its content.
+class AudioContentElement extends ContentElement {
+  final List<String> src;
+  final bool showControls;
+  final bool autoplay;
+  final bool loop;
+  final bool muted;
+
+  AudioContentElement({
+    String name,
+    Style style,
+    this.src,
+    this.showControls,
+    this.autoplay,
+    this.loop,
+    this.muted,
+  }) : super(name: name, style: style);
+}
+
+/// [VideoContentElement] is a [ContentElement] with a video file as its content.
+class VideoContentElement extends ContentElement {
+  final List<String> src;
+  final String poster;
+  final bool showControls;
+  final bool autoplay;
+  final bool loop;
+  final bool muted;
+
+  VideoContentElement({
+    String name,
+    Style style,
+    this.src,
+    this.poster,
+    this.showControls,
+    this.autoplay,
+    this.loop,
+    this.muted,
+  }) : super(name: name, style: style);
+}
+
 class EmptyContentElement extends ContentElement {
-  EmptyContentElement({
-    String name = "empty"
-  }): super(
-    name: name,
-  );
+  EmptyContentElement({String name = "empty"}) : super(name: name);
 }
 
 ContentElement parseContentElement(dom.Element element) {
   switch (element.localName) {
+    case "audio":
+      return AudioContentElement(
+        name: "audio",
+        src: ContentElement.parseContentSources(element.children),
+        showControls: element.attributes['controls'] != null,
+        loop: element.attributes['loop'] != null,
+        autoplay: element.attributes['autoplay'] != null,
+        muted: element.attributes['muted'] != null,
+      );
     case "img":
       return ImageContentElement(
         name: "img",
         src: element.attributes['href'],
         alt: element.attributes['alt'],
       );
-      break;
+    case "video":
+      return VideoContentElement(
+        name: "video",
+        src: ContentElement.parseContentSources(element.children),
+        poster: element.attributes['poster'],
+        showControls: element.attributes['controls'] != null,
+        loop: element.attributes['loop'] != null,
+        autoplay: element.attributes['autoplay'] != null,
+        muted: element.attributes['muted'] != null,
+      );
     default:
       return EmptyContentElement(name: element.localName);
   }

@@ -83,9 +83,11 @@ const BLOCK_ELEMENTS = [
 ];
 
 const CONTENT_ELEMENTS = [
+  "audio",
   "head",
   "img",
   "template",
+  "video",
 ];
 
 enum ElementType {
@@ -101,7 +103,7 @@ enum ElementType {
     abbr      - s [x]
     acronym   - s [x]
     address   - s [x]
-    audio     - c [ ]
+    audio     - c [x]
     article   - b [x]
     aside     - b [x]
     b         - s [x]
@@ -178,6 +180,6 @@ enum ElementType {
     u         - s [x]
     ul        - b [x] post
     var       - s [x]
-    video     - c [ ]
+    video     - c [x]
     wbr       - s [x]
  */

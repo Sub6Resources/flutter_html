@@ -55,6 +55,7 @@ StyledElement parseStyledElement(
       styledElement.style = Style(
         textDirection: textDirection,
       );
+      break;
     case "big":
       styledElement.style = Style(
         textStyle: TextStyle(fontSize: 20.0),

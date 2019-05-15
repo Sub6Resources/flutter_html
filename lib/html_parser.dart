@@ -1834,7 +1834,9 @@ class HtmlParser extends StatelessWidget {
   /// on the first level, redundant levels are collapsed, empty elements are
   /// removed, and lists are converted to StyledElements.
   static StyledElement cleanTree(StyledElement tree) {
-    return tree; //For now, just pass data through. TODO optimize tree
+    tree = processWhitespace(tree);
+    tree = removeEmptyElements(tree);
+    return tree;
   }
 
   /// [parseTree] converts a tree of [StyledElement]s to a Flutter [Widget] tree.
@@ -1845,6 +1847,36 @@ class HtmlParser extends StatelessWidget {
       softWrap: false,
       style: TextStyle(fontFamily: 'Monospace'),
     );
+  }
+
+  /// [processWhitespace] removes unnecessary whitespace from the StyledElement tree.
+  static StyledElement processWhitespace(StyledElement tree) {
+    if(tree is TextContentElement) {
+      tree.text = trimAllButOneWhitespace(tree.text);
+    }
+    tree.children?.forEach(processWhitespace);
+    return tree;
+  }
+
+  /// [trimAllButOneWhitespace] removes all whitespace except for one space.
+  static String trimAllButOneWhitespace(String text) {
+    return text.replaceAll(RegExp("\ {2,}"), " ").replaceAll("\n", "").replaceAll("\t", "");
+  }
+
+  static StyledElement removeEmptyElements(StyledElement tree) {
+    List<StyledElement> toRemove = new List<StyledElement>();
+    tree.children?.forEach((child) {
+      if(child is EmptyContentElement) {
+        toRemove.add(child);
+      } else if(child is TextContentElement && child.text.isEmpty) {
+        toRemove.add(child);
+      } else {
+        removeEmptyElements(child);
+      }
+    });
+    tree.children?.removeWhere((element) => toRemove.contains(element));
+
+    return tree;
   }
 }
 
