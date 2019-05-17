@@ -1,5 +1,5 @@
 import 'dart:convert';
-
+import 'image_properties.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
@@ -12,7 +12,7 @@ typedef CustomTextStyle = TextStyle Function(
 );
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
-
+typedef OnImageTap = void Function();
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
 
@@ -157,6 +157,8 @@ class HtmlRichTextParser extends StatelessWidget {
       color: Colors.blueAccent,
       decorationColor: Colors.blueAccent,
     ),
+    this.imageProperties,
+    this.onImageTap,
   });
 
   final double indentSize = 10.0;
@@ -169,6 +171,8 @@ class HtmlRichTextParser extends StatelessWidget {
   final CustomEdgeInsets customEdgeInsets;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
+  final ImageProperties imageProperties;
+  final OnImageTap onImageTap;
 
   // style elements set a default style
   // for all child nodes
@@ -654,26 +658,65 @@ class HtmlRichTextParser extends StatelessWidget {
                   buildContext,
                   onError: onImageError,
                 );
-                parseContext.rootWidgetList.add(Image.memory(base64.decode(
-                    node.attributes['src'].split("base64,")[1].trim())));
+                parseContext.rootWidgetList.add(InkWell(
+                  child: Image.memory(
+                    base64.decode(node.attributes['src'].split("base64,")[1].trim()),
+                    width: imageProperties?.width,
+                    height: imageProperties?.height,
+                    scale: imageProperties?.scale ?? 1.0,
+                    matchTextDirection: imageProperties?.matchTextDirection ?? false,
+                    centerSlice: imageProperties?.centerSlice,
+                    gaplessPlayback: imageProperties?.gaplessPlayback ?? false,
+                    filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
+                    alignment: imageProperties?.alignment ?? Alignment.center,
+                    colorBlendMode: imageProperties?.colorBlendMode,
+                    fit: imageProperties?.fit,
+                    color: imageProperties?.color,
+                    repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                    semanticLabel: imageProperties?.semanticLabel,
+                    excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
+                  ),
+                  onTap: onImageTap,
+                ));
               } else {
                 precacheImage(
                   NetworkImage(node.attributes['src']),
                   buildContext,
                   onError: onImageError,
                 );
-                parseContext.rootWidgetList
-                    .add(Image.network(node.attributes['src']));
+                parseContext.rootWidgetList.add(InkWell(
+                  child: Image.network(
+                    node.attributes['src'],
+                    width: imageProperties?.width,
+                    height: imageProperties?.height,
+                    scale: imageProperties?.scale ?? 1.0,
+                    matchTextDirection: imageProperties?.matchTextDirection ?? false,
+                    centerSlice: imageProperties?.centerSlice,
+                    gaplessPlayback: imageProperties?.gaplessPlayback ?? false,
+                    filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
+                    alignment: imageProperties?.alignment ?? Alignment.center,
+                    colorBlendMode: imageProperties?.colorBlendMode,
+                    fit: imageProperties?.fit,
+                    color: imageProperties?.color,
+                    repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                    semanticLabel: imageProperties?.semanticLabel,
+                    excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
+                  ),
+                  onTap: onImageTap,
+                ));
               }
-            } else if (node.attributes['alt'] != null) {
-              parseContext.rootWidgetList.add(BlockText(
-                  margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                  padding: EdgeInsets.all(0.0),
-                  child: RichText(
-                      text: TextSpan(
-                    text: node.attributes['alt'],
-                    children: <TextSpan>[],
-                  ))));
+              if (node.attributes['alt'] != null) {
+                parseContext.rootWidgetList.add(BlockText(
+                    margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
+                    padding: EdgeInsets.all(0.0),
+                    child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: node.attributes['alt'],
+                          style: nextContext.childStyle,
+                          children: <TextSpan>[],
+                        ))));
+              }
             }
             break;
           case "li":
