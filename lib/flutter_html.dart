@@ -2,27 +2,30 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'image_properties.dart';
 
 class Html extends StatelessWidget {
-  Html({
-    Key key,
-    @required this.data,
-    this.padding,
-    this.backgroundColor,
-    this.defaultTextStyle,
-    this.onLinkTap,
-    this.renderNewlines = false,
-    this.customRender,
-    this.customEdgeInsets,
-    this.customTextStyle,
-    this.blockSpacing = 14.0,
-    this.useRichText = false,
-    this.onImageError,
-    this.linkStyle = const TextStyle(
-        decoration: TextDecoration.underline,
-        color: Colors.blueAccent,
-        decorationColor: Colors.blueAccent),
-  }) : super(key: key);
+  Html(
+      {Key key,
+      @required this.data,
+      this.padding,
+      this.backgroundColor,
+      this.defaultTextStyle,
+      this.onLinkTap,
+      this.renderNewlines = false,
+      this.customRender,
+      this.customEdgeInsets,
+      this.customTextStyle,
+      this.blockSpacing = 14.0,
+      this.useRichText = false,
+      this.onImageError,
+      this.linkStyle = const TextStyle(
+          decoration: TextDecoration.underline,
+          color: Colors.blueAccent,
+          decorationColor: Colors.blueAccent),
+      this.imageProperties,
+      this.onImageTap})
+      : super(key: key);
 
   final String data;
   final EdgeInsetsGeometry padding;
@@ -34,6 +37,10 @@ class Html extends StatelessWidget {
   final bool useRichText;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
+
+  /// Properties for the Image widget that gets rendered by the rich text parser
+  final ImageProperties imageProperties;
+  final OnImageTap onImageTap;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -61,6 +68,8 @@ class Html extends StatelessWidget {
                 html: data,
                 onImageError: onImageError,
                 linkStyle: linkStyle,
+                imageProperties: imageProperties,
+                onImageTap: onImageTap,
               )
             : HtmlOldParser(
                 width: width,
