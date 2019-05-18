@@ -13,23 +13,22 @@ class ImageProperties {
   final ImageRepeat repeat;
   final Rect centerSlice;
   final bool matchTextDirection;
-  final bool gaplessPlayback;
   final FilterQuality filterQuality;
   final double scale;
 
-  const ImageProperties(
-      {this.scale = 1,
-      this.semanticLabel,
-      this.excludeFromSemantics = false,
-      this.width,
-      this.height,
-      this.color,
-      this.colorBlendMode,
-      this.fit,
-      this.alignment = Alignment.center,
-      this.repeat = ImageRepeat.noRepeat,
-      this.centerSlice,
-      this.matchTextDirection = false,
-      this.gaplessPlayback = false,
-      this.filterQuality = FilterQuality.low});
+  const ImageProperties({
+    this.scale = 1,
+    this.semanticLabel,
+    this.excludeFromSemantics = false,
+    this.width,
+    this.height,
+    this.color,
+    this.colorBlendMode,
+    this.fit,
+    this.alignment = Alignment.center,
+    this.repeat = ImageRepeat.noRepeat,
+    this.centerSlice,
+    this.matchTextDirection = false,
+    this.filterQuality = FilterQuality.low,
+  });
 }
