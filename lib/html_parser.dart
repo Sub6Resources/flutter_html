@@ -627,7 +627,7 @@ class HtmlRichTextParser extends StatelessWidget {
                   buildContext,
                   onError: onImageError,
                 );
-                parseContext.rootWidgetList.add(InkWell(
+                parseContext.rootWidgetList.add(GestureDetector(
                   child: Image.memory(
                     base64.decode(node.attributes['src'].split("base64,")[1].trim()),
                     width: imageProperties?.width,
@@ -652,7 +652,7 @@ class HtmlRichTextParser extends StatelessWidget {
                   buildContext,
                   onError: onImageError,
                 );
-                parseContext.rootWidgetList.add(InkWell(
+                parseContext.rootWidgetList.add(GestureDetector(
                   child: Image.network(
                     node.attributes['src'],
                     width: imageProperties?.width,
