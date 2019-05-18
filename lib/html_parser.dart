@@ -755,11 +755,13 @@ class HtmlRichTextParser extends StatelessWidget {
               ));
             }
             BlockText blockText = BlockText(
-              margin: _customEdgeInsets ??
-                  EdgeInsets.only(
-                      top: 8.0,
-                      bottom: 8.0,
-                      left: parseContext.indentLevel * indentSize),
+              margin: node.localName != 'body'
+                  ? _customEdgeInsets ??
+                      EdgeInsets.only(
+                          top: 8.0,
+                          bottom: 8.0,
+                          left: parseContext.indentLevel * indentSize)
+                  : EdgeInsets.zero,
               padding: EdgeInsets.all(2.0),
               decoration: decoration,
               child: RichText(
@@ -783,30 +785,6 @@ class HtmlRichTextParser extends StatelessWidget {
       });
     }
   }
-
-  // List<dynamic> _parseNodeList({
-  //   @required List<dom.Node> nodeList,
-  //   @required List<BlockText> rootWidgetList,  // the widgetList accumulator
-  //   int parentIndex,         // the parent spans list accumulator
-  //   int indentLevel = 0,
-  //   int listCount = 0,
-  //   String listChar = '•',
-  //   String blockType,          // blockType can be 'p', 'div', 'ul', 'ol', 'blockquote'
-  //   bool condenseWhitespace = true,
-  //   }) {
-  //   return nodeList.map((node) {
-  //     return _parseNode(
-  //       node: node,
-  //       rootWidgetList: rootWidgetList,
-  //       parentIndex: parentIndex,
-  //       indentLevel: indentLevel,
-  //       listCount: listCount,
-  //       listChar: listChar,
-  //       blockType: blockType,
-  //       condenseWhitespace: condenseWhitespace,
-  //     );
-  //   }).toList();
-  // }
 
   Paint _getPaint(Color color) {
     Paint paint = new Paint();

@@ -1,3 +1,7 @@
+## [0.9.9] - May 17, 2019:
+
+* Fixes extra padding issue ([#87](https://github.com/Sub6Resources/flutter_html/issues/87))
+
 ## [0.9.8] - May 14, 2019:
 
 * Add support for `address` tag in `RichText` parser.
@@ -7,7 +11,7 @@
 * Added onImageError callback
 * Added custom textstyle and edgeinsets callback ([#72](https://github.com/Sub6Resources/flutter_html/pull/72))
 * Update dependency versions ([#84](https://github.com/Sub6Resources/flutter_html/issues/84))
-* Fixes #82 and #86
+* Fixes [#82](https://github.com/Sub6Resources/flutter_html/issues/82) and [#86](https://github.com/Sub6Resources/flutter_html/issues/86)
 
 ## [0.9.6] - March 11, 2019:
 
