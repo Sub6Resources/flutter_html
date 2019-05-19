@@ -16,7 +16,7 @@ class Html extends StatelessWidget {
     this.customEdgeInsets,
     this.customTextStyle,
     this.blockSpacing = 14.0,
-    this.useRichText = false,
+    this.useRichText = true,
     this.onImageError,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,

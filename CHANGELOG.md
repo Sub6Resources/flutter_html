@@ -1,3 +1,8 @@
+## [0.10.0] - May 18, 2019:
+
+* **BREAKING:** `useRichText` now defaults to `true`
+* Support for `aside`, `bdi`, `big`, `cite`, `data`, `ins`, `kbd`, `mark`, `nav`, `noscript`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `strike`, `template`, `time`, `tt`, and `var` added to `RichText` parser.
+
 ## [0.9.9] - May 17, 2019:
 
 * Fixes extra padding issue ([#87](https://github.com/Sub6Resources/flutter_html/issues/87))
