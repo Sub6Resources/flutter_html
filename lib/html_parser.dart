@@ -151,6 +151,7 @@ class HtmlRichTextParser extends StatelessWidget {
     ),
     this.imageProperties,
     this.onImageTap,
+    this.showImages = true,
   });
 
   final double indentSize = 10.0;
@@ -165,6 +166,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final TextStyle linkStyle;
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
+  final bool showImages;
 
   // style elements set a default style
   // for all child nodes
@@ -615,86 +617,88 @@ class HtmlRichTextParser extends StatelessWidget {
             parseContext.rootWidgetList.add(Divider(height: 1.0, color: Colors.black38));
             break;
           case "img":
-            if (node.attributes['src'] != null) {
-              if (node.attributes['src'].startsWith("data:image") &&
-                  node.attributes['src'].contains("base64,")) {
-                precacheImage(
-                  MemoryImage(
-                    base64.decode(
-                      node.attributes['src'].split("base64,")[1].trim(),
+            if (showImages) {
+              if (node.attributes['src'] != null) {
+                if (node.attributes['src'].startsWith("data:image") &&
+                    node.attributes['src'].contains("base64,")) {
+                  precacheImage(
+                    MemoryImage(
+                      base64.decode(
+                        node.attributes['src'].split("base64,")[1].trim(),
+                      ),
                     ),
-                  ),
-                  buildContext,
-                  onError: onImageError,
-                );
-                parseContext.rootWidgetList.add(GestureDetector(
-                  child: Image.memory(
-                    base64.decode(node.attributes['src'].split("base64,")[1].trim()),
-                    width: imageProperties?.width ??
-                        ((node.attributes['width'] != null)
-                            ? double.parse(node.attributes['width'])
-                            : null),
-                    height: imageProperties?.height ??
-                        ((node.attributes['height'] != null)
-                            ? double.parse(node.attributes['height'])
-                            : null),
-                    scale: imageProperties?.scale ?? 1.0,
-                    matchTextDirection: imageProperties?.matchTextDirection ?? false,
-                    centerSlice: imageProperties?.centerSlice,
-                    filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
-                    alignment: imageProperties?.alignment ?? Alignment.center,
-                    colorBlendMode: imageProperties?.colorBlendMode,
-                    fit: imageProperties?.fit,
-                    color: imageProperties?.color,
-                    repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                    semanticLabel: imageProperties?.semanticLabel,
-                    excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
-                  ),
-                  onTap: onImageTap,
-                ));
-              } else {
-                precacheImage(
-                  NetworkImage(node.attributes['src']),
-                  buildContext,
-                  onError: onImageError,
-                );
-                parseContext.rootWidgetList.add(GestureDetector(
-                  child: Image.network(
-                    node.attributes['src'],
-                    width: imageProperties?.width ??
-                        ((node.attributes['width'] != null)
-                            ? double.parse(node.attributes['width'])
-                            : null),
-                    height: imageProperties?.height ??
-                        ((node.attributes['height'] != null)
-                            ? double.parse(node.attributes['height'])
-                            : null),
-                    scale: imageProperties?.scale ?? 1.0,
-                    matchTextDirection: imageProperties?.matchTextDirection ?? false,
-                    centerSlice: imageProperties?.centerSlice,
-                    filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
-                    alignment: imageProperties?.alignment ?? Alignment.center,
-                    colorBlendMode: imageProperties?.colorBlendMode,
-                    fit: imageProperties?.fit,
-                    color: imageProperties?.color,
-                    repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                    semanticLabel: imageProperties?.semanticLabel,
-                    excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
-                  ),
-                  onTap: onImageTap,
-                ));
-              }
-              if (node.attributes['alt'] != null) {
-                parseContext.rootWidgetList.add(BlockText(
-                    margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                    padding: EdgeInsets.all(0.0),
-                    child: RichText(
-                        textAlign: TextAlign.center,
-                        text: TextSpan(
-                          text: node.attributes['alt'],
-                          style: nextContext.childStyle,
-                          children: <TextSpan>[],
-                        ))));
+                    buildContext,
+                    onError: onImageError,
+                  );
+                  parseContext.rootWidgetList.add(GestureDetector(
+                    child: Image.memory(
+                      base64.decode(node.attributes['src'].split("base64,")[1].trim()),
+                      width: imageProperties?.width ??
+                          ((node.attributes['width'] != null)
+                              ? double.parse(node.attributes['width'])
+                              : null),
+                      height: imageProperties?.height ??
+                          ((node.attributes['height'] != null)
+                              ? double.parse(node.attributes['height'])
+                              : null),
+                      scale: imageProperties?.scale ?? 1.0,
+                      matchTextDirection: imageProperties?.matchTextDirection ?? false,
+                      centerSlice: imageProperties?.centerSlice,
+                      filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
+                      alignment: imageProperties?.alignment ?? Alignment.center,
+                      colorBlendMode: imageProperties?.colorBlendMode,
+                      fit: imageProperties?.fit,
+                      color: imageProperties?.color,
+                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                      semanticLabel: imageProperties?.semanticLabel,
+                      excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
+                    ),
+                    onTap: onImageTap,
+                  ));
+                } else {
+                  precacheImage(
+                    NetworkImage(node.attributes['src']),
+                    buildContext,
+                    onError: onImageError,
+                  );
+                  parseContext.rootWidgetList.add(GestureDetector(
+                    child: Image.network(
+                      node.attributes['src'],
+                      width: imageProperties?.width ??
+                          ((node.attributes['width'] != null)
+                              ? double.parse(node.attributes['width'])
+                              : null),
+                      height: imageProperties?.height ??
+                          ((node.attributes['height'] != null)
+                              ? double.parse(node.attributes['height'])
+                              : null),
+                      scale: imageProperties?.scale ?? 1.0,
+                      matchTextDirection: imageProperties?.matchTextDirection ?? false,
+                      centerSlice: imageProperties?.centerSlice,
+                      filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
+                      alignment: imageProperties?.alignment ?? Alignment.center,
+                      colorBlendMode: imageProperties?.colorBlendMode,
+                      fit: imageProperties?.fit,
+                      color: imageProperties?.color,
+                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                      semanticLabel: imageProperties?.semanticLabel,
+                      excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
+                    ),
+                    onTap: onImageTap,
+                  ));
+                }
+                if (node.attributes['alt'] != null) {
+                  parseContext.rootWidgetList.add(BlockText(
+                      margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
+                      padding: EdgeInsets.all(0.0),
+                      child: RichText(
+                          textAlign: TextAlign.center,
+                          text: TextSpan(
+                            text: node.attributes['alt'],
+                            style: nextContext.childStyle,
+                            children: <TextSpan>[],
+                          ))));
+                }
               }
             }
             break;
@@ -876,6 +880,7 @@ class HtmlOldParser extends StatelessWidget {
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
+    this.showImages = true,
   });
 
   final double width;
@@ -886,6 +891,7 @@ class HtmlOldParser extends StatelessWidget {
   final String html;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
+  final bool showImages;
 
   static const _supportedElements = [
     "a",
@@ -1345,30 +1351,32 @@ class HtmlOldParser extends StatelessWidget {
         case "img":
           return Builder(
             builder: (BuildContext context) {
-              if (node.attributes['src'] != null) {
-                if (node.attributes['src'].startsWith("data:image") &&
-                    node.attributes['src'].contains("base64,")) {
+              if (showImages) {
+                if (node.attributes['src'] != null) {
+                  if (node.attributes['src'].startsWith("data:image") &&
+                      node.attributes['src'].contains("base64,")) {
+                    precacheImage(
+                      MemoryImage(base64.decode(node.attributes['src'].split("base64,")[1].trim())),
+                      context,
+                      onError: onImageError,
+                    );
+                    return Image.memory(
+                        base64.decode(node.attributes['src'].split("base64,")[1].trim()));
+                  }
                   precacheImage(
-                    MemoryImage(base64.decode(node.attributes['src'].split("base64,")[1].trim())),
+                    NetworkImage(node.attributes['src']),
                     context,
                     onError: onImageError,
                   );
-                  return Image.memory(
-                      base64.decode(node.attributes['src'].split("base64,")[1].trim()));
-                }
-                precacheImage(
-                  NetworkImage(node.attributes['src']),
-                  context,
-                  onError: onImageError,
-                );
-                return Image.network(node.attributes['src']);
-              } else if (node.attributes['alt'] != null) {
-                //Temp fix for https://github.com/flutter/flutter/issues/736
-                if (node.attributes['alt'].endsWith(" ")) {
-                  return Container(
-                      padding: EdgeInsets.only(right: 2.0), child: Text(node.attributes['alt']));
-                } else {
-                  return Text(node.attributes['alt']);
+                  return Image.network(node.attributes['src']);
+                } else if (node.attributes['alt'] != null) {
+                  //Temp fix for https://github.com/flutter/flutter/issues/736
+                  if (node.attributes['alt'].endsWith(" ")) {
+                    return Container(
+                        padding: EdgeInsets.only(right: 2.0), child: Text(node.attributes['alt']));
+                  } else {
+                    return Text(node.attributes['alt']);
+                  }
                 }
               }
               return Container();
