@@ -500,12 +500,14 @@ class HtmlRichTextParser extends StatelessWidget {
             childStyle = childStyle.merge(TextStyle(fontSize: 10.0));
             break;
           case "mark":
-            childStyle = childStyle.merge(TextStyle(backgroundColor: Colors.yellow, color: Colors.black));
+            childStyle = childStyle.merge(
+                TextStyle(backgroundColor: Colors.yellow, color: Colors.black));
             break;
           case "del":
           case "s":
           case "strike":
-            childStyle = childStyle.merge(TextStyle(decoration: TextDecoration.lineThrough));
+            childStyle = childStyle
+                .merge(TextStyle(decoration: TextDecoration.lineThrough));
             break;
           case "ol":
             nextContext.indentLevel += 1;
@@ -672,7 +674,8 @@ class HtmlRichTextParser extends StatelessWidget {
                   .add(TextSpan(text: '"', children: []));
               TextSpan content = TextSpan(text: '', children: []);
               parseContext.parentElement.children.add(content);
-              parseContext.parentElement.children.add(TextSpan(text: '"', children: []));
+              parseContext.parentElement.children
+                  .add(TextSpan(text: '"', children: []));
               nextContext.parentElement = content;
             }
             break;
