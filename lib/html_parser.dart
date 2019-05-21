@@ -175,17 +175,34 @@ class HtmlRichTextParser extends StatelessWidget {
     "b",
     "i",
     "address",
+    "cite",
+    "var",
     "em",
     "strong",
+    "kbd",
+    "samp",
+    "tt",
     "code",
+    "ins",
     "u",
     "small",
     "abbr",
     "acronym",
+    "mark",
     "ol",
     "ul",
     "blockquote",
+    "del",
+    "s",
+    "strike",
+    "ruby",
+    "rp",
+    "rt",
+    "bdi",
+    "data",
+    "time",
     "span",
+    "big",
   ];
 
   // specialty elements require unique handling
@@ -203,6 +220,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "th",
     "thead",
     "tr",
+    "q",
   ];
 
   // block elements are always rendered with a new
@@ -211,6 +229,7 @@ class HtmlRichTextParser extends StatelessWidget {
   // we simply treat it as a new block level element
   static const _supportedBlockElements = [
     "article",
+    "aside",
     "body",
     "center",
     "dd",
@@ -232,6 +251,8 @@ class HtmlRichTextParser extends StatelessWidget {
     "img",
     "li",
     "main",
+    "nav",
+    "noscript",
     "p",
     "pre",
     "section",
@@ -434,12 +455,18 @@ class HtmlRichTextParser extends StatelessWidget {
             break;
           case "i":
           case "address":
+          case "cite":
+          case "var":
           case "em":
             childStyle = childStyle.merge(TextStyle(fontStyle: FontStyle.italic));
             break;
+          case "kbd":
+          case "samp":
+          case "tt":
           case "code":
             childStyle = childStyle.merge(TextStyle(fontFamily: 'monospace'));
             break;
+          case "ins":
           case "u":
             childStyle = childStyle.merge(TextStyle(decoration: TextDecoration.underline));
             break;
@@ -450,8 +477,21 @@ class HtmlRichTextParser extends StatelessWidget {
               decorationStyle: TextDecorationStyle.dotted,
             ));
             break;
+          case "big":
+            childStyle = childStyle.merge(TextStyle(fontSize: 20.0));
+            break;
           case "small":
-            childStyle = childStyle.merge(TextStyle(fontSize: 12.0));
+            childStyle = childStyle.merge(TextStyle(fontSize: 10.0));
+            break;
+          case "mark":
+            childStyle = childStyle.merge(
+                TextStyle(backgroundColor: Colors.yellow, color: Colors.black));
+            break;
+          case "del":
+          case "s":
+          case "strike":
+            childStyle = childStyle
+                .merge(TextStyle(decoration: TextDecoration.lineThrough));
             break;
           case "ol":
             nextContext.indentLevel += 1;
@@ -469,6 +509,12 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.indentLevel += 1;
             nextContext.blockType = 'blockquote';
             break;
+          case "ruby":
+          case "rt":
+          case "rp":
+          case "bdi":
+          case "data":
+          case "time":
           case "span":
             //No additional styles
             break;
@@ -596,6 +642,18 @@ class HtmlRichTextParser extends StatelessWidget {
             row.children.add(cell);
             nextContext.parentElement.children.add(row);
             nextContext.parentElement = text.text;
+            break;
+          case "q":
+            if (parseContext.parentElement != null &&
+                parseContext.parentElement is TextSpan) {
+              parseContext.parentElement.children
+                  .add(TextSpan(text: '"', children: []));
+              TextSpan content = TextSpan(text: '', children: []);
+              parseContext.parentElement.children.add(content);
+              parseContext.parentElement.children
+                  .add(TextSpan(text: '"', children: []));
+              nextContext.parentElement = content;
+            }
             break;
         }
       }
@@ -779,9 +837,14 @@ class HtmlRichTextParser extends StatelessWidget {
               ));
             }
             BlockText blockText = BlockText(
-              margin: _customEdgeInsets ??
-                  EdgeInsets.only(
-                      top: 8.0, bottom: 8.0, left: parseContext.indentLevel * indentSize),
+
+              margin: node.localName != 'body'
+                  ? _customEdgeInsets ??
+                      EdgeInsets.only(
+                          top: 8.0,
+                          bottom: 8.0,
+                          left: parseContext.indentLevel * indentSize)
+                  : EdgeInsets.zero,
               padding: EdgeInsets.all(2.0),
               decoration: decoration,
               child: RichText(
@@ -805,30 +868,6 @@ class HtmlRichTextParser extends StatelessWidget {
       });
     }
   }
-
-  // List<dynamic> _parseNodeList({
-  //   @required List<dom.Node> nodeList,
-  //   @required List<BlockText> rootWidgetList,  // the widgetList accumulator
-  //   int parentIndex,         // the parent spans list accumulator
-  //   int indentLevel = 0,
-  //   int listCount = 0,
-  //   String listChar = '•',
-  //   String blockType,          // blockType can be 'p', 'div', 'ul', 'ol', 'blockquote'
-  //   bool condenseWhitespace = true,
-  //   }) {
-  //   return nodeList.map((node) {
-  //     return _parseNode(
-  //       node: node,
-  //       rootWidgetList: rootWidgetList,
-  //       parentIndex: parentIndex,
-  //       indentLevel: indentLevel,
-  //       listCount: listCount,
-  //       listChar: listChar,
-  //       blockType: blockType,
-  //       condenseWhitespace: condenseWhitespace,
-  //     );
-  //   }).toList();
-  // }
 
   Paint _getPaint(Color color) {
     Paint paint = new Paint();
