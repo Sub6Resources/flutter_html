@@ -12,7 +12,7 @@ typedef CustomTextStyle = TextStyle Function(
 );
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
-typedef OnImageTap = void Function();
+typedef OnImageTap = void Function(String source);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
@@ -733,23 +733,20 @@ class HtmlRichTextParser extends StatelessWidget {
                               ? double.parse(node.attributes['height'])
                               : null),
                       scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
+                      matchTextDirection: imageProperties?.matchTextDirection ?? false,
                       centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
+                      filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
                       alignment: imageProperties?.alignment ?? Alignment.center,
                       colorBlendMode: imageProperties?.colorBlendMode,
                       fit: imageProperties?.fit,
                       color: imageProperties?.color,
                       repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
                       semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
+                      excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
                     ),
-                    onTap: onImageTap,
+                    onTap: () {
+                      onImageTap(node.attributes['src']);
+                    },
                   ));
                 } else {
                   precacheImage(
@@ -769,29 +766,25 @@ class HtmlRichTextParser extends StatelessWidget {
                               ? double.parse(node.attributes['height'])
                               : null),
                       scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
+                      matchTextDirection: imageProperties?.matchTextDirection ?? false,
                       centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
+                      filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
                       alignment: imageProperties?.alignment ?? Alignment.center,
                       colorBlendMode: imageProperties?.colorBlendMode,
                       fit: imageProperties?.fit,
                       color: imageProperties?.color,
                       repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
                       semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
+                      excludeFromSemantics: (imageProperties?.semanticLabel == null) ? true : false,
                     ),
-                    onTap: onImageTap,
+                    onTap: () {
+                      onImageTap(node.attributes['src']);
+                    },
                   ));
                 }
                 if (node.attributes['alt'] != null) {
                   parseContext.rootWidgetList.add(BlockText(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
+                      margin: EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
                       padding: EdgeInsets.all(0.0),
                       child: RichText(
                           textAlign: TextAlign.center,
