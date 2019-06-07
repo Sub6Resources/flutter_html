@@ -2,6 +2,7 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'image_properties.dart';
 
 class Html extends StatelessWidget {
   Html({
@@ -16,14 +17,17 @@ class Html extends StatelessWidget {
     this.customEdgeInsets,
     this.customTextStyle,
     this.blockSpacing = 14.0,
-    this.useRichText = false,
+    this.useRichText = true,
     this.useFancyNewParser = false,
     this.onImageError,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
-  }) : super(key: key);
+    this.imageProperties,
+    this.onImageTap,
+    this.showImages = true,
+  }) : assert(useRichText != useFancyNewParser), super(key: key);
 
   final String data;
   final EdgeInsetsGeometry padding;
@@ -36,6 +40,11 @@ class Html extends StatelessWidget {
   final bool useFancyNewParser;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
+
+  /// Properties for the Image widget that gets rendered by the rich text parser
+  final ImageProperties imageProperties;
+  final OnImageTap onImageTap;
+  final bool showImages;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -63,6 +72,9 @@ class Html extends StatelessWidget {
                 html: data,
                 onImageError: onImageError,
                 linkStyle: linkStyle,
+                imageProperties: imageProperties,
+                onImageTap: onImageTap,
+                showImages: showImages,
               )
             : (useFancyNewParser)
                 ? HtmlParser(
@@ -77,6 +89,7 @@ class Html extends StatelessWidget {
                     blockSpacing: blockSpacing,
                     onImageError: onImageError,
                     linkStyle: linkStyle,
+                    showImages: showImages,
                   ),
       ),
     );
