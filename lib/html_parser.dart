@@ -314,8 +314,9 @@ class HtmlRichTextParser extends StatelessWidget {
     widgetList.forEach((dynamic w) {
       if (w is BlockText) {
         if (w.child.text == null) return;
-        if ((w.child.text.text == null || w.child.text.text.isEmpty) &&
-            (w.child.text.children == null || w.child.text.children.isEmpty))
+        TextSpan childTextSpan = w.child.text;
+        if ((childTextSpan.text == null || childTextSpan.text.isEmpty) &&
+            (childTextSpan.children == null || childTextSpan.children.isEmpty))
           return;
       } else if (w is LinkBlock) {
         if (w.children.isEmpty) return;

@@ -1,6 +1,7 @@
 ## [0.10.1] - May 20, 2019:
 
 * Image properties and onImageTap for the richTextParser, plus some fixes ([#90](https://github.com/Sub6Resources/flutter_html/pull/90))
+* Hotfix 1 (June 6, 2019): Fixes [#100](https://github.com/Sub6Resources/flutter_html/issues/100)
 
 ## [0.10.0] - May 18, 2019:
 
