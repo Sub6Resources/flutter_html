@@ -1,6 +1,7 @@
 library flutter_html;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/html_elements.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'image_properties.dart';
 
@@ -8,26 +9,26 @@ class Html extends StatelessWidget {
   Html({
     Key key,
     @required this.data,
-    this.padding,
+    @deprecated this.padding,
     this.backgroundColor,
-    this.defaultTextStyle,
+    @deprecated this.defaultTextStyle,
     this.onLinkTap,
     this.renderNewlines = false,
     this.customRender,
-    this.customEdgeInsets,
-    this.customTextStyle,
-    this.blockSpacing = 14.0,
-    this.useRichText = true,
-    this.useFancyNewParser = false,
+    @deprecated this.customEdgeInsets,
+    @deprecated this.customTextStyle,
+    @deprecated this.blockSpacing = 14.0,
+    @deprecated this.useRichText = false,
     this.onImageError,
-    this.linkStyle = const TextStyle(
+    @deprecated this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
-  }) : assert(useRichText != useFancyNewParser), super(key: key);
+    this.style,
+  }) : super(key: key);
 
   final String data;
   final EdgeInsetsGeometry padding;
@@ -37,7 +38,6 @@ class Html extends StatelessWidget {
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
-  final bool useFancyNewParser;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
 
@@ -52,46 +52,46 @@ class Html extends StatelessWidget {
   final CustomEdgeInsets customEdgeInsets;
   final CustomTextStyle customTextStyle;
 
+  /// Fancy New Parser parameters
+  final Map<String, Style> style;
+
   @override
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 
+    if(useRichText) {
+      return Container(
+//      padding: padding,
+        color: backgroundColor,
+        width: width,
+        child: DefaultTextStyle.merge(
+          style: defaultTextStyle ?? Theme.of(context).textTheme.body1,
+          child:  HtmlRichTextParser(
+            width: width,
+            onLinkTap: onLinkTap,
+            renderNewlines: renderNewlines,
+            customEdgeInsets: customEdgeInsets,
+            customTextStyle: customTextStyle,
+            html: data,
+            onImageError: onImageError,
+            linkStyle: linkStyle,
+            imageProperties: imageProperties,
+            onImageTap: onImageTap,
+            showImages: showImages,
+          ),
+        ),
+      );
+    }
+
     return Container(
-      padding: padding,
       color: backgroundColor,
       width: width,
-      child: DefaultTextStyle.merge(
-        style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
-        child: (useRichText)
-            ? HtmlRichTextParser(
-                width: width,
-                onLinkTap: onLinkTap,
-                renderNewlines: renderNewlines,
-                customEdgeInsets: customEdgeInsets,
-                customTextStyle: customTextStyle,
-                html: data,
-                onImageError: onImageError,
-                linkStyle: linkStyle,
-                imageProperties: imageProperties,
-                onImageTap: onImageTap,
-                showImages: showImages,
-              )
-            : (useFancyNewParser)
-                ? HtmlParser(
-                    data,
-                  )
-                : HtmlOldParser(
-                    width: width,
-                    onLinkTap: onLinkTap,
-                    renderNewlines: renderNewlines,
-                    customRender: customRender,
-                    html: data,
-                    blockSpacing: blockSpacing,
-                    onImageError: onImageError,
-                    linkStyle: linkStyle,
-                    showImages: showImages,
-                  ),
-      ),
+      child: HtmlParser(
+        html: data,
+        onLinkTap: onLinkTap,
+        style: style,
+      )
     );
+
   }
 }

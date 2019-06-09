@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 
+import 'block_element.dart';
+
 /// A [StyledElement] applies a style to all of its children.
 class StyledElement {
   final String name;
@@ -51,7 +53,10 @@ StyledElement parseStyledElement(
       );
       break;
     case "bdo":
-      TextDirection textDirection = ((element.attributes["dir"] ?? "ltr") == "rtl")? TextDirection.rtl: TextDirection.ltr;
+      TextDirection textDirection =
+          ((element.attributes["dir"] ?? "ltr") == "rtl")
+              ? TextDirection.rtl
+              : TextDirection.ltr;
       styledElement.style = Style(
         textDirection: textDirection,
       );
@@ -148,30 +153,62 @@ StyledElement parseStyledElement(
 typedef ListCharacter = String Function(int i);
 
 class Style {
-  final TextStyle textStyle;
-  final bool indentChildren;
-  final ListCharacter listCharacter;
-  final bool preserveWhitespace;
-  final int baselineOffset;
-  final Border border;
-  final String before;
-  final String after;
-  final TextDirection textDirection;
+  TextStyle textStyle;
+  bool preserveWhitespace;
+  int baselineOffset;
+  String before;
+  String after;
+  TextDirection textDirection;
+  Block block;
 
   Style({
     this.textStyle,
-    this.indentChildren,
-    this.listCharacter,
     this.preserveWhitespace,
     this.baselineOffset,
-    this.border,
     this.before,
     this.after,
     this.textDirection,
+    this.block,
   });
 
   @override
   String toString() {
     return "(Text Style: ($textStyle}),)";
+  }
+
+  Style merge(Style other) {
+    if (other == null) return this;
+
+    Block mergedBlock = block?.merge(other.block);
+
+    return copyWith(
+      textStyle: other.textStyle,
+      preserveWhitespace: other.preserveWhitespace,
+      baselineOffset: other.baselineOffset,
+      before: other.before,
+      after: other.after,
+      textDirection: other.textDirection,
+      block: mergedBlock,
+    );
+  }
+
+  Style copyWith({
+    TextStyle textStyle,
+    bool preserveWhitespace,
+    int baselineOffset,
+    String before,
+    String after,
+    TextDirection textDirection,
+    Block block,
+  }) {
+    return Style(
+      textStyle: textStyle ?? this.textStyle,
+      preserveWhitespace: preserveWhitespace ?? this.preserveWhitespace,
+      baselineOffset: baselineOffset ?? this.baselineOffset,
+      before: before ?? this.before,
+      after: after ?? this.after,
+      textDirection: textDirection ?? this.textDirection,
+      block: block ?? this.block,
+    );
   }
 }

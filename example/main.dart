@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/block_element.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/styled_element.dart';
 import 'package:html/dom.dart' as dom;
 
 void main() => runApp(new MyApp());
@@ -120,22 +122,21 @@ class _MyHomePageState extends State<MyHomePage> {
           <div>Fourth div</div>
   """,
             //Optional parameters:
-            padding: EdgeInsets.all(8.0),
-            linkStyle: const TextStyle(
-              color: Colors.redAccent,
-              decorationColor: Colors.redAccent,
-              decoration: TextDecoration.underline,
-            ),
+            style: {
+              "ul": Style(
+                textStyle: TextStyle(
+                  fontFamily: "monospace",
+                  fontSize: 24,
+                ),
+                block: Block(
+                  backgroundColor: Colors.blue,
+                  border: Border.all(width: 2),
+                  margin: EdgeInsets.zero,
+                ),
+              ),
+            },
             onLinkTap: (url) {
               print("Opening $url...");
-            },
-            customRender: (node, children) {
-              if (node is dom.Element) {
-                switch (node.localName) {
-                  case "custom_tag":
-                    return Column(children: children);
-                }
-              }
             },
           ),
         ),

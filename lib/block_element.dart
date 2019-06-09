@@ -1,23 +1,60 @@
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_elements.dart';
 import 'package:html/dom.dart' as dom;
 
 /// A [Block] contains information about a [BlockElement] (width, height, padding, margins)
 class Block {
-  final EdgeInsets margin;
+  EdgeInsets margin;
+  double width;
+  double height;
+  Border border;
+  Alignment alignment;
+  Color backgroundColor;
 
-  final double width;
-  final double height;
-
-  const Block({
+  Block({
     this.margin,
     this.width,
     this.height,
+    this.border,
+    this.alignment = Alignment.centerLeft,
+    this.backgroundColor,
   });
 
   @override
   String toString() {
-    return "(${margin != null? "Margin: $margin": ""} ${width != null? "Width: $width": ""}, ${height != null? "Height: $height": ""})";
+    return "(${margin != null ? "Margin: $margin" : ""} ${width != null ? "Width: $width" : ""}, ${height != null ? "Height: $height" : ""})";
+  }
+
+  Block merge(Block other) {
+    if (other == null) return this;
+
+    return copyWith(
+      margin: other.margin,
+      width: other.width,
+      height: other.height,
+      border: other.border,
+      alignment: other.alignment,
+      backgroundColor: other.backgroundColor,
+    );
+  }
+
+  Block copyWith({
+    EdgeInsets margin,
+    double width,
+    double height,
+    Border border,
+    Alignment alignment,
+    Color backgroundColor,
+  }) {
+    return Block(
+      margin: margin ?? this.margin,
+      width: width ?? this.width,
+      height: height ?? this.height,
+      border: border ?? this.border,
+      alignment: alignment ?? this.alignment,
+      backgroundColor: backgroundColor ?? this.backgroundColor,
+    );
   }
 }
 
@@ -25,20 +62,19 @@ class Block {
 ///
 /// A [BlockElement] may have a margin/padding or be a set width/height.
 class BlockElement extends StyledElement {
-  final Block block;
-
   BlockElement({
     String name,
     List<StyledElement> children,
     Style style,
-    this.block,
   }) : super(name: name, children: children, style: style);
 
   @override
   String toString() {
-    String selfData = "$name [Children: ${children?.length ?? 0}] <Block: $block Style: $style>";
+    String selfData =
+        "$name [Children: ${children?.length ?? 0}] <Block: ${style.block} Style: $style>";
     children?.forEach((child) {
-      selfData += ("\n${child.toString()}").replaceAll(RegExp("^", multiLine: true), "-");
+      selfData += ("\n${child.toString()}")
+          .replaceAll(RegExp("^", multiLine: true), "-");
     });
     return selfData;
   }
@@ -48,82 +84,132 @@ BlockElement parseBlockElement(dom.Element node, List<StyledElement> children) {
   BlockElement blockElement = BlockElement(
     name: node.localName,
     children: children,
-    block: parseBlockElementBlock(node),
   );
 
   // Add styles to new block element.
-  switch(node.localName) {
+  switch (node.localName) {
     case "h1":
-      blockElement.style = Style(textStyle: TextStyle(fontSize: 26.0, fontWeight: FontWeight.bold));
+      blockElement.style = Style(
+          textStyle: TextStyle(fontSize: 28.0, fontWeight: FontWeight.bold));
       break;
     case "h2":
-      blockElement.style = Style(textStyle: TextStyle(fontSize: 24.0, fontWeight: FontWeight.bold));
+      blockElement.style = Style(
+          textStyle: TextStyle(fontSize: 21.0, fontWeight: FontWeight.bold));
       break;
     case "h3":
-      blockElement.style = Style(textStyle: TextStyle(fontSize: 22.0, fontWeight: FontWeight.bold));
+      blockElement.style = Style(
+          textStyle: TextStyle(fontSize: 16.5, fontWeight: FontWeight.bold));
       break;
     case "h4":
-      blockElement.style = Style(textStyle: TextStyle(fontSize: 20.0));
+      blockElement.style = Style(
+          textStyle: TextStyle(fontSize: 14.0, fontWeight: FontWeight.bold));
       break;
     case "h5":
-      blockElement.style = Style(textStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold));
+      blockElement.style = Style(
+          textStyle: TextStyle(fontSize: 11.5, fontWeight: FontWeight.bold));
       break;
     case "h6":
-      blockElement.style = Style(textStyle: TextStyle(fontSize: 18.0));
-      break;
-    case "hr":
-      blockElement.style = Style(border: Border(bottom: BorderSide(width: 1.0)));
-      break;
-    case "ol":
-      blockElement.style = Style(indentChildren: true, listCharacter: (i) => "$i.");
+      blockElement.style = Style(
+          textStyle: TextStyle(fontSize: 9.5, fontWeight: FontWeight.bold));
       break;
     case "pre":
-      blockElement.style = Style(textStyle: TextStyle(fontFamily: 'Monospace'), preserveWhitespace: true);
+      blockElement.style = Style(
+          textStyle: TextStyle(fontFamily: 'Monospace'),
+          preserveWhitespace: true);
       break;
-    case "ul":
-      blockElement.style = Style(indentChildren: true, listCharacter: (i) => ".");
-      break;
+    default:
+      blockElement.style = Style();
   }
+
+  blockElement.style.block = parseBlockElementBlock(node);
 
   return blockElement;
 }
 
-//TODO all of these margin values need to be customizable and researched to be made more accurate to life.
 Block parseBlockElementBlock(dom.Element element) {
   switch (element.localName) {
     case "blockquote":
-      return const Block(
-        margin: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 40.0),
+      if (element.parent.localName == "blockquote") {
+        return Block(
+          margin: const EdgeInsets.only(left: 40.0, right: 40.0, bottom: 14.0),
+        );
+      }
+      return Block(
+        margin: const EdgeInsets.symmetric(horizontal: 40.0, vertical: 14.0),
+      );
+    case "body":
+      return Block(
+        margin: const EdgeInsets.all(8.0),
+      );
+    case "center":
+      return Block(
+        alignment: Alignment.center,
       );
     case "dd":
-      return const Block(
+      return Block(
         margin: const EdgeInsets.only(left: 40.0),
       );
     case "div":
-      return const Block(
-        margin: const EdgeInsets.symmetric(vertical: 14.0),
+      return Block(
+        margin: const EdgeInsets.all(0),
       );
     case "dl":
-      return const Block(
+      return Block(
         margin: const EdgeInsets.symmetric(vertical: 14.0),
       );
     case "figure":
-      return const Block(
+      return Block(
         margin: const EdgeInsets.symmetric(vertical: 14.0, horizontal: 40.0),
       );
+    case "h1":
+      return Block(
+        margin: const EdgeInsets.symmetric(vertical: 18.67),
+      );
+    case "h2":
+      return Block(
+        margin: const EdgeInsets.symmetric(vertical: 17.5),
+      );
+    case "h3":
+      return Block(
+        margin: const EdgeInsets.symmetric(vertical: 16.5),
+      );
+    case "h4":
+      return Block(
+        margin: const EdgeInsets.symmetric(vertical: 18.5),
+      );
+    case "h5":
+      return Block(
+        margin: const EdgeInsets.symmetric(vertical: 19.25),
+      );
+    case "h6":
+      return Block(
+        margin: const EdgeInsets.symmetric(vertical: 22),
+      );
     case "hr":
-      return const Block(
+      return Block(
         margin: const EdgeInsets.symmetric(vertical: 7.0),
+        width: double.infinity,
+        border: Border(bottom: BorderSide(width: 1.0)),
+      );
+    case "ol":
+    case "ul":
+      if (element.parent.localName == "li") {
+        return Block(
+          margin: const EdgeInsets.only(left: 30.0),
+        );
+      }
+      return Block(
+        margin: const EdgeInsets.only(left: 30.0, top: 14.0, bottom: 14.0),
       );
     case "p":
-      return const Block(
+      return Block(
         margin: const EdgeInsets.symmetric(vertical: 14.0),
       );
     case "pre":
-      return const Block(
+      return Block(
         margin: const EdgeInsets.symmetric(vertical: 14.0),
       );
     default:
-      return const Block();
+      return Block();
   }
 }

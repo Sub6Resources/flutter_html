@@ -48,41 +48,42 @@ Check out the official Flutter WebView package here: https://pub.dartlang.org/pa
 
 
 ## Example Usage:
-
-    Html(
+(For a much more extensive example, look at example/main.dart).
+```dart
+    Widget html = Html(
       data: """
         <!--For a much more extensive example, look at example/main.dart-->
         <div>
           <h1>Demo Page</h1>
-          <p>This is a fantastic nonexistent product that you should buy!</p>
-          <h2>Pricing</h2>
-          <p>Lorem ipsum <b>dolor</b> sit amet.</p>
-          <h2>The Team</h2>
-          <p>There isn't <i>really</i> a team...</p>
-          <h2>Installation</h2>
-          <p>You <u>cannot</u> install a nonexistent product!</p>
+          <p>This is a fantastic product that you should buy!</p>
+          <h3>Features</h3>
+          <ul>
+            <li>It actually works</li>
+            <li>It exists</li>
+            <li>It doesn't cost much!</li>
+          </ul>
           <!--You can pretty much put any html in here!-->
         </div>
       """,
       //Optional parameters:
-      padding: EdgeInsets.all(8.0),
       backgroundColor: Colors.white70,
-      defaultTextStyle: TextStyle(fontFamily: 'serif'),
-      linkStyle: const TextStyle(
-        color: Colors.redAccent,
-      ),
       onLinkTap: (url) {
         // open url in a webview
       },
-      customRender: (node, children) {
-        if(node is dom.Element) {
-          switch(node.localName) {
-            case "video": return Chewie(...);
-            case "custom_tag": return CustomWidget(...);
-          }
-        }
+      style: {
+        "div": Style(
+          block: Block(
+            margin: EdgeInsets.all(16),
+            border: Border.all(width: 6),
+            backgroundColor: Colors.grey,
+          ),
+          textStyle: TextStyle(
+            color: Colors.red,
+          ),
+        ),
       },
-    )
+    );
+```
 
 ## `useRichText` parameter
 

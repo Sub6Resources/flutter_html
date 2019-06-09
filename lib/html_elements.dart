@@ -50,7 +50,7 @@ const BLOCK_ELEMENTS = [
   "aside",
   "blockquote",
   "body",
-  "br",
+  "center",
   "dd",
   "div",
   "dl",
@@ -84,6 +84,7 @@ const BLOCK_ELEMENTS = [
 
 const CONTENT_ELEMENTS = [
   "audio",
+  "br",
   "head",
   "img",
   "template",
@@ -113,8 +114,9 @@ enum ElementType {
     blockquote- b [x]
     body      - b [x]
     br        - b [x]
+    button    - i [ ]
     caption   - b [ ]
-    center    - b [ ]
+    center    - b [x]
     cite      - s [x]
     code      - s [x]
     data      - s [x]

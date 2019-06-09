@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_html/html_elements.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -18,16 +19,22 @@ enum Gesture {
   TAP,
 }
 
-InteractableElement parseInteractableElement(dom.Element element, List<StyledElement> children) {
-
+InteractableElement parseInteractableElement(
+    dom.Element element, List<StyledElement> children) {
   InteractableElement interactableElement = InteractableElement(
     name: element.localName,
     children: children,
   );
 
-  switch(element.localName) {
+  switch (element.localName) {
     case "a":
       interactableElement.href = element.attributes['href'];
+      interactableElement.style = Style(
+        textStyle: TextStyle(
+          color: Colors.blue,
+          decoration: TextDecoration.underline,
+        ),
+      );
       break;
   }
 

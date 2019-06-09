@@ -1189,10 +1189,10 @@ void testNewParser() {
     }
   });
 
-  test("Test trimAllButOneWhitespace function", () {
-    String testString = "    Twelve\t angry \nblack  bears  ";
-    String result = HtmlParser.trimAllButOneWhitespace(testString);
-
-    expect(result, equals(" Twelve angry black bears "));
-  });
+//  test("Test trimAllButOneWhitespace function", () {
+//    String testString = "    Twelve\t angry \nblack  bears  ";
+//    String result = HtmlParser.trimAllButOneWhitespace(testString);
+//
+//    expect(result, equals(" Twelve angry black bears "));
+//  });
 }

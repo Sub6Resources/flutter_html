@@ -1,3 +1,7 @@
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_elements.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -18,6 +22,8 @@ abstract class ContentElement extends StyledElement {
       return element.attributes['src'];
     }).toList();
   }
+
+  Widget toWidget();
 }
 
 /// [TextContentElement] is a [ContentElement] with plaintext as its content.
@@ -33,6 +39,9 @@ class TextContentElement extends ContentElement {
   String toString() {
     return "\"${text.replaceAll("\n", "\\n")}\"";
   }
+
+  @override
+  Widget toWidget() => null;
 }
 
 /// [ImageContentElement] is a [ContentElement] with an image as its content.
@@ -46,6 +55,18 @@ class ImageContentElement extends ContentElement {
     this.src,
     this.alt,
   }) : super(name: name, style: style);
+
+  @override
+  Widget toWidget() {
+    if(src == null) return Text(alt ?? "");
+    if(src.startsWith("data:image") && src.contains("base64,")) {
+      return Image.memory(base64.decode(src.split("base64,")[1].trim()));
+    } else {
+      return Image.network(src);
+    }
+    //TODO alt text
+    //TODO precacheImage
+  }
 }
 
 /// [AudioContentElement] is a [ContentElement] with an audio file as its content.
@@ -65,6 +86,12 @@ class AudioContentElement extends ContentElement {
     this.loop,
     this.muted,
   }) : super(name: name, style: style);
+
+  @override
+  Widget toWidget() {
+    //TODO
+    return Container(padding: const EdgeInsets.all(24), child: Text("AUDIO"));
+  }
 }
 
 /// [VideoContentElement] is a [ContentElement] with a video file as its content.
@@ -86,10 +113,19 @@ class VideoContentElement extends ContentElement {
     this.loop,
     this.muted,
   }) : super(name: name, style: style);
+
+  @override
+  Widget toWidget() {
+    //TODO
+    return Container(padding: const EdgeInsets.all(24), child: Text("AUDIO"));
+  }
 }
 
 class EmptyContentElement extends ContentElement {
   EmptyContentElement({String name = "empty"}) : super(name: name);
+
+  @override
+  Widget toWidget() => null;
 }
 
 ContentElement parseContentElement(dom.Element element) {
@@ -103,10 +139,15 @@ ContentElement parseContentElement(dom.Element element) {
         autoplay: element.attributes['autoplay'] != null,
         muted: element.attributes['muted'] != null,
       );
+    case "br":
+      return TextContentElement(
+        text: "\n",
+        style: Style(preserveWhitespace: true),
+      );
     case "img":
       return ImageContentElement(
         name: "img",
-        src: element.attributes['href'],
+        src: element.attributes['src'],
         alt: element.attributes['alt'],
       );
     case "video":
