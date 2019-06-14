@@ -3,12 +3,14 @@ library flutter_html;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_elements.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/style.dart';
 import 'image_properties.dart';
 
 class Html extends StatelessWidget {
   Html({
     Key key,
     @required this.data,
+    this.css,
     @deprecated this.padding,
     this.backgroundColor,
     @deprecated this.defaultTextStyle,
@@ -31,6 +33,7 @@ class Html extends StatelessWidget {
   }) : super(key: key);
 
   final String data;
+  final String css;
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
@@ -88,6 +91,7 @@ class Html extends StatelessWidget {
       width: width,
       child: HtmlParser(
         html: data,
+        css: css,
         onLinkTap: onLinkTap,
         style: style,
       )

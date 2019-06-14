@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_elements.dart';
+import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
 /// A [Block] contains information about a [BlockElement] (width, height, padding, margins)

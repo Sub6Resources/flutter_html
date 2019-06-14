@@ -10,6 +10,8 @@ environment:
 
 dependencies:
   html: ^0.14.0
+  csslib: ^0.16.0
+  css_colors: ^1.0.2
   flutter:
     sdk: flutter
 

@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'package:flutter_html/style.dart';
+
 import 'image_properties.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -955,11 +957,13 @@ class HtmlRichTextParser extends StatelessWidget {
 
 class HtmlParser extends StatelessWidget {
   final String html;
+  final String css;
   final OnLinkTap onLinkTap;
   final Map<String, Style> style;
 
   HtmlParser({
     this.html,
+    this.css,
     this.onLinkTap,
     this.style,
   });
