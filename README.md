@@ -4,6 +4,9 @@
 
 A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
 
+## Roadmap
+[View the development roadmap in the wiki](https://github.com/Sub6Resources/flutter_html/wiki/Roadmap)
+
 ## Installing:
 
 Add the following to your `pubspec.yaml` file:
