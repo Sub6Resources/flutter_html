@@ -10,6 +10,7 @@ typedef CustomTextStyle = TextStyle Function(
   dom.Node node,
   TextStyle baseStyle,
 );
+typedef CustomTextAlign = TextAlign Function(dom.Element elem);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 typedef OnImageTap = void Function();
@@ -150,8 +151,9 @@ class HtmlRichTextParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
-    this.customTextStyle,
     this.customEdgeInsets,
+    this.customTextStyle,
+    this.customTextAlign,
     this.onImageError,
     this.linkStyle = const TextStyle(
       decoration: TextDecoration.underline,
@@ -169,8 +171,9 @@ class HtmlRichTextParser extends StatelessWidget {
   final onLinkTap;
   final bool renderNewlines;
   final String html;
-  final CustomTextStyle customTextStyle;
   final CustomEdgeInsets customEdgeInsets;
+  final CustomTextStyle customTextStyle;
+  final CustomTextAlign customTextAlign;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
   final ImageProperties imageProperties;
@@ -696,6 +699,9 @@ class HtmlRichTextParser extends StatelessWidget {
         // so if we have a block element, reset the parentElement to null
         parseContext.parentElement = null;
         TextAlign textAlign = TextAlign.left;
+        if (customTextAlign != null) {
+          textAlign = customTextAlign(node) ?? textAlign;
+        }
 
         EdgeInsets _customEdgeInsets;
         if (customEdgeInsets != null) {
