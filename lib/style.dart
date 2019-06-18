@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/block_element.dart';
 
 class Style {
+  Display display;
   TextStyle textStyle;
   bool preserveWhitespace;
   int baselineOffset;
@@ -11,6 +12,7 @@ class Style {
   Block block;
 
   Style({
+    this.display,
     this.textStyle,
     this.preserveWhitespace,
     this.baselineOffset,
@@ -32,6 +34,7 @@ class Style {
     Block mergedBlock = block?.merge(other.block);
 
     return copyWith(
+      display: other.display,
       textStyle: mergedTextStyle,
       preserveWhitespace: other.preserveWhitespace,
       baselineOffset: other.baselineOffset,
@@ -43,6 +46,7 @@ class Style {
   }
 
   Style copyWith({
+    Display display,
     TextStyle textStyle,
     bool preserveWhitespace,
     int baselineOffset,
@@ -52,6 +56,7 @@ class Style {
     Block block,
   }) {
     return Style(
+      display: display ?? this.display,
       textStyle: textStyle ?? this.textStyle,
       preserveWhitespace: preserveWhitespace ?? this.preserveWhitespace,
       baselineOffset: baselineOffset ?? this.baselineOffset,
@@ -61,4 +66,10 @@ class Style {
       block: block ?? this.block,
     );
   }
+}
+
+enum Display {
+  BLOCK,
+  INLINE,
+  INLINE_BLOCK,
 }

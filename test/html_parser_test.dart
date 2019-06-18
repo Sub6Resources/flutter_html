@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_elements.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/style.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -89,5 +90,26 @@ void testNewParser() {
       expect(audioContentElement.showControls, equals(true), reason: "Controls isn't working");
       expect(audioContentElement.src, hasLength(2), reason: "Not enough sources...");
     }
+  });
+
+  test("Test style merging", () {
+    Style style1 = Style(
+      display: Display.BLOCK,
+      textStyle: TextStyle(fontWeight: FontWeight.bold),
+    );
+
+    Style style2 = Style(
+      before: "* ",
+      textDirection: TextDirection.rtl,
+      textStyle: TextStyle(fontStyle: FontStyle.italic),
+    );
+
+    Style finalStyle = style1.merge(style2);
+
+    expect(finalStyle.display, equals(Display.BLOCK));
+    expect(finalStyle.before, equals("* "));
+    expect(finalStyle.textDirection, equals(TextDirection.rtl));
+    expect(finalStyle.textStyle.fontStyle, equals(FontStyle.italic));
+    expect(finalStyle.textStyle.fontWeight, equals(FontWeight.bold));
   });
 }

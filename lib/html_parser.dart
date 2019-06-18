@@ -36,7 +36,7 @@ class HtmlParser extends StatelessWidget {
       cleanedTree,
     );
 
-    return Text.rich(parsedTree);
+    return RichText(text: parsedTree);
   }
 
   /// [parseHTML] converts a string to a DOM document using the dart `html` library.
@@ -91,8 +91,9 @@ class HtmlParser extends StatelessWidget {
 
   static StyledElement applyCSS(StyledElement tree, css.StyleSheet sheet) {
     sheet.topLevels.forEach((treeNode) {
-      if(treeNode is css.RuleSet) {
-        print(treeNode.selectorGroup.selectors.first.simpleSelectorSequences.first.simpleSelector.name);
+      if (treeNode is css.RuleSet) {
+        print(treeNode.selectorGroup.selectors.first.simpleSelectorSequences
+            .first.simpleSelector.name);
       }
     });
 
