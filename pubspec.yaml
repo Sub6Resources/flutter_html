@@ -1,5 +1,5 @@
 name: flutter_html
-description: A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
+description: A Flutter widget for converting then rendering html and css as Flutter widgets.
 version: 1.0.0-pre.1
 author: Matthew Whitaker <sub6resources@gmail.com>
 homepage: https://github.com/Sub6Resources/flutter_html

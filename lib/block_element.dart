@@ -69,16 +69,6 @@ class BlockElement extends StyledElement {
     Style style,
   }) : super(name: name, children: children, style: style);
 
-  @override
-  String toString() {
-    String selfData =
-        "$name [Children: ${children?.length ?? 0}] <Block: ${style.block} Style: $style>";
-    children?.forEach((child) {
-      selfData += ("\n${child.toString()}")
-          .replaceAll(RegExp("^", multiLine: true), "-");
-    });
-    return selfData;
-  }
 }
 
 BlockElement parseBlockElement(dom.Element node, List<StyledElement> children) {

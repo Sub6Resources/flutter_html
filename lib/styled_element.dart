@@ -5,11 +5,15 @@ import 'package:html/dom.dart' as dom;
 /// A [StyledElement] applies a style to all of its children.
 class StyledElement {
   final String name;
+  final String elementId;
+  final List<String> elementClasses;
   List<StyledElement> children;
   Style style;
 
   StyledElement({
     this.name = "[[No name]]",
+    this.elementId,
+    this.elementClasses,
     this.children,
     this.style,
   });
@@ -17,7 +21,7 @@ class StyledElement {
   @override
   String toString() {
     String selfData =
-        "$name [Children: ${children?.length ?? 0}] <Style: $style>";
+        "$name [Children: ${children?.length ?? 0}] [Classes: ${elementClasses.toString()}] [ID: $elementId] <Style: $style>";
     children?.forEach((child) {
       selfData += ("\n${child.toString()}")
           .replaceAll(RegExp("^", multiLine: true), "-");
@@ -30,6 +34,8 @@ StyledElement parseStyledElement(
     dom.Element element, List<StyledElement> children) {
   StyledElement styledElement = StyledElement(
     name: element.localName,
+    elementId: element.id,
+    elementClasses: element.classes.toList(),
     children: children,
   );
 
