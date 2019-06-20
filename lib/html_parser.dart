@@ -763,7 +763,7 @@ class HtmlRichTextParser extends StatelessWidget {
                               : false,
                     ),
                     onTap: () {
-                      if(onImageTap != null) {
+                      if (onImageTap != null) {
                         onImageTap(node.attributes['src']);
                       }
                     },
@@ -803,7 +803,7 @@ class HtmlRichTextParser extends StatelessWidget {
                               : false,
                     ),
                     onTap: () {
-                      if(onImageTap != null) {
+                      if (onImageTap != null) {
                         onImageTap(node.attributes['src']);
                       }
                     },
