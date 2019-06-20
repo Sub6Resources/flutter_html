@@ -14,7 +14,8 @@ abstract class ContentElement extends StyledElement {
   ContentElement({
     String name,
     Style style,
-  }) : super(name: name, children: null, style: style);
+    dom.Element node,
+  }) : super(name: name, children: null, style: style, node: node);
 
   static List<String> parseContentSources(List<dom.Element> elements) {
     return elements
@@ -55,12 +56,13 @@ class ImageContentElement extends ContentElement {
     Style style,
     this.src,
     this.alt,
-  }) : super(name: name, style: style);
+    dom.Element node,
+  }) : super(name: name, style: style, node: node);
 
   @override
   Widget toWidget() {
-    if(src == null) return Text(alt ?? "");
-    if(src.startsWith("data:image") && src.contains("base64,")) {
+    if (src == null) return Text(alt ?? "");
+    if (src.startsWith("data:image") && src.contains("base64,")) {
       return Image.memory(base64.decode(src.split("base64,")[1].trim()));
     } else {
       return Image.network(src);
@@ -86,7 +88,8 @@ class AudioContentElement extends ContentElement {
     this.autoplay,
     this.loop,
     this.muted,
-  }) : super(name: name, style: style);
+    dom.Element node,
+  }) : super(name: name, style: style, node: node);
 
   @override
   Widget toWidget() {
@@ -113,7 +116,8 @@ class VideoContentElement extends ContentElement {
     this.autoplay,
     this.loop,
     this.muted,
-  }) : super(name: name, style: style);
+    dom.Element node,
+  }) : super(name: name, style: style, node: node);
 
   @override
   Widget toWidget() {
@@ -139,6 +143,7 @@ ContentElement parseContentElement(dom.Element element) {
         loop: element.attributes['loop'] != null,
         autoplay: element.attributes['autoplay'] != null,
         muted: element.attributes['muted'] != null,
+        node: element,
       );
     case "br":
       return TextContentElement(
@@ -150,6 +155,7 @@ ContentElement parseContentElement(dom.Element element) {
         name: "img",
         src: element.attributes['src'],
         alt: element.attributes['alt'],
+        node: element,
       );
     case "video":
       return VideoContentElement(
@@ -160,6 +166,7 @@ ContentElement parseContentElement(dom.Element element) {
         loop: element.attributes['loop'] != null,
         autoplay: element.attributes['autoplay'] != null,
         muted: element.attributes['muted'] != null,
+        node: element,
       );
     default:
       return EmptyContentElement(name: element.localName);

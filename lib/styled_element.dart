@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:html/src/query_selector.dart';
 
 /// A [StyledElement] applies a style to all of its children.
 class StyledElement {
@@ -9,6 +10,7 @@ class StyledElement {
   final List<String> elementClasses;
   List<StyledElement> children;
   Style style;
+  final dom.Node _node;
 
   StyledElement({
     this.name = "[[No name]]",
@@ -16,7 +18,10 @@ class StyledElement {
     this.elementClasses,
     this.children,
     this.style,
-  });
+    dom.Element node,
+  }): this._node = node;
+
+  bool matchesSelector(String selector) => _node != null && matches(_node, selector);
 
   @override
   String toString() {
@@ -37,6 +42,7 @@ StyledElement parseStyledElement(
     elementId: element.id,
     elementClasses: element.classes.toList(),
     children: children,
+    node: element,
   );
 
   switch (element.localName) {

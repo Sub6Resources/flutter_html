@@ -53,6 +53,7 @@ class HtmlParser extends StatelessWidget {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: new List<StyledElement>(),
+      node: html.documentElement,
     );
 
     html.nodes.forEach((node) {
@@ -104,13 +105,15 @@ class HtmlParser extends StatelessWidget {
   /// widget onto the [StyledElement] tree.
   StyledElement _applyCustomStyles(StyledElement tree) {
     if (style == null) return tree;
-    if (style.containsKey(tree.name)) {
-      if (tree.style == null) {
-        tree.style = style[tree.name];
-      } else {
-        tree.style = tree.style.merge(style[tree.name]);
+    style.forEach((key, style) {
+      if(tree.matchesSelector(key)) {
+        if (tree.style == null) {
+          tree.style = style;
+        } else {
+          tree.style = tree.style.merge(style);
+        }
       }
-    }
+    });
     tree.children?.forEach(_applyCustomStyles);
 
     return tree;
@@ -137,23 +140,23 @@ class HtmlParser extends StatelessWidget {
     );
 
     //Return the correct InlineSpan based on the element type.
-    if (tree is BlockElement) {
+    if (tree.style?.display == Display.BLOCK) {
       return WidgetSpan(
         child: Container(
           decoration: BoxDecoration(
             border: tree.style?.block?.border,
             color: tree.style?.block?.backgroundColor,
           ),
-          height: tree.style.block.height,
-          width: tree.style.block.width ?? double.infinity,
-          margin: tree.style.block.margin,
+          height: tree.style.block?.height,
+          width: tree.style.block?.width ?? double.infinity,
+          margin: tree.style.block?.margin,
           alignment: tree.style?.block?.alignment,
           child: RichText(
             text: TextSpan(
               style: context.style.merge(tree.style?.textStyle),
               children: tree.children
-                  .map((tree) => parseTree(newContext, tree))
-                  .toList(),
+                  ?.map((tree) => parseTree(newContext, tree))
+                  ?.toList() ?? [],
             ),
           ),
         ),
@@ -218,7 +221,7 @@ class HtmlParser extends StatelessWidget {
 
   /// [processListCharacters] adds list characters to the front of all list items.
   static StyledElement _processListCharacters(StyledElement tree) {
-    if (tree is BlockElement && (tree.name == "ol" || tree.name == "ul")) {
+    if (tree.style?.display == Display.BLOCK && (tree.name == "ol" || tree.name == "ul")) {
       for (int i = 0; i < tree.children?.length; i++) {
         if (tree.children[i].name == "li") {
           tree.children[i].children?.insert(

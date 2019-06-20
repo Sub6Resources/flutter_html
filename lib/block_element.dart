@@ -4,7 +4,7 @@ import 'package:flutter_html/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
-/// A [Block] contains information about a [BlockElement] (width, height, padding, margins)
+/// A [Block] contains information about a [Display.BLOCK] element (width, height, padding, margins)
 class Block {
   EdgeInsets margin;
   double width;
@@ -59,22 +59,11 @@ class Block {
   }
 }
 
-/// A [BlockElement] is a [StyledElement] that wraps before and after the its [children].
-///
-/// A [BlockElement] may have a margin/padding or be a set width/height.
-class BlockElement extends StyledElement {
-  BlockElement({
-    String name,
-    List<StyledElement> children,
-    Style style,
-  }) : super(name: name, children: children, style: style);
-
-}
-
-BlockElement parseBlockElement(dom.Element node, List<StyledElement> children) {
-  BlockElement blockElement = BlockElement(
+StyledElement parseBlockElement(dom.Element node, List<StyledElement> children) {
+  StyledElement blockElement = StyledElement(
     name: node.localName,
     children: children,
+    node: node,
   );
 
   // Add styles to new block element.
@@ -113,6 +102,7 @@ BlockElement parseBlockElement(dom.Element node, List<StyledElement> children) {
   }
 
   blockElement.style.block = parseBlockElementBlock(node);
+  blockElement.style.display = Display.BLOCK;
 
   return blockElement;
 }
