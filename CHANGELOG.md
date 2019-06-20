@@ -1,3 +1,7 @@
+## [0.10.3] - June 20, 2019:
+
+* Add `src` to the `onImageTap` callback ([#93](https://github.com/Sub6Resources/flutter_html/pull/93))
+
 ## [0.10.2] - June 19, 2019:
 
 * Add `customTextAlign` property ([#112](https://github.com/Sub6Resources/flutter_html/pull/112))

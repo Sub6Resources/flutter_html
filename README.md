@@ -12,7 +12,7 @@ A Flutter widget for rendering static html tags as Flutter widgets. (Will render
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^0.10.2
+      flutter_html: ^0.10.3
 
 ## Currently Supported HTML Tags:
 `a`, `abbr`, `acronym`, `address`, `article`, `aside`, `b`, `bdi`, `bdo`, `big`, `blockquote`, `body`, `br`, `caption`, `cite`, `code`, `data`, `dd`, `del`, `dfn`, `div`, `dl`, `dt`, `em`, `figcaption`, `figure`, `footer`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `header`, `hr`, `i`, `img`, `ins`, `kbd`, `li`, `main`, `mark`, `nav`, `noscript`, `ol`, `p`, `pre`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `section`, `small`, `span`, `strike`, `strong`, `sub`, `sup`, `table`, `tbody`, `td`, `template`, `tfoot`, `th`, `thead`, `time`, `tr`, `tt`, `u`, `ul`, `var`
@@ -77,6 +77,10 @@ Check out the official Flutter WebView package here: https://pub.dartlang.org/pa
       onLinkTap: (url) {
         // open url in a webview
       },
+      onImageTap: (src) {
+        // Display the image in large form.
+      },
+      //Must have useRichText set to false for this to work.
       customRender: (node, children) {
         if(node is dom.Element) {
           switch(node.localName) {

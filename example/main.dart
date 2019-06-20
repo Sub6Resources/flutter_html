@@ -129,6 +129,10 @@ class _MyHomePageState extends State<MyHomePage> {
             onLinkTap: (url) {
               print("Opening $url...");
             },
+            onImageTap: (src) {
+              print(src);
+            },
+            //Must have useRichText set to false for this to work
             customRender: (node, children) {
               if (node is dom.Element) {
                 switch (node.localName) {
