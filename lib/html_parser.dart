@@ -10,6 +10,7 @@ typedef CustomTextStyle = TextStyle Function(
   dom.Node node,
   TextStyle baseStyle,
 );
+typedef CustomTextAlign = TextAlign Function(dom.Element elem);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 typedef OnImageTap = void Function(String source);
@@ -142,8 +143,9 @@ class HtmlRichTextParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
-    this.customTextStyle,
     this.customEdgeInsets,
+    this.customTextStyle,
+    this.customTextAlign,
     this.onImageError,
     this.linkStyle = const TextStyle(
       decoration: TextDecoration.underline,
@@ -161,8 +163,9 @@ class HtmlRichTextParser extends StatelessWidget {
   final onLinkTap;
   final bool renderNewlines;
   final String html;
-  final CustomTextStyle customTextStyle;
   final CustomEdgeInsets customEdgeInsets;
+  final CustomTextStyle customTextStyle;
+  final CustomTextAlign customTextAlign;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
   final ImageProperties imageProperties;
@@ -305,8 +308,10 @@ class HtmlRichTextParser extends StatelessWidget {
     widgetList.forEach((dynamic w) {
       if (w is BlockText) {
         if (w.child.text == null) return;
-        if ((w.child.text.text == null || w.child.text.text.isEmpty) &&
-            (w.child.text.children == null || w.child.text.children.isEmpty)) return;
+        TextSpan childTextSpan = w.child.text;
+        if ((childTextSpan.text == null || childTextSpan.text.isEmpty) &&
+            (childTextSpan.children == null || childTextSpan.children.isEmpty))
+          return;
       } else if (w is LinkBlock) {
         if (w.children.isEmpty) return;
       } else if (w is LinkTextSpan) {
@@ -661,6 +666,9 @@ class HtmlRichTextParser extends StatelessWidget {
         // so if we have a block element, reset the parentElement to null
         parseContext.parentElement = null;
         TextAlign textAlign = TextAlign.left;
+        if (customTextAlign != null) {
+          textAlign = customTextAlign(node) ?? textAlign;
+        }
 
         EdgeInsets _customEdgeInsets;
         if (customEdgeInsets != null) {
@@ -690,11 +698,11 @@ class HtmlRichTextParser extends StatelessWidget {
                       base64.decode(node.attributes['src'].split("base64,")[1].trim()),
                       width: imageProperties?.width ??
                           ((node.attributes['width'] != null)
-                              ? double.parse(node.attributes['width'])
+                              ? double.tryParse(node.attributes['width'])
                               : null),
                       height: imageProperties?.height ??
                           ((node.attributes['height'] != null)
-                              ? double.parse(node.attributes['height'])
+                              ? double.tryParse(node.attributes['height'])
                               : null),
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection: imageProperties?.matchTextDirection ?? false,

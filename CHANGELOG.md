@@ -1,6 +1,12 @@
+## [0.10.2] - June 19, 2019:
+
+* Add `customTextAlign` property ([#112](https://github.com/Sub6Resources/flutter_html/pull/112))
+* Use `tryParse` instead of `parse` for image width and height attributes so that `%` values are ignored safely. Fixes [#98](https://github.com/Sub6Resources/flutter_html/issues/98)
+
 ## [0.10.1] - May 20, 2019:
 
 * Image properties and onImageTap for the richTextParser, plus some fixes ([#90](https://github.com/Sub6Resources/flutter_html/pull/90))
+* Hotfix 1 (June 6, 2019): Fixes [#100](https://github.com/Sub6Resources/flutter_html/issues/100)
 
 ## [0.10.0] - May 18, 2019:
 

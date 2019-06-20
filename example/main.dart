@@ -137,6 +137,14 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               }
             },
+            customTextAlign: (dom.Node node) {
+              if (node is dom.Element) {
+                switch (node.localName) {
+                  case "p":
+                    return TextAlign.justify;
+                }
+              }
+            },
           ),
         ),
       ),
