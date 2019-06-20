@@ -733,11 +733,11 @@ class HtmlRichTextParser extends StatelessWidget {
                           node.attributes['src'].split("base64,")[1].trim()),
                       width: imageProperties?.width ??
                           ((node.attributes['width'] != null)
-                              ? double.parse(node.attributes['width'])
+                              ? double.tryParse(node.attributes['width'])
                               : null),
                       height: imageProperties?.height ??
                           ((node.attributes['height'] != null)
-                              ? double.parse(node.attributes['height'])
+                              ? double.tryParse(node.attributes['height'])
                               : null),
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
