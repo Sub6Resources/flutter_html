@@ -16,6 +16,7 @@ class Html extends StatelessWidget {
     this.customRender,
     this.customEdgeInsets,
     this.customTextStyle,
+    this.customTextAlign,
     this.blockSpacing = 14.0,
     this.useRichText = true,
     this.onImageError,
@@ -49,6 +50,7 @@ class Html extends StatelessWidget {
   final CustomRender customRender;
   final CustomEdgeInsets customEdgeInsets;
   final CustomTextStyle customTextStyle;
+  final CustomTextAlign customTextAlign;
 
   @override
   Widget build(BuildContext context) {
@@ -67,6 +69,7 @@ class Html extends StatelessWidget {
                 renderNewlines: renderNewlines,
                 customEdgeInsets: customEdgeInsets,
                 customTextStyle: customTextStyle,
+                customTextAlign: customTextAlign,
                 html: data,
                 onImageError: onImageError,
                 linkStyle: linkStyle,
