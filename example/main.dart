@@ -140,6 +140,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Column(children: children);
                 }
               }
+              return null;
             },
             customTextAlign: (dom.Node node) {
               if (node is dom.Element) {
@@ -148,6 +149,16 @@ class _MyHomePageState extends State<MyHomePage> {
                     return TextAlign.justify;
                 }
               }
+              return null;
+            },
+            customTextStyle: (dom.Node node, TextStyle baseStyle) {
+              if (node is dom.Element) {
+                switch (node.localName) {
+                  case "p":
+                    return baseStyle.merge(TextStyle(height: 2, fontSize: 20));
+                }
+              }
+              return baseStyle;
             },
           ),
         ),

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/rich_text_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_html/flutter_html.dart';
 

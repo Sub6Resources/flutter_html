@@ -1,3 +1,7 @@
+## [0.10.4] - June 22, 2019:
+
+* Add support for `customTextStyle` to block and specialty HTML elements.
+
 ## [0.10.3] - June 20, 2019:
 
 * Add `src` to the `onImageTap` callback ([#93](https://github.com/Sub6Resources/flutter_html/pull/93))
