@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
+//TODO(Sub6Resources) don't use the internal code of the html package as it may change unexpectedly.
 import 'package:html/src/query_selector.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -19,9 +20,10 @@ class StyledElement {
     this.children,
     this.style,
     dom.Element node,
-  }): this._node = node;
+  }) : this._node = node;
 
-  bool matchesSelector(String selector) => _node != null && matches(_node, selector);
+  bool matchesSelector(String selector) =>
+      _node != null && matches(_node, selector);
 
   @override
   String toString() {
@@ -49,10 +51,8 @@ StyledElement parseStyledElement(
     case "abbr":
     case "acronym":
       styledElement.style = Style(
-        textStyle: TextStyle(
-          decoration: TextDecoration.underline,
-          decorationStyle: TextDecorationStyle.dotted,
-        ),
+        textDecoration: TextDecoration.underline,
+        textDecorationStyle: TextDecorationStyle.dotted,
       );
       break;
     case "address":
@@ -60,7 +60,7 @@ StyledElement parseStyledElement(
     bold:
     case "b":
       styledElement.style = Style(
-        textStyle: TextStyle(fontWeight: FontWeight.bold),
+        fontWeight: FontWeight.bold,
       );
       break;
     case "bdo":
@@ -74,7 +74,7 @@ StyledElement parseStyledElement(
       break;
     case "big":
       styledElement.style = Style(
-        textStyle: TextStyle(fontSize: 20.0),
+        fontSize: 20.0,
       );
       break;
     case "cite":
@@ -82,15 +82,13 @@ StyledElement parseStyledElement(
     monospace:
     case "code":
       styledElement.style = Style(
-        textStyle: TextStyle(fontFamily: 'Monospace'),
+        fontFamily: 'Monospace',
       );
       break;
     strikeThrough:
     case "del":
       styledElement.style = Style(
-        textStyle: TextStyle(
-          decoration: TextDecoration.lineThrough,
-        ),
+        textDecoration: TextDecoration.lineThrough,
       );
       break;
     case "dfn":
@@ -100,7 +98,7 @@ StyledElement parseStyledElement(
     italics:
     case "i":
       styledElement.style = Style(
-        textStyle: TextStyle(fontStyle: FontStyle.italic),
+        fontStyle: FontStyle.italic,
       );
       break;
     case "ins":
@@ -109,10 +107,8 @@ StyledElement parseStyledElement(
       continue monospace;
     case "mark":
       styledElement.style = Style(
-        textStyle: TextStyle(
-          color: Colors.black,
-          backgroundColor: Colors.yellow,
-        ),
+        color: Colors.black,
+        backgroundColor: Colors.yellow,
       );
       break;
     case "q":
@@ -127,7 +123,7 @@ StyledElement parseStyledElement(
       continue monospace;
     case "small":
       styledElement.style = Style(
-        textStyle: TextStyle(fontSize: 10.0),
+        fontSize: 10.0,
       );
       break;
     case "strike":
@@ -136,13 +132,13 @@ StyledElement parseStyledElement(
       continue bold;
     case "sub":
       styledElement.style = Style(
-        textStyle: TextStyle(fontSize: 10.0),
+        fontSize: 10.0,
         baselineOffset: -1,
       );
       break;
     case "sup":
       styledElement.style = Style(
-        textStyle: TextStyle(fontSize: 10.0),
+        fontSize: 10.0,
         baselineOffset: 1,
       );
       break;
@@ -151,7 +147,7 @@ StyledElement parseStyledElement(
     underline:
     case "u":
       styledElement.style = Style(
-        textStyle: TextStyle(decoration: TextDecoration.underline),
+        textDecoration: TextDecoration.underline,
       );
       break;
     case "var":

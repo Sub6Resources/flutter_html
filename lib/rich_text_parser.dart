@@ -917,39 +917,11 @@ class HtmlRichTextParser extends StatelessWidget {
     }
   }
 
-  Paint _getPaint(Color color) {
-    Paint paint = new Paint();
-    paint.color = color;
-    return paint;
-  }
-
   String condenseHtmlWhitespace(String stringToTrim) {
     stringToTrim = stringToTrim.replaceAll("\n", " ");
     while (stringToTrim.indexOf("  ") != -1) {
       stringToTrim = stringToTrim.replaceAll("  ", " ");
     }
     return stringToTrim;
-  }
-
-  bool _isNotFirstBreakTag(dom.Node node) {
-    int index = node.parentNode.nodes.indexOf(node);
-    if (index == 0) {
-      if (node.parentNode == null) {
-        return false;
-      }
-      return _isNotFirstBreakTag(node.parentNode);
-    } else if (node.parentNode.nodes[index - 1] is dom.Element) {
-      if ((node.parentNode.nodes[index - 1] as dom.Element).localName == "br") {
-        return true;
-      }
-      return false;
-    } else if (node.parentNode.nodes[index - 1] is dom.Text) {
-      if ((node.parentNode.nodes[index - 1] as dom.Text).text.trim() == "") {
-        return _isNotFirstBreakTag(node.parentNode.nodes[index - 1]);
-      } else {
-        return false;
-      }
-    }
-    return false;
   }
 }

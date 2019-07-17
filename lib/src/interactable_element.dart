@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/html_elements.dart';
+import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -31,10 +31,8 @@ InteractableElement parseInteractableElement(
     case "a":
       interactableElement.href = element.attributes['href'];
       interactableElement.style = Style(
-        textStyle: TextStyle(
           color: Colors.blue,
-          decoration: TextDecoration.underline,
-        ),
+          textDecoration: TextDecoration.underline,
       );
       break;
   }

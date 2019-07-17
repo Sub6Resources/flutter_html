@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/block_element.dart';
+import 'package:flutter_html/src/block_element.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
-import 'package:flutter_html/styled_element.dart';
-import 'package:html/dom.dart' as dom;
 
 void main() => runApp(new MyApp());
 
@@ -125,15 +123,13 @@ class _MyHomePageState extends State<MyHomePage> {
             //Optional parameters:
             style: {
               "ul": Style(
-                textStyle: TextStyle(
-                  fontFamily: "monospace",
-                  fontSize: 24,
-                ),
+                fontFamily: "monospace",
+                fontSize: 24,
+                margin: EdgeInsets.zero,
                 block: Block(
-                  backgroundColor: Colors.blue,
                   border: Border.all(width: 2),
-                  margin: EdgeInsets.zero,
                 ),
+                backgroundColor: Colors.blue,
               ),
             },
             onLinkTap: (url) {

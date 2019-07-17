@@ -2,16 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
-import 'package:flutter_html/html_elements.dart';
+import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
-/// A [ContentElement] is a type of [StyledElement] that renders none of its [children].
+/// A [ReplacedElement] is a type of [StyledElement] that renders none of its [children].
 ///
 /// A [ContentElement] may use its children nodes to determine relevant information
 /// (e.g. <video>'s <source> tags), but the children nodes will not be saved as [children].
-abstract class ContentElement extends StyledElement {
-  ContentElement({
+abstract class ReplacedElement extends StyledElement {
+  ReplacedElement({
     String name,
     Style style,
     dom.Element node,
@@ -29,7 +29,7 @@ abstract class ContentElement extends StyledElement {
 }
 
 /// [TextContentElement] is a [ContentElement] with plaintext as its content.
-class TextContentElement extends ContentElement {
+class TextContentElement extends ReplacedElement {
   String text;
 
   TextContentElement({
@@ -46,8 +46,9 @@ class TextContentElement extends ContentElement {
   Widget toWidget() => null;
 }
 
-/// [ImageContentElement] is a [ContentElement] with an image as its content.
-class ImageContentElement extends ContentElement {
+/// [ImageContentElement] is a [ReplacedElement] with an image as its content.
+/// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
+class ImageContentElement extends ReplacedElement {
   final String src;
   final String alt;
 
@@ -73,7 +74,7 @@ class ImageContentElement extends ContentElement {
 }
 
 /// [AudioContentElement] is a [ContentElement] with an audio file as its content.
-class AudioContentElement extends ContentElement {
+class AudioContentElement extends ReplacedElement {
   final List<String> src;
   final bool showControls;
   final bool autoplay;
@@ -99,7 +100,7 @@ class AudioContentElement extends ContentElement {
 }
 
 /// [VideoContentElement] is a [ContentElement] with a video file as its content.
-class VideoContentElement extends ContentElement {
+class VideoContentElement extends ReplacedElement {
   final List<String> src;
   final String poster;
   final bool showControls;
@@ -126,19 +127,19 @@ class VideoContentElement extends ContentElement {
   }
 }
 
-class EmptyContentElement extends ContentElement {
+class EmptyContentElement extends ReplacedElement {
   EmptyContentElement({String name = "empty"}) : super(name: name);
 
   @override
   Widget toWidget() => null;
 }
 
-ContentElement parseContentElement(dom.Element element) {
+ReplacedElement parseReplacedElement(dom.Element element) {
   switch (element.localName) {
     case "audio":
       return AudioContentElement(
         name: "audio",
-        src: ContentElement.parseContentSources(element.children),
+        src: ReplacedElement.parseContentSources(element.children),
         showControls: element.attributes['controls'] != null,
         loop: element.attributes['loop'] != null,
         autoplay: element.attributes['autoplay'] != null,
@@ -160,7 +161,7 @@ ContentElement parseContentElement(dom.Element element) {
     case "video":
       return VideoContentElement(
         name: "video",
-        src: ContentElement.parseContentSources(element.children),
+        src: ReplacedElement.parseContentSources(element.children),
         poster: element.attributes['poster'],
         showControls: element.attributes['controls'] != null,
         loop: element.attributes['loop'] != null,

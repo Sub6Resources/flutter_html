@@ -1,7 +1,7 @@
 export 'styled_element.dart';
 export 'interactable_element.dart';
-export 'block_element.dart';
-export 'content_element.dart';
+export 'package:flutter_html/src/block_element.dart';
+export 'replaced_element.dart';
 
 const STYLED_ELEMENTS = [
   "abbr",
@@ -82,18 +82,18 @@ const BLOCK_ELEMENTS = [
   "ul",
 ];
 
-const CONTENT_ELEMENTS = [
+const REPLACED_ELEMENTS = [
   "audio",
   "br",
   "head",
-  "img",
+  "img", //TODO display inline
   "template",
   "video",
 ];
 
 enum ElementType {
-  CONTENT,
-  STYLED,
+  REPLACED,
+  INLINE,
   BLOCK,
   INTERACTABLE,
 }

@@ -62,14 +62,14 @@ class Html extends StatelessWidget {
   Widget build(BuildContext context) {
     final double width = MediaQuery.of(context).size.width;
 
-    if(useRichText) {
+    if (useRichText) {
       return Container(
-//      padding: padding,
+        padding: padding,
         color: backgroundColor,
         width: width,
         child: DefaultTextStyle.merge(
           style: defaultTextStyle ?? Theme.of(context).textTheme.body1,
-          child:  HtmlRichTextParser(
+          child: HtmlRichTextParser(
             width: width,
             onLinkTap: onLinkTap,
             renderNewlines: renderNewlines,
@@ -87,15 +87,13 @@ class Html extends StatelessWidget {
     }
 
     return Container(
-      color: backgroundColor,
-      width: width,
-      child: HtmlParser(
-        htmlData: data,
-        cssData: css,
-        onLinkTap: onLinkTap,
-        style: style,
-      )
-    );
-
+        color: backgroundColor,
+        width: width,
+        child: HtmlParser(
+          htmlData: data,
+          cssData: css,
+          onLinkTap: onLinkTap,
+          style: style,
+        ));
   }
 }

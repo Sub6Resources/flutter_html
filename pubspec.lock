@@ -158,4 +158,4 @@ packages:
     version: "2.0.8"
 sdks:
   dart: ">=2.2.2 <3.0.0"
-  flutter: ">=0.7.3-pre.38 <2.0.0"
+  flutter: ">=0.7.4 <2.0.0"
