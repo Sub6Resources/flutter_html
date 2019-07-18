@@ -143,6 +143,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.onLinkTap,
     this.renderNewlines = false,
     this.fillWidth = true,
+    this.horizontalAlignment = CrossAxisAlignment.center,
     this.html,
     this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,
@@ -155,6 +156,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final onLinkTap;
   final bool renderNewlines;
   final bool fillWidth;
+  final CrossAxisAlignment horizontalAlignment;
   final String html;
   final TextStyle linkStyle;
 
@@ -286,7 +288,7 @@ class HtmlRichTextParser extends StatelessWidget {
     });
 
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: horizontalAlignment,
       children: children,
     );
   }
