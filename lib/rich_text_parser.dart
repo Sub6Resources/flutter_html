@@ -396,9 +396,13 @@ class HtmlRichTextParser extends StatelessWidget {
 
       // create a span by default
       TextSpan span = TextSpan(
-          text: finalText,
-          children: <TextSpan>[],
-          style: parseContext.childStyle);
+        // Workaround for bug where fontFamily styling is not applied to child
+        // spans if the root span is given a style.
+        // https://github.com/flutter/flutter/issues/35992
+        children: <TextSpan>[
+          TextSpan(text: finalText, style: parseContext.childStyle)
+        ],
+      );
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
 
@@ -449,8 +453,8 @@ class HtmlRichTextParser extends StatelessWidget {
       } else if (parseContext.parentElement is LinkTextSpan) {
         // add this node to the parent as another LinkTextSpan
         parseContext.parentElement.children.add(LinkTextSpan(
-          style:
-              parseContext.parentElement.style.merge(parseContext.childStyle),
+          style: parseContext.parentElement.children.first.style
+              .merge(parseContext.childStyle),
           url: parseContext.parentElement.url,
           text: finalText,
           onLinkTap: onLinkTap,
@@ -589,10 +593,12 @@ class HtmlRichTextParser extends StatelessWidget {
             } else {
               TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
               LinkTextSpan span = LinkTextSpan(
-                style: _linkStyle,
                 url: url,
                 onLinkTap: onLinkTap,
-                children: <TextSpan>[],
+                // Workaround for bug where fontFamily styling is not applied to child
+                // spans if the root span is given a style.
+                // https://github.com/flutter/flutter/issues/35992
+                children: <TextSpan>[TextSpan(style: _linkStyle)],
               );
               if (parseContext.parentElement is TextSpan) {
                 nextContext.parentElement.children.add(span);
@@ -827,9 +833,16 @@ class HtmlRichTextParser extends StatelessWidget {
                       child: RichText(
                           textAlign: TextAlign.center,
                           text: TextSpan(
-                            text: node.attributes['alt'],
-                            style: nextContext.childStyle,
-                            children: <TextSpan>[],
+                            // Workaround for bug where fontFamily styling is
+                            // not applied to child spans if the root span is
+                            // given a style.
+                            // https://github.com/flutter/flutter/issues/35992
+                            children: <TextSpan>[
+                              TextSpan(
+                                text: node.attributes['alt'],
+                                style: nextContext.childStyle,
+                              )
+                            ],
                           ))));
                 }
               }
@@ -848,9 +861,12 @@ class HtmlRichTextParser extends StatelessWidget {
                   left: parseContext.indentLevel * indentSize, top: 3.0),
               child: RichText(
                 text: TextSpan(
-                  text: '',
-                  style: nextContext.childStyle,
-                  children: <TextSpan>[],
+                  // Workaround for bug where fontFamily styling is not applied
+                  // to child spans if the root span is given a style.
+                  // https://github.com/flutter/flutter/issues/35992
+                  children: <TextSpan>[
+                    TextSpan(text: '', style: nextContext.childStyle)
+                  ],
                 ),
               ),
               leadingChar: '$leadingChar  ',
@@ -926,9 +942,12 @@ class HtmlRichTextParser extends StatelessWidget {
               child: RichText(
                 textAlign: textAlign,
                 text: TextSpan(
-                  text: '',
-                  style: nextContext.childStyle,
-                  children: <TextSpan>[],
+                  // Workaround for bug where fontFamily styling is not applied
+                  // to child spans if the root span is given a style.
+                  // https://github.com/flutter/flutter/issues/35992
+                  children: <TextSpan>[
+                    TextSpan(text: '', style: nextContext.childStyle)
+                  ],
                 ),
               ),
             );
