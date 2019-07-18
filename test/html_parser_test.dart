@@ -218,7 +218,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `aside` tag renders", (tester) async {
@@ -249,7 +249,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `b` tag renders", (tester) async {
@@ -615,7 +615,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `dfn` tag renders", (tester) async {
@@ -645,7 +645,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `div` tag renders", (tester) async {
@@ -675,7 +675,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `dl` tag renders", (tester) async {
@@ -705,7 +705,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `dt` tag renders", (tester) async {
@@ -735,7 +735,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `em` tag renders", (tester) async {
@@ -795,7 +795,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `figure` tag renders", (tester) async {
@@ -825,7 +825,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(RichText), findsOneWidget);
+    expect(find.byType(RichText), findsNWidgets(2));
   });
 
   testWidgets("Check that `footer` tag renders", (tester) async {
@@ -885,7 +885,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `h2` tag renders", (tester) async {
@@ -915,7 +915,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `h3` tag renders", (tester) async {
@@ -945,7 +945,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `h4` tag renders", (tester) async {
@@ -975,7 +975,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `h5` tag renders", (tester) async {
@@ -1005,7 +1005,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `h6` tag renders", (tester) async {
@@ -1035,7 +1035,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `header` tag renders", (tester) async {
@@ -1065,7 +1065,7 @@ void main() {
       ),
     );
 
-    expect(find.byType(BlockText), findsOneWidget);
+    expect(find.byType(BlockText), findsNWidgets(2));
   });
 
   testWidgets("Check that `hr` tag renders", (tester) async {
