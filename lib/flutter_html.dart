@@ -12,6 +12,7 @@ class Html extends StatelessWidget {
     this.defaultTextStyle,
     this.onLinkTap,
     this.fillWidth = true,
+    this.horizontalAlignment = CrossAxisAlignment.center,
     this.renderNewlines = false,
     this.customRender,
     this.blockSpacing = 14.0,
@@ -28,6 +29,7 @@ class Html extends StatelessWidget {
   final TextStyle defaultTextStyle;
   final OnLinkTap onLinkTap;
   final bool fillWidth;
+  final CrossAxisAlignment horizontalAlignment;
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
@@ -53,6 +55,7 @@ class Html extends StatelessWidget {
                 renderNewlines: renderNewlines,
                 html: data,
                 linkStyle: linkStyle,
+                horizontalAlignment: horizontalAlignment
               )
             : HtmlOldParser(
                 width: width,
