@@ -83,14 +83,12 @@ class BlockText extends StatelessWidget {
   final RichText child;
   final EdgeInsets padding;
   final EdgeInsets margin;
-  final String leadingChar;
   final Decoration decoration;
 
   BlockText({
     @required this.child,
     this.padding,
     this.margin,
-    this.leadingChar = '',
     this.decoration,
   });
 
@@ -101,13 +99,7 @@ class BlockText extends StatelessWidget {
       padding: this.padding,
       margin: this.margin,
       decoration: this.decoration,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          leadingChar.isNotEmpty ? Text(leadingChar) : Container(),
-          Expanded(child: child),
-        ],
-      ),
+      child: child,
     );
   }
 }
@@ -848,12 +840,13 @@ class HtmlRichTextParser extends StatelessWidget {
                   left: parseContext.indentLevel * indentSize, top: 3.0),
               child: RichText(
                 text: TextSpan(
-                  text: '',
-                  style: nextContext.childStyle,
-                  children: <TextSpan>[],
+                  text: '$leadingChar  ',
+                  style: DefaultTextStyle.of(buildContext).style,
+                  children: <TextSpan>[
+                    TextSpan(text: '', style: nextContext.childStyle)
+                  ],
                 ),
               ),
-              leadingChar: '$leadingChar  ',
             );
             parseContext.rootWidgetList.add(blockText);
             nextContext.parentElement = blockText.child.text;
