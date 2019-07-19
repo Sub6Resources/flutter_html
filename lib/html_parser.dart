@@ -1,9 +1,7 @@
 import 'dart:convert';
-import 'package:flutter_html/rich_text_parser.dart';
 
-import 'image_properties.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/rich_text_parser.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
