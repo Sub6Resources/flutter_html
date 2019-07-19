@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/rich_text_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_html/flutter_html.dart';
 
@@ -11,6 +11,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: "",
+            useRichText: false,
           ),
         ),
       ),
@@ -39,6 +40,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: "<a href='https://github.com'>Test link</a>",
+            useRichText: false,
           ),
         ),
       ),
@@ -73,6 +75,7 @@ void main() {
             onLinkTap: (url) {
               urlTapped = url;
             },
+            useRichText: false,
           ),
         ),
       ),
@@ -111,6 +114,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: "<abbr>Abbreviation</abbr>",
+            useRichText: false,
           ),
         ),
       ),
@@ -138,6 +142,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: "<acronym>Acronym</acronym>",
+            useRichText: false,
           ),
         ),
       ),
@@ -165,6 +170,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: "<address>Address</address>",
+            useRichText: false
           ),
         ),
       ),
@@ -173,18 +179,18 @@ void main() {
     expect(find.text("Address"), findsOneWidget);
 
     //Not supported in `RichText` parser.
-//    await tester.pumpWidget(
-//      MaterialApp(
-//        home: Scaffold(
-//          body: Html(
-//            data: "<address>Address</address>",
-//            useRichText: true,
-//          ),
-//        ),
-//      ),
-//    );
-//
-//    expect(find.byType(RichText), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: "<address>Address</address>",
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
   });
 
   testWidgets("Check that `article` tag renders", (tester) async {
@@ -193,6 +199,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: "<article>Article</article>",
+            useRichText: false,
           ),
         ),
       ),
@@ -222,6 +229,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -230,18 +238,18 @@ void main() {
     expect(find.text("Aside"), findsOneWidget);
 
     //Not supported in `RichText` parser.
-//    await tester.pumpWidget(
-//      MaterialApp(
-//        home: Scaffold(
-//          body: Html(
-//            data: html,
-//            useRichText: true,
-//          ),
-//        ),
-//      ),
-//    );
-//
-//    expect(find.byType(RichText), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
   });
 
   testWidgets("Check that `b` tag renders", (tester) async {
@@ -252,6 +260,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -281,6 +290,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -289,18 +299,18 @@ void main() {
     expect(find.text("Bdi"), findsOneWidget);
 
     //Not supported in `RichText` parser.
-//    await tester.pumpWidget(
-//      MaterialApp(
-//        home: Scaffold(
-//          body: Html(
-//            data: html,
-//            useRichText: true,
-//          ),
-//        ),
-//      ),
-//    );
-//
-//    expect(find.byType(RichText), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
   });
 
   testWidgets("Check that `bdo` tag renders", (tester) async {
@@ -311,6 +321,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -341,6 +352,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -349,18 +361,18 @@ void main() {
     expect(find.text("Big"), findsOneWidget);
 
     //Not supported in `RichText` parser.
-//    await tester.pumpWidget(
-//      MaterialApp(
-//        home: Scaffold(
-//          body: Html(
-//            data: html,
-//            useRichText: true,
-//          ),
-//        ),
-//      ),
-//    );
-//
-//    expect(find.byType(RichText), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
   });
 
   testWidgets("Check that `blockquote` tag renders", (tester) async {
@@ -371,6 +383,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -400,6 +413,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -429,6 +443,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -459,6 +474,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -488,6 +504,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -496,18 +513,18 @@ void main() {
     expect(find.text("Cite"), findsOneWidget);
 
     //Not supported in `RichText` parser.
-//    await tester.pumpWidget(
-//      MaterialApp(
-//        home: Scaffold(
-//          body: Html(
-//            data: html,
-//            useRichText: true,
-//          ),
-//        ),
-//      ),
-//    );
-//
-//    expect(find.byType(RichText), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
   });
 
   testWidgets("Check that `code` tag renders", (tester) async {
@@ -518,6 +535,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -547,6 +565,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -555,18 +574,18 @@ void main() {
     expect(find.text("Data"), findsOneWidget);
 
     //Not supported in `RichText` parser.
-//    await tester.pumpWidget(
-//      MaterialApp(
-//        home: Scaffold(
-//          body: Html(
-//            data: html,
-//            useRichText: true,
-//          ),
-//        ),
-//      ),
-//    );
-//
-//    expect(find.byType(RichText), findsOneWidget);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
   });
 
   testWidgets("Check that `dd` tag renders", (tester) async {
@@ -577,6 +596,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -598,7 +618,7 @@ void main() {
     expect(find.byType(RichText), findsOneWidget);
   });
 
-  testWidgets("Check that `del` tag renders", (tester) async {
+  testWidgets("Check that `dfn` tag renders", (tester) async {
     String html = "<dfn>Dfn</dfn>";
 
     await tester.pumpWidget(
@@ -606,6 +626,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -635,6 +656,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -664,6 +686,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -693,6 +716,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -722,6 +746,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -751,6 +776,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -780,6 +806,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -809,6 +836,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -838,6 +866,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -867,6 +896,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -896,6 +926,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -925,6 +956,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -954,6 +986,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -983,6 +1016,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -1012,6 +1046,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -1041,6 +1076,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),
@@ -1070,6 +1106,7 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
+            useRichText: false,
           ),
         ),
       ),

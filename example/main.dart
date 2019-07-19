@@ -129,6 +129,10 @@ class _MyHomePageState extends State<MyHomePage> {
             onLinkTap: (url) {
               print("Opening $url...");
             },
+            onImageTap: (src) {
+              print(src);
+            },
+            //Must have useRichText set to false for this to work
             customRender: (node, children) {
               if (node is dom.Element) {
                 switch (node.localName) {
@@ -136,6 +140,25 @@ class _MyHomePageState extends State<MyHomePage> {
                     return Column(children: children);
                 }
               }
+              return null;
+            },
+            customTextAlign: (dom.Node node) {
+              if (node is dom.Element) {
+                switch (node.localName) {
+                  case "p":
+                    return TextAlign.justify;
+                }
+              }
+              return null;
+            },
+            customTextStyle: (dom.Node node, TextStyle baseStyle) {
+              if (node is dom.Element) {
+                switch (node.localName) {
+                  case "p":
+                    return baseStyle.merge(TextStyle(height: 2, fontSize: 20));
+                }
+              }
+              return baseStyle;
             },
           ),
         ),
