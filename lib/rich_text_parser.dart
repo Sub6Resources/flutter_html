@@ -84,9 +84,11 @@ class BlockText extends StatelessWidget {
   final EdgeInsets padding;
   final EdgeInsets margin;
   final Decoration decoration;
+  final bool shrinkToFit;
 
   BlockText({
     @required this.child,
+    @required this.shrinkToFit,
     this.padding,
     this.margin,
     this.decoration,
@@ -95,7 +97,7 @@ class BlockText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: shrinkToFit ? null : double.infinity,
       padding: this.padding,
       margin: this.margin,
       decoration: this.decoration,
@@ -147,7 +149,7 @@ class ParseContext {
 
 class HtmlRichTextParser extends StatelessWidget {
   HtmlRichTextParser({
-    @required this.width,
+    this.shrinkToFit,
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
@@ -167,7 +169,7 @@ class HtmlRichTextParser extends StatelessWidget {
 
   final double indentSize = 10.0;
 
-  final double width;
+  final bool shrinkToFit;
   final onLinkTap;
   final bool renderNewlines;
   final String html;
@@ -417,6 +419,7 @@ class HtmlRichTextParser extends StatelessWidget {
             ));
           }
           BlockText blockText = BlockText(
+            shrinkToFit: shrinkToFit,
             margin: EdgeInsets.only(
                 top: 8.0,
                 bottom: 8.0,
@@ -430,8 +433,10 @@ class HtmlRichTextParser extends StatelessWidget {
           );
           parseContext.rootWidgetList.add(blockText);
         } else {
-          parseContext.rootWidgetList
-              .add(BlockText(child: RichText(text: span)));
+          parseContext.rootWidgetList.add(BlockText(
+            child: RichText(text: span),
+            shrinkToFit: shrinkToFit,
+          ));
         }
 
         // this allows future items to be added as children of this item
@@ -591,6 +596,7 @@ class HtmlRichTextParser extends StatelessWidget {
               } else {
                 // start a new block element for this link and its text
                 BlockText blockElement = BlockText(
+                  shrinkToFit: shrinkToFit,
                   margin: EdgeInsets.only(
                       left: parseContext.indentLevel * indentSize, top: 10.0),
                   child: RichText(text: span),
@@ -813,6 +819,7 @@ class HtmlRichTextParser extends StatelessWidget {
                 }
                 if (node.attributes['alt'] != null) {
                   parseContext.rootWidgetList.add(BlockText(
+                      shrinkToFit: shrinkToFit,
                       margin:
                           EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
                       padding: EdgeInsets.all(0.0),
@@ -836,6 +843,7 @@ class HtmlRichTextParser extends StatelessWidget {
               leadingChar = parseContext.listCount.toString() + '.';
             }
             BlockText blockText = BlockText(
+              shrinkToFit: shrinkToFit,
               margin: EdgeInsets.only(
                   left: parseContext.indentLevel * indentSize, top: 3.0),
               child: RichText(
@@ -907,6 +915,7 @@ class HtmlRichTextParser extends StatelessWidget {
               ));
             }
             BlockText blockText = BlockText(
+              shrinkToFit: shrinkToFit,
               margin: node.localName != 'body'
                   ? _customEdgeInsets ??
                       EdgeInsets.only(
