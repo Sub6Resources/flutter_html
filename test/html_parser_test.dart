@@ -828,8 +828,100 @@ void main() {
     expect(find.byType(RichText), findsOneWidget);
   });
 
+  testWidgets("Check that `font` tag renders", (tester) async {
+    String html = "<font>font</font>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: false,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.text("font"), findsOneWidget);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
+
+    // Check that font hex color attributes don't cause an exception
+    html = "<font color='#aabbcc'>font with hex color</font>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
+
+    html = "<font color='#abc'>font with short hex color</font>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
+
+    html = "<font color='#axbycz'>font with invalid hex color</font>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
+
+    // Check that font rgb color attributes don't cause an exception
+    html = "<font color='rgb(64,127,250'>font</font>";
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: Html(
+            data: html,
+            useRichText: true,
+          ),
+        ),
+      ),
+    );
+
+    expect(find.byType(RichText), findsOneWidget);
+  });
+
   testWidgets("Check that `footer` tag renders", (tester) async {
-    String html = "<b>Footer</b>";
+    String html = "<footer>Footer</footer>";
 
     await tester.pumpWidget(
       MaterialApp(

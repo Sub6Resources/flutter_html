@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
@@ -223,6 +224,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "time",
     "span",
     "big",
+    "font",
   ];
 
   // specialty elements require unique handling
@@ -485,6 +487,11 @@ class HtmlRichTextParser extends StatelessWidget {
           case "strong":
             childStyle =
                 childStyle.merge(TextStyle(fontWeight: FontWeight.bold));
+            break;
+          case "font":
+            childStyle = childStyle.merge(TextStyle(
+              color: colorFromNodeAttribute(node),
+            ));
             break;
           case "i":
           case "address":

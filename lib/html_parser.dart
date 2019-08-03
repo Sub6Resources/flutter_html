@@ -1,8 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_html/rich_text_parser.dart';
+import 'package:flutter_html/utils.dart';
 
-import 'image_properties.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
@@ -375,8 +374,15 @@ class HtmlOldParser extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.center,
               ));
         case "font":
-          return Wrap(
-            children: _parseNodeList(node.nodes),
+          return DefaultTextStyle.merge(
+            child: Container(
+              child: Wrap(
+                children: _parseNodeList(node.nodes),
+              ),
+            ),
+            style: TextStyle(
+              color: colorFromNodeAttribute(node),
+            ),
           );
         case "footer":
           return Container(
