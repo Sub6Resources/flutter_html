@@ -788,6 +788,14 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ));
                 } else {
+                  String imageUrl = '';
+                  if (!node.attributes['src'].contains('http')) {
+                    imageUrl = imageProperties.prefixNetworkImageRelativePath +
+                        node.attributes['src'];
+                  }
+                  else {
+                    imageUrl = node.attributes['src'];
+                  }
                   precacheImage(
                     NetworkImage(node.attributes['src']),
                     buildContext,
