@@ -1,5 +1,5 @@
 # flutter_html
-[![pub package](https://img.shields.io/pub/v/flutter_html.svg)](https://pub.dev/packages/flutter_html)
+[![Financial Contributors on Open Collective](https://opencollective.com/flutter_html/all/badge.svg?label=financial+contributors)](https://opencollective.com/flutter_html) [![pub package](https://img.shields.io/pub/v/flutter_html.svg)](https://pub.dev/packages/flutter_html)
 [![CircleCI](https://circleci.com/gh/Sub6Resources/flutter_html.svg?style=svg)](https://circleci.com/gh/Sub6Resources/flutter_html)
 
 A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
@@ -113,3 +113,33 @@ Check out the official Flutter WebView package here: https://pub.dartlang.org/pa
 This package has a known issue where text does not wrap correctly. Setting `useRichText` to true fixes the issue
 by using an alternate parser. The alternate parser, however, does not support the `customRender` callback, and several elements
 supported by the default parser are not supported by the alternate parser (see [#61](https://github.com/Sub6Resources/flutter_html/issues/61) for a list).
+
+## Contributors
+
+### Code Contributors
+
+This project exists thanks to all the people who contribute. [[Contribute](CONTRIBUTING.md)].
+<a href="https://github.com/Sub6Resources/flutter_html/graphs/contributors"><img src="https://opencollective.com/flutter_html/contributors.svg?width=890&button=false" /></a>
+
+### Financial Contributors
+
+Become a financial contributor and help us sustain our community. [[Contribute](https://opencollective.com/flutter_html/contribute)]
+
+#### Individuals
+
+<a href="https://opencollective.com/flutter_html"><img src="https://opencollective.com/flutter_html/individuals.svg?width=890"></a>
+
+#### Organizations
+
+Support this project with your organization. Your logo will show up here with a link to your website. [[Contribute](https://opencollective.com/flutter_html/contribute)]
+
+<a href="https://opencollective.com/flutter_html/organization/0/website"><img src="https://opencollective.com/flutter_html/organization/0/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/1/website"><img src="https://opencollective.com/flutter_html/organization/1/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/2/website"><img src="https://opencollective.com/flutter_html/organization/2/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/3/website"><img src="https://opencollective.com/flutter_html/organization/3/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/4/website"><img src="https://opencollective.com/flutter_html/organization/4/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/5/website"><img src="https://opencollective.com/flutter_html/organization/5/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/6/website"><img src="https://opencollective.com/flutter_html/organization/6/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/7/website"><img src="https://opencollective.com/flutter_html/organization/7/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/8/website"><img src="https://opencollective.com/flutter_html/organization/8/avatar.svg"></a>
+<a href="https://opencollective.com/flutter_html/organization/9/website"><img src="https://opencollective.com/flutter_html/organization/9/avatar.svg"></a>
