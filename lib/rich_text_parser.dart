@@ -759,8 +759,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     child: Image.memory(
                       base64.decode(
                           node.attributes['src'].split("base64,")[1].trim()),
-                      width: width,
-                      height: height,
+                      width: (width ?? -1) > 0? width: null,
+                      height: (height ?? -1) > 0? width: null,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
@@ -793,8 +793,8 @@ class HtmlRichTextParser extends StatelessWidget {
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
                       node.attributes['src'],
-                      width: width,
-                      height: height,
+                      width: (width ?? -1) > 0? width: null,
+                      height: (height ?? -1) > 0? height: null,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,

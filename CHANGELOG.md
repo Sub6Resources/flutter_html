@@ -1,6 +1,7 @@
 ## [0.11.0] - September 6, 2019:
 
 * Make it so `width=100%` doesn't throw error. Fixes [#118](https://github.com/Sub6Resources/flutter_html/issues/118).
+* You can now set width and/or height in `ImageProperties` to negative to ignore the `width` and/or `height` values from the html.
 
 ## [0.10.4] - June 22, 2019:
 
