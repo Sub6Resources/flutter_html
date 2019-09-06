@@ -732,6 +732,18 @@ class HtmlRichTextParser extends StatelessWidget {
           case "img":
             if (showImages) {
               if (node.attributes['src'] != null) {
+
+                final width = imageProperties?.width ??
+                    ((node.attributes['width'] != null)
+                        ? double.tryParse(node.attributes['width'])
+                        : null
+                    );
+                final height = imageProperties?.height ??
+                    ((node.attributes['height'] != null)
+                        ? double.tryParse(node.attributes['height'])
+                        : null
+                    );
+
                 if (node.attributes['src'].startsWith("data:image") &&
                     node.attributes['src'].contains("base64,")) {
                   precacheImage(
@@ -747,14 +759,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     child: Image.memory(
                       base64.decode(
                           node.attributes['src'].split("base64,")[1].trim()),
-                      width: imageProperties?.width ??
-                          ((node.attributes['width'] != null)
-                              ? double.tryParse(node.attributes['width'])
-                              : null),
-                      height: imageProperties?.height ??
-                          ((node.attributes['height'] != null)
-                              ? double.tryParse(node.attributes['height'])
-                              : null),
+                      width: width,
+                      height: height,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
@@ -787,14 +793,8 @@ class HtmlRichTextParser extends StatelessWidget {
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
                       node.attributes['src'],
-                      width: imageProperties?.width ??
-                          ((node.attributes['width'] != null)
-                              ? double.parse(node.attributes['width'])
-                              : null),
-                      height: imageProperties?.height ??
-                          ((node.attributes['height'] != null)
-                              ? double.parse(node.attributes['height'])
-                              : null),
+                      width: width,
+                      height: height,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
