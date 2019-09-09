@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -753,7 +754,7 @@ class HtmlRichTextParser extends StatelessWidget {
                       ),
                     ),
                     buildContext,
-                    onError: onImageError,
+                    onError: onImageError ?? (_,__) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.memory(
@@ -788,11 +789,28 @@ class HtmlRichTextParser extends StatelessWidget {
                   precacheImage(
                     NetworkImage(node.attributes['src']),
                     buildContext,
-                    onError: onImageError,
+                    onError: onImageError ?? (_,__) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
                       node.attributes['src'],
+                      frameBuilder: (context, child, frame, _) {
+                        if (node.attributes['alt'] != null && frame == null) {
+                          return BlockText(
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text: node.attributes['alt'],
+                                style: nextContext.childStyle,
+                              ),
+                            )
+                          );
+                        }
+                        if (frame != null) {
+                          return child;
+                        }
+                        return Container();
+                      },
                       width: (width ?? -1) > 0? width: null,
                       height: (height ?? -1) > 0? height: null,
                       scale: imageProperties?.scale ?? 1.0,
@@ -818,19 +836,6 @@ class HtmlRichTextParser extends StatelessWidget {
                       }
                     },
                   ));
-                }
-                if (node.attributes['alt'] != null) {
-                  parseContext.rootWidgetList.add(BlockText(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                      padding: EdgeInsets.all(0.0),
-                      child: RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            text: node.attributes['alt'],
-                            style: nextContext.childStyle,
-                            children: <TextSpan>[],
-                          ))));
                 }
               }
             }
