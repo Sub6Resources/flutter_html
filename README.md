@@ -4,8 +4,7 @@
 
 A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
 
-## Roadmap
-[View the development roadmap in the wiki](https://github.com/Sub6Resources/flutter_html/wiki/Roadmap)
+<img alt="A Screenshot of flutter_html" src=".github/flutter_html_screenshot.png" width="300"/>
 
 ## Installing:
 
@@ -16,6 +15,9 @@ Add the following to your `pubspec.yaml` file:
 
 ## Currently Supported HTML Tags:
 `a`, `abbr`, `acronym`, `address`, `article`, `aside`, `b`, `bdi`, `bdo`, `big`, `blockquote`, `body`, `br`, `caption`, `cite`, `code`, `data`, `dd`, `del`, `dfn`, `div`, `dl`, `dt`, `em`, `figcaption`, `figure`, `footer`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `header`, `hr`, `i`, `img`, `ins`, `kbd`, `li`, `main`, `mark`, `nav`, `noscript`, `ol`, `p`, `pre`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `section`, `small`, `span`, `strike`, `strong`, `sub`, `sup`, `table`, `tbody`, `td`, `template`, `tfoot`, `th`, `thead`, `time`, `tr`, `tt`, `u`, `ul`, `var`
+ 
+## Roadmap
+[View the development roadmap in the wiki](https://github.com/Sub6Resources/flutter_html/wiki/Roadmap)
  
 ### Partially supported elements:
 > These are common elements that aren't yet fully supported, but won't be ignored and will still render somewhat correctly.
