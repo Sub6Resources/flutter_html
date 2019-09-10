@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -224,6 +223,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "time",
     "span",
     "big",
+    "sub",
   ];
 
   // specialty elements require unique handling
@@ -522,6 +522,13 @@ class HtmlRichTextParser extends StatelessWidget {
           case "mark":
             childStyle = childStyle.merge(
                 TextStyle(backgroundColor: Colors.yellow, color: Colors.black));
+            break;
+          case "sub":
+            childStyle = childStyle.merge(
+              TextStyle(
+                fontSize: childStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR,
+              ),
+            );
             break;
           case "del":
           case "s":
@@ -958,39 +965,11 @@ class HtmlRichTextParser extends StatelessWidget {
     }
   }
 
-  Paint _getPaint(Color color) {
-    Paint paint = new Paint();
-    paint.color = color;
-    return paint;
-  }
-
   String condenseHtmlWhitespace(String stringToTrim) {
     stringToTrim = stringToTrim.replaceAll("\n", " ");
     while (stringToTrim.indexOf("  ") != -1) {
       stringToTrim = stringToTrim.replaceAll("  ", " ");
     }
     return stringToTrim;
-  }
-
-  bool _isNotFirstBreakTag(dom.Node node) {
-    int index = node.parentNode.nodes.indexOf(node);
-    if (index == 0) {
-      if (node.parentNode == null) {
-        return false;
-      }
-      return _isNotFirstBreakTag(node.parentNode);
-    } else if (node.parentNode.nodes[index - 1] is dom.Element) {
-      if ((node.parentNode.nodes[index - 1] as dom.Element).localName == "br") {
-        return true;
-      }
-      return false;
-    } else if (node.parentNode.nodes[index - 1] is dom.Text) {
-      if ((node.parentNode.nodes[index - 1] as dom.Text).text.trim() == "") {
-        return _isNotFirstBreakTag(node.parentNode.nodes[index - 1]);
-      } else {
-        return false;
-      }
-    }
-    return false;
   }
 }
