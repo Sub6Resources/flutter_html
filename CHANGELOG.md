@@ -4,6 +4,7 @@
 * You can now set width and/or height in `ImageProperties` to negative to ignore the `width` and/or `height` values from the html. Fixes [#97](https://github.com/Sub6Resources/flutter_html/issues/97)
 * The `img` `alt` property now renders correctly when the image fails to load and with the correct style. Fixes [#96](https://github.com/Sub6Resources/flutter_html/issues/96)
 * Add partial support for `sub` tag.
+* Add new option: `shrinkToFit` ([#148](https://github.com/Sub6Resources/flutter_html/pull/148)). Fixes [#75](https://github.com/Sub6Resources/flutter_html/issues/75).
 
 ## [0.10.4] - June 22, 2019:
 
