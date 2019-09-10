@@ -738,17 +738,14 @@ class HtmlRichTextParser extends StatelessWidget {
           case "img":
             if (showImages) {
               if (node.attributes['src'] != null) {
-
                 final width = imageProperties?.width ??
                     ((node.attributes['width'] != null)
                         ? double.tryParse(node.attributes['width'])
-                        : null
-                    );
+                        : null);
                 final height = imageProperties?.height ??
                     ((node.attributes['height'] != null)
                         ? double.tryParse(node.attributes['height'])
-                        : null
-                    );
+                        : null);
 
                 if (node.attributes['src'].startsWith("data:image") &&
                     node.attributes['src'].contains("base64,")) {
@@ -759,14 +756,14 @@ class HtmlRichTextParser extends StatelessWidget {
                       ),
                     ),
                     buildContext,
-                    onError: onImageError ?? (_,__) {},
+                    onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.memory(
                       base64.decode(
                           node.attributes['src'].split("base64,")[1].trim()),
-                      width: (width ?? -1) > 0? width: null,
-                      height: (height ?? -1) > 0? width: null,
+                      width: (width ?? -1) > 0 ? width : null,
+                      height: (height ?? -1) > 0 ? width : null,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
@@ -794,7 +791,7 @@ class HtmlRichTextParser extends StatelessWidget {
                   precacheImage(
                     NetworkImage(node.attributes['src']),
                     buildContext,
-                    onError: onImageError ?? (_,__) {},
+                    onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
@@ -808,7 +805,8 @@ class HtmlRichTextParser extends StatelessWidget {
                                 text: node.attributes['alt'],
                                 style: nextContext.childStyle,
                               ),
-                            )
+                            ),
+                            shrinkToFit: shrinkToFit,
                           );
                         }
                         if (frame != null) {
@@ -816,8 +814,8 @@ class HtmlRichTextParser extends StatelessWidget {
                         }
                         return Container();
                       },
-                      width: (width ?? -1) > 0? width: null,
-                      height: (height ?? -1) > 0? height: null,
+                      width: (width ?? -1) > 0 ? width : null,
+                      height: (height ?? -1) > 0 ? height : null,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
