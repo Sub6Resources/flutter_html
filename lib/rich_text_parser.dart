@@ -83,31 +83,25 @@ class BlockText extends StatelessWidget {
   final RichText child;
   final EdgeInsets padding;
   final EdgeInsets margin;
-  final String leadingChar;
   final Decoration decoration;
+  final bool shrinkToFit;
 
   BlockText({
     @required this.child,
+    @required this.shrinkToFit,
     this.padding,
     this.margin,
-    this.leadingChar = '',
     this.decoration,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: shrinkToFit ? null : double.infinity,
       padding: this.padding,
       margin: this.margin,
       decoration: this.decoration,
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          leadingChar.isNotEmpty ? Text(leadingChar) : Container(),
-          Expanded(child: child),
-        ],
-      ),
+      child: child,
     );
   }
 }
@@ -155,7 +149,7 @@ class ParseContext {
 
 class HtmlRichTextParser extends StatelessWidget {
   HtmlRichTextParser({
-    @required this.width,
+    this.shrinkToFit,
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
@@ -175,7 +169,7 @@ class HtmlRichTextParser extends StatelessWidget {
 
   final double indentSize = 10.0;
 
-  final double width;
+  final bool shrinkToFit;
   final onLinkTap;
   final bool renderNewlines;
   final String html;
@@ -223,6 +217,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "time",
     "span",
     "big",
+    "sub",
   ];
 
   // specialty elements require unique handling
@@ -425,6 +420,7 @@ class HtmlRichTextParser extends StatelessWidget {
             ));
           }
           BlockText blockText = BlockText(
+            shrinkToFit: shrinkToFit,
             margin: EdgeInsets.only(
                 top: 8.0,
                 bottom: 8.0,
@@ -438,8 +434,10 @@ class HtmlRichTextParser extends StatelessWidget {
           );
           parseContext.rootWidgetList.add(blockText);
         } else {
-          parseContext.rootWidgetList
-              .add(BlockText(child: RichText(text: span)));
+          parseContext.rootWidgetList.add(BlockText(
+            child: RichText(text: span),
+            shrinkToFit: shrinkToFit,
+          ));
         }
 
         // this allows future items to be added as children of this item
@@ -522,6 +520,13 @@ class HtmlRichTextParser extends StatelessWidget {
             childStyle = childStyle.merge(
                 TextStyle(backgroundColor: Colors.yellow, color: Colors.black));
             break;
+          case "sub":
+            childStyle = childStyle.merge(
+              TextStyle(
+                fontSize: childStyle.fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR,
+              ),
+            );
+            break;
           case "del":
           case "s":
           case "strike":
@@ -599,6 +604,7 @@ class HtmlRichTextParser extends StatelessWidget {
               } else {
                 // start a new block element for this link and its text
                 BlockText blockElement = BlockText(
+                  shrinkToFit: shrinkToFit,
                   margin: EdgeInsets.only(
                       left: parseContext.indentLevel * indentSize, top: 10.0),
                   child: RichText(text: span),
@@ -732,6 +738,15 @@ class HtmlRichTextParser extends StatelessWidget {
           case "img":
             if (showImages) {
               if (node.attributes['src'] != null) {
+                final width = imageProperties?.width ??
+                    ((node.attributes['width'] != null)
+                        ? double.tryParse(node.attributes['width'])
+                        : null);
+                final height = imageProperties?.height ??
+                    ((node.attributes['height'] != null)
+                        ? double.tryParse(node.attributes['height'])
+                        : null);
+
                 if (node.attributes['src'].startsWith("data:image") &&
                     node.attributes['src'].contains("base64,")) {
                   precacheImage(
@@ -741,20 +756,14 @@ class HtmlRichTextParser extends StatelessWidget {
                       ),
                     ),
                     buildContext,
-                    onError: onImageError,
+                    onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.memory(
                       base64.decode(
                           node.attributes['src'].split("base64,")[1].trim()),
-                      width: imageProperties?.width ??
-                          ((node.attributes['width'] != null)
-                              ? double.tryParse(node.attributes['width'])
-                              : null),
-                      height: imageProperties?.height ??
-                          ((node.attributes['height'] != null)
-                              ? double.tryParse(node.attributes['height'])
-                              : null),
+                      width: (width ?? -1) > 0 ? width : null,
+                      height: (height ?? -1) > 0 ? width : null,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
@@ -782,19 +791,31 @@ class HtmlRichTextParser extends StatelessWidget {
                   precacheImage(
                     NetworkImage(node.attributes['src']),
                     buildContext,
-                    onError: onImageError,
+                    onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
                       node.attributes['src'],
-                      width: imageProperties?.width ??
-                          ((node.attributes['width'] != null)
-                              ? double.parse(node.attributes['width'])
-                              : null),
-                      height: imageProperties?.height ??
-                          ((node.attributes['height'] != null)
-                              ? double.parse(node.attributes['height'])
-                              : null),
+                      frameBuilder: (context, child, frame, _) {
+                        if (node.attributes['alt'] != null && frame == null) {
+                          return BlockText(
+                            child: RichText(
+                              textAlign: TextAlign.center,
+                              text: TextSpan(
+                                text: node.attributes['alt'],
+                                style: nextContext.childStyle,
+                              ),
+                            ),
+                            shrinkToFit: shrinkToFit,
+                          );
+                        }
+                        if (frame != null) {
+                          return child;
+                        }
+                        return Container();
+                      },
+                      width: (width ?? -1) > 0 ? width : null,
+                      height: (height ?? -1) > 0 ? height : null,
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
@@ -819,19 +840,6 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ));
                 }
-                if (node.attributes['alt'] != null) {
-                  parseContext.rootWidgetList.add(BlockText(
-                      margin:
-                          EdgeInsets.symmetric(horizontal: 0.0, vertical: 10.0),
-                      padding: EdgeInsets.all(0.0),
-                      child: RichText(
-                          textAlign: TextAlign.center,
-                          text: TextSpan(
-                            text: node.attributes['alt'],
-                            style: nextContext.childStyle,
-                            children: <TextSpan>[],
-                          ))));
-                }
               }
             }
             break;
@@ -844,16 +852,18 @@ class HtmlRichTextParser extends StatelessWidget {
               leadingChar = parseContext.listCount.toString() + '.';
             }
             BlockText blockText = BlockText(
+              shrinkToFit: shrinkToFit,
               margin: EdgeInsets.only(
                   left: parseContext.indentLevel * indentSize, top: 3.0),
               child: RichText(
                 text: TextSpan(
-                  text: '',
-                  style: nextContext.childStyle,
-                  children: <TextSpan>[],
+                  text: '$leadingChar  ',
+                  style: DefaultTextStyle.of(buildContext).style,
+                  children: <TextSpan>[
+                    TextSpan(text: '', style: nextContext.childStyle)
+                  ],
                 ),
               ),
-              leadingChar: '$leadingChar  ',
             );
             parseContext.rootWidgetList.add(blockText);
             nextContext.parentElement = blockText.child.text;
@@ -914,6 +924,7 @@ class HtmlRichTextParser extends StatelessWidget {
               ));
             }
             BlockText blockText = BlockText(
+              shrinkToFit: shrinkToFit,
               margin: node.localName != 'body'
                   ? _customEdgeInsets ??
                       EdgeInsets.only(
@@ -953,39 +964,11 @@ class HtmlRichTextParser extends StatelessWidget {
     }
   }
 
-  Paint _getPaint(Color color) {
-    Paint paint = new Paint();
-    paint.color = color;
-    return paint;
-  }
-
   String condenseHtmlWhitespace(String stringToTrim) {
     stringToTrim = stringToTrim.replaceAll("\n", " ");
     while (stringToTrim.indexOf("  ") != -1) {
       stringToTrim = stringToTrim.replaceAll("  ", " ");
     }
     return stringToTrim;
-  }
-
-  bool _isNotFirstBreakTag(dom.Node node) {
-    int index = node.parentNode.nodes.indexOf(node);
-    if (index == 0) {
-      if (node.parentNode == null) {
-        return false;
-      }
-      return _isNotFirstBreakTag(node.parentNode);
-    } else if (node.parentNode.nodes[index - 1] is dom.Element) {
-      if ((node.parentNode.nodes[index - 1] as dom.Element).localName == "br") {
-        return true;
-      }
-      return false;
-    } else if (node.parentNode.nodes[index - 1] is dom.Text) {
-      if ((node.parentNode.nodes[index - 1] as dom.Text).text.trim() == "") {
-        return _isNotFirstBreakTag(node.parentNode.nodes[index - 1]);
-      } else {
-        return false;
-      }
-    }
-    return false;
   }
 }
