@@ -3,6 +3,7 @@ library flutter_html;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/rich_text_parser.dart';
+
 import 'image_properties.dart';
 
 class Html extends StatelessWidget {
@@ -25,6 +26,7 @@ class Html extends StatelessWidget {
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
+    this.shrinkToFit = false,
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
@@ -40,6 +42,7 @@ class Html extends StatelessWidget {
   final bool useRichText;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
+  final bool shrinkToFit;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -55,7 +58,7 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = MediaQuery.of(context).size.width;
+    final double width = shrinkToFit ? null : MediaQuery.of(context).size.width;
 
     return Container(
       padding: padding,
@@ -65,7 +68,7 @@ class Html extends StatelessWidget {
         style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
         child: (useRichText)
             ? HtmlRichTextParser(
-                width: width,
+                shrinkToFit: shrinkToFit,
                 onLinkTap: onLinkTap,
                 renderNewlines: renderNewlines,
                 customEdgeInsets: customEdgeInsets,
