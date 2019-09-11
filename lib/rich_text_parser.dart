@@ -793,52 +793,74 @@ class HtmlRichTextParser extends StatelessWidget {
                     buildContext,
                     onError: onImageError ?? (_, __) {},
                   );
-                  parseContext.rootWidgetList.add(GestureDetector(
-                    child: Image.network(
-                      node.attributes['src'],
-                      frameBuilder: (context, child, frame, _) {
-                        if (node.attributes['alt'] != null && frame == null) {
-                          return BlockText(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: node.attributes['alt'],
-                                style: nextContext.childStyle,
-                              ),
-                            ),
-                            shrinkToFit: shrinkToFit,
-                          );
+                  if (imageProperties?.placeholder != null) {
+                    parseContext.rootWidgetList.add(GestureDetector(
+                      child: FadeInImage.assetNetwork(
+                        image: node.attributes['src'],
+                        placeholder: imageProperties.placeholder,
+                        width: imageProperties?.width ??
+                            ((node.attributes['width'] != null)
+                                ? double.parse(node.attributes['width'])
+                                : null),
+                        height: imageProperties?.height ??
+                            ((node.attributes['height'] != null)
+                                ? double.parse(node.attributes['height'])
+                                : null),
+                      ),
+                      onTap: () {
+                        if (onImageTap != null) {
+                          onImageTap(node.attributes['src']);
                         }
-                        if (frame != null) {
-                          return child;
-                        }
-                        return Container();
                       },
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? height : null,
-                      scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
-                      centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
-                      alignment: imageProperties?.alignment ?? Alignment.center,
-                      colorBlendMode: imageProperties?.colorBlendMode,
-                      fit: imageProperties?.fit,
-                      color: imageProperties?.color,
-                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                      semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
-                    ),
-                    onTap: () {
-                      if (onImageTap != null) {
-                        onImageTap(node.attributes['src']);
-                      }
-                    },
-                  ));
+                    ));
+                  } else {
+                    parseContext.rootWidgetList.add(GestureDetector(
+                      child: Image.network(
+                        node.attributes['src'],
+                        frameBuilder: (context, child, frame, _) {
+                          if (node.attributes['alt'] != null && frame == null) {
+                            return BlockText(
+                              child: RichText(
+                                textAlign: TextAlign.center,
+                                text: TextSpan(
+                                  text: node.attributes['alt'],
+                                  style: nextContext.childStyle,
+                                ),
+                              ),
+                              shrinkToFit: shrinkToFit,
+                            );
+                          }
+                          if (frame != null) {
+                            return child;
+                          }
+                          return Container();
+                        },
+                        width: (width ?? -1) > 0 ? width : null,
+                        height: (height ?? -1) > 0 ? height : null,
+                        scale: imageProperties?.scale ?? 1.0,
+                        matchTextDirection:
+                        imageProperties?.matchTextDirection ?? false,
+                        centerSlice: imageProperties?.centerSlice,
+                        filterQuality:
+                        imageProperties?.filterQuality ?? FilterQuality.low,
+                        alignment: imageProperties?.alignment ?? Alignment.center,
+                        colorBlendMode: imageProperties?.colorBlendMode,
+                        fit: imageProperties?.fit,
+                        color: imageProperties?.color,
+                        repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                        semanticLabel: imageProperties?.semanticLabel,
+                        excludeFromSemantics:
+                        (imageProperties?.semanticLabel == null)
+                            ? true
+                            : false,
+                      ),
+                      onTap: () {
+                        if (onImageTap != null) {
+                          onImageTap(node.attributes['src']);
+                        }
+                      },
+                    ));
+                  }
                 }
               }
             }
