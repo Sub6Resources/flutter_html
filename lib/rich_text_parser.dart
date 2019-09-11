@@ -47,7 +47,7 @@ class LinkTextSpan extends TextSpan {
           children: children ?? <TextSpan>[],
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              onLinkTap(url);
+              onLinkTap?.call(url);
             },
         );
 }
