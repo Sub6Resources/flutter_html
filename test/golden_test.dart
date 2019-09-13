@@ -29,7 +29,7 @@ void testHtml(String name, String htmlData) {
         ),
       ),
     );
-    await expectLater(find.byType(Html), matchesGoldenFile('goldens/$name.png'));
+    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/$name.png'));
   });
 }
 
