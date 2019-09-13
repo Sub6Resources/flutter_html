@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -37,4 +39,5 @@ void main() {
   testData.forEach((key, value) {
     testHtml(key, value);
   });
+  File.fromUri(Uri(path: './goldens/a.png')).readAsBytesSync();
 }
