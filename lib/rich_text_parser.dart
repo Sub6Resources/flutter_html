@@ -790,40 +790,27 @@ class HtmlRichTextParser extends StatelessWidget {
                 } else {
                   String imageUrl = '';
                   if (!node.attributes['src'].contains('http')) {
-                    imageUrl = imageProperties.prefixNetworkImageRelativePath +
-                        node.attributes['src'];
-                  }
-                  else {
+                    imageUrl =
+                        "${imageProperties.prefixImagePath} ${node.attributes['src']}";
+                  } else {
                     imageUrl = node.attributes['src'];
                   }
                   precacheImage(
-                    NetworkImage(node.attributes['src']),
+                    NetworkImage(imageUrl),
                     buildContext,
                     onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
-                      node.attributes['src'],
-                      frameBuilder: (context, child, frame, _) {
-                        if (node.attributes['alt'] != null && frame == null) {
-                          return BlockText(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: node.attributes['alt'],
-                                style: nextContext.childStyle,
-                              ),
-                            ),
-                            shrinkToFit: shrinkToFit,
-                          );
-                        }
-                        if (frame != null) {
-                          return child;
-                        }
-                        return Container();
-                      },
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? height : null,
+                      imageUrl,
+                      width: imageProperties?.width ??
+                          ((node.attributes['width'] != null)
+                              ? double.parse(node.attributes['width'])
+                              : null),
+                      height: imageProperties?.height ??
+                          ((node.attributes['height'] != null)
+                              ? double.parse(node.attributes['height'])
+                              : null),
                       scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
@@ -843,7 +830,7 @@ class HtmlRichTextParser extends StatelessWidget {
                     ),
                     onTap: () {
                       if (onImageTap != null) {
-                        onImageTap(node.attributes['src']);
+                        onImageTap(imageUrl);
                       }
                     },
                   ));
