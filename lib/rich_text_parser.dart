@@ -781,20 +781,19 @@ class HtmlRichTextParser extends StatelessWidget {
                 } else {
                   String imageUrl = '';
                   if (!node.attributes['src'].contains('http')) {
-                    imageUrl = imageProperties.prefixNetworkImageRelativePath +
-                        node.attributes['src'];
-                  }
-                  else {
+                    imageUrl =
+                        "${imageProperties.prefixImagePath} ${node.attributes['src']}";
+                  } else {
                     imageUrl = node.attributes['src'];
                   }
                   precacheImage(
-                    NetworkImage(node.attributes['src']),
+                    NetworkImage(imageUrl),
                     buildContext,
                     onError: onImageError,
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
-                      node.attributes['src'],
+                      imageUrl,
                       width: imageProperties?.width ??
                           ((node.attributes['width'] != null)
                               ? double.parse(node.attributes['width'])
@@ -822,7 +821,7 @@ class HtmlRichTextParser extends StatelessWidget {
                     ),
                     onTap: () {
                       if (onImageTap != null) {
-                        onImageTap(node.attributes['src']);
+                        onImageTap(imageUrl);
                       }
                     },
                   ));

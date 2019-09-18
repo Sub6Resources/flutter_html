@@ -15,7 +15,7 @@ class ImageProperties {
   final bool matchTextDirection;
   final FilterQuality filterQuality;
   final double scale;
-  final String prefixNetworkImageRelativePath;
+  final String prefixImagePath;
 
   const ImageProperties({
     this.scale = 1,
@@ -31,6 +31,6 @@ class ImageProperties {
     this.centerSlice,
     this.matchTextDirection = false,
     this.filterQuality = FilterQuality.low,
-    this.prefixNetworkImageRelativePath = ''
+    this.prefixImagePath = ''
   });
 }
