@@ -791,7 +791,7 @@ class HtmlRichTextParser extends StatelessWidget {
                   String imageUrl = '';
                   if (!node.attributes['src'].contains('http')) {
                     imageUrl =
-                        "${imageProperties.prefixImagePath} ${node.attributes['src']}";
+                        "${imageProperties.prefixImagePath}${node.attributes['src']}";
                   } else {
                     imageUrl = node.attributes['src'];
                   }
