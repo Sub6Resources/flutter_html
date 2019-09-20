@@ -28,7 +28,6 @@ void testHtml(String name, String htmlData) {
       TestApp(
         Html(
           data: htmlData,
-          useRichText: true,
         ),
       ),
     );
