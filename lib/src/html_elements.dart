@@ -86,6 +86,7 @@ const REPLACED_ELEMENTS = [
   "audio",
   "br",
   "head",
+  "iframe",
   "img", //TODO display inline
   "template",
   "video",

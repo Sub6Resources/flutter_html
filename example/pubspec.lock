@@ -30,31 +30,45 @@ packages:
     source: hosted
     version: "1.14.11"
   css_colors:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: css_colors
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.2"
   csslib:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: csslib
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.16.1"
+  cupertino_icons:
+    dependency: "direct main"
+    description:
+      name: cupertino_icons
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.2"
   flutter:
     dependency: "direct main"
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_html:
+    dependency: "direct main"
+    description:
+      path: ".."
+      relative: true
+    source: path
+    version: "1.0.0-pre.1"
   flutter_test:
     dependency: "direct dev"
     description: flutter
     source: sdk
     version: "0.0.0"
   html:
-    dependency: "direct main"
+    dependency: transitive
     description:
       name: html
       url: "https://pub.dartlang.org"

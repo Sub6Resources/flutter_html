@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
@@ -18,14 +19,12 @@ abstract class ReplacedElement extends StyledElement {
   }) : super(name: name, children: null, style: style, node: node);
 
   static List<String> parseContentSources(List<dom.Element> elements) {
-    return elements
-        .where((element) => element.localName == 'source')
-        .map((element) {
+    return elements.where((element) => element.localName == 'source').map((element) {
       return element.attributes['src'];
     }).toList();
   }
 
-  Widget toWidget();
+  Widget toWidget(RenderContext context);
 }
 
 /// [TextContentElement] is a [ContentElement] with plaintext as its content.
@@ -43,7 +42,7 @@ class TextContentElement extends ReplacedElement {
   }
 
   @override
-  Widget toWidget() => null;
+  Widget toWidget(_) => null;
 }
 
 /// [ImageContentElement] is a [ReplacedElement] with an image as its content.
@@ -61,15 +60,38 @@ class ImageContentElement extends ReplacedElement {
   }) : super(name: name, style: style, node: node);
 
   @override
-  Widget toWidget() {
-    if (src == null) return Text(alt ?? "");
+  Widget toWidget(RenderContext context) {
+    if (src == null) return Text(alt ?? "", style: context.style);
     if (src.startsWith("data:image") && src.contains("base64,")) {
       return Image.memory(base64.decode(src.split("base64,")[1].trim()));
     } else {
-      return Image.network(src);
+      return Image.network(src, frameBuilder: (ctx, child, frame, something) {
+        if (frame == null) {
+          return Text(alt ?? "", style: context.style);
+        }
+
+        return child;
+      });
     }
     //TODO(Sub6Resources): alt text
     //TODO(Sub6Resources): precacheImage
+  }
+}
+
+/// [IframeContentElement is a [ReplacedElement] with web content.
+class IframeContentElement extends ReplacedElement {
+  final String src;
+
+  IframeContentElement({
+    String name,
+    Style style,
+    this.src,
+    dom.Element node,
+  }) : super(name: name, style: style, node: node);
+
+  @override
+  Widget toWidget(RenderContext context) {
+    return Container(color: Colors.deepOrangeAccent, child: Text(src));
   }
 }
 
@@ -93,9 +115,9 @@ class AudioContentElement extends ReplacedElement {
   }) : super(name: name, style: style, node: node);
 
   @override
-  Widget toWidget() {
+  Widget toWidget(RenderContext context) {
     //TODO(Sub6Resources)
-    return Container(padding: const EdgeInsets.all(24), child: Text("AUDIO"));
+    return Container(padding: const EdgeInsets.all(24), child: Text("AUDIO", style: context.style));
   }
 }
 
@@ -121,9 +143,9 @@ class VideoContentElement extends ReplacedElement {
   }) : super(name: name, style: style, node: node);
 
   @override
-  Widget toWidget() {
+  Widget toWidget(RenderContext context) {
     //TODO(Sub6Resources)
-    return Container(padding: const EdgeInsets.all(24), child: Text("AUDIO"));
+    return Container(padding: const EdgeInsets.all(24), child: Text("AUDIO", style: context.style));
   }
 }
 
@@ -131,7 +153,7 @@ class EmptyContentElement extends ReplacedElement {
   EmptyContentElement({String name = "empty"}) : super(name: name);
 
   @override
-  Widget toWidget() => null;
+  Widget toWidget(_) => null;
 }
 
 ReplacedElement parseReplacedElement(dom.Element element) {
@@ -150,6 +172,11 @@ ReplacedElement parseReplacedElement(dom.Element element) {
       return TextContentElement(
         text: "\n",
         style: Style(preserveWhitespace: true),
+      );
+    case "iframe":
+      return IframeContentElement(
+        name: "iframe",
+        src: element.attributes['src'],
       );
     case "img":
       return ImageContentElement(

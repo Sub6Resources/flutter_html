@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/src/block_element.dart';
+//import 'package:flutter_html/src/block_element.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/style.dart';
 
@@ -126,9 +126,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 fontFamily: "monospace",
                 fontSize: 24,
                 margin: EdgeInsets.zero,
-                block: Block(
-                  border: Border.all(width: 2),
-                ),
+//                block: Block(
+//                  border: Border.all(width: 2),
+//                ),
                 backgroundColor: Colors.blue,
               ),
             },
