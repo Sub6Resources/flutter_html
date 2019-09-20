@@ -1,5 +1,4 @@
 import 'package:flutter_html/style.dart';
-
 import 'package:flutter/material.dart';
 import 'package:csslib/visitor.dart' as css;
 import 'package:html/dom.dart' as dom;

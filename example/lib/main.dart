@@ -109,7 +109,7 @@ class _MyHomePageState extends State<MyHomePage> {
             <br />
             Second nested div<br />
             <figure>
-            <img src="https://assets-cdn.github.com/images/modules/logos_page/GitHub-Mark.png" />
+            <img src="https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png" />
             <figcaption>Available on GitHub</figcaption>
             </figure>
             </div>
@@ -133,6 +133,9 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             onLinkTap: (url) {
               print("Opening $url...");
+            },
+            onImageTap: (src) {
+              print(src);
             },
           ),
         ),

@@ -5,6 +5,8 @@
 
 A Flutter widget for rendering html and css as Flutter widgets.
 
+<img alt="A Screenshot of flutter_html" src=".github/flutter_html_screenshot.png" width="300"/>
+
 ## Installing:
 
 Add the following to your `pubspec.yaml` file:
@@ -16,7 +18,7 @@ Add the following to your `pubspec.yaml` file:
 `a`, `abbr`, `acronym`, `address`, `article`, `aside`, `b`, `bdi`, `bdo`, `big`, `blockquote`, `body`, `br`, `caption`, `cite`, `code`, `data`, `dd`, `del`, `dfn`, `div`, `dl`, `dt`, `em`, `figcaption`, `figure`, `footer`, `h1`, `h2`, `h3`, `h4`, `h5`, `h6`, `header`, `hr`, `i`, `img`, `ins`, `kbd`, `li`, `main`, `mark`, `nav`, `noscript`, `ol`, `p`, `pre`, `q`, `rp`, `rt`, `ruby`, `s`, `samp`, `section`, `small`, `span`, `strike`, `strong`, `sub`, `sup`, `table`, `tbody`, `td`, `template`, `tfoot`, `th`, `thead`, `time`, `tr`, `tt`, `u`, `ul`, `var`
  
 ## Currently Supported CSS Attributes:
-
+> Coming soon!
  
 ### Elements with planned support:
 
@@ -61,5 +63,7 @@ this project has expanded to include support for basic CSS styling (both inline 
           ),
         ),
       },
+      onImageTap: (src) {
+        // Display the image in large form.
+      },
     );
-```

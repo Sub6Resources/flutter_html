@@ -6,8 +6,8 @@ jobs:
     docker:
     - image: cirrusci/flutter
     steps:
-    - run: flutter channel master
     - checkout
+    - run: flutter --version
     - run: flutter test --coverage
     - codecov/upload:
         file: coverage/lcov.info

@@ -4,6 +4,26 @@
 * Adds support for a new parser, which resolves several major issues and adds several new features.
 * For a list of pre-release changes, including several BREAKING CHANGES, see [the pre-release changelog](https://github.com/Sub6Resources/flutter_html/PRE_CHANGELOG.md)
 
+## [0.11.0] - September 10, 2019:
+
+* Make it so `width=100%` doesn't throw error. Fixes [#118](https://github.com/Sub6Resources/flutter_html/issues/118).
+* You can now set width and/or height in `ImageProperties` to negative to ignore the `width` and/or `height` values from the html. Fixes [#97](https://github.com/Sub6Resources/flutter_html/issues/97)
+* The `img` `alt` property now renders correctly when the image fails to load and with the correct style. Fixes [#96](https://github.com/Sub6Resources/flutter_html/issues/96)
+* Add partial support for `sub` tag.
+* Add new option: `shrinkToFit` ([#148](https://github.com/Sub6Resources/flutter_html/pull/148)). Fixes [#75](https://github.com/Sub6Resources/flutter_html/issues/75).
+
+## [0.10.4] - June 22, 2019:
+
+* Add support for `customTextStyle` to block and specialty HTML elements.
+
+## [0.10.3] - June 20, 2019:
+
+* Add `src` to the `onImageTap` callback ([#93](https://github.com/Sub6Resources/flutter_html/pull/93))
+
+## [0.10.2] - June 19, 2019:
+
+* Add `customTextAlign` property ([#112](https://github.com/Sub6Resources/flutter_html/pull/112))
+* Use `tryParse` instead of `parse` for image width and height attributes so that `%` values are ignored safely. Fixes [#98](https://github.com/Sub6Resources/flutter_html/issues/98)
 
 ## [0.10.1] - May 20, 2019:
 
