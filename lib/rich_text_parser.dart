@@ -14,7 +14,7 @@ typedef CustomTextStyle = TextStyle Function(
 );
 typedef CustomTextAlign = TextAlign Function(dom.Element elem);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
-typedef OnLinkTap = void Function(String url);
+typedef OnLinkTap = void Function(String text, String url);
 typedef OnImageTap = void Function(String source);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
@@ -47,7 +47,7 @@ class LinkTextSpan extends TextSpan {
           children: children ?? <TextSpan>[],
           recognizer: TapGestureRecognizer()
             ..onTap = () {
-              onLinkTap?.call(url);
+              onLinkTap?.call(text, url);
             },
         );
 }
@@ -60,6 +60,7 @@ class LinkBlock extends Container {
   final List<Widget> children;
 
   LinkBlock({
+    String text,
     String url,
     EdgeInsets padding,
     EdgeInsets margin,
@@ -70,7 +71,7 @@ class LinkBlock extends Container {
           margin: margin,
           child: GestureDetector(
             onTap: () {
-              onLinkTap(url);
+              onLinkTap(text, url);
             },
             child: Column(
               children: children,

@@ -126,7 +126,7 @@ class _MyHomePageState extends State<MyHomePage> {
               decorationColor: Colors.redAccent,
               decoration: TextDecoration.underline,
             ),
-            onLinkTap: (url) {
+            onLinkTap: (text, url) {
               print("Opening $url...");
             },
             onImageTap: (src) {

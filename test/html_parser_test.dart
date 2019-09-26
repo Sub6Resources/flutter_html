@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/rich_text_parser.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_html/flutter_html.dart';
 
 void main() {
   testWidgets("Check that default parser does not fail on empty data",
@@ -65,6 +65,7 @@ void main() {
   testWidgets("Check that tapping on the `a` tag calls the callback",
       (tester) async {
     String html = "<a href='https://github.com'>Test link</a>";
+    String textTapped;
     String urlTapped;
 
     await tester.pumpWidget(
@@ -72,7 +73,8 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
-            onLinkTap: (url) {
+            onLinkTap: (text, url) {
+              textTapped = text;
               urlTapped = url;
             },
             useRichText: false,
@@ -81,6 +83,7 @@ void main() {
       ),
     );
     await tester.tap(find.text("Test link"));
+    expect(textTapped, "Test link");
     expect(urlTapped, "https://github.com");
   });
 
@@ -88,6 +91,7 @@ void main() {
       "Check that tapping on the `a` tag calls the callback `RichText` parser",
       (tester) async {
     String html = "<a href='https://github.com'>Test link</a>";
+    String textTapped;
     String urlTapped;
 
     await tester.pumpWidget(
@@ -95,7 +99,8 @@ void main() {
         home: Scaffold(
           body: Html(
             data: html,
-            onLinkTap: (url) {
+            onLinkTap: (text, url) {
+              textTapped = text;
               urlTapped = url;
             },
             useRichText: true,
@@ -104,6 +109,7 @@ void main() {
       ),
     );
     await tester.tap(find.byType(RichText));
+    expect(textTapped, "Test link");
     expect(urlTapped, "https://github.com");
   });
 
@@ -168,10 +174,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         home: Scaffold(
-          body: Html(
-            data: "<address>Address</address>",
-            useRichText: false
-          ),
+          body: Html(data: "<address>Address</address>", useRichText: false),
         ),
       ),
     );

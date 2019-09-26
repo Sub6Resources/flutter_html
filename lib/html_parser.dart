@@ -154,8 +154,9 @@ class HtmlOldParser extends StatelessWidget {
               ),
               onTap: () {
                 if (node.attributes.containsKey('href') && onLinkTap != null) {
+                  final String text = node.text;
                   String url = node.attributes['href'];
-                  onLinkTap(url);
+                  onLinkTap(text, url);
                 }
               });
         case "abbr":
