@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/src/block_element.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package
@@ -25,6 +24,9 @@ class Style {
   ///CSS attribute "`font-weight`"
   FontWeight fontWeight;
 
+  ///CSS attribute "`height`"
+  double height;
+
   ///CSS attribute "`list-style-type`"
   ListStyleType listStyleType;
 
@@ -40,13 +42,17 @@ class Style {
   ///CSS attribute "`text-decoration-style`" -
   TextDecorationStyle textDecorationStyle;
 
+  ///CSS attribute "`width`"
+  double width;
+
   //TODO modify these to match CSS styles
   bool preserveWhitespace;
   int baselineOffset;
   String before;
   String after;
   TextDirection textDirection;
-  Block block;
+  Border border;
+  Alignment alignment;
 
   Style({
     this.backgroundColor,
@@ -56,17 +62,20 @@ class Style {
     this.fontSize,
     this.fontStyle,
     this.fontWeight,
+    this.height,
     this.listStyleType,
     this.padding,
     this.margin,
     this.textDecoration,
     this.textDecorationStyle,
+    this.width,
     this.preserveWhitespace,
     this.baselineOffset,
     this.before,
     this.after,
     this.textDirection,
-    this.block,
+    this.border,
+    this.alignment = Alignment.centerLeft, //TODO
   });
 
   //TODO: all attributes of TextStyle likely have a CSS attribute and should be supported.
@@ -91,8 +100,6 @@ class Style {
   Style merge(Style other) {
     if (other == null) return this;
 
-    Block mergedBlock = block?.merge(other.block);
-
     return copyWith(
       backgroundColor: other.backgroundColor,
       color: other.color,
@@ -101,18 +108,23 @@ class Style {
       fontSize: other.fontSize,
       fontStyle: other.fontStyle,
       fontWeight: other.fontWeight,
+      height: other.height,
+      listStyleType: other.listStyleType,
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
       //TODO merge EdgeInsets
       textDecoration: other.textDecoration,
       textDecorationStyle: other.textDecorationStyle,
+      width: other.width,
       preserveWhitespace: other.preserveWhitespace,
       baselineOffset: other.baselineOffset,
       before: other.before,
       after: other.after,
       textDirection: other.textDirection,
-      block: mergedBlock,
+      border: other.border,
+      //TODO merge border
+      alignment: other.alignment,
     );
   }
 
@@ -124,16 +136,20 @@ class Style {
     double fontSize,
     FontStyle fontStyle,
     FontWeight fontWeight,
+    double height,
+    ListStyleType listStyleType,
     EdgeInsets padding,
     EdgeInsets margin,
     TextDecoration textDecoration,
     TextDecorationStyle textDecorationStyle,
+    double width,
     bool preserveWhitespace,
     int baselineOffset,
     String before,
     String after,
     TextDirection textDirection,
-    Block block,
+    Border border,
+    Alignment alignment,
   }) {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -143,16 +159,20 @@ class Style {
       fontSize: fontSize ?? this.fontSize,
       fontStyle: fontStyle ?? this.fontStyle,
       fontWeight: fontWeight ?? this.fontWeight,
+      height: height ?? this.height,
+      listStyleType: listStyleType ?? this.listStyleType,
       padding: padding ?? this.padding,
       margin: margin ?? this.margin,
       textDecoration: textDecoration ?? this.textDecoration,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
+      width: width ?? this.width,
       preserveWhitespace: preserveWhitespace ?? this.preserveWhitespace,
       baselineOffset: baselineOffset ?? this.baselineOffset,
       before: before ?? this.before,
       after: after ?? this.after,
       textDirection: textDirection ?? this.textDirection,
-      block: block ?? this.block,
+      border: border ?? this.border,
+      alignment: alignment ?? this.alignment,
     );
   }
 

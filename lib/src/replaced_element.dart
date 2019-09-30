@@ -138,7 +138,7 @@ class AudioContentElement extends ReplacedElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
-      width: context.style.block?.width ?? 300,
+      width: context.style.width ?? 300,
       child: ChewieAudio(
         controller: ChewieAudioController(
           videoPlayerController: VideoPlayerController.network(

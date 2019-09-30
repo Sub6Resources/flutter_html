@@ -89,8 +89,6 @@ class HtmlParser extends StatelessWidget {
         return parseStyledElement(node, children);
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
-      } else if (BLOCK_ELEMENTS.contains(node.localName)) {
-        return parseBlockElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
         return parseReplacedElement(node);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
@@ -324,14 +322,14 @@ class ContainerSpan extends StatelessWidget {
   Widget build(BuildContext _) {
     return Container(
       decoration: BoxDecoration(
-        border: style?.block?.border,
+        border: style?.border,
         color: style?.backgroundColor,
       ),
-      height: style?.block?.height,
-      width: style?.block?.width,
+      height: style?.height,
+      width: style?.width,
       padding: style?.padding,
       margin: style?.margin,
-      alignment: style?.block?.alignment,
+      alignment: style?.alignment,
       child: child ??
           RichText(
             text: TextSpan(
