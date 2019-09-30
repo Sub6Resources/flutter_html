@@ -12,10 +12,10 @@ class Html extends StatelessWidget {
     @required this.data,
     this.css = "",
     @deprecated this.padding,
-    this.backgroundColor,
+    @deprecated this.backgroundColor,
     @deprecated this.defaultTextStyle,
     this.onLinkTap,
-    this.renderNewlines = false,
+    @deprecated this.renderNewlines = false, //TODO(Sub6Resources): Document alternatives
     this.customRender,
     @deprecated this.customEdgeInsets,
     @deprecated this.customTextStyle,
@@ -30,7 +30,8 @@ class Html extends StatelessWidget {
     this.shrinkToFit = false,
     this.imageProperties,
     this.onImageTap,
-    this.showImages = true,
+    @deprecated this.showImages = true,
+    this.blacklistedElements = const [],
     this.style,
   }) : super(key: key);
 
@@ -52,9 +53,11 @@ class Html extends StatelessWidget {
   final OnImageTap onImageTap;
   final bool showImages;
 
+  final List<String> blacklistedElements;
+
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
-  final CustomRender customRender;
+  final Map<String, CustomRender> customRender;
   final CustomEdgeInsets customEdgeInsets;
   final CustomTextStyle customTextStyle;
   final CustomTextAlign customTextAlign;
@@ -99,6 +102,8 @@ class Html extends StatelessWidget {
           cssData: css,
           onLinkTap: onLinkTap,
           style: style,
+          customRender: customRender,
+          blacklistedElements: blacklistedElements,
         ),
     );
   }

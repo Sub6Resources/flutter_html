@@ -87,17 +87,16 @@ const REPLACED_ELEMENTS = [
   "br",
   "head",
   "iframe",
-  "img", //TODO display inline
+  "img",
+  "svg",
   "template",
   "video",
 ];
 
-enum ElementType {
-  REPLACED,
-  INLINE,
-  BLOCK,
-  INTERACTABLE,
-}
+const LAYOUT_ELEMENTS = [
+  "table",
+  "tr",
+];
 
 /**
   Here is a list of elements with planned support:
@@ -168,7 +167,7 @@ enum ElementType {
     strong    - s [x]
     sub       - s [x]
     sup       - s [x]
-    svg       - c [ ]
+    svg       - c [x]
     table     - b [x]
     tbody     - b [x]
     td        - s [ ]

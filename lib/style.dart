@@ -25,6 +25,9 @@ class Style {
   ///CSS attribute "`font-weight`"
   FontWeight fontWeight;
 
+  ///CSS attribute "`list-style-type`"
+  ListStyleType listStyleType;
+
   ///CSS attribute "`padding`"
   EdgeInsets padding;
 
@@ -53,6 +56,7 @@ class Style {
     this.fontSize,
     this.fontStyle,
     this.fontWeight,
+    this.listStyleType,
     this.padding,
     this.margin,
     this.textDecoration,
@@ -81,7 +85,7 @@ class Style {
 
   @override
   String toString() {
-    return "Instance of `Style`";
+    return "Style";
   }
 
   Style merge(Style other) {
@@ -91,16 +95,18 @@ class Style {
 
     return copyWith(
       backgroundColor: other.backgroundColor,
-      color: color,
+      color: other.color,
       display: other.display,
-      fontFamily: fontFamily,
-      fontSize: fontSize,
-      fontStyle: fontStyle,
-      fontWeight: fontWeight,
-      padding: padding, //TODO merge EdgeInsets
-      margin: margin, //TODO merge EdgeInsets
-      textDecoration: textDecoration,
-      textDecorationStyle: textDecorationStyle,
+      fontFamily: other.fontFamily,
+      fontSize: other.fontSize,
+      fontStyle: other.fontStyle,
+      fontWeight: other.fontWeight,
+      padding: other.padding,
+      //TODO merge EdgeInsets
+      margin: other.margin,
+      //TODO merge EdgeInsets
+      textDecoration: other.textDecoration,
+      textDecorationStyle: other.textDecorationStyle,
       preserveWhitespace: other.preserveWhitespace,
       baselineOffset: other.baselineOffset,
       before: other.before,
@@ -149,10 +155,27 @@ class Style {
       block: block ?? this.block,
     );
   }
+
+  Style.fromTextStyle(TextStyle textStyle) {
+    this.backgroundColor = textStyle.backgroundColor;
+    this.color = textStyle.color;
+    this.textDecoration = textStyle.decoration;
+    this.textDecorationStyle = textStyle.decorationStyle;
+    this.fontFamily = textStyle.fontFamily;
+    this.fontSize = textStyle.fontSize;
+    this.fontStyle = textStyle.fontStyle;
+    this.fontWeight = textStyle.fontWeight;
+  }
 }
 
 enum Display {
   BLOCK,
   INLINE,
   INLINE_BLOCK,
+  LIST_ITEM,
+}
+
+enum ListStyleType {
+  DISC,
+  DECIMAL,
 }

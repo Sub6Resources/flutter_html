@@ -1,3 +1,5 @@
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/layout_element.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter/material.dart';
 import 'package:csslib/visitor.dart' as css;
@@ -7,32 +9,37 @@ import 'package:html/parser.dart' as htmlparser;
 import 'package:csslib/parser.dart' as cssparser;
 
 typedef OnLinkTap = void Function(String url);
+typedef CustomRender = Widget Function(
+    RenderContext context, Widget child, Map<String, String> elementAttributes);
 
 class HtmlParser extends StatelessWidget {
   final String htmlData;
   final String cssData;
   final OnLinkTap onLinkTap;
   final Map<String, Style> style;
+  final Map<String, CustomRender> customRender;
+  final List<String> blacklistedElements;
 
   HtmlParser({
     @required this.htmlData,
     @required this.cssData,
     this.onLinkTap,
     this.style,
+    this.customRender,
+    this.blacklistedElements,
   });
 
   @override
   Widget build(BuildContext context) {
     dom.Document document = parseHTML(htmlData);
     css.StyleSheet sheet = parseCSS(cssData);
-    StyledElement lexedTree = lexDomTree(document);
+    StyledElement lexedTree = lexDomTree(document, customRender?.keys?.toList() ?? [], blacklistedElements);
     StyledElement styledTree = applyCSS(lexedTree, sheet);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
     StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
     StyledElement cleanedTree = cleanTree(customStyledTree);
-    print(cleanedTree);
     InlineSpan parsedTree = parseTree(
-      RenderContext(style: Theme.of(context).textTheme.body1),
+      RenderContext(style: Style.fromTextStyle(Theme.of(context).textTheme.body1)),
       cleanedTree,
     );
 
@@ -49,7 +56,8 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
-  static StyledElement lexDomTree(dom.Document html) {
+  static StyledElement lexDomTree(
+      dom.Document html, List<String> customRenderTags, List<String> blacklistedElements) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: new List<StyledElement>(),
@@ -57,21 +65,26 @@ class HtmlParser extends StatelessWidget {
     );
 
     html.nodes.forEach((node) {
-      tree.children.add(_recursiveLexer(node));
+      tree.children.add(_recursiveLexer(node, customRenderTags, blacklistedElements));
     });
 
     return tree;
   }
 
   //TODO(Sub6Resources): Apply inline styles
-  static StyledElement _recursiveLexer(dom.Node node) {
+  static StyledElement _recursiveLexer(
+      dom.Node node, List<String> customRenderTags, List<String> blacklistedElements) {
     List<StyledElement> children = List<StyledElement>();
 
     node.nodes.forEach((childNode) {
-      children.add(_recursiveLexer(childNode));
+      children.add(_recursiveLexer(childNode, customRenderTags, blacklistedElements));
     });
 
+    //TODO(Sub6Resources): There's probably a more efficient way to look this up.
     if (node is dom.Element) {
+      if (blacklistedElements?.contains(node.localName) ?? false) {
+        return EmptyContentElement();
+      }
       if (STYLED_ELEMENTS.contains(node.localName)) {
         return parseStyledElement(node, children);
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
@@ -80,6 +93,10 @@ class HtmlParser extends StatelessWidget {
         return parseBlockElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
         return parseReplacedElement(node);
+      } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
+        return parseLayoutElement(node, children);
+      } else if (customRenderTags.contains(node.localName)) {
+        return parseStyledElement(node, children);
       } else {
         return EmptyContentElement();
       }
@@ -93,8 +110,8 @@ class HtmlParser extends StatelessWidget {
   static StyledElement applyCSS(StyledElement tree, css.StyleSheet sheet) {
     sheet.topLevels.forEach((treeNode) {
       if (treeNode is css.RuleSet) {
-        print(treeNode.selectorGroup.selectors.first.simpleSelectorSequences
-            .first.simpleSelector.name);
+        print(treeNode
+            .selectorGroup.selectors.first.simpleSelectorSequences.first.simpleSelector.name);
       }
     });
 
@@ -142,20 +159,37 @@ class HtmlParser extends StatelessWidget {
     // Merge this element's style into the context so that children
     // inherit the correct style
     RenderContext newContext = RenderContext(
-      style: context.style.merge(tree.style?.generateTextStyle()),
+      style: context.style.merge(tree.style),
     );
+
+    if (customRender?.containsKey(tree.name) ?? false) {
+      return WidgetSpan(
+        child: ContainerSpan(
+          thisContext: context,
+          newContext: newContext,
+          style: tree.style,
+          child: customRender[tree.name].call(
+            newContext,
+            ContainerSpan(
+              thisContext: context,
+              newContext: newContext,
+              style: tree.style,
+              children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
+            ),
+            tree.attributes,
+          ),
+        ),
+      );
+    }
 
     //Return the correct InlineSpan based on the element type.
     if (tree.style?.display == Display.BLOCK) {
       return WidgetSpan(
         child: ContainerSpan(
-          style: tree.style,
-          thisContext: context,
           newContext: newContext,
-          children: tree.children
-                  ?.map((tree) => parseTree(newContext, tree))
-                  ?.toList() ??
-              [],
+          thisContext: context,
+          style: tree.style,
+          children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
         ),
       );
     } else if (tree is ReplacedElement) {
@@ -174,21 +208,21 @@ class HtmlParser extends StatelessWidget {
           onTap: () => onLinkTap(tree.href),
           child: RichText(
             text: TextSpan(
-              style: context.style.merge(tree.style?.generateTextStyle()),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList() ??
-                  [],
+              style: newContext.style.generateTextStyle(),
+              children: tree.children.map((tree) => parseTree(newContext, tree)).toList() ?? [],
             ),
           ),
         ),
       );
+    } else if (tree is LayoutElement) {
+      return WidgetSpan(
+        child: tree.toWidget(context),
+      );
     } else {
       ///[tree] is an inline element, as such, it can only have horizontal margins.
       return TextSpan(
-        style: context.style.merge(tree.style?.generateTextStyle()),
-        children:
-            tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        style: newContext.style.generateTextStyle(),
+        children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
       );
     }
   }
@@ -220,8 +254,7 @@ class HtmlParser extends StatelessWidget {
 
   /// [processListCharacters] adds list characters to the front of all list items.
   static StyledElement _processListCharacters(StyledElement tree) {
-    if (tree.style?.display == Display.BLOCK &&
-        (tree.name == "ol" || tree.name == "ul")) {
+    if (tree.style?.display == Display.BLOCK && (tree.name == "ol" || tree.name == "ul")) {
       for (int i = 0; i < tree.children?.length; i++) {
         if (tree.children[i].name == "li") {
           tree.children[i].children?.insert(
@@ -266,32 +299,21 @@ class HtmlParser extends StatelessWidget {
   }
 }
 
-/// A [CustomRenderer] is used to render html tags in your own way or implement unsupported tags.
-class CustomRenderer {
-  final String name;
-  final Widget Function(BuildContext context) render;
-  final ElementType renderAs;
-
-  CustomRenderer(
-    this.name, {
-    this.render,
-    this.renderAs,
-  });
-}
-
 class RenderContext {
-  TextStyle style;
+  final Style style;
 
   RenderContext({this.style});
 }
 
 class ContainerSpan extends StatelessWidget {
+  final Widget child;
   final List<InlineSpan> children;
   final Style style;
   final RenderContext thisContext;
   final RenderContext newContext;
 
   ContainerSpan({
+    this.child,
     this.children,
     this.style,
     this.thisContext,
@@ -299,7 +321,7 @@ class ContainerSpan extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext _) {
     return Container(
       decoration: BoxDecoration(
         border: style?.block?.border,
@@ -310,12 +332,13 @@ class ContainerSpan extends StatelessWidget {
       padding: style?.padding,
       margin: style?.margin,
       alignment: style?.block?.alignment,
-      child: RichText(
-        text: TextSpan(
-          style: thisContext.style.merge(style?.generateTextStyle()),
-          children: children,
-        ),
-      ),
+      child: child ??
+          RichText(
+            text: TextSpan(
+              style: thisContext.style.merge(style).generateTextStyle(),
+              children: children,
+            ),
+          ),
     );
   }
 }

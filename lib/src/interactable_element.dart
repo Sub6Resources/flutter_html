@@ -12,7 +12,8 @@ class InteractableElement extends StyledElement {
     List<StyledElement> children,
     Style style,
     this.href,
-  }) : super(name: name, children: children, style: style);
+    dom.Node node,
+  }) : super(name: name, children: children, style: style, node: node);
 }
 
 /// A [Gesture] indicates the type of interaction by a user.
@@ -25,6 +26,7 @@ InteractableElement parseInteractableElement(
   InteractableElement interactableElement = InteractableElement(
     name: element.localName,
     children: children,
+    node: element,
   );
 
   switch (element.localName) {

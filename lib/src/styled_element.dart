@@ -25,6 +25,10 @@ class StyledElement {
   bool matchesSelector(String selector) =>
       _node != null && matches(_node, selector);
 
+  Map<String, String> get attributes => _node.attributes.map((key, value) {
+    return MapEntry(key, value);
+  });
+
   @override
   String toString() {
     String selfData =

@@ -1,6 +1,6 @@
 ## [1.0.0] - UNRELEASED
 
-* BREAKING: Requires Flutter version 0.7.3 or greater.
+* BREAKING: Requires Flutter version 1.7.3 or greater and Dart 2.2.2 or greater.
 * Adds support for a new parser, which resolves several major issues and adds several new features.
 * For a list of pre-release changes, including several BREAKING CHANGES, see [the pre-release changelog](https://github.com/Sub6Resources/flutter_html/PRE_CHANGELOG.md)
 
