@@ -36,8 +36,10 @@ class _MyHomePageState extends State<MyHomePage> {
         title: new Text(widget.title),
       ),
       body: SingleChildScrollView(
-        child: Html(
-          data: """
+        child: Directionality(
+          textDirection: TextDirection.ltr,
+          child: Html(
+            data: """
       <h1>Header 1</h1>
       <h2>Header 2</h2>
       <h3>Header 3</h3>
@@ -56,30 +58,31 @@ class _MyHomePageState extends State<MyHomePage> {
       </table>
       <flutter></flutter>
       <svg id='svg1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
-        <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
-        <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
-        <circle r="32" cx="50" cy="35" fill="#00F" opacity="0.5"/>
+          <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
+          <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
+          <circle r="32" cx="50" cy="35" fill="#00F" opacity="0.5"/>
       </svg>
       <br />
       <a href='https://flutter.dev'>Flutter Website</a><br />
       <audio controls>
-        <source src='https://www.w3schools.com/tags/horse.mp3'>
+          <source src='https://www.w3schools.com/tags/horse.mp3'>
       </audio>
       <ol>
-        <li>This</li>
-        <li>is</li>
-        <li>an</li>
-        <li>
-        ordered
-        <ul>
-        <li>With</li>
-        <li>a</li>
-        <li>nested</li>
-        <li>unordered</li>
-        <li>list</li>
-        </ul>
-        </li>
-        <li>list!</li>
+          <li>This</li>
+          <li><p>is</p></li>
+          <li>an</li>
+          <li>
+          ordered
+          <ul>
+          <li>With<br /><br />...</li>
+          <li>a</li>
+          <li>nested</li>
+          <li>unordered</li>
+          <li>list</li>
+          </ul>
+          </li>
+          <li>list! Lorem ipsum dolor sit <b>amet cale aaihg aie a gama eia aai aia ia af a</b></li>
+          <li><h2>Header 2</h2></li>
       </ol>
       <hr />
       <video controls>
@@ -87,28 +90,37 @@ class _MyHomePageState extends State<MyHomePage> {
       </video>
       <iframe src='https://matthewwhitaker.me'></iframe>
   """,
-          //Optional parameters:
-          style: {
-            "html": Style.fromTextStyle(TextStyle(fontFamily: 'monospace')),
-            "a": Style(
-              color: Colors.red,
-            ),
-          },
-          customRender: {
-            "flutter": (RenderContext context, Widget child, attributes) {
-              return FlutterLogo(
-                style: (attributes['horizontal'] != null)? FlutterLogoStyle.horizontal: FlutterLogoStyle.markOnly,
-                textColor: context.style.color,
-                size: context.style.fontSize * 5,
-              );
-            }
-          },
-          onLinkTap: (url) {
-            print("Opening $url...");
-          },
-          onImageTap: (src) {
-            print(src);
-          },
+            //Optional parameters:
+            style: {
+              "html": Style(
+                backgroundColor: Colors.black,
+                color: Colors.white,
+              ),
+              "a": Style(
+                color: Colors.red,
+              ),
+              "li": Style(
+//              backgroundColor: Colors.red,
+                fontSize: 20,
+//                margin: const EdgeInsets.only(top: 32),
+              ),
+            },
+            customRender: {
+              "flutter": (RenderContext context, Widget child, attributes) {
+                return FlutterLogo(
+                  style: (attributes['horizontal'] != null)? FlutterLogoStyle.horizontal: FlutterLogoStyle.markOnly,
+                  textColor: context.style.color,
+                  size: context.style.fontSize * 5,
+                );
+              }
+            },
+            onLinkTap: (url) {
+              print("Opening $url...");
+            },
+            onImageTap: (src) {
+              print(src);
+            },
+          ),
         ),
       ),
     );

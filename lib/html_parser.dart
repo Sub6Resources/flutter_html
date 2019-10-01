@@ -190,6 +190,31 @@ class HtmlParser extends StatelessWidget {
           children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
         ),
       );
+    } else if(tree.style?.display == Display.LIST_ITEM) {
+      return WidgetSpan(
+        child: ContainerSpan(
+          newContext: newContext,
+          thisContext: context,
+          style: tree.style,
+          child: Stack(
+            children: <Widget>[
+              SizedBox(
+                width: newContext.style.fontSize * 1.5, //TODO(Sub6Resources): this is a somewhat arbitrary constant.
+                child: Text(newContext.style.markerContent ?? "", textAlign: TextAlign.center, style: newContext.style.generateTextStyle()),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 30),
+                child: RichText(
+                  text: TextSpan(
+                    children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
+                    style: tree.style.generateTextStyle(),
+                  ),
+                ),
+              )
+            ],
+          ),
+        ),
+      );
     } else if (tree is ReplacedElement) {
       if (tree is TextContentElement) {
         return TextSpan(text: tree.text);
@@ -252,16 +277,17 @@ class HtmlParser extends StatelessWidget {
 
   /// [processListCharacters] adds list characters to the front of all list items.
   static StyledElement _processListCharacters(StyledElement tree) {
-    if (tree.style?.display == Display.BLOCK && (tree.name == "ol" || tree.name == "ul")) {
+    if (tree.name == "ol" || tree.name == "ul") {
       for (int i = 0; i < tree.children?.length; i++) {
         if (tree.children[i].name == "li") {
-          tree.children[i].children?.insert(
-            0,
-            TextContentElement(
-              text: tree.name == "ol" ? "${i + 1}.\t" : "•\t",
-            ),
-          );
-        }
+          switch(tree.style.listStyleType) {
+            case ListStyleType.DISC:
+              tree.children[i].style.markerContent = '•';
+              break;
+            case ListStyleType.DECIMAL:
+              tree.children[i].style.markerContent = '${i + 1}.';
+              break;
+          }}
       }
     }
     tree.children?.forEach(_processListCharacters);
@@ -300,7 +326,9 @@ class HtmlParser extends StatelessWidget {
 class RenderContext {
   final Style style;
 
-  RenderContext({this.style});
+  RenderContext({
+    this.style,
+  });
 }
 
 class ContainerSpan extends StatelessWidget {

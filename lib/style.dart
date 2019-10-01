@@ -53,6 +53,7 @@ class Style {
   TextDirection textDirection;
   Border border;
   Alignment alignment;
+  String markerContent;
 
   Style({
     this.backgroundColor,
@@ -76,6 +77,7 @@ class Style {
     this.textDirection,
     this.border,
     this.alignment = Alignment.centerLeft, //TODO
+    this.markerContent,
   });
 
   //TODO: all attributes of TextStyle likely have a CSS attribute and should be supported.
@@ -125,6 +127,7 @@ class Style {
       border: other.border,
       //TODO merge border
       alignment: other.alignment,
+      markerContent: other.markerContent,
     );
   }
 
@@ -150,6 +153,7 @@ class Style {
     TextDirection textDirection,
     Border border,
     Alignment alignment,
+    String markerContent,
   }) {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -173,6 +177,7 @@ class Style {
       textDirection: textDirection ?? this.textDirection,
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
+      markerContent: markerContent ?? this.markerContent,
     );
   }
 

@@ -58,6 +58,8 @@ LayoutElement parseLayoutElement(dom.Element element, List<StyledElement> childr
       );
       break;
     default:
-      return null;
+      return TableLayoutElement(
+        children: children
+      );
   }
 }

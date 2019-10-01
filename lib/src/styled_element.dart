@@ -61,6 +61,16 @@ StyledElement parseStyledElement(
       break;
     case "address":
       continue italics;
+    case "article":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
+    case "aside":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
     bold:
     case "b":
       styledElement.style = Style(
@@ -141,11 +151,26 @@ StyledElement parseStyledElement(
         display: Display.BLOCK,
       );
       break;
+    case "dt":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
     case "em":
       continue italics;
+    case "figcaption":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
     case "figure":
       styledElement.style = Style(
         margin: EdgeInsets.symmetric(vertical: 14.0, horizontal: 40.0),
+        display: Display.BLOCK,
+      );
+      break;
+    case "footer":
+      styledElement.style = Style(
         display: Display.BLOCK,
       );
       break;
@@ -197,11 +222,21 @@ StyledElement parseStyledElement(
         display: Display.BLOCK,
       );
       break;
+    case "header":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
     case "hr":
       styledElement.style = Style(
         margin: EdgeInsets.symmetric(vertical: 7.0),
         width: double.infinity,
         border: Border(bottom: BorderSide(width: 1.0)),
+        display: Display.BLOCK,
+      );
+      break;
+    case "html":
+      styledElement.style = Style(
         display: Display.BLOCK,
       );
       break;
@@ -215,10 +250,30 @@ StyledElement parseStyledElement(
       continue underline;
     case "kbd":
       continue monospace;
+    case "li":
+      styledElement.style = Style(
+        display: Display.LIST_ITEM,
+      );
+      break;
+    case "main":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
     case "mark":
       styledElement.style = Style(
         color: Colors.black,
         backgroundColor: Colors.yellow,
+      );
+      break;
+    case "nav":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
+    case "noscript":
+      styledElement.style = Style(
+        display: Display.BLOCK,
       );
       break;
     case "ol":
@@ -226,13 +281,15 @@ StyledElement parseStyledElement(
       //TODO(Sub6Resources): This is a workaround for collapsed margins. Remove.
       if (element.parent.localName == "li") {
         styledElement.style = Style(
-          margin: EdgeInsets.only(left: 30.0),
+//          margin: EdgeInsets.only(left: 30.0),
           display: Display.BLOCK,
+          listStyleType: element.localName == "ol"? ListStyleType.DECIMAL: ListStyleType.DISC,
         );
       } else {
         styledElement.style = Style(
-          margin: EdgeInsets.only(left: 30.0, top: 14.0, bottom: 14.0),
+//          margin: EdgeInsets.only(left: 30.0, top: 14.0, bottom: 14.0),
           display: Display.BLOCK,
+          listStyleType: element.localName == "ol"? ListStyleType.DECIMAL: ListStyleType.DISC,
         );
       }
       break;
@@ -260,6 +317,11 @@ StyledElement parseStyledElement(
       continue strikeThrough;
     case "samp":
       continue monospace;
+    case "section":
+      styledElement.style = Style(
+        display: Display.BLOCK,
+      );
+      break;
     case "small":
       styledElement.style = Style(
         fontSize: 10.0,
