@@ -42,11 +42,13 @@ class Style {
   ///CSS attribute "`text-decoration-style`" -
   TextDecorationStyle textDecorationStyle;
 
+  ///CSS attribute "`white-space`"
+  WhiteSpace whiteSpace;
+
   ///CSS attribute "`width`"
   double width;
 
   //TODO modify these to match CSS styles
-  bool preserveWhitespace;
   int baselineOffset;
   String before;
   String after;
@@ -69,8 +71,8 @@ class Style {
     this.margin,
     this.textDecoration,
     this.textDecorationStyle,
+    this.whiteSpace,
     this.width,
-    this.preserveWhitespace,
     this.baselineOffset,
     this.before,
     this.after,
@@ -118,8 +120,8 @@ class Style {
       //TODO merge EdgeInsets
       textDecoration: other.textDecoration,
       textDecorationStyle: other.textDecorationStyle,
+      whiteSpace: other.whiteSpace,
       width: other.width,
-      preserveWhitespace: other.preserveWhitespace,
       baselineOffset: other.baselineOffset,
       before: other.before,
       after: other.after,
@@ -145,6 +147,7 @@ class Style {
     EdgeInsets margin,
     TextDecoration textDecoration,
     TextDecorationStyle textDecorationStyle,
+    WhiteSpace whiteSpace,
     double width,
     bool preserveWhitespace,
     int baselineOffset,
@@ -169,8 +172,8 @@ class Style {
       margin: margin ?? this.margin,
       textDecoration: textDecoration ?? this.textDecoration,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
+      whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
-      preserveWhitespace: preserveWhitespace ?? this.preserveWhitespace,
       baselineOffset: baselineOffset ?? this.baselineOffset,
       before: before ?? this.before,
       after: after ?? this.after,
@@ -203,4 +206,9 @@ enum Display {
 enum ListStyleType {
   DISC,
   DECIMAL,
+}
+
+enum WhiteSpace {
+  NORMAL,
+  PRE,
 }

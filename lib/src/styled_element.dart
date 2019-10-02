@@ -32,7 +32,7 @@ class StyledElement {
   @override
   String toString() {
     String selfData =
-        "$name [Children: ${children?.length ?? 0}] [Classes: ${elementClasses.toString()}] [ID: $elementId] <Style: $style>";
+        "[$name] ${children?.length ?? 0} ${elementClasses?.isNotEmpty == true? 'C:${elementClasses.toString()}': ''}${elementId?.isNotEmpty == true? 'ID: $elementId': ''}";
     children?.forEach((child) {
       selfData += ("\n${child.toString()}")
           .replaceAll(RegExp("^", multiLine: true), "-");
@@ -303,7 +303,7 @@ StyledElement parseStyledElement(
       styledElement.style = Style(
         fontFamily: 'monospace',
         margin: EdgeInsets.symmetric(vertical: 14.0),
-        preserveWhitespace: true,
+        whiteSpace: WhiteSpace.PRE,
         display: Display.BLOCK,
       );
       break;

@@ -248,7 +248,7 @@ ReplacedElement parseReplacedElement(dom.Element element) {
     case "br":
       return TextContentElement(
         text: "\n",
-        style: Style(preserveWhitespace: true),
+        style: Style(whiteSpace: WhiteSpace.PRE),
       );
     case "iframe":
       return IframeContentElement(

@@ -28,25 +28,19 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: new AppBar(
-        title: new Text(widget.title),
-      ),
-      body: SingleChildScrollView(
-        child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: Html(
-            data: """
-      <h1>Header 1</h1>
-      <h2>Header 2</h2>
-      <h3>Header 3</h3>
-      <h4>Header 4</h4>
-      <h5>Header 5</h5>
-      <h6>Header 6</h6>
-      <img src='https://example.com/image.jpg' alt='Alt Text' />
+const htmlData = """
+<p id='whitespace'>
+      These two lines should have an identical length:<br /><br />
+      
+            The     quick   <b> brown </b><u><i> fox </i></u> jumped over   the 
+             &nbsp;lazy  
+             
+             
+             
+             
+             &nbsp;dog.<br />
+            The quick brown fox jumped over the lazy dog.
+      </p>
       <table>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
       <tr><td>Data</td><td>Data</td><td>Data</td></tr>
@@ -58,69 +52,94 @@ class _MyHomePageState extends State<MyHomePage> {
       </table>
       <flutter></flutter>
       <svg id='svg1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
-          <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
-          <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
-          <circle r="32" cx="50" cy="35" fill="#00F" opacity="0.5"/>
+            <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
+            <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
+            <circle r="32" cx="50" cy="35" fill="#00F" opacity="0.5"/>
       </svg>
-      <br />
-      <a href='https://flutter.dev'>Flutter Website</a><br />
-      <audio controls>
-          <source src='https://www.w3schools.com/tags/horse.mp3'>
-      </audio>
       <ol>
-          <li>This</li>
-          <li><p>is</p></li>
-          <li>an</li>
-          <li>
-          ordered
-          <ul>
-          <li>With<br /><br />...</li>
-          <li>a</li>
-          <li>nested</li>
-          <li>unordered</li>
-          <li>list</li>
-          </ul>
-          </li>
-          <li>list! Lorem ipsum dolor sit <b>amet cale aaihg aie a gama eia aai aia ia af a</b></li>
-          <li><h2>Header 2</h2></li>
+            <li>This</li>
+            <li><p>is</p></li>
+            <li>an</li>
+            <li>
+            ordered
+            <ul>
+            <li>With<br /><br />...</li>
+            <li>a</li>
+            <li>nested</li>
+            <li>unordered</li>
+            <ol>
+            <li>With a nested</li>
+            <li>ordered list.</li>
+            </ol>
+            <li>list</li>
+            </ul>
+            </li>
+            <li>list! Lorem ipsum dolor sit <b>amet cale aaihg aie a gama eia aai aia ia af a</b></li>
+            <li><h2>Header 2</h2></li>
+            <h2><li>Header 2</li></h2>
       </ol>
-      <hr />
-      <video controls>
-      <source src='https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4'>
-      </video>
-      <iframe src='https://matthewwhitaker.me'></iframe>
-  """,
-            //Optional parameters:
-            style: {
-              "html": Style(
-                backgroundColor: Colors.black,
-                color: Colors.white,
-              ),
-              "a": Style(
-                color: Colors.red,
-              ),
-              "li": Style(
+""";
+
+class _MyHomePageState extends State<MyHomePage> {
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      body: SafeArea(
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: SingleChildScrollView(
+                child: Html(
+                  data: htmlData,
+                  //Optional parameters:
+                  style: {
+                    "html": Style(
+                      backgroundColor: Colors.black,
+                      color: Colors.white,
+                    ),
+                    "a": Style(
+                      color: Colors.red,
+                    ),
+                    "li": Style(
 //              backgroundColor: Colors.red,
-                fontSize: 20,
+//                fontSize: 20,
 //                margin: const EdgeInsets.only(top: 32),
+                    ),
+                    "h1, h3, h5": Style(
+//                backgroundColor: Colors.deepPurple,
+//                alignment: Alignment.center,
+                    ),
+                    "#whitespace": Style(
+                      backgroundColor: Colors.purple,
+                    ),
+                  },
+                  customRender: {
+                    "flutter": (RenderContext context, Widget child, attributes) {
+                      return FlutterLogo(
+                        style: (attributes['horizontal'] != null)? FlutterLogoStyle.horizontal: FlutterLogoStyle.markOnly,
+                        textColor: context.style.color,
+                        size: context.style.fontSize * 5,
+                      );
+                    }
+                  },
+                  onLinkTap: (url) {
+                    print("Opening $url...");
+                  },
+                  onImageTap: (src) {
+                    print(src);
+                  },
+                ),
               ),
-            },
-            customRender: {
-              "flutter": (RenderContext context, Widget child, attributes) {
-                return FlutterLogo(
-                  style: (attributes['horizontal'] != null)? FlutterLogoStyle.horizontal: FlutterLogoStyle.markOnly,
-                  textColor: context.style.color,
-                  size: context.style.fontSize * 5,
-                );
-              }
-            },
-            onLinkTap: (url) {
-              print("Opening $url...");
-            },
-            onImageTap: (src) {
-              print(src);
-            },
-          ),
+            ),
+            Expanded(
+                child: SingleChildScrollView(
+                  child: Text(
+                    HtmlParser.cleanTree(HtmlParser.applyCSS(HtmlParser.lexDomTree(HtmlParser.parseHTML(htmlData), [], []), null)).toString(),
+                    style: TextStyle(fontFamily: 'monospace'),
+                  ),
+                ),
+            )
+          ],
         ),
       ),
     );

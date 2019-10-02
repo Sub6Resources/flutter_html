@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/layout_element.dart';
 import 'package:flutter_html/style.dart';
@@ -51,6 +53,7 @@ class HtmlParser extends StatelessWidget {
     return htmlparser.parse(data);
   }
 
+  ///TODO document
   static css.StyleSheet parseCSS(String data) {
     return cssparser.parse(data);
   }
@@ -71,7 +74,7 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  //TODO(Sub6Resources): Apply inline styles
+  ///TODO document
   static StyledElement _recursiveLexer(
       dom.Node node, List<String> customRenderTags, List<String> blacklistedElements) {
     List<StyledElement> children = List<StyledElement>();
@@ -105,24 +108,34 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
+  ///TODO document
   static StyledElement applyCSS(StyledElement tree, css.StyleSheet sheet) {
-    sheet.topLevels.forEach((treeNode) {
-      if (treeNode is css.RuleSet) {
-        print(treeNode
-            .selectorGroup.selectors.first.simpleSelectorSequences.first.simpleSelector.name);
-      }
-    });
+    //TODO
+//    sheet.topLevels.forEach((treeNode) {
+//      if (treeNode is css.RuleSet) {
+//        print(treeNode
+//            .selectorGroup.selectors.first.simpleSelectorSequences.first.simpleSelector.name);
+//      }
+//    });
+
+    //Make sure style is never null.
+    if(tree.style == null) {
+      tree.style = Style();
+    }
+
+    tree.children?.forEach((e) => applyCSS(e, sheet));
 
     return tree;
   }
 
+  ///TODO document
   static StyledElement applyInlineStyles(StyledElement tree) {
     //TODO
 
     return tree;
   }
 
-  /// [_applyCustomStyles] applies the [Style] objects passed into the [Html]
+  /// [applyCustomStyles] applies the [Style] objects passed into the [Html]
   /// widget onto the [StyledElement] tree.
   StyledElement _applyCustomStyles(StyledElement tree) {
     if (style == null) return tree;
@@ -144,11 +157,12 @@ class HtmlParser extends StatelessWidget {
   /// on the first level, redundant levels are collapsed, empty elements are
   /// removed, and specialty elements are processed.
   static StyledElement cleanTree(StyledElement tree) {
-    tree = _processWhitespace(tree);
+    tree = _processInternalWhitespace(tree);
+    tree = _processInlineWhitespace(tree);
     tree = _removeEmptyElements(tree);
-    //TODO(Sub6Resources): Make this better.
     tree = _processListCharacters(tree);
     tree = _processBeforesAndAfters(tree);
+    tree = _collapseMargins(tree);
     return tree;
   }
 
@@ -242,7 +256,7 @@ class HtmlParser extends StatelessWidget {
         child: tree.toWidget(context),
       );
     } else {
-      ///[tree] is an inline element, as such, it can only have horizontal margins.
+      ///[tree] is an inline element.
       return TextSpan(
         style: newContext.style.generateTextStyle(),
         children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
@@ -251,21 +265,59 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [processWhitespace] removes unnecessary whitespace from the StyledElement tree.
-  static StyledElement _processWhitespace(StyledElement tree) {
-    // Goal is to Follow specs given at https://www.w3.org/TR/css-text-3/
-    // specs outlined less technically at https://medium.com/@patrickbrosset/when-does-white-space-matter-in-html-b90e8a7cdd33
-    if (tree.style?.preserveWhitespace ?? false) {
-      //preserve this whitespace
+  ///
+  /// The criteria for determining which whitespace is replaceable is outlined
+  /// at https://www.w3.org/TR/css-text-3/
+  /// and summarized at https://medium.com/@patrickbrosset/when-does-white-space-matter-in-html-b90e8a7cdd33
+  static StyledElement _processInternalWhitespace(StyledElement tree) {
+    if ((tree.style?.whiteSpace ?? WhiteSpace.NORMAL) == WhiteSpace.PRE) {
+      // Preserve this whitespace
     } else if (tree is TextContentElement) {
       tree.text = _removeUnnecessaryWhitespace(tree.text);
     } else {
-      //TODO(Sub6Resources): remove all but one space even across inline elements
-      tree.children?.forEach(_processWhitespace);
+      tree.children?.forEach(_processInternalWhitespace);
     }
     return tree;
   }
 
-  /// [_removeUnnecessaryWhitespace] removes most unnecessary whitespace
+  ///TODO document
+  static StyledElement _processInlineWhitespace(StyledElement tree) {
+    final whitespaceParsingContext = WhitespaceParsingContext(false);
+    tree = _processInlineWhitespaceRecursive(tree, whitespaceParsingContext);
+    return tree;
+  }
+
+  ///TODO document
+  static StyledElement _processInlineWhitespaceRecursive(StyledElement tree, WhitespaceParsingContext wpc) {
+
+    if(tree.style.display == Display.BLOCK) {
+      wpc.inTrailingSpaceContext = false;
+    }
+
+    if(tree is TextContentElement) {
+      if(wpc.inTrailingSpaceContext && tree.text.startsWith(' ')) {
+        tree.text = tree.text.replaceFirst(' ', '');
+      }
+
+      if(tree.text.endsWith(' ')) {
+        wpc.inTrailingSpaceContext = true;
+      } else {
+        wpc.inTrailingSpaceContext = false;
+      }
+    }
+
+    tree.children?.forEach((e) => _processInlineWhitespaceRecursive(e, wpc));
+
+    return tree;
+  }
+
+  /// [removeUnnecessaryWhitespace] removes "unnecessary" white space from the given String.
+  ///
+  /// The steps for removing this whitespace are as follows:
+  /// (1) Remove any whitespace immediately preceding or following a newline.
+  /// (2) Replace all newlines with a space
+  /// (3) Replace all tabs with a space
+  /// (4) Replace any instances of two or more spaces with a single space.
   static String _removeUnnecessaryWhitespace(String text) {
     return text
         .replaceAll(RegExp("\ *(?=\n)"), "")
@@ -276,6 +328,7 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [processListCharacters] adds list characters to the front of all list items.
+  /// TODO document better
   static StyledElement _processListCharacters(StyledElement tree) {
     if (tree.name == "ol" || tree.name == "ul") {
       for (int i = 0; i < tree.children?.length; i++) {
@@ -294,6 +347,7 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
+  /// TODO document better
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style?.before != null) {
       tree.children.insert(0, TextContentElement(text: tree.style.before));
@@ -302,6 +356,102 @@ class HtmlParser extends StatelessWidget {
       tree.children.add(TextContentElement(text: tree.style.after));
     }
     tree.children?.forEach(_processBeforesAndAfters);
+    return tree;
+  }
+
+  /// [collapseMargins] follows the specifications at https://www.w3.org/TR/CSS21/box.html#collapsing-margins
+  /// for collapsing margins of block-level boxes. This prevents the doubling of margins between
+  /// boxes, and makes for a more correct rendering of the html content.
+  ///
+  /// Paraphrased from the CSS specification:
+  /// Margins are collapsed if both belong to vertically-adjacent box edges, i.e form one of the following pairs:
+  /// (1) Top margin of a box and top margin of its first in-flow child
+  /// (2) Bottom margin of a box and top margin of its next in-flow following sibling
+  /// (3) Bottom margin of a last in-flow child and bottom margin of its parent (if the parent's height is not explicit)
+  /// (4) Top and Bottom margins of a box with a height of zero or no in-flow children.
+  static StyledElement _collapseMargins(StyledElement tree) {
+    //Short circuit if we've reached a leaf of the tree
+    if (tree.children == null || tree.children.isEmpty) {
+      // Handle case (4) from above.
+      if((tree.style.height ?? 0) == 0) {
+        tree.style.margin = EdgeInsets.zero;
+      }
+      return tree;
+    }
+
+    //Collapsing should be depth-first.
+    tree.children?.forEach(_collapseMargins);
+
+    //The root boxes do not collapse.
+    if (tree.name == '[Tree Root]' || tree.name == 'html') {
+      return tree;
+    }
+
+    // Handle case (1) from above.
+    // Top margins cannot collapse if the element has padding
+    if ((tree.style.padding?.top ?? 0) == 0) {
+      final parentTop = tree.style.margin?.top ?? 0;
+      final firstChildTop = tree.children.first.style.margin?.top ?? 0;
+      final newOuterMarginTop = max(parentTop, firstChildTop);
+
+      // Set the parent's margin
+      if(tree.style.margin == null) {
+        tree.style.margin = EdgeInsets.only(top: newOuterMarginTop);
+      } else {
+        tree.style.margin = tree.style.margin.copyWith(top: newOuterMarginTop);
+      }
+
+      // And remove the child's margin
+      if(tree.children.first.style.margin == null) {
+        tree.children.first.style.margin = EdgeInsets.zero;
+      } else {
+        tree.children.first.style.margin = tree.children.first.style.margin.copyWith(top: 0);
+      }
+    }
+
+    // Handle case (3) from above.
+    // Bottom margins cannot collapse if the element has padding
+    if ((tree.style.padding?.bottom ?? 0) == 0) {
+      final parentBottom = tree.style.margin?.bottom ?? 0;
+      final lastChildBottom = tree.children.last.style.margin?.bottom ?? 0;
+      final newOuterMarginBottom = max(parentBottom, lastChildBottom);
+
+      // Set the parent's margin
+      if(tree.style.margin == null) {
+        tree.style.margin = EdgeInsets.only(bottom: newOuterMarginBottom);
+      } else {
+        tree.style.margin = tree.style.margin.copyWith(bottom: newOuterMarginBottom);
+      }
+
+      // And remove the child's margin
+      if(tree.children.last.style.margin == null) {
+        tree.children.last.style.margin = EdgeInsets.zero;
+      } else {
+        tree.children.last.style.margin = tree.children.last.style.margin.copyWith(bottom: 0);
+      }
+    }
+
+    // Handle case (2) from above.
+    if(tree.children.length > 1) {
+      for (int i = 1; i < tree.children.length; i++) {
+        final previousSiblingBottom = tree.children[i - 1].style.margin?.bottom ?? 0;
+        final thisTop = tree.children[i].style.margin?.top ?? 0;
+        final newInternalMargin = max(previousSiblingBottom, thisTop) / 2;
+
+        if(tree.children[i - 1].style.margin == null) {
+          tree.children[i - 1].style.margin = EdgeInsets.only(bottom: newInternalMargin);
+        } else {
+          tree.children[i - 1].style.margin = tree.children[i - 1].style.margin.copyWith(bottom: newInternalMargin);
+        }
+
+        if(tree.children[i].style.margin == null) {
+          tree.children[i].style.margin = EdgeInsets.only(top: newInternalMargin);
+        } else {
+          tree.children[i].style.margin = tree.children[i].style.margin.copyWith(top: newInternalMargin);
+        }
+      }
+    }
+
     return tree;
   }
 
@@ -323,6 +473,7 @@ class HtmlParser extends StatelessWidget {
   }
 }
 
+///TODO document better
 class RenderContext {
   final Style style;
 
@@ -331,6 +482,14 @@ class RenderContext {
   });
 }
 
+///TODO document
+class WhitespaceParsingContext {
+  bool inTrailingSpaceContext;
+
+  WhitespaceParsingContext(this.inTrailingSpaceContext);
+}
+
+///TODO document
 class ContainerSpan extends StatelessWidget {
   final Widget child;
   final List<InlineSpan> children;
