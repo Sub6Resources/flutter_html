@@ -33,12 +33,12 @@ const htmlData = """
       These two lines should have an identical length:<br /><br />
       
             The     quick   <b> brown </b><u><i> fox </i></u> jumped over   the 
-             &nbsp;lazy  
+             lazy  
              
              
              
              
-             &nbsp;dog.<br />
+             dog.<br />
             The quick brown fox jumped over the lazy dog.
       </p>
       <table>
@@ -66,11 +66,12 @@ const htmlData = """
             <li>With<br /><br />...</li>
             <li>a</li>
             <li>nested</li>
-            <li>unordered</li>
+            <li>unordered
             <ol>
             <li>With a nested</li>
             <li>ordered list.</li>
             </ol>
+            </li>
             <li>list</li>
             </ul>
             </li>

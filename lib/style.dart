@@ -133,6 +133,20 @@ class Style {
     );
   }
 
+  Style copyOnlyInherited(Style child) {
+    if (child == null) return this;
+
+    return child.copyWith(
+      color: child.color ?? color,
+      fontFamily: child.fontFamily ?? fontFamily,
+      fontSize: child.fontSize ?? fontSize,
+      fontStyle: child.fontStyle ?? fontStyle,
+      fontWeight: child.fontWeight ?? fontWeight,
+      listStyleType: child.listStyleType ?? listStyleType,
+      whiteSpace: child.whiteSpace ?? whiteSpace,
+    );
+  }
+
   Style copyWith({
     Color backgroundColor,
     Color color,

@@ -1,7 +1,9 @@
+import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/layout_element.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter/material.dart';
 import 'package:csslib/visitor.dart' as css;
@@ -39,7 +41,8 @@ class HtmlParser extends StatelessWidget {
     StyledElement styledTree = applyCSS(lexedTree, sheet);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
     StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
-    StyledElement cleanedTree = cleanTree(customStyledTree);
+    StyledElement cascadedStyledTree = _cascadeStyles(customStyledTree);
+    StyledElement cleanedTree = cleanTree(cascadedStyledTree);
     InlineSpan parsedTree = parseTree(
       RenderContext(style: Style.fromTextStyle(Theme.of(context).textTheme.body1)),
       cleanedTree,
@@ -153,6 +156,15 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
+  StyledElement _cascadeStyles(StyledElement tree) {
+    tree.children?.forEach((child) {
+      child.style = tree.style.copyOnlyInherited(child.style);
+      _cascadeStyles(child);
+    });
+
+    return tree;
+  }
+
   /// [cleanTree] optimizes the [StyledElement] tree so all [BlockElement]s are
   /// on the first level, redundant levels are collapsed, empty elements are
   /// removed, and specialty elements are processed.
@@ -177,13 +189,11 @@ class HtmlParser extends StatelessWidget {
     if (customRender?.containsKey(tree.name) ?? false) {
       return WidgetSpan(
         child: ContainerSpan(
-          thisContext: context,
           newContext: newContext,
           style: tree.style,
           child: customRender[tree.name].call(
             newContext,
             ContainerSpan(
-              thisContext: context,
               newContext: newContext,
               style: tree.style,
               children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
@@ -199,7 +209,6 @@ class HtmlParser extends StatelessWidget {
       return WidgetSpan(
         child: ContainerSpan(
           newContext: newContext,
-          thisContext: context,
           style: tree.style,
           children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
         ),
@@ -208,16 +217,16 @@ class HtmlParser extends StatelessWidget {
       return WidgetSpan(
         child: ContainerSpan(
           newContext: newContext,
-          thisContext: context,
           style: tree.style,
           child: Stack(
             children: <Widget>[
-              SizedBox(
-                width: newContext.style.fontSize * 1.5, //TODO(Sub6Resources): this is a somewhat arbitrary constant.
-                child: Text(newContext.style.markerContent ?? "", textAlign: TextAlign.center, style: newContext.style.generateTextStyle()),
+              PositionedDirectional(
+                width: 30, //TODO derive this from list padding.
+                start: 0,
+                child: Text('${newContext.style.markerContent}\t', textAlign: TextAlign.right, style: newContext.style.generateTextStyle()),
               ),
               Padding(
-                padding: const EdgeInsets.only(left: 30),
+                padding: EdgeInsets.only(left: 30), //TODO derive this from list padding.
                 child: RichText(
                   text: TextSpan(
                     children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
@@ -282,27 +291,27 @@ class HtmlParser extends StatelessWidget {
 
   ///TODO document
   static StyledElement _processInlineWhitespace(StyledElement tree) {
-    final whitespaceParsingContext = WhitespaceParsingContext(false);
+    final whitespaceParsingContext = Context(false);
     tree = _processInlineWhitespaceRecursive(tree, whitespaceParsingContext);
     return tree;
   }
 
   ///TODO document
-  static StyledElement _processInlineWhitespaceRecursive(StyledElement tree, WhitespaceParsingContext wpc) {
+  static StyledElement _processInlineWhitespaceRecursive(StyledElement tree, Context<bool> wpc) {
 
     if(tree.style.display == Display.BLOCK) {
-      wpc.inTrailingSpaceContext = false;
+      wpc.data = false;
     }
 
     if(tree is TextContentElement) {
-      if(wpc.inTrailingSpaceContext && tree.text.startsWith(' ')) {
+      if(wpc.data && tree.text.startsWith(' ')) {
         tree.text = tree.text.replaceFirst(' ', '');
       }
 
       if(tree.text.endsWith(' ')) {
-        wpc.inTrailingSpaceContext = true;
+        wpc.data = true;
       } else {
-        wpc.inTrailingSpaceContext = false;
+        wpc.data = false;
       }
     }
 
@@ -320,8 +329,8 @@ class HtmlParser extends StatelessWidget {
   /// (4) Replace any instances of two or more spaces with a single space.
   static String _removeUnnecessaryWhitespace(String text) {
     return text
-        .replaceAll(RegExp("\ *(?=\n)"), "")
-        .replaceAll(RegExp("(?:\n)\ *"), "")
+        .replaceAll(RegExp("\ *(?=\n)"), "\n")
+        .replaceAll(RegExp("(?:\n)\ *"), "\n")
         .replaceAll("\n", " ")
         .replaceAll("\t", " ")
         .replaceAll(RegExp(" {2,}"), " ");
@@ -330,20 +339,45 @@ class HtmlParser extends StatelessWidget {
   /// [processListCharacters] adds list characters to the front of all list items.
   /// TODO document better
   static StyledElement _processListCharacters(StyledElement tree) {
-    if (tree.name == "ol" || tree.name == "ul") {
-      for (int i = 0; i < tree.children?.length; i++) {
-        if (tree.children[i].name == "li") {
-          switch(tree.style.listStyleType) {
-            case ListStyleType.DISC:
-              tree.children[i].style.markerContent = '•';
-              break;
-            case ListStyleType.DECIMAL:
-              tree.children[i].style.markerContent = '${i + 1}.';
-              break;
-          }}
+//    if (tree.name == "ol" || tree.name == "ul") {
+//      for (int i = 0; i < tree.children?.length; i++) {
+//        if (tree.children[i].name == "li") {
+//          switch(tree.style.listStyleType) {
+//            case ListStyleType.DISC:
+//              tree.children[i].style.markerContent = '•';
+//              break;
+//            case ListStyleType.DECIMAL:
+//              tree.children[i].style.markerContent = '${i + 1}.';
+//              break;
+//          }}
+//      }
+//    }
+//    tree.children?.forEach(_processListCharacters);
+    final olStack = ListQueue<Context<int>>();
+    tree = _processListCharactersRecursive(tree, olStack);
+    return tree;
+  }
+
+  static StyledElement _processListCharactersRecursive(StyledElement tree, ListQueue<Context<int>> olStack) {
+    if(tree.name == 'ol') {
+      olStack.add(Context(0));
+    } else if (tree.style.display == Display.LIST_ITEM) {
+      switch(tree.style.listStyleType) {
+        case ListStyleType.DISC:
+          tree.style.markerContent = '•';
+          break;
+        case ListStyleType.DECIMAL:
+          olStack.last.data += 1;
+          tree.style.markerContent = '${olStack.last.data}.';
       }
     }
-    tree.children?.forEach(_processListCharacters);
+
+    tree.children?.forEach((e) => _processListCharactersRecursive(e, olStack));
+
+    if(tree.name == 'ol') {
+      olStack.removeLast();
+    }
+
     return tree;
   }
 
@@ -463,6 +497,12 @@ class HtmlParser extends StatelessWidget {
         toRemove.add(child);
       } else if (child is TextContentElement && (child.text.isEmpty)) {
         toRemove.add(child);
+      } else if (child is TextContentElement &&
+          child.style.whiteSpace != WhiteSpace.PRE &&
+          tree.style.display == Display.BLOCK &&
+          child.text.trim().isEmpty) {
+        //TODO should this be moved to the whitespace functions?
+        toRemove.add(child);
       } else {
         _removeEmptyElements(child);
       }
@@ -483,25 +523,16 @@ class RenderContext {
 }
 
 ///TODO document
-class WhitespaceParsingContext {
-  bool inTrailingSpaceContext;
-
-  WhitespaceParsingContext(this.inTrailingSpaceContext);
-}
-
-///TODO document
 class ContainerSpan extends StatelessWidget {
   final Widget child;
   final List<InlineSpan> children;
   final Style style;
-  final RenderContext thisContext;
   final RenderContext newContext;
 
   ContainerSpan({
     this.child,
     this.children,
     this.style,
-    this.thisContext,
     this.newContext,
   });
 
@@ -520,7 +551,7 @@ class ContainerSpan extends StatelessWidget {
       child: child ??
           RichText(
             text: TextSpan(
-              style: thisContext.style.merge(style).generateTextStyle(),
+              style: newContext.style.generateTextStyle(),
               children: children,
             ),
           ),
