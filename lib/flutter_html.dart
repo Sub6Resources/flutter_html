@@ -30,6 +30,7 @@ class Html extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.customImgRender,
   }) : super(key: key);
 
   final String data;
@@ -43,6 +44,7 @@ class Html extends StatelessWidget {
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
   final bool shrinkToFit;
+  final ImgRender customImgRender;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -80,6 +82,7 @@ class Html extends StatelessWidget {
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,
+                customImageRenderer: customImgRender,
               )
             : HtmlOldParser(
                 width: width,

@@ -7,6 +7,16 @@ import 'package:html/parser.dart' as parser;
 
 import 'image_properties.dart';
 
+typedef ImgRender = Widget Function({
+  String src,
+  String alt,
+  double width,
+  double height,
+  ImageProperties imageProperties,
+  bool shrinkToFit,
+  ParseContext nextContext,
+});
+
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef CustomTextStyle = TextStyle Function(
   dom.Node node,
@@ -19,6 +29,51 @@ typedef OnImageTap = void Function(String source);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
+
+ImgRender _defaultImageRenderer = (
+    {String src,
+    String alt,
+    double width,
+    double height,
+    ImageProperties imageProperties,
+    bool shrinkToFit,
+    ParseContext nextContext}) {
+  return Image.network(
+    src,
+    frameBuilder: (context, child, frame, _) {
+      if (alt != null && frame == null) {
+        return BlockText(
+          child: RichText(
+            textAlign: TextAlign.center,
+            text: TextSpan(
+              text: alt,
+              style: nextContext.childStyle,
+            ),
+          ),
+          shrinkToFit: shrinkToFit,
+        );
+      }
+      if (frame != null) {
+        return child;
+      }
+      return Container();
+    },
+    width: (width ?? -1) > 0 ? width : null,
+    height: (height ?? -1) > 0 ? height : null,
+    scale: imageProperties?.scale ?? 1.0,
+    matchTextDirection: imageProperties?.matchTextDirection ?? false,
+    centerSlice: imageProperties?.centerSlice,
+    filterQuality: imageProperties?.filterQuality ?? FilterQuality.low,
+    alignment: imageProperties?.alignment ?? Alignment.center,
+    colorBlendMode: imageProperties?.colorBlendMode,
+    fit: imageProperties?.fit,
+    color: imageProperties?.color,
+    repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+    semanticLabel: imageProperties?.semanticLabel,
+    excludeFromSemantics:
+        (imageProperties?.semanticLabel == null) ? true : false,
+  );
+};
 
 class LinkTextSpan extends TextSpan {
   // Beware!
@@ -165,6 +220,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.customImageRenderer,
   });
 
   final double indentSize = 10.0;
@@ -181,6 +237,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
+  final ImgRender customImageRenderer;
 
   // style elements set a default style
   // for all child nodes
@@ -794,45 +851,19 @@ class HtmlRichTextParser extends StatelessWidget {
                     onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
-                    child: Image.network(
-                      node.attributes['src'],
-                      frameBuilder: (context, child, frame, _) {
-                        if (node.attributes['alt'] != null && frame == null) {
-                          return BlockText(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: node.attributes['alt'],
-                                style: nextContext.childStyle,
-                              ),
-                            ),
+                    child: customImageRenderer(
+                          src: node.attributes['src'],
+                          alt: node.attributes['alt'],
+                          imageProperties: imageProperties,
+                          shrinkToFit: shrinkToFit,
+                          nextContext: nextContext,
+                        ) ??
+                        _defaultImageRenderer(
+                            src: node.attributes['src'],
+                            alt: node.attributes['alt'],
+                            imageProperties: imageProperties,
                             shrinkToFit: shrinkToFit,
-                          );
-                        }
-                        if (frame != null) {
-                          return child;
-                        }
-                        return Container();
-                      },
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? height : null,
-                      scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
-                      centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
-                      alignment: imageProperties?.alignment ?? Alignment.center,
-                      colorBlendMode: imageProperties?.colorBlendMode,
-                      fit: imageProperties?.fit,
-                      color: imageProperties?.color,
-                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                      semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
-                    ),
+                            nextContext: nextContext),
                     onTap: () {
                       if (onImageTap != null) {
                         onImageTap(node.attributes['src']);
