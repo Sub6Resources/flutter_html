@@ -56,29 +56,6 @@ const htmlData = """
             <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
             <circle r="32" cx="50" cy="35" fill="#00F" opacity="0.5"/>
       </svg>
-      <ol>
-            <li>This</li>
-            <li><p>is</p></li>
-            <li>an</li>
-            <li>
-            ordered
-            <ul>
-            <li>With<br /><br />...</li>
-            <li>a</li>
-            <li>nested</li>
-            <li>unordered
-            <ol>
-            <li>With a nested</li>
-            <li>ordered list.</li>
-            </ol>
-            </li>
-            <li>list</li>
-            </ul>
-            </li>
-            <li>list! Lorem ipsum dolor sit <b>amet cale aaihg aie a gama eia aai aia ia af a</b></li>
-            <li><h2>Header 2</h2></li>
-            <h2><li>Header 2</li></h2>
-      </ol>
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -111,7 +88,7 @@ class _MyHomePageState extends State<MyHomePage> {
 //                alignment: Alignment.center,
                     ),
                     "#whitespace": Style(
-                      backgroundColor: Colors.purple,
+                      backgroundColor: Colors.deepPurple,
                     ),
                   },
                   customRender: {
@@ -119,7 +96,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       return FlutterLogo(
                         style: (attributes['horizontal'] != null)? FlutterLogoStyle.horizontal: FlutterLogoStyle.markOnly,
                         textColor: context.style.color,
-                        size: context.style.fontSize * 5,
+                        size: context.style.fontSize * 8,
                       );
                     }
                   },

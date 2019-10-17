@@ -2,7 +2,6 @@ import 'dart:collection';
 import 'dart:math';
 
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/layout_element.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter/material.dart';
@@ -97,8 +96,6 @@ class HtmlParser extends StatelessWidget {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
         return parseReplacedElement(node);
-      } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
-        return parseLayoutElement(node, children);
       } else if (customRenderTags.contains(node.localName)) {
         return parseStyledElement(node, children);
       } else {
@@ -238,6 +235,47 @@ class HtmlParser extends StatelessWidget {
           ),
         ),
       );
+    } else if(tree.style?.display == Display.TABLE) {
+      return WidgetSpan(
+        child: DefaultTextStyle(
+          style: TextStyle(color: Colors.white),
+          child: IntrinsicWidth(
+            child: ContainerSpan(
+              style: Style(border: Border.all(color: Colors.white)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [Expanded(child: Placeholder()), Expanded(child: FlutterLogo())],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    ),
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [Expanded(child: Text('Hello\nWorld!')), Expanded(child: ContainerSpan(child: Placeholder()))],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    ),
+                  ),
+                  IntrinsicHeight(
+                    child: Row(
+                      children: [Expanded(child: Placeholder()), Expanded(child: Text('Hi'))],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      );
+//    } else if(tree.style?.display == Display.TABLE_CELL) {
+//      return TextSpan();
+//    } else if(tree.style?.display == Display.TABLE_ROW) {
+//
     } else if (tree is ReplacedElement) {
       if (tree is TextContentElement) {
         return TextSpan(text: tree.text);
@@ -259,10 +297,6 @@ class HtmlParser extends StatelessWidget {
             ),
           ),
         ),
-      );
-    } else if (tree is LayoutElement) {
-      return WidgetSpan(
-        child: tree.toWidget(context),
       );
     } else {
       ///[tree] is an inline element.
@@ -499,7 +533,14 @@ class HtmlParser extends StatelessWidget {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
-          tree.style.display == Display.BLOCK &&
+          (
+              tree.style.display == Display.BLOCK ||
+              tree.style.display == Display.TABLE ||
+              tree.style.display == Display.TABLE_ROW_GROUP ||
+              tree.style.display == Display.TABLE_ROW ||
+              tree.style.display == Display.TABLE_FOOTER_GROUP ||
+              tree.style.display == Display.TABLE_HEADER_GROUP
+          ) &&
           child.text.trim().isEmpty) {
         //TODO should this be moved to the whitespace functions?
         toRemove.add(child);

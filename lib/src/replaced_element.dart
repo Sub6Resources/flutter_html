@@ -202,11 +202,13 @@ class VideoContentElement extends ReplacedElement {
 
 /// [SvgContentElement] is a [ReplacedElement] with an SVG as its contents.
 class SvgContentElement extends ReplacedElement {
+  final String name;
   final String data;
   final double width;
   final double height;
 
   SvgContentElement({
+    this.name,
     this.data,
     this.width,
     this.height,
@@ -283,6 +285,7 @@ ReplacedElement parseReplacedElement(dom.Element element) {
       );
     case "svg":
       return SvgContentElement(
+        name: "svg",
         data: element.outerHtml,
         width: double.tryParse(element.attributes['width'] ?? ""),
         height: double.tryParse(element.attributes['height'] ?? ""),
