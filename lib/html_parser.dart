@@ -243,7 +243,7 @@ class HtmlParser extends StatelessWidget {
         return TextSpan(text: tree.text);
       } else {
         return WidgetSpan(
-          alignment: PlaceholderAlignment.aboveBaseline,
+          alignment: tree.alignment,
           baseline: TextBaseline.alphabetic,
           child: tree.toWidget(context),
         );

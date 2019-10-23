@@ -22,9 +22,6 @@ const STYLED_ELEMENTS = [
   "kbd",
   "mark",
   "q",
-  "rp",
-  "rt",
-  "ruby",
   "s",
   "samp",
   "small",
@@ -85,6 +82,9 @@ const REPLACED_ELEMENTS = [
   "svg",
   "template",
   "video",
+  "rp",
+  "rt",
+  "ruby",
 ];
 
 const LAYOUT_ELEMENTS = [

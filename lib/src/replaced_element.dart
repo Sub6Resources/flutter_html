@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
@@ -19,14 +20,19 @@ import 'package:html/dom.dart' as dom;
 /// A [ReplacedElement] may use its children nodes to determine relevant information
 /// (e.g. <video>'s <source> tags), but the children nodes will not be saved as [children].
 abstract class ReplacedElement extends StyledElement {
-  ReplacedElement({
-    String name,
-    Style style,
-    dom.Element node,
-  }) : super(name: name, children: null, style: style, node: node);
+  PlaceholderAlignment alignment;
+
+  ReplacedElement(
+      {String name,
+      Style style,
+      dom.Element node,
+      this.alignment = PlaceholderAlignment.aboveBaseline})
+      : super(name: name, children: null, style: style, node: node);
 
   static List<String> parseMediaSources(List<dom.Element> elements) {
-    return elements.where((element) => element.localName == 'source').map((element) {
+    return elements
+        .where((element) => element.localName == 'source')
+        .map((element) {
       return element.attributes['src'];
     }).toList();
   }
@@ -68,7 +74,8 @@ class ImageContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    if (src == null) return Text(alt ?? "", style: context.style.generateTextStyle());
+    if (src == null)
+      return Text(alt ?? "", style: context.style.generateTextStyle());
     if (src.startsWith("data:image") && src.contains("base64,")) {
       return Image.memory(base64.decode(src.split("base64,")[1].trim()));
     } else {
@@ -110,7 +117,9 @@ class IframeContentElement extends ReplacedElement {
       child: WebView(
         initialUrl: src,
         javascriptMode: JavascriptMode.unrestricted,
-        gestureRecognizers: {Factory(() => PlatformViewVerticalGestureRecognizer())},
+        gestureRecognizers: {
+          Factory(() => PlatformViewVerticalGestureRecognizer())
+        },
       ),
     );
   }
@@ -189,7 +198,9 @@ class VideoContentElement extends ReplacedElement {
           videoPlayerController: VideoPlayerController.network(
             src.first ?? "",
           ),
-          placeholder: poster != null ? Image.network(poster) : Container(color: Colors.black),
+          placeholder: poster != null
+              ? Image.network(poster)
+              : Container(color: Colors.black),
           autoPlay: autoplay,
           looping: loop,
           showControls: showControls,
@@ -227,6 +238,55 @@ class EmptyContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(_) => null;
+}
+
+class RubyElement extends ReplacedElement {
+  dom.Element element;
+
+  RubyElement({@required this.element, String name = "ruby"})
+      : super(name: name, alignment: PlaceholderAlignment.middle);
+
+  @override
+  Widget toWidget(RenderContext context) {
+    dom.Node textNode = null;
+    List<Widget> widgets = List<Widget>();
+    final rubySize = max(9.0, context.style.fontSize / 2);
+    final rubyYPos = rubySize + 2;
+    element.nodes.forEach((c) {
+      if (c.nodeType == dom.Node.TEXT_NODE) {
+        textNode = c;
+      }
+      if (c is dom.Element) {
+        if (c.localName == "rt" && textNode != null) {
+          final widget = Stack(
+            alignment: Alignment.center,
+            children: <Widget>[
+              Container(
+                  alignment: Alignment.bottomCenter,
+                  child: Center(
+                      child: Transform(
+                          transform:
+                              Matrix4.translationValues(0, -(rubyYPos), 0),
+                          child: Text(c.innerHtml,
+                              style: context.style
+                                  .generateTextStyle()
+                                  .copyWith(fontSize: rubySize))))),
+              Container(
+                  child: Text(textNode.text.trim(),
+                      style: context.style.generateTextStyle())),
+            ],
+          );
+          widgets.add(widget);
+        }
+      }
+    });
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.end,
+      textBaseline: TextBaseline.alphabetic,
+      mainAxisSize: MainAxisSize.min,
+      children: widgets,
+    );
+  }
 }
 
 ReplacedElement parseReplacedElement(dom.Element element) {
@@ -286,6 +346,10 @@ ReplacedElement parseReplacedElement(dom.Element element) {
         data: element.outerHtml,
         width: double.tryParse(element.attributes['width'] ?? ""),
         height: double.tryParse(element.attributes['height'] ?? ""),
+      );
+    case "ruby":
+      return RubyElement(
+        element: element,
       );
     default:
       return EmptyContentElement(name: element.localName);
