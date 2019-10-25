@@ -50,8 +50,12 @@ const htmlData = """
       </thead>
       <tbody>
       <tr><td><b>Data</b></td><td>Data</td><td>Data</td></tr>
-      <tr><td>Data</td><td>Data</td><td>Data</td></tr>
-      <tr><td>Data</td><td>Data</td><td>Data</td></tr>
+      <tr>
+        <td>Data</td><td>Data</td><td>Data</td>
+      </tr>
+      <tr>
+        <td>Data</td><td>Data</td><td>Data</td>
+      </tr>
       </tbody>
       <tfoot>
       <tr><td>fData</td><td>fData</td><td>fData</td></tr>
