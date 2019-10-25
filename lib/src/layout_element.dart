@@ -42,22 +42,25 @@ class TableLayoutElement extends LayoutElement {
       });
     }).expand((i) => i).toList().asMap();
 
-    return Table(
-      columnWidths: colWidths,
-      children: children
-          .map((c) {
+    return Container(
+        decoration: BoxDecoration(
+          color: style.backgroundColor
+        ),
+        child: Table(
+          columnWidths: colWidths,
+          children: children.map((c) {
             if (c is TableSectionLayoutElement) {
               return c.toTableRows(context);
             }
             return null;
           })
-          .where((t) {
+              .where((t) {
             return t != null;
           })
           .toList()
           .expand((i) => i)
           .toList(),
-    );
+        ));
   }
 }
 
@@ -98,9 +101,18 @@ class TableRowLayoutElement extends LayoutElement {
 
   TableRow toTableRow(RenderContext context) {
     return TableRow(
+      decoration: BoxDecoration(
+        border: style.border,
+      ),
         children: children.map((c) {
           if (c is StyledElement && c.name == 'td' || c.name == 'th') {
-            return RichText(text: context.parser.parseTree(context, c));
+            return TableCell(
+                child: Container(
+                  padding: c.style.padding,
+                  decoration: BoxDecoration(
+                    color: c.style.backgroundColor
+                  ),
+                  child: RichText(text: context.parser.parseTree(context, c))));
           }
           return null;
     }).where((c) => c != null).toList());

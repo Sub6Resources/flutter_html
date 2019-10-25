@@ -43,13 +43,14 @@ const htmlData = """
       </p>
       <table>
       <colgroup>
-        <col width="70%" />
+        <col width="50%" />
+        <col width="25%" />
+        <col width="25%" />
       </colgroup>
       <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
       </thead>
       <tbody>
-      <tr><td><b>Data</b></td><td>Data</td><td>Data</td></tr>
       <tr>
         <td>Data</td><td>Data</td><td>Data</td>
       </tr>
@@ -124,6 +125,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     "#whitespace": Style(
                       backgroundColor: Colors.purple,
                     ),
+                    "table": Style(
+                      backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee)
+                    ),
+                    "tr": Style(
+                      border: Border(bottom: BorderSide(color: Colors.grey))
+                    ),
+                    "th": Style(
+                      padding: EdgeInsets.all(6),
+                      backgroundColor: Colors.grey
+                    ),
+                    "td": Style(
+                      padding: EdgeInsets.all(6),
+                      backgroundColor: Colors.transparent
+                    )
                   },
                   customRender: {
                     "flutter": (RenderContext context, Widget child, attributes) {
