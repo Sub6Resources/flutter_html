@@ -343,42 +343,6 @@ StyledElement parseStyledElement(
         baselineOffset: 1,
       );
       break;
-    case "table":
-      styledElement.style = Style(
-        display: Display.TABLE,
-      );
-      break;
-    case "tbody":
-      styledElement.style = Style(
-        display: Display.TABLE_ROW_GROUP,
-      );
-      break;
-    case "td":
-      styledElement.style = Style(
-        display: Display.TABLE_CELL,
-      );
-      break;
-    case "th":
-      styledElement.style = Style(
-        display: Display.TABLE_CELL,
-        fontWeight: FontWeight.bold,
-      );
-      break;
-    case "thead":
-      styledElement.style = Style(
-        display: Display.TABLE_HEADER_GROUP,
-      );
-      break;
-    case "tfoot":
-      styledElement.style = Style(
-        display: Display.TABLE_FOOTER_GROUP,
-      );
-      break;
-    case "tr":
-      styledElement.style = Style(
-        display: Display.TABLE_ROW,
-      );
-      break;
     case "tt":
       continue monospace;
     underline:

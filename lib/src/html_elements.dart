@@ -70,15 +70,6 @@ const STYLED_ELEMENTS = [
   "pre",
   "section",
   "ul",
-
-  //TABLE ELEMENTS
-  "table",
-  "td",
-  "th",
-  "tr",
-  "tbody",
-  "tfoot",
-  "thead",
 ];
 
 const INTERACTABLE_ELEMENTS = [
@@ -94,6 +85,14 @@ const REPLACED_ELEMENTS = [
   "svg",
   "template",
   "video",
+];
+
+const LAYOUT_ELEMENTS = [
+  "table",
+  "tr",
+  "tbody",
+  "tfoot",
+  "thead",
 ];
 
 /**
