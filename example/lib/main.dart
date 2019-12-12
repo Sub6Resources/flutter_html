@@ -41,6 +41,13 @@ const htmlData = """
              dog.<br />
             The quick brown fox jumped over the lazy dog.
       </p>
+      <p>
+        <ruby>
+          漢<rt>かん</rt>
+          字<rt>じ</rt>
+        </ruby>
+        &nbsp;is Japanese Kanji
+      </p>
       <table>
       <colgroup>
         <col width="50%" />
