@@ -42,12 +42,24 @@ const htmlData = """
             The quick brown fox jumped over the lazy dog.
       </p>
       <table>
+      <colgroup>
+        <col width="50%" />
+        <col width="25%" />
+        <col width="25%" />
+      </colgroup>
+      <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
-      <tr><td>Data</td><td>Data</td><td>Data</td></tr>
-      <tr><td>Data</td><td>Data</td><td>Data</td></tr>
-      <tr><td>Data</td><td>Data</td><td>Data</td></tr>
+      </thead>
+      <tbody>
+      <tr>
+        <td>Data</td><td>Data</td><td>Data</td>
+      </tr>
+      <tr>
+        <td>Data</td><td>Data</td><td>Data</td>
+      </tr>
+      </tbody>
       <tfoot>
-      <tr><td>Data</td><td>Data</td><td>Data</td></tr>
+      <tr><td>fData</td><td>fData</td><td>fData</td></tr>
       </tfoot>
       </table>
       <flutter></flutter>
@@ -113,6 +125,20 @@ class _MyHomePageState extends State<MyHomePage> {
                     "#whitespace": Style(
                       backgroundColor: Colors.purple,
                     ),
+                    "table": Style(
+                      backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee)
+                    ),
+                    "tr": Style(
+                      border: Border(bottom: BorderSide(color: Colors.grey))
+                    ),
+                    "th": Style(
+                      padding: EdgeInsets.all(6),
+                      backgroundColor: Colors.grey
+                    ),
+                    "td": Style(
+                      padding: EdgeInsets.all(6),
+                      backgroundColor: Colors.transparent
+                    )
                   },
                   customRender: {
                     "flutter": (RenderContext context, Widget child, attributes) {

@@ -44,7 +44,7 @@ class HtmlParser extends StatelessWidget {
     StyledElement cascadedStyledTree = _cascadeStyles(customStyledTree);
     StyledElement cleanedTree = cleanTree(cascadedStyledTree);
     InlineSpan parsedTree = parseTree(
-      RenderContext(style: Style.fromTextStyle(Theme.of(context).textTheme.body1)),
+      RenderContext(parser: this, style: Style.fromTextStyle(Theme.of(context).textTheme.body1)),
       cleanedTree,
     );
 
@@ -99,6 +99,8 @@ class HtmlParser extends StatelessWidget {
         return parseReplacedElement(node);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
+      } else if (TABLE_STYLE_ELEMENTS.contains(node.localName)) {
+        return parseTableDefinitionElement(node, children);
       } else if (customRenderTags.contains(node.localName)) {
         return parseStyledElement(node, children);
       } else {
@@ -183,6 +185,7 @@ class HtmlParser extends StatelessWidget {
     // Merge this element's style into the context so that children
     // inherit the correct style
     RenderContext newContext = RenderContext(
+      parser: this,
       style: context.style.merge(tree.style),
     );
 
@@ -515,9 +518,11 @@ class HtmlParser extends StatelessWidget {
 
 ///TODO document better
 class RenderContext {
+  final HtmlParser parser;
   final Style style;
 
   RenderContext({
+    this.parser,
     this.style,
   });
 }
