@@ -74,23 +74,34 @@ class ImageContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    if (src == null)
+    if (src == null) {
       return Text(alt ?? "", style: context.style.generateTextStyle());
-    if (src.startsWith("data:image") && src.contains("base64,")) {
+    } else if (src.startsWith("data:image") && src.contains("base64,")) {
       return Image.memory(base64.decode(src.split("base64,")[1].trim()));
+    } else if(src.startsWith("asset:")) {
+      final assetPath = src.replaceFirst('asset:', '');
+      //TODO precache image
+      return Image.asset(
+        assetPath,
+        frameBuilder: (ctx, child, frame, _) {
+          if(frame == null) {
+            return Text(alt ?? "", style: context.style.generateTextStyle());
+          }
+          return child;
+        },
+      );
     } else {
+      //TODO precache image
       return Image.network(
         src,
-        frameBuilder: (ctx, child, frame, something) {
+        frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
             return Text(alt ?? "", style: context.style.generateTextStyle());
           }
-
           return child;
         },
       );
     }
-    //TODO(Sub6Resources): precacheImage
   }
 }
 
