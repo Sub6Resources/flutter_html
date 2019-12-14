@@ -130,6 +130,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.1.8"
+<<<<<<< HEAD
   open_iconic_flutter:
     dependency: transitive
     description:
@@ -137,6 +138,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.0"
+=======
+>>>>>>> master
   path:
     dependency: transitive
     description:
@@ -144,6 +147,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.4"
+<<<<<<< HEAD
   path_drawing:
     dependency: transitive
     description:
@@ -158,6 +162,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.1.4"
+=======
+>>>>>>> master
   pedantic:
     dependency: transitive
     description:
@@ -179,6 +185,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.5"
+<<<<<<< HEAD
   screen:
     dependency: transitive
     description:
@@ -186,6 +193,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.0.5"
+=======
+>>>>>>> master
   sky_engine:
     dependency: transitive
     description: flutter
@@ -247,6 +256,7 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.8"
+<<<<<<< HEAD
   video_player:
     dependency: "direct main"
     description:
@@ -261,6 +271,8 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "0.3.14+1"
+=======
+>>>>>>> master
   xml:
     dependency: transitive
     description:
@@ -270,4 +282,8 @@ packages:
     version: "3.5.0"
 sdks:
   dart: ">=2.4.0 <3.0.0"
+<<<<<<< HEAD
   flutter: ">=1.7.4 <2.0.0"
+=======
+  flutter: ">=0.5.0"
+>>>>>>> master

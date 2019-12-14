@@ -4,6 +4,10 @@
 * Adds support for a new parser, which resolves several major issues and adds several new features.
 * For a list of pre-release changes, including several BREAKING CHANGES, see [the pre-release changelog](https://github.com/Sub6Resources/flutter_html/PRE_CHANGELOG.md)
 
+## [0.11.1] - December 14, 2019:
+
+* Add support for `AssetImage`s using the `asset:` prefix ([#162](https://github.com/Sub6Resources/flutter_html/pull/162)).
+
 ## [0.11.0] - September 10, 2019:
 
 * Make it so `width=100%` doesn't throw error. Fixes [#118](https://github.com/Sub6Resources/flutter_html/issues/118).
