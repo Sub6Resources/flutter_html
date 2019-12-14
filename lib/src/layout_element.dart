@@ -28,38 +28,46 @@ class TableLayoutElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
-
-    final colWidths = children.where((c) => c.name == "colgroup").map((group) {
-      return group.children.where((c) => c.name == "col").map((c) {
-        final widthStr = c.attributes["width"] ?? "";
-        if (widthStr.endsWith("%")) {
-          final width = double.tryParse(widthStr.substring(0, widthStr.length - 1)) * 0.01;
-          return FractionColumnWidth(width);
-        } else {
-          final width = double.tryParse(widthStr);
-          return FixedColumnWidth(width);
-        }
-      });
-    }).expand((i) => i).toList().asMap();
+    final colWidths = children
+        .where((c) => c.name == "colgroup")
+        .map((group) {
+          return group.children.where((c) => c.name == "col").map((c) {
+            final widthStr = c.attributes["width"] ?? "";
+            if (widthStr.endsWith("%")) {
+              final width = double.tryParse(widthStr.substring(0, widthStr.length - 1)) * 0.01;
+              return FractionColumnWidth(width);
+            } else {
+              final width = double.tryParse(widthStr);
+              return FixedColumnWidth(width);
+            }
+          });
+        })
+        .expand((i) => i)
+        .toList()
+        .asMap();
 
     return Container(
         decoration: BoxDecoration(
-          color: style.backgroundColor
+          color: style.backgroundColor,
+          border: style.border,
         ),
+        width: style.width,
+        height: style.height,
         child: Table(
           columnWidths: colWidths,
-          children: children.map((c) {
-            if (c is TableSectionLayoutElement) {
-              return c.toTableRows(context);
-            }
-            return null;
-          })
+          children: children
+              .map((c) {
+                if (c is TableSectionLayoutElement) {
+                  return c.toTableRows(context);
+                }
+                return null;
+              })
               .where((t) {
-            return t != null;
-          })
-          .toList()
-          .expand((i) => i)
-          .toList(),
+                return t != null;
+              })
+              .toList()
+              .expand((i) => i)
+              .toList(),
         ));
   }
 }
@@ -101,21 +109,26 @@ class TableRowLayoutElement extends LayoutElement {
 
   TableRow toTableRow(RenderContext context) {
     return TableRow(
-      decoration: BoxDecoration(
-        border: style.border,
-      ),
-        children: children.map((c) {
-          if (c is StyledElement && c.name == 'td' || c.name == 'th') {
-            return TableCell(
-                child: Container(
-                  padding: c.style.padding,
-                  decoration: BoxDecoration(
-                    color: c.style.backgroundColor
-                  ),
-                  child: RichText(text: context.parser.parseTree(context, c))));
-          }
-          return null;
-    }).where((c) => c != null).toList());
+        decoration: BoxDecoration(
+          border: style.border,
+          color: style.backgroundColor,
+        ),
+        children: children
+            .map((c) {
+              if (c is StyledElement && c.name == 'td' || c.name == 'th') {
+                return TableCell(
+                    child: Container(
+                        padding: c.style.padding,
+                        decoration: BoxDecoration(
+                          color: c.style.backgroundColor,
+                          border: c.style.border,
+                        ),
+                        child: RichText(text: context.parser.parseTree(context, c))));
+              }
+              return null;
+            })
+            .where((c) => c != null)
+            .toList());
   }
 }
 
@@ -128,22 +141,24 @@ class TableStyleElement extends StyledElement {
   }) : super(name: name, children: children, style: style, node: node);
 }
 
-TableStyleElement parseTableDefinitionElement(
-    dom.Element element, List<StyledElement> children) {
+TableStyleElement parseTableDefinitionElement(dom.Element element, List<StyledElement> children) {
   switch (element.localName) {
     case "colgroup":
     case "col":
       return TableStyleElement(
-          name: element.localName,
-          children: children,
-          node: element
+        name: element.localName,
+        children: children,
+        node: element,
       );
     default:
       return TableStyleElement();
   }
 }
+
 LayoutElement parseLayoutElement(
-    dom.Element element, List<StyledElement> children) {
+  dom.Element element,
+  List<StyledElement> children,
+) {
   switch (element.localName) {
     case "table":
       return TableLayoutElement(
@@ -161,11 +176,7 @@ LayoutElement parseLayoutElement(
       );
       break;
     case "tr":
-      return TableRowLayoutElement(
-        name: element.localName,
-        children: children,
-        node: element
-      );
+      return TableRowLayoutElement(name: element.localName, children: children, node: element);
       break;
     default:
       return TableLayoutElement(children: children);

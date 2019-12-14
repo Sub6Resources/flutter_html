@@ -118,7 +118,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
                     "li": Style(
 //              backgroundColor: Colors.red,
-//                fontSize: 20,
+//                fontSize: FontSize(20),
 //                margin: const EdgeInsets.only(top: 32),
                         ),
                     "h1, h3, h5": Style(
@@ -128,8 +128,12 @@ class _MyHomePageState extends State<MyHomePage> {
                     "#whitespace": Style(
                       backgroundColor: Colors.deepPurple,
                     ),
-                    "table": Style(backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee)),
-                    "tr": Style(border: Border(bottom: BorderSide(color: Colors.grey))),
+                    "table": Style(
+                      backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
+                    ),
+                    "tr": Style(
+                      border: Border(bottom: BorderSide(color: Colors.grey)),
+                    ),
                     "th": Style(
                       padding: EdgeInsets.all(6),
                       backgroundColor: Colors.grey,
