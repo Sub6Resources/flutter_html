@@ -1,3 +1,7 @@
+## [0.11.1] - December 14, 2019:
+
+* Add support for `AssetImage`s using the `asset:` prefix ([#162](https://github.com/Sub6Resources/flutter_html/pull/162)).
+
 ## [0.11.0] - September 10, 2019:
 
 * Make it so `width=100%` doesn't throw error. Fixes [#118](https://github.com/Sub6Resources/flutter_html/issues/118).
