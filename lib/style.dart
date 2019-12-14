@@ -16,7 +16,7 @@ class Style {
   String fontFamily;
 
   ///CSS attribute "`font-size`"
-  double fontSize;
+  FontSize fontSize;
 
   ///CSS attribute "`font-style`"
   FontStyle fontStyle;
@@ -42,6 +42,9 @@ class Style {
   ///CSS attribute "`text-decoration-style`" -
   TextDecorationStyle textDecorationStyle;
 
+  ///CSS attribute "`vertical-align`"
+  VerticalAlign verticalAlign;
+
   ///CSS attribute "`white-space`"
   WhiteSpace whiteSpace;
 
@@ -49,7 +52,6 @@ class Style {
   double width;
 
   //TODO modify these to match CSS styles
-  int baselineOffset;
   String before;
   String after;
   TextDirection textDirection;
@@ -71,9 +73,9 @@ class Style {
     this.margin,
     this.textDecoration,
     this.textDecorationStyle,
+    this.verticalAlign,
     this.whiteSpace,
     this.width,
-    this.baselineOffset,
     this.before,
     this.after,
     this.textDirection,
@@ -90,7 +92,7 @@ class Style {
       decoration: textDecoration,
       decorationStyle: textDecorationStyle,
       fontFamily: fontFamily,
-      fontSize: fontSize,
+      fontSize: fontSize?.size,
       fontStyle: fontStyle,
       fontWeight: fontWeight,
     );
@@ -120,9 +122,9 @@ class Style {
       //TODO merge EdgeInsets
       textDecoration: other.textDecoration,
       textDecorationStyle: other.textDecorationStyle,
+      verticalAlign: other.verticalAlign,
       whiteSpace: other.whiteSpace,
       width: other.width,
-      baselineOffset: other.baselineOffset,
       before: other.before,
       after: other.after,
       textDirection: other.textDirection,
@@ -152,7 +154,7 @@ class Style {
     Color color,
     Display display,
     String fontFamily,
-    double fontSize,
+    FontSize fontSize,
     FontStyle fontStyle,
     FontWeight fontWeight,
     double height,
@@ -161,6 +163,7 @@ class Style {
     EdgeInsets margin,
     TextDecoration textDecoration,
     TextDecorationStyle textDecorationStyle,
+    VerticalAlign verticalAlign,
     WhiteSpace whiteSpace,
     double width,
     bool preserveWhitespace,
@@ -186,9 +189,9 @@ class Style {
       margin: margin ?? this.margin,
       textDecoration: textDecoration ?? this.textDecoration,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
+      verticalAlign: verticalAlign ?? this.verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
-      baselineOffset: baselineOffset ?? this.baselineOffset,
       before: before ?? this.before,
       after: after ?? this.after,
       textDirection: textDirection ?? this.textDirection,
@@ -204,7 +207,7 @@ class Style {
     this.textDecoration = textStyle.decoration;
     this.textDecorationStyle = textStyle.decorationStyle;
     this.fontFamily = textStyle.fontFamily;
-    this.fontSize = textStyle.fontSize;
+    this.fontSize = FontSize(textStyle.fontSize);
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
   }
@@ -217,9 +220,41 @@ enum Display {
   LIST_ITEM,
 }
 
+class FontSize {
+  final double size;
+
+  const FontSize(this.size);
+
+  /// A percentage of the parent style's font size.
+  factory FontSize.percent(int percent) => FontSize(percent.toDouble() / -100.0);
+
+  // These values are calculated based off of the default (`medium`)
+  // being 14px.
+  //
+  // TODO(Sub6Resources): This seems to override Flutter's accessibility text scaling.
+  //
+  // Negative values are computed during parsing to be a percentage of
+  // the parent style's font size.
+  static const xxSmall = FontSize(7.875);
+  static const xSmall = FontSize(8.75);
+  static const small = FontSize(11.375);
+  static const medium = FontSize(14.0);
+  static const large = FontSize(15.75);
+  static const xLarge = FontSize(21.0);
+  static const xxLarge = FontSize(28.0);
+  static const smaller = FontSize(-0.83);
+  static const larger = FontSize(-1.2);
+}
+
 enum ListStyleType {
   DISC,
   DECIMAL,
+}
+
+enum VerticalAlign {
+  BASELINE,
+  SUB,
+  SUPER,
 }
 
 enum WhiteSpace {

@@ -250,7 +250,8 @@ class RubyElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     dom.Node textNode = null;
     List<Widget> widgets = List<Widget>();
-    final rubySize = max(9.0, context.style.fontSize / 2);
+    //TODO calculate based off of parent font size.
+    final rubySize = max(9.0, context.style.fontSize.size / 2);
     final rubyYPos = rubySize + 2;
     element.nodes.forEach((c) {
       if (c.nodeType == dom.Node.TEXT_NODE) {

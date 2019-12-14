@@ -177,6 +177,7 @@ class HtmlParser extends StatelessWidget {
     tree = _processListCharacters(tree);
     tree = _processBeforesAndAfters(tree);
     tree = _collapseMargins(tree);
+    tree = _processFontSize(tree);
     return tree;
   }
 
@@ -186,7 +187,7 @@ class HtmlParser extends StatelessWidget {
     // inherit the correct style
     RenderContext newContext = RenderContext(
       parser: this,
-      style: context.style.merge(tree.style),
+      style: context.style.copyOnlyInherited(tree.style),
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
@@ -254,7 +255,7 @@ class HtmlParser extends StatelessWidget {
     } else if (tree is InteractableElement) {
       return WidgetSpan(
         child: GestureDetector(
-          onTap: () => onLinkTap(tree.href),
+          onTap: () => onLinkTap?.call(tree.href),
           child: RichText(
             text: TextSpan(
               style: newContext.style.generateTextStyle(),
@@ -266,6 +267,30 @@ class HtmlParser extends StatelessWidget {
     } else if (tree is LayoutElement) {
       return WidgetSpan(
         child: tree.toWidget(context),
+      );
+    } else if (tree.style.verticalAlign != null && tree.style.verticalAlign != VerticalAlign.BASELINE) {
+      double verticalOffset;
+      switch(tree.style.verticalAlign) {
+        case VerticalAlign.SUB:
+          verticalOffset = tree.style.fontSize.size / 2.5;
+          break;
+        case VerticalAlign.SUPER:
+          verticalOffset = tree.style.fontSize.size / -2.5;
+          break;
+        default:
+          break;
+      }
+      //Requires special layout features not available in the TextStyle API.
+      return WidgetSpan(
+        child: Transform.translate(
+          offset: Offset(0, verticalOffset),
+          child: RichText(
+            text: TextSpan(
+              style: newContext.style.generateTextStyle(),
+              children: tree.children.map((tree) => parseTree(newContext, tree)).toList() ?? [],
+            ),
+          ),
+        ),
       );
     } else {
       ///[tree] is an inline element.
@@ -512,6 +537,19 @@ class HtmlParser extends StatelessWidget {
     });
     tree.children?.removeWhere((element) => toRemove.contains(element));
 
+    return tree;
+  }
+
+  static StyledElement _processFontSize(StyledElement tree) {
+    double parentFontSize = tree.style?.fontSize?.size ?? FontSize.medium.size;
+
+    tree.children?.forEach((child) {
+      if ((child.style.fontSize?.size ?? parentFontSize) < 0) {
+        child.style.fontSize = FontSize(parentFontSize * -child.style.fontSize.size);
+      }
+
+      _processFontSize(child);
+    });
     return tree;
   }
 }
