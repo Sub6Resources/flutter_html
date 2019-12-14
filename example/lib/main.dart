@@ -29,18 +29,12 @@ class MyHomePage extends StatefulWidget {
 }
 
 const htmlData = """
-<p id='whitespace'>
-      These two lines should have an identical length:<br /><br />
-      
-            The     quick   <b> brown </b><u><i> fox </i></u> jumped over   the 
-             lazy  
-             
-             
-             
-             
-             dog.<br />
-            The quick brown fox jumped over the lazy dog.
-      </p>
+<h1>Header 1</h1>
+<h2>Header 2</h2>
+<h3>Header 3</h3>
+<h4>Header 4</h4>
+<h5>Header 5</h5>
+<h6>Header 6</h6>
       <p>
         <ruby>
           漢<rt>かん</rt>
@@ -48,6 +42,8 @@ const htmlData = """
         </ruby>
         &nbsp;is Japanese Kanji
       </p>
+      Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
+      <p>One of the most common equations in all of physics is <var>E</var>=<var>m</var><var>c</var><sup>2</sup>.<p>
       <table>
       <colgroup>
         <col width="50%" />
@@ -124,35 +120,34 @@ class _MyHomePageState extends State<MyHomePage> {
 //              backgroundColor: Colors.red,
 //                fontSize: 20,
 //                margin: const EdgeInsets.only(top: 32),
-                    ),
+                        ),
                     "h1, h3, h5": Style(
 //                backgroundColor: Colors.deepPurple,
 //                alignment: Alignment.center,
-                    ),
+                        ),
                     "#whitespace": Style(
-                      backgroundColor: Colors.purple,
+                      backgroundColor: Colors.deepPurple,
                     ),
-                    "table": Style(
-                      backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee)
-                    ),
-                    "tr": Style(
-                      border: Border(bottom: BorderSide(color: Colors.grey))
-                    ),
+                    "table": Style(backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee)),
+                    "tr": Style(border: Border(bottom: BorderSide(color: Colors.grey))),
                     "th": Style(
                       padding: EdgeInsets.all(6),
-                      backgroundColor: Colors.grey
+                      backgroundColor: Colors.grey,
                     ),
                     "td": Style(
                       padding: EdgeInsets.all(6),
-                      backgroundColor: Colors.transparent
-                    )
+                      backgroundColor: Colors.transparent,
+                    ),
+                    "var": Style(fontFamily: 'serif'),
                   },
                   customRender: {
                     "flutter": (RenderContext context, Widget child, attributes) {
                       return FlutterLogo(
-                        style: (attributes['horizontal'] != null)? FlutterLogoStyle.horizontal: FlutterLogoStyle.markOnly,
+                        style: (attributes['horizontal'] != null)
+                            ? FlutterLogoStyle.horizontal
+                            : FlutterLogoStyle.markOnly,
                         textColor: context.style.color,
-                        size: context.style.fontSize * 5,
+                        size: context.style.fontSize.size * 5,
                       );
                     }
                   },
@@ -166,12 +161,14 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             ),
             Expanded(
-                child: SingleChildScrollView(
-                  child: Text(
-                    HtmlParser.cleanTree(HtmlParser.applyCSS(HtmlParser.lexDomTree(HtmlParser.parseHTML(htmlData), [], []), null)).toString(),
-                    style: TextStyle(fontFamily: 'monospace'),
-                  ),
+              child: SingleChildScrollView(
+                child: Text(
+                  HtmlParser.cleanTree(HtmlParser.applyCSS(
+                          HtmlParser.lexDomTree(HtmlParser.parseHTML(htmlData), [], []), null))
+                      .toString(),
+                  style: TextStyle(fontFamily: 'monospace'),
                 ),
+              ),
             )
           ],
         ),
