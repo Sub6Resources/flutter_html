@@ -234,7 +234,7 @@ class HtmlParser extends StatelessWidget {
                 child: RichText(
                   text: TextSpan(
                     children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
-                    style: tree.style.generateTextStyle(),
+                    style: newContext.style.generateTextStyle(),
                   ),
                 ),
               )
