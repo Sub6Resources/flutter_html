@@ -5,6 +5,7 @@ import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:video_player/video_player.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -30,9 +31,7 @@ abstract class ReplacedElement extends StyledElement {
       : super(name: name, children: null, style: style, node: node);
 
   static List<String> parseMediaSources(List<dom.Element> elements) {
-    return elements
-        .where((element) => element.localName == 'source')
-        .map((element) {
+    return elements.where((element) => element.localName == 'source').map((element) {
       return element.attributes['src'];
     }).toList();
   }
@@ -74,25 +73,54 @@ class ImageContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    Widget imageWidget;
     if (src == null) {
-      return Text(alt ?? "", style: context.style.generateTextStyle());
+      imageWidget = Text(alt ?? "", style: context.style.generateTextStyle());
     } else if (src.startsWith("data:image") && src.contains("base64,")) {
-      return Image.memory(base64.decode(src.split("base64,")[1].trim()));
-    } else if(src.startsWith("asset:")) {
+      final decodedImage = base64.decode(src.split("base64,")[1].trim());
+      precacheImage(
+        MemoryImage(decodedImage),
+        context.buildContext,
+        onError: (exception, StackTrace stackTrace) {
+          context.parser.onImageError?.call(exception, stackTrace);
+        },
+      );
+      imageWidget = Image.memory(
+        decodedImage,
+        frameBuilder: (ctx, child, frame, _) {
+          if (frame == null) {
+            return Text(alt ?? "", style: context.style.generateTextStyle());
+          }
+          return child;
+        },
+      );
+    } else if (src.startsWith("asset:")) {
       final assetPath = src.replaceFirst('asset:', '');
-      //TODO precache image
-      return Image.asset(
+      precacheImage(
+        AssetImage(assetPath),
+        context.buildContext,
+        onError: (exception, StackTrace stackTrace) {
+          context.parser.onImageError?.call(exception, stackTrace);
+        },
+      );
+      imageWidget = Image.asset(
         assetPath,
         frameBuilder: (ctx, child, frame, _) {
-          if(frame == null) {
+          if (frame == null) {
             return Text(alt ?? "", style: context.style.generateTextStyle());
           }
           return child;
         },
       );
     } else {
-      //TODO precache image
-      return Image.network(
+      precacheImage(
+        NetworkImage(src),
+        context.buildContext,
+        onError: (exception, StackTrace stackTrace) {
+          context.parser.onImageError?.call(exception, stackTrace);
+        },
+      );
+      imageWidget = Image.network(
         src,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
@@ -102,6 +130,19 @@ class ImageContentElement extends ReplacedElement {
         },
       );
     }
+
+    return RawGestureDetector(
+      child: imageWidget,
+      gestures: {
+        MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
+            () => MultipleTapGestureRecognizer(),
+        (instance) {
+          instance..onTap = () => context.parser.onImageTap?.call(src);
+        },
+        ),
+      },
+    );
+    return imageWidget;
   }
 }
 
@@ -128,9 +169,7 @@ class IframeContentElement extends ReplacedElement {
       child: WebView(
         initialUrl: src,
         javascriptMode: JavascriptMode.unrestricted,
-        gestureRecognizers: {
-          Factory(() => PlatformViewVerticalGestureRecognizer())
-        },
+        gestureRecognizers: {Factory(() => PlatformViewVerticalGestureRecognizer())},
       ),
     );
   }
@@ -209,9 +248,7 @@ class VideoContentElement extends ReplacedElement {
           videoPlayerController: VideoPlayerController.network(
             src.first ?? "",
           ),
-          placeholder: poster != null
-              ? Image.network(poster)
-              : Container(color: Colors.black),
+          placeholder: poster != null ? Image.network(poster) : Container(color: Colors.black),
           autoPlay: autoplay,
           looping: loop,
           showControls: showControls,
@@ -277,15 +314,13 @@ class RubyElement extends ReplacedElement {
                   alignment: Alignment.bottomCenter,
                   child: Center(
                       child: Transform(
-                          transform:
-                              Matrix4.translationValues(0, -(rubyYPos), 0),
+                          transform: Matrix4.translationValues(0, -(rubyYPos), 0),
                           child: Text(c.innerHtml,
                               style: context.style
                                   .generateTextStyle()
                                   .copyWith(fontSize: rubySize))))),
               Container(
-                  child: Text(textNode.text.trim(),
-                      style: context.style.generateTextStyle())),
+                  child: Text(textNode.text.trim(), style: context.style.generateTextStyle())),
             ],
           );
           widgets.add(widget);

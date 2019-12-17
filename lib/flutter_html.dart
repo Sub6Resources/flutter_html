@@ -28,7 +28,7 @@ class Html extends StatelessWidget {
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
     this.shrinkToFit = false,
-    this.imageProperties,
+    @deprecated this.imageProperties,
     this.onImageTap,
     @deprecated this.showImages = true,
     this.blacklistedElements = const [],
@@ -40,7 +40,7 @@ class Html extends StatelessWidget {
   final EdgeInsetsGeometry padding;
   final Color backgroundColor;
   final TextStyle defaultTextStyle;
-  final OnLinkTap onLinkTap;
+  final OnTap onLinkTap;
   final bool renderNewlines;
   final double blockSpacing;
   final bool useRichText;
@@ -50,7 +50,7 @@ class Html extends StatelessWidget {
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
-  final OnImageTap onImageTap;
+  final OnTap onImageTap;
   final bool showImages;
 
   final List<String> blacklistedElements;
@@ -101,6 +101,8 @@ class Html extends StatelessWidget {
           htmlData: data,
           cssData: css,
           onLinkTap: onLinkTap,
+          onImageTap: onImageTap,
+          onImageError: onImageError,
           style: style,
           customRender: customRender,
           blacklistedElements: blacklistedElements,

@@ -13,7 +13,6 @@ typedef CustomTextStyle = TextStyle Function(
 );
 typedef CustomTextAlign = TextAlign Function(dom.Element elem);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
-typedef OnImageTap = void Function(String url);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
@@ -37,7 +36,7 @@ class LinkTextSpan extends TextSpan {
       {TextStyle style,
         this.url,
         String text,
-        OnLinkTap onLinkTap,
+        OnTap onLinkTap,
         List<TextSpan> children})
       : super(
           style: style,
@@ -61,7 +60,7 @@ class LinkBlock extends Container {
     String url,
     EdgeInsets padding,
     EdgeInsets margin,
-    OnLinkTap onLinkTap,
+    OnTap onLinkTap,
     this.children,
   }) : super(
           padding: padding,
@@ -178,7 +177,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
   final ImageProperties imageProperties;
-  final OnImageTap onImageTap;
+  final OnTap onImageTap;
   final bool showImages;
 
   // style elements set a default style
