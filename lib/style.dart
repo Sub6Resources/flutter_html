@@ -80,9 +80,13 @@ class Style {
     this.after,
     this.textDirection,
     this.border,
-    this.alignment = Alignment.centerLeft, //TODO
+    this.alignment,
     this.markerContent,
-  });
+  }) {
+    if (this.alignment == null && (display == Display.BLOCK || display == Display.LIST_ITEM)) {
+      this.alignment = Alignment.centerLeft;
+    }
+  }
 
   //TODO: all attributes of TextStyle likely have a CSS attribute and should be supported.
   TextStyle generateTextStyle() {

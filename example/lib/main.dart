@@ -13,8 +13,7 @@ class MyApp extends StatelessWidget {
     return new MaterialApp(
       title: 'Flutter Demo',
       theme: new ThemeData(
-        primarySwatch: Colors.blue,
-        brightness: Brightness.dark,
+        primarySwatch: Colors.deepPurple,
       ),
       home: new MyHomePage(title: 'flutter_html Example'),
     );
@@ -124,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
+      appBar: AppBar(title: Text('flutter_html Example')),
       body: SafeArea(
         child: Row(
           children: <Widget>[

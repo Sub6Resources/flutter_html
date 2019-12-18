@@ -9,7 +9,7 @@ class Context<T> {
 // This class is a workaround so that both an image
 // and a link can detect taps at the same time.
 class MultipleTapGestureRecognizer extends TapGestureRecognizer {
-  bool _ready;
+  bool _ready = false;
 
   @override
   void addAllowedPointer(PointerDownEvent event) {

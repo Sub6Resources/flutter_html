@@ -27,7 +27,7 @@ class Html extends StatelessWidget {
         decoration: TextDecoration.underline,
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
-    this.shrinkToFit = false,
+    this.shrinkWrap = false,
     @deprecated this.imageProperties,
     this.onImageTap,
     @deprecated this.showImages = true,
@@ -46,7 +46,7 @@ class Html extends StatelessWidget {
   final bool useRichText;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
-  final bool shrinkToFit;
+  final bool shrinkWrap;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -67,7 +67,7 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double width = shrinkToFit ? null : MediaQuery.of(context).size.width;
+    final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     if (useRichText) {
       return Container(
@@ -77,7 +77,7 @@ class Html extends StatelessWidget {
         child: DefaultTextStyle.merge(
           style: defaultTextStyle ?? Theme.of(context).textTheme.body1,
           child: HtmlRichTextParser(
-            shrinkToFit: shrinkToFit,
+            shrinkToFit: shrinkWrap,
             onLinkTap: onLinkTap,
             renderNewlines: renderNewlines,
             customEdgeInsets: customEdgeInsets,
@@ -103,6 +103,7 @@ class Html extends StatelessWidget {
           onLinkTap: onLinkTap,
           onImageTap: onImageTap,
           onImageError: onImageError,
+          shrinkWrap: shrinkWrap,
           style: style,
           customRender: customRender,
           blacklistedElements: blacklistedElements,

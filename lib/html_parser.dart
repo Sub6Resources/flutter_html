@@ -22,6 +22,7 @@ class HtmlParser extends StatelessWidget {
   final OnTap onLinkTap;
   final OnTap onImageTap;
   final ImageErrorListener onImageError;
+  final bool shrinkWrap;
 
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
@@ -33,6 +34,7 @@ class HtmlParser extends StatelessWidget {
     this.onLinkTap,
     this.onImageTap,
     this.onImageError,
+    this.shrinkWrap,
     this.style,
     this.customRender,
     this.blacklistedElements,
@@ -209,11 +211,13 @@ class HtmlParser extends StatelessWidget {
         child: ContainerSpan(
           newContext: newContext,
           style: tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
           child: customRender[tree.name].call(
             newContext,
             ContainerSpan(
               newContext: newContext,
               style: tree.style,
+              shrinkWrap: context.parser.shrinkWrap,
               children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
             ),
             tree.attributes,
@@ -228,6 +232,7 @@ class HtmlParser extends StatelessWidget {
         child: ContainerSpan(
           newContext: newContext,
           style: tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
           children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
         ),
       );
@@ -236,6 +241,7 @@ class HtmlParser extends StatelessWidget {
         child: ContainerSpan(
           newContext: newContext,
           style: tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
           child: Stack(
             children: <Widget>[
               PositionedDirectional(
@@ -599,12 +605,14 @@ class ContainerSpan extends StatelessWidget {
   final List<InlineSpan> children;
   final Style style;
   final RenderContext newContext;
+  final bool shrinkWrap;
 
   ContainerSpan({
     this.child,
     this.children,
     this.style,
     this.newContext,
+    this.shrinkWrap = false,
   });
 
   @override
@@ -618,7 +626,7 @@ class ContainerSpan extends StatelessWidget {
       width: style?.width,
       padding: style?.padding,
       margin: style?.margin,
-      alignment: style?.alignment,
+      alignment: shrinkWrap? null: style?.alignment,
       child: child ??
           RichText(
             text: TextSpan(
