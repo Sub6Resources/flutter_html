@@ -7,6 +7,32 @@ import 'package:flutter_html/style.dart';
 import 'image_properties.dart';
 
 class Html extends StatelessWidget {
+  /// The `Html` widget takes HTML as input and displays a RichText
+  /// tree of the parsed HTML content.
+  ///
+  /// **Attributes**
+  /// **data** *required* takes in a String of HTML data.
+  ///
+  /// **css** currently does nothing
+  ///
+  /// **onLinkTap** This function is called whenever a link (`<a href>`)
+  /// is tapped.
+  /// **customRender** This function allows you to return your own widgets
+  /// for existing or custom HTML tags.
+  /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/All-About-customRender) for more info.
+  ///
+  /// **onImageError** This is called whenever an image fails to load or
+  /// display on the page.
+  ///
+  /// **shrinkWrap** This makes the Html widget take up only the width it
+  /// needs and no more.
+  ///
+  /// **onImageTap** This is called whenever an image is tapped.
+  ///
+  /// **blacklistedElements** Tag names in this array are ignored during parsing and rendering.
+  ///
+  /// **style** Pass in the style information for the Html here.
+  /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
   Html({
     Key key,
     @required this.data,
@@ -15,13 +41,13 @@ class Html extends StatelessWidget {
     @deprecated this.backgroundColor,
     @deprecated this.defaultTextStyle,
     this.onLinkTap,
-    @deprecated this.renderNewlines = false, //TODO(Sub6Resources): Document alternatives
+    @deprecated this.renderNewlines = false,
     this.customRender,
     @deprecated this.customEdgeInsets,
     @deprecated this.customTextStyle,
     @deprecated this.blockSpacing = 14.0,
     @deprecated this.useRichText = false,
-    @deprecated this.customTextAlign,
+    @deprecated this.customTextAlign, //TODO Add alternative for this
     this.onImageError,
     @deprecated this.linkStyle = const TextStyle(
         decoration: TextDecoration.underline,

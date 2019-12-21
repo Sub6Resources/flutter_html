@@ -1,54 +1,102 @@
 import 'package:flutter/material.dart';
 
 ///This class represents all the available CSS attributes
-///for this package
+///for this package.
 class Style {
-  ///CSS attribute "`background-color`"
+  /// CSS attribute "`background-color`"
+  ///
+  /// Inherited: no,
+  /// Default: Colors.transparent,
   Color backgroundColor;
 
-  ///CSS attribute "`color`"
+  /// CSS attribute "`color`"
+  ///
+  /// Inherited: yes,
+  /// Default: unspecified,
   Color color;
 
-  ///CSS attribute "`display`"
+  /// CSS attribute "`display`"
+  ///
+  /// Inherited: no,
+  /// Default: unspecified,
   Display display;
 
-  ///CSS attribute "`font-family`"
+  /// CSS attribute "`font-family`"
+  ///
+  /// Inherited: yes,
+  /// Default: Theme.of(context).style.textTheme.body1.fontFamily
   String fontFamily;
 
-  ///CSS attribute "`font-size`"
+  /// CSS attribute "`font-size`"
+  ///
+  /// Inherited: yes,
+  /// Default: FontSize.medium
   FontSize fontSize;
 
-  ///CSS attribute "`font-style`"
+  /// CSS attribute "`font-style`"
+  ///
+  /// Inherited: yes,
+  /// Default: FontStyle.normal,
   FontStyle fontStyle;
 
-  ///CSS attribute "`font-weight`"
+  /// CSS attribute "`font-weight`"
+  ///
+  /// Inherited: yes,
+  /// Default: FontWeight.normal,
   FontWeight fontWeight;
 
-  ///CSS attribute "`height`"
+  /// CSS attribute "`height`"
+  ///
+  /// Inherited: no,
+  /// Default: Unspecified (null),
   double height;
 
-  ///CSS attribute "`list-style-type`"
+  /// CSS attribute "`list-style-type`"
+  ///
+  /// Inherited: yes,
+  /// Default: ListStyleType.DISC
   ListStyleType listStyleType;
 
-  ///CSS attribute "`padding`"
+  /// CSS attribute "`padding`"
+  ///
+  /// Inherited: no,
+  /// Default: EdgeInsets.zero
   EdgeInsets padding;
 
-  ///CSS attribute "`margin`"
+  /// CSS attribute "`margin`"
+  ///
+  /// Inherited: no,
+  /// Default: EdgeInsets.zero
   EdgeInsets margin;
 
-  ///CSS attribute "`text-decoration`" -
+  /// CSS attribute "`text-decoration`"
+  ///
+  /// Inherited: no,
+  /// Default: TextDecoration.none,
   TextDecoration textDecoration;
 
-  ///CSS attribute "`text-decoration-style`" -
+  /// CSS attribute "`text-decoration-style`"
+  ///
+  /// Inherited: no,
+  /// Default: TextDecorationStyle.solid,
   TextDecorationStyle textDecorationStyle;
 
-  ///CSS attribute "`vertical-align`"
+  /// CSS attribute "`vertical-align`"
+  ///
+  /// Inherited: no,
+  /// Default: VerticalAlign.BASELINE,
   VerticalAlign verticalAlign;
 
-  ///CSS attribute "`white-space`"
+  /// CSS attribute "`white-space`"
+  ///
+  /// Inherited: yes,
+  /// Default: WhiteSpace.NORMAL,
   WhiteSpace whiteSpace;
 
-  ///CSS attribute "`width`"
+  /// CSS attribute "`width`"
+  ///
+  /// Inherited: no,
+  /// Default: unspecified (null)
   double width;
 
   //TODO modify these to match CSS styles
@@ -60,7 +108,7 @@ class Style {
   String markerContent;
 
   Style({
-    this.backgroundColor,
+    this.backgroundColor = Colors.transparent,
     this.color,
     this.display,
     this.fontFamily,

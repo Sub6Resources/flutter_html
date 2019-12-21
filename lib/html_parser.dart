@@ -66,12 +66,12 @@ class HtmlParser extends StatelessWidget {
     return RichText(text: parsedTree);
   }
 
-  /// [parseHTML] converts a string to a DOM document using the dart `html` library.
+  /// [parseHTML] converts a string of HTML to a DOM document using the dart `html` library.
   static dom.Document parseHTML(String data) {
     return htmlparser.parse(data);
   }
 
-  ///TODO document
+  /// [parseCSS] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
   static css.StyleSheet parseCSS(String data) {
     return cssparser.parse(data);
   }
@@ -92,7 +92,10 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  ///TODO document
+  /// [_recursiveLexer] is the recursive worker function for [lexDomTree].
+  ///
+  /// It runs the parse functions of every type of
+  /// element and returns a [StyledElement] tree representing the element.
   static StyledElement _recursiveLexer(
       dom.Node node, List<String> customRenderTags, List<String> blacklistedElements) {
     List<StyledElement> children = List<StyledElement>();
@@ -156,7 +159,7 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [applyCustomStyles] applies the [Style] objects passed into the [Html]
-  /// widget onto the [StyledElement] tree.
+  /// widget onto the [StyledElement] tree, no cascading of styles is done at this point.
   StyledElement _applyCustomStyles(StyledElement tree) {
     if (style == null) return tree;
     style.forEach((key, style) {
@@ -173,6 +176,8 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
+  /// [_cascadeStyles] cascades all of the inherited styles down the tree, applying them to each
+  /// child that doesn't specify a different style.
   StyledElement _cascadeStyles(StyledElement tree) {
     tree.children?.forEach((child) {
       child.style = tree.style.copyOnlyInherited(child.style);
@@ -197,6 +202,9 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [parseTree] converts a tree of [StyledElement]s to an [InlineSpan] tree.
+  ///
+  /// [parseTree] is responsible for handling the [customRender] parameter and
+  /// deciding what different `Style.display` options look like as Widgets.
   InlineSpan parseTree(RenderContext context, StyledElement tree) {
     // Merge this element's style into the context so that children
     // inherit the correct style
@@ -347,14 +355,18 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  ///TODO document
+  /// [_processInlineWhitespace] is responsible for removing redundant whitespace
+  /// between and among inline elements. It does so by creating a boolean [Context]
+  /// and passing it to the [_processInlineWhitespaceRecursive] function.
   static StyledElement _processInlineWhitespace(StyledElement tree) {
     final whitespaceParsingContext = Context(false);
     tree = _processInlineWhitespaceRecursive(tree, whitespaceParsingContext);
     return tree;
   }
 
-  ///TODO document
+  /// [_processInlineWhitespaceRecursive] analyzes the whitespace between and among different
+  /// inline elements, and replaces any instance of two or more spaces with a single space, according
+  /// to the w3's HTML whitespace processing specification linked to above.
   static StyledElement _processInlineWhitespaceRecursive(StyledElement tree, Context<bool> wpc) {
     if (tree.style.display == Display.BLOCK) {
       wpc.data = false;
@@ -394,27 +406,16 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [processListCharacters] adds list characters to the front of all list items.
-  /// TODO document better
+  ///
+  /// The function uses the [_processListCharactersRecursive] function to do most of its work.
   static StyledElement _processListCharacters(StyledElement tree) {
-//    if (tree.name == "ol" || tree.name == "ul") {
-//      for (int i = 0; i < tree.children?.length; i++) {
-//        if (tree.children[i].name == "li") {
-//          switch(tree.style.listStyleType) {
-//            case ListStyleType.DISC:
-//              tree.children[i].style.markerContent = '•';
-//              break;
-//            case ListStyleType.DECIMAL:
-//              tree.children[i].style.markerContent = '${i + 1}.';
-//              break;
-//          }}
-//      }
-//    }
-//    tree.children?.forEach(_processListCharacters);
     final olStack = ListQueue<Context<int>>();
     tree = _processListCharactersRecursive(tree, olStack);
     return tree;
   }
 
+  /// [_processListCharactersRecursive] uses a Stack of integers to properly number and
+  /// bullet all list items according to the [ListStyleType] they have been given.
   static StyledElement _processListCharactersRecursive(
       StyledElement tree, ListQueue<Context<int>> olStack) {
     if (tree.name == 'ol') {
@@ -439,7 +440,9 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  /// TODO document better
+  /// [_processBeforesAndAfters] adds text content to the beginning and end of
+  /// the list of the trees children according to the `before` and `after` Style
+  /// properties.
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style?.before != null) {
       tree.children.insert(0, TextContentElement(text: tree.style.before));
@@ -550,6 +553,9 @@ class HtmlParser extends StatelessWidget {
   }
 
   /// [removeEmptyElements] recursively removes empty elements.
+  ///
+  /// An empty element is any [EmptyContentElement], any empty [TextContentElement],
+  /// or any block-level [TextContentElement] that contains only whitespace.
   static StyledElement _removeEmptyElements(StyledElement tree) {
     List<StyledElement> toRemove = new List<StyledElement>();
     tree.children?.forEach((child) {
@@ -561,7 +567,6 @@ class HtmlParser extends StatelessWidget {
           child.style.whiteSpace != WhiteSpace.PRE &&
           tree.style.display == Display.BLOCK &&
           child.text.trim().isEmpty) {
-        //TODO should this be moved to the whitespace functions?
         toRemove.add(child);
       } else {
         _removeEmptyElements(child);
@@ -572,6 +577,8 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
+  /// [_processFontSize] changes percent-based font sizes (negative numbers in this implementation)
+  /// to pixel-based font sizes.
   static StyledElement _processFontSize(StyledElement tree) {
     double parentFontSize = tree.style?.fontSize?.size ?? FontSize.medium.size;
 
@@ -586,7 +593,10 @@ class HtmlParser extends StatelessWidget {
   }
 }
 
-///TODO document better
+/// The [RenderContext] is available when parsing the tree. It contains information
+/// about the [BuildContext] of the `Html` widget, contains the configuration available
+/// in the [HtmlParser], and contains information about the [Style] of the current
+/// tree root.
 class RenderContext {
   final BuildContext buildContext;
   final HtmlParser parser;
@@ -599,7 +609,10 @@ class RenderContext {
   });
 }
 
-///TODO document
+/// A [ContainerSpan] is a widget with an [InlineSpan] child or children.
+///
+/// A [ContainerSpan] can have a border, background color, height, width, padding, and margin
+/// and can represent either an INLINE or BLOCK-level element.
 class ContainerSpan extends StatelessWidget {
   final Widget child;
   final List<InlineSpan> children;
