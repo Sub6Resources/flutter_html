@@ -97,10 +97,7 @@ const LAYOUT_ELEMENTS = [
   "thead",
 ];
 
-const TABLE_STYLE_ELEMENTS = [
-  "col",
-  "colgroup"
-];
+const TABLE_STYLE_ELEMENTS = ["col", "colgroup"];
 
 /**
   Here is a list of elements with planned support:

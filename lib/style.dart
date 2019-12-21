@@ -131,7 +131,8 @@ class Style {
     this.alignment,
     this.markerContent,
   }) {
-    if (this.alignment == null && (display == Display.BLOCK || display == Display.LIST_ITEM)) {
+    if (this.alignment == null &&
+        (display == Display.BLOCK || display == Display.LIST_ITEM)) {
       this.alignment = Alignment.centerLeft;
     }
   }
@@ -278,7 +279,9 @@ class FontSize {
   const FontSize(this.size);
 
   /// A percentage of the parent style's font size.
-  factory FontSize.percent(int percent) => FontSize(percent.toDouble() / -100.0);
+  factory FontSize.percent(int percent) {
+    return FontSize(percent.toDouble() / -100.0);
+  }
 
   // These values are calculated based off of the default (`medium`)
   // being 14px.

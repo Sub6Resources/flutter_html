@@ -34,10 +34,10 @@ class LinkTextSpan extends TextSpan {
 
   LinkTextSpan(
       {TextStyle style,
-        this.url,
-        String text,
-        OnTap onLinkTap,
-        List<TextSpan> children})
+      this.url,
+      String text,
+      OnTap onLinkTap,
+      List<TextSpan> children})
       : super(
           style: style,
           text: text,
@@ -410,7 +410,8 @@ class HtmlRichTextParser extends StatelessWidget {
           Decoration decoration;
           if (parseContext.blockType == 'blockquote') {
             decoration = BoxDecoration(
-              border: Border(left: BorderSide(color: Colors.black38, width: 2.0)),
+              border:
+                  Border(left: BorderSide(color: Colors.black38, width: 2.0)),
             );
             parseContext.childStyle = parseContext.childStyle.merge(TextStyle(
               fontStyle: FontStyle.italic,
@@ -444,7 +445,8 @@ class HtmlRichTextParser extends StatelessWidget {
       } else if (parseContext.parentElement is LinkTextSpan) {
         // add this node to the parent as another LinkTextSpan
         parseContext.parentElement.children.add(LinkTextSpan(
-          style: parseContext.parentElement.style.merge(parseContext.childStyle),
+          style:
+              parseContext.parentElement.style.merge(parseContext.childStyle),
           url: parseContext.parentElement.url,
           text: finalText,
           onLinkTap: onLinkTap,
@@ -628,9 +630,10 @@ class HtmlRichTextParser extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[],
             );
-            nextContext.rootWidgetList.add(Container(
-                margin: EdgeInsets.symmetric(vertical: 12.0),
-                child: nextContext.parentElement),
+            nextContext.rootWidgetList.add(
+              Container(
+                  margin: EdgeInsets.symmetric(vertical: 12.0),
+                  child: nextContext.parentElement),
             );
             break;
 
@@ -650,7 +653,8 @@ class HtmlRichTextParser extends StatelessWidget {
                 fontWeight: (node.localName == 'th')
                     ? FontWeight.bold
                     : FontWeight.normal));
-            RichText text = RichText(text: TextSpan(text: '', children: <TextSpan>[]));
+            RichText text =
+                RichText(text: TextSpan(text: '', children: <TextSpan>[]));
             Expanded cell = Expanded(
               flex: colspan,
               child: Container(padding: EdgeInsets.all(1.0), child: text),
@@ -784,7 +788,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ));
                 } else if (node.attributes['src'].startsWith('asset:')) {
-                  final assetPath = node.attributes['src'].replaceFirst('asset:', '');
+                  final assetPath =
+                      node.attributes['src'].replaceFirst('asset:', '');
                   precacheImage(
                     AssetImage(assetPath),
                     buildContext,
@@ -965,7 +970,8 @@ class HtmlRichTextParser extends StatelessWidget {
             Decoration decoration;
             if (parseContext.blockType == 'blockquote') {
               decoration = BoxDecoration(
-                border: Border(left: BorderSide(color: Colors.black38, width: 2.0)),
+                border:
+                    Border(left: BorderSide(color: Colors.black38, width: 2.0)),
               );
               nextContext.childStyle = nextContext.childStyle.merge(TextStyle(
                 fontStyle: FontStyle.italic,

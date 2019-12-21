@@ -33,8 +33,8 @@ InteractableElement parseInteractableElement(
     case "a":
       interactableElement.href = element.attributes['href'];
       interactableElement.style = Style(
-          color: Colors.blue,
-          textDecoration: TextDecoration.underline,
+        color: Colors.blue,
+        textDecoration: TextDecoration.underline,
       );
       break;
   }

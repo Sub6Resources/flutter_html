@@ -121,19 +121,19 @@ class Html extends StatelessWidget {
     }
 
     return Container(
-        color: backgroundColor,
-        width: width,
-        child: HtmlParser(
-          htmlData: data,
-          cssData: css,
-          onLinkTap: onLinkTap,
-          onImageTap: onImageTap,
-          onImageError: onImageError,
-          shrinkWrap: shrinkWrap,
-          style: style,
-          customRender: customRender,
-          blacklistedElements: blacklistedElements,
-        ),
+      color: backgroundColor,
+      width: width,
+      child: HtmlParser(
+        htmlData: data,
+        cssData: css,
+        onLinkTap: onLinkTap,
+        onImageTap: onImageTap,
+        onImageError: onImageError,
+        shrinkWrap: shrinkWrap,
+        style: style,
+        customRender: customRender,
+        blacklistedElements: blacklistedElements,
+      ),
     );
   }
 }

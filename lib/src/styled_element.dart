@@ -26,13 +26,13 @@ class StyledElement {
       _node != null && matches(_node, selector);
 
   Map<String, String> get attributes => _node.attributes.map((key, value) {
-    return MapEntry(key, value);
-  });
+        return MapEntry(key, value);
+      });
 
   @override
   String toString() {
     String selfData =
-        "[$name] ${children?.length ?? 0} ${elementClasses?.isNotEmpty == true? 'C:${elementClasses.toString()}': ''}${elementId?.isNotEmpty == true? 'ID: $elementId': ''}";
+        "[$name] ${children?.length ?? 0} ${elementClasses?.isNotEmpty == true ? 'C:${elementClasses.toString()}' : ''}${elementId?.isNotEmpty == true ? 'ID: $elementId' : ''}";
     children?.forEach((child) {
       selfData += ("\n${child.toString()}")
           .replaceAll(RegExp("^", multiLine: true), "-");
@@ -283,13 +283,17 @@ StyledElement parseStyledElement(
         styledElement.style = Style(
 //          margin: EdgeInsets.only(left: 30.0),
           display: Display.BLOCK,
-          listStyleType: element.localName == "ol"? ListStyleType.DECIMAL: ListStyleType.DISC,
+          listStyleType: element.localName == "ol"
+              ? ListStyleType.DECIMAL
+              : ListStyleType.DISC,
         );
       } else {
         styledElement.style = Style(
 //          margin: EdgeInsets.only(left: 30.0, top: 14.0, bottom: 14.0),
           display: Display.BLOCK,
-          listStyleType: element.localName == "ol"? ListStyleType.DECIMAL: ListStyleType.DISC,
+          listStyleType: element.localName == "ol"
+              ? ListStyleType.DECIMAL
+              : ListStyleType.DISC,
         );
       }
       break;

@@ -31,7 +31,9 @@ abstract class ReplacedElement extends StyledElement {
       : super(name: name, children: null, style: style, node: node);
 
   static List<String> parseMediaSources(List<dom.Element> elements) {
-    return elements.where((element) => element.localName == 'source').map((element) {
+    return elements
+        .where((element) => element.localName == 'source')
+        .map((element) {
       return element.attributes['src'];
     }).toList();
   }
@@ -134,11 +136,12 @@ class ImageContentElement extends ReplacedElement {
     return RawGestureDetector(
       child: imageWidget,
       gestures: {
-        MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-            () => MultipleTapGestureRecognizer(),
-        (instance) {
-          instance..onTap = () => context.parser.onImageTap?.call(src);
-        },
+        MultipleTapGestureRecognizer:
+            GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
+          () => MultipleTapGestureRecognizer(),
+          (instance) {
+            instance..onTap = () => context.parser.onImageTap?.call(src);
+          },
         ),
       },
     );
@@ -169,7 +172,9 @@ class IframeContentElement extends ReplacedElement {
       child: WebView(
         initialUrl: src,
         javascriptMode: JavascriptMode.unrestricted,
-        gestureRecognizers: {Factory(() => PlatformViewVerticalGestureRecognizer())},
+        gestureRecognizers: {
+          Factory(() => PlatformViewVerticalGestureRecognizer())
+        },
       ),
     );
   }
@@ -248,7 +253,9 @@ class VideoContentElement extends ReplacedElement {
           videoPlayerController: VideoPlayerController.network(
             src.first ?? "",
           ),
-          placeholder: poster != null ? Image.network(poster) : Container(color: Colors.black),
+          placeholder: poster != null
+              ? Image.network(poster)
+              : Container(color: Colors.black),
           autoPlay: autoplay,
           looping: loop,
           showControls: showControls,
@@ -314,13 +321,15 @@ class RubyElement extends ReplacedElement {
                   alignment: Alignment.bottomCenter,
                   child: Center(
                       child: Transform(
-                          transform: Matrix4.translationValues(0, -(rubyYPos), 0),
+                          transform:
+                              Matrix4.translationValues(0, -(rubyYPos), 0),
                           child: Text(c.innerHtml,
                               style: context.style
                                   .generateTextStyle()
                                   .copyWith(fontSize: rubySize))))),
               Container(
-                  child: Text(textNode.text.trim(), style: context.style.generateTextStyle())),
+                  child: Text(textNode.text.trim(),
+                      style: context.style.generateTextStyle())),
             ],
           );
           widgets.add(widget);
@@ -404,8 +413,10 @@ ReplacedElement parseReplacedElement(dom.Element element) {
 }
 
 // TODO(Sub6Resources): Remove when https://github.com/flutter/flutter/issues/36304 is resolved
-class PlatformViewVerticalGestureRecognizer extends VerticalDragGestureRecognizer {
-  PlatformViewVerticalGestureRecognizer({PointerDeviceKind kind}) : super(kind: kind);
+class PlatformViewVerticalGestureRecognizer
+    extends VerticalDragGestureRecognizer {
+  PlatformViewVerticalGestureRecognizer({PointerDeviceKind kind})
+      : super(kind: kind);
 
   Offset _dragDistance = Offset.zero;
 

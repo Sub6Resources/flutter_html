@@ -78,7 +78,10 @@ class HtmlParser extends StatelessWidget {
 
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
   static StyledElement lexDomTree(
-      dom.Document html, List<String> customRenderTags, List<String> blacklistedElements) {
+    dom.Document html,
+    List<String> customRenderTags,
+    List<String> blacklistedElements,
+  ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: new List<StyledElement>(),
@@ -86,7 +89,8 @@ class HtmlParser extends StatelessWidget {
     );
 
     html.nodes.forEach((node) {
-      tree.children.add(_recursiveLexer(node, customRenderTags, blacklistedElements));
+      tree.children
+          .add(_recursiveLexer(node, customRenderTags, blacklistedElements));
     });
 
     return tree;
@@ -97,11 +101,15 @@ class HtmlParser extends StatelessWidget {
   /// It runs the parse functions of every type of
   /// element and returns a [StyledElement] tree representing the element.
   static StyledElement _recursiveLexer(
-      dom.Node node, List<String> customRenderTags, List<String> blacklistedElements) {
+    dom.Node node,
+    List<String> customRenderTags,
+    List<String> blacklistedElements,
+  ) {
     List<StyledElement> children = List<StyledElement>();
 
     node.nodes.forEach((childNode) {
-      children.add(_recursiveLexer(childNode, customRenderTags, blacklistedElements));
+      children.add(
+          _recursiveLexer(childNode, customRenderTags, blacklistedElements));
     });
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
@@ -226,7 +234,10 @@ class HtmlParser extends StatelessWidget {
               newContext: newContext,
               style: tree.style,
               shrinkWrap: context.parser.shrinkWrap,
-              children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
+              children: tree.children
+                      ?.map((tree) => parseTree(newContext, tree))
+                      ?.toList() ??
+                  [],
             ),
             tree.attributes,
           ),
@@ -241,7 +252,10 @@ class HtmlParser extends StatelessWidget {
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
+          children: tree.children
+                  ?.map((tree) => parseTree(newContext, tree))
+                  ?.toList() ??
+              [],
         ),
       );
     } else if (tree.style?.display == Display.LIST_ITEM) {
@@ -256,14 +270,18 @@ class HtmlParser extends StatelessWidget {
                 width: 30, //TODO derive this from list padding.
                 start: 0,
                 child: Text('${newContext.style.markerContent}\t',
-                    textAlign: TextAlign.right, style: newContext.style.generateTextStyle()),
+                    textAlign: TextAlign.right,
+                    style: newContext.style.generateTextStyle()),
               ),
               Padding(
-                padding: EdgeInsets.only(left: 30), //TODO derive this from list padding.
+                padding: EdgeInsets.only(
+                    left: 30), //TODO derive this from list padding.
                 child: RichText(
                   text: TextSpan(
-                    children:
-                        tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [],
+                    children: tree.children
+                            ?.map((tree) => parseTree(newContext, tree))
+                            ?.toList() ??
+                        [],
                     style: newContext.style.generateTextStyle(),
                   ),
                 ),
@@ -286,17 +304,21 @@ class HtmlParser extends StatelessWidget {
       return WidgetSpan(
         child: RawGestureDetector(
           gestures: {
-            MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-                () => MultipleTapGestureRecognizer(),
-                (instance) {
-                  instance..onTap = () => onLinkTap?.call(tree.href);
-                },
+            MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
+                MultipleTapGestureRecognizer>(
+              () => MultipleTapGestureRecognizer(),
+              (instance) {
+                instance..onTap = () => onLinkTap?.call(tree.href);
+              },
             ),
           },
           child: RichText(
             text: TextSpan(
               style: newContext.style.generateTextStyle(),
-              children: tree.children.map((tree) => parseTree(newContext, tree)).toList() ?? [],
+              children: tree.children
+                      .map((tree) => parseTree(newContext, tree))
+                      .toList() ??
+                  [],
             ),
           ),
         ),
@@ -325,7 +347,10 @@ class HtmlParser extends StatelessWidget {
           child: RichText(
             text: TextSpan(
               style: newContext.style.generateTextStyle(),
-              children: tree.children.map((tree) => parseTree(newContext, tree)).toList() ?? [],
+              children: tree.children
+                      .map((tree) => parseTree(newContext, tree))
+                      .toList() ??
+                  [],
             ),
           ),
         ),
@@ -334,7 +359,8 @@ class HtmlParser extends StatelessWidget {
       ///[tree] is an inline element.
       return TextSpan(
         style: newContext.style.generateTextStyle(),
-        children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        children:
+            tree.children.map((tree) => parseTree(newContext, tree)).toList(),
       );
     }
   }
@@ -367,7 +393,10 @@ class HtmlParser extends StatelessWidget {
   /// [_processInlineWhitespaceRecursive] analyzes the whitespace between and among different
   /// inline elements, and replaces any instance of two or more spaces with a single space, according
   /// to the w3's HTML whitespace processing specification linked to above.
-  static StyledElement _processInlineWhitespaceRecursive(StyledElement tree, Context<bool> wpc) {
+  static StyledElement _processInlineWhitespaceRecursive(
+    StyledElement tree,
+    Context<bool> wpc,
+  ) {
     if (tree.style.display == Display.BLOCK) {
       wpc.data = false;
     }
@@ -500,7 +529,8 @@ class HtmlParser extends StatelessWidget {
       if (tree.children.first.style.margin == null) {
         tree.children.first.style.margin = EdgeInsets.zero;
       } else {
-        tree.children.first.style.margin = tree.children.first.style.margin.copyWith(top: 0);
+        tree.children.first.style.margin =
+            tree.children.first.style.margin.copyWith(top: 0);
       }
     }
 
@@ -515,33 +545,38 @@ class HtmlParser extends StatelessWidget {
       if (tree.style.margin == null) {
         tree.style.margin = EdgeInsets.only(bottom: newOuterMarginBottom);
       } else {
-        tree.style.margin = tree.style.margin.copyWith(bottom: newOuterMarginBottom);
+        tree.style.margin =
+            tree.style.margin.copyWith(bottom: newOuterMarginBottom);
       }
 
       // And remove the child's margin
       if (tree.children.last.style.margin == null) {
         tree.children.last.style.margin = EdgeInsets.zero;
       } else {
-        tree.children.last.style.margin = tree.children.last.style.margin.copyWith(bottom: 0);
+        tree.children.last.style.margin =
+            tree.children.last.style.margin.copyWith(bottom: 0);
       }
     }
 
     // Handle case (2) from above.
     if (tree.children.length > 1) {
       for (int i = 1; i < tree.children.length; i++) {
-        final previousSiblingBottom = tree.children[i - 1].style.margin?.bottom ?? 0;
+        final previousSiblingBottom =
+            tree.children[i - 1].style.margin?.bottom ?? 0;
         final thisTop = tree.children[i].style.margin?.top ?? 0;
         final newInternalMargin = max(previousSiblingBottom, thisTop) / 2;
 
         if (tree.children[i - 1].style.margin == null) {
-          tree.children[i - 1].style.margin = EdgeInsets.only(bottom: newInternalMargin);
-        } else {
           tree.children[i - 1].style.margin =
-              tree.children[i - 1].style.margin.copyWith(bottom: newInternalMargin);
+              EdgeInsets.only(bottom: newInternalMargin);
+        } else {
+          tree.children[i - 1].style.margin = tree.children[i - 1].style.margin
+              .copyWith(bottom: newInternalMargin);
         }
 
         if (tree.children[i].style.margin == null) {
-          tree.children[i].style.margin = EdgeInsets.only(top: newInternalMargin);
+          tree.children[i].style.margin =
+              EdgeInsets.only(top: newInternalMargin);
         } else {
           tree.children[i].style.margin =
               tree.children[i].style.margin.copyWith(top: newInternalMargin);
@@ -584,7 +619,8 @@ class HtmlParser extends StatelessWidget {
 
     tree.children?.forEach((child) {
       if ((child.style.fontSize?.size ?? parentFontSize) < 0) {
-        child.style.fontSize = FontSize(parentFontSize * -child.style.fontSize.size);
+        child.style.fontSize =
+            FontSize(parentFontSize * -child.style.fontSize.size);
       }
 
       _processFontSize(child);
@@ -639,7 +675,7 @@ class ContainerSpan extends StatelessWidget {
       width: style?.width,
       padding: style?.padding,
       margin: style?.margin,
-      alignment: shrinkWrap? null: style?.alignment,
+      alignment: shrinkWrap ? null : style?.alignment,
       child: child ??
           RichText(
             text: TextSpan(

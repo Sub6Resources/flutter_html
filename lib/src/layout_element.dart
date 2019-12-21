@@ -34,7 +34,9 @@ class TableLayoutElement extends LayoutElement {
           return group.children.where((c) => c.name == "col").map((c) {
             final widthStr = c.attributes["width"] ?? "";
             if (widthStr.endsWith("%")) {
-              final width = double.tryParse(widthStr.substring(0, widthStr.length - 1)) * 0.01;
+              final width =
+                  double.tryParse(widthStr.substring(0, widthStr.length - 1)) *
+                      0.01;
               return FractionColumnWidth(width);
             } else {
               final width = double.tryParse(widthStr);
@@ -123,7 +125,9 @@ class TableRowLayoutElement extends LayoutElement {
                           color: c.style.backgroundColor,
                           border: c.style.border,
                         ),
-                        child: RichText(text: context.parser.parseTree(context, c))));
+                        child: RichText(
+                          text: context.parser.parseTree(context, c),
+                        )));
               }
               return null;
             })
@@ -141,7 +145,10 @@ class TableStyleElement extends StyledElement {
   }) : super(name: name, children: children, style: style, node: node);
 }
 
-TableStyleElement parseTableDefinitionElement(dom.Element element, List<StyledElement> children) {
+TableStyleElement parseTableDefinitionElement(
+  dom.Element element,
+  List<StyledElement> children,
+) {
   switch (element.localName) {
     case "colgroup":
     case "col":
@@ -176,7 +183,11 @@ LayoutElement parseLayoutElement(
       );
       break;
     case "tr":
-      return TableRowLayoutElement(name: element.localName, children: children, node: element);
+      return TableRowLayoutElement(
+        name: element.localName,
+        children: children,
+        node: element,
+      );
       break;
     default:
       return TableLayoutElement(children: children);

@@ -13,7 +13,7 @@ class MultipleTapGestureRecognizer extends TapGestureRecognizer {
 
   @override
   void addAllowedPointer(PointerDownEvent event) {
-    if(state == GestureRecognizerState.ready) {
+    if (state == GestureRecognizerState.ready) {
       _ready = true;
     }
     super.addAllowedPointer(event);
@@ -29,7 +29,7 @@ class MultipleTapGestureRecognizer extends TapGestureRecognizer {
 
   @override
   void resolve(GestureDisposition disposition) {
-    if(_ready && disposition == GestureDisposition.rejected) {
+    if (_ready && disposition == GestureDisposition.rejected) {
       _ready = false;
     }
     super.resolve(disposition);
@@ -37,7 +37,7 @@ class MultipleTapGestureRecognizer extends TapGestureRecognizer {
 
   @override
   void rejectGesture(int pointer) {
-    if(_ready) {
+    if (_ready) {
       acceptGesture(pointer);
       _ready = false;
     }
