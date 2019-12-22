@@ -29,6 +29,8 @@ class StyledElement {
         return MapEntry(key, value);
       });
 
+  dom.Element get element => _node;
+
   @override
   String toString() {
     String selfData =

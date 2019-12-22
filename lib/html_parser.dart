@@ -14,7 +14,11 @@ import 'package:csslib/parser.dart' as cssparser;
 
 typedef OnTap = void Function(String url);
 typedef CustomRender = Widget Function(
-    RenderContext context, Widget child, Map<String, String> elementAttributes);
+  RenderContext context,
+  Widget parsedChild,
+  Map<String, String> attributes,
+  dom.Element element,
+);
 
 class HtmlParser extends StatelessWidget {
   final String htmlData;
@@ -240,6 +244,7 @@ class HtmlParser extends StatelessWidget {
                   [],
             ),
             tree.attributes,
+            tree.element,
           ),
         ),
       );

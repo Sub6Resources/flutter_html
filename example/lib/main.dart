@@ -116,7 +116,6 @@ const htmlData = """
       <h3>Audio support:</h3>
       <h3>IFrame support:</h3>
       
-      
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -124,58 +123,50 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return new Scaffold(
       appBar: AppBar(title: Text('flutter_html Example')),
-      body: SafeArea(
-        child: Row(
-          children: <Widget>[
-            Expanded(
-              child: SingleChildScrollView(
-                child: Html(
-                  data: htmlData,
-                  //Optional parameters:
-                  style: {
-                    "html": Style(
-                      backgroundColor: Colors.black,
-                      color: Colors.white,
-                    ),
-                    "table": Style(
-                      backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
-                    ),
-                    "tr": Style(
-                      border: Border(bottom: BorderSide(color: Colors.grey)),
-                    ),
-                    "th": Style(
-                      padding: EdgeInsets.all(6),
-                      backgroundColor: Colors.grey,
-                    ),
-                    "td": Style(
-                      padding: EdgeInsets.all(6),
-                    ),
-                    "var": Style(fontFamily: 'serif'),
-                  },
-                  customRender: {
-                    "flutter": (RenderContext context, Widget child, attributes) {
-                      return FlutterLogo(
-                        style: (attributes['horizontal'] != null)
-                            ? FlutterLogoStyle.horizontal
-                            : FlutterLogoStyle.markOnly,
-                        textColor: context.style.color,
-                        size: context.style.fontSize.size * 5,
-                      );
-                    }
-                  },
-                  onLinkTap: (url) {
-                    print("Opening $url...");
-                  },
-                  onImageTap: (src) {
-                    print(src);
-                  },
-                  onImageError: (exception, stackTrace) {
-                    print(exception);
-                  },
-                ),
-              ),
+      body: SingleChildScrollView(
+        child: Html(
+          data: htmlData,
+          //Optional parameters:
+          style: {
+            "html": Style(
+              backgroundColor: Colors.black,
+              color: Colors.white,
             ),
-          ],
+            "table": Style(
+              backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
+            ),
+            "tr": Style(
+              border: Border(bottom: BorderSide(color: Colors.grey)),
+            ),
+            "th": Style(
+              padding: EdgeInsets.all(6),
+              backgroundColor: Colors.grey,
+            ),
+            "td": Style(
+              padding: EdgeInsets.all(6),
+            ),
+            "var": Style(fontFamily: 'serif'),
+          },
+          customRender: {
+            "flutter": (RenderContext context, Widget child, attributes, _) {
+              return FlutterLogo(
+                style: (attributes['horizontal'] != null)
+                    ? FlutterLogoStyle.horizontal
+                    : FlutterLogoStyle.markOnly,
+                textColor: context.style.color,
+                size: context.style.fontSize.size * 5,
+              );
+            },
+          },
+          onLinkTap: (url) {
+            print("Opening $url...");
+          },
+          onImageTap: (src) {
+            print(src);
+          },
+          onImageError: (exception, stackTrace) {
+            print(exception);
+          },
         ),
       ),
     );
