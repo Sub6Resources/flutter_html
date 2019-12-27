@@ -1,8 +1,6 @@
-## [1.0.0] - UNRELEASED
+## [1.0.0-pre.1] - December 27, 2019
 
-* BREAKING: Requires Flutter version 1.7.3 or greater and Dart 2.2.2 or greater.
-* Adds support for a new parser, which resolves several major issues and adds several new features.
-* For a list of pre-release changes, including several BREAKING CHANGES, see [the pre-release changelog](https://github.com/Sub6Resources/flutter_html/PRE_CHANGELOG.md)
+* For a list of pre-release changes, including several BREAKING CHANGES, see [the pre-release changelog](https://github.com/Sub6Resources/flutter_html/blob/new-parser/PRE_CHANGELOG.md#100-pre1)
 
 ## [0.11.1] - December 14, 2019:
 
