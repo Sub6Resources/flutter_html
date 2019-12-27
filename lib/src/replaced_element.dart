@@ -133,19 +133,23 @@ class ImageContentElement extends ReplacedElement {
       );
     }
 
-    return RawGestureDetector(
-      child: imageWidget,
-      gestures: {
-        MultipleTapGestureRecognizer:
-            GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-          () => MultipleTapGestureRecognizer(),
-          (instance) {
-            instance..onTap = () => context.parser.onImageTap?.call(src);
-          },
-        ),
-      },
+    return ContainerSpan(
+      style: style,
+      newContext: context,
+      shrinkWrap: context.parser.shrinkWrap,
+      child: RawGestureDetector(
+        child: imageWidget,
+        gestures: {
+          MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
+              MultipleTapGestureRecognizer>(
+            () => MultipleTapGestureRecognizer(),
+            (instance) {
+              instance..onTap = () => context.parser.onImageTap?.call(src);
+            },
+          ),
+        },
+      ),
     );
-    return imageWidget;
   }
 }
 
@@ -303,7 +307,7 @@ class RubyElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    dom.Node textNode = null;
+    dom.Node textNode;
     List<Widget> widgets = List<Widget>();
     //TODO calculate based off of parent font size.
     final rubySize = max(9.0, context.style.fontSize.size / 2);

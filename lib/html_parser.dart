@@ -595,9 +595,11 @@ class HtmlParser extends StatelessWidget {
   /// [removeEmptyElements] recursively removes empty elements.
   ///
   /// An empty element is any [EmptyContentElement], any empty [TextContentElement],
-  /// or any block-level [TextContentElement] that contains only whitespace.
+  /// or any block-level [TextContentElement] that contains only whitespace and doesn't follow
+  /// a block element or a line break.
   static StyledElement _removeEmptyElements(StyledElement tree) {
     List<StyledElement> toRemove = new List<StyledElement>();
+    bool lastChildBlock = true;
     tree.children?.forEach((child) {
       if (child is EmptyContentElement) {
         toRemove.add(child);
@@ -606,11 +608,17 @@ class HtmlParser extends StatelessWidget {
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
           tree.style.display == Display.BLOCK &&
-          child.text.trim().isEmpty) {
+          child.text.trim().isEmpty &&
+          lastChildBlock) {
         toRemove.add(child);
       } else {
         _removeEmptyElements(child);
       }
+
+      // This is used above to check if the previous element is a block element or a line break.
+      lastChildBlock = (child.style.display == Display.BLOCK ||
+          child.style.display == Display.LIST_ITEM ||
+          (child is TextContentElement && child.text == '\n'));
     });
     tree.children?.removeWhere((element) => toRemove.contains(element));
 
