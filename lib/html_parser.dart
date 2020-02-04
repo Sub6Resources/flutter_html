@@ -405,6 +405,10 @@ class HtmlParser extends StatelessWidget {
     if (tree.style.display == Display.BLOCK) {
       wpc.data = false;
     }
+    
+    if (tree is ImageContentElement || tree is SvgContentElement) {
+      wpc.data = false;
+    }
 
     if (tree is TextContentElement) {
       if (wpc.data && tree.text.startsWith(' ')) {
