@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
-//TODO(Sub6Resources) don't use the internal code of the html package as it may change unexpectedly.
+//TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
 import 'package:html/src/query_selector.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -85,7 +85,7 @@ StyledElement parseStyledElement(
               ? TextDirection.rtl
               : TextDirection.ltr;
       styledElement.style = Style(
-        textDirection: textDirection,
+        direction: textDirection,
       );
       break;
     case "big":

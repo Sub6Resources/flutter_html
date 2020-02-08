@@ -125,8 +125,9 @@ class TableRowLayoutElement extends LayoutElement {
                           color: c.style.backgroundColor,
                           border: c.style.border,
                         ),
-                        child: RichText(
-                          text: context.parser.parseTree(context, c),
+                        child: StyledText(
+                          textSpan: context.parser.parseTree(context, c),
+                          style: c.style,
                         )));
               }
               return null;
