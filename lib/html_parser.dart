@@ -5,6 +5,7 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
 import 'package:flutter_html/src/utils.dart';
@@ -53,6 +54,7 @@ class HtmlParser extends StatelessWidget {
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
     );
+    // TODO(Sub6Resources): this could be simplified to a single recursive descent.
     StyledElement styledTree = applyCSS(lexedTree, sheet);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
     StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
@@ -145,13 +147,8 @@ class HtmlParser extends StatelessWidget {
 
   ///TODO document
   static StyledElement applyCSS(StyledElement tree, css.StyleSheet sheet) {
+
     //TODO
-//    sheet.topLevels.forEach((treeNode) {
-//      if (treeNode is css.RuleSet) {
-//        print(treeNode
-//            .selectorGroup.selectors.first.simpleSelectorSequences.first.simpleSelector.name);
-//      }
-//    });
 
     //Make sure style is never null.
     if (tree.style == null) {
@@ -163,9 +160,14 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  ///TODO document
+  /// [applyInlineStyle] applies inline styles (i.e. `style="..."`) recursively into the StyledElement tree.
   static StyledElement applyInlineStyles(StyledElement tree) {
-    //TODO
+
+    if(tree.attributes.containsKey("style")) {
+      tree.style = tree.style.merge(inlineCSSToStyle(tree.attributes['style']));
+    }
+
+    tree.children?.forEach(applyInlineStyles);
 
     return tree;
   }

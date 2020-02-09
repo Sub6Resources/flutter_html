@@ -103,7 +103,7 @@ const htmlData = """
             <h2><li>Header 2</li></h2>
       </ol>
       <h3>Link support:</h3>
-      <p>
+      <p style='color:darkgreen; text-align: center; font-family: monospace;'>
         Linking to <a href='https://github.com'>websites</a> has never been easier.
       </p>
       <h3>Image support:</h3>

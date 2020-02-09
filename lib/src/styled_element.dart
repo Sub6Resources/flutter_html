@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
-//TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
 import 'package:html/src/query_selector.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -22,12 +21,15 @@ class StyledElement {
     dom.Element node,
   }) : this._node = node;
 
-  bool matchesSelector(String selector) =>
-      _node != null && matches(_node, selector);
+  bool matchesSelector(String selector) => _node != null && matches(_node, selector);
 
-  Map<String, String> get attributes => _node.attributes.map((key, value) {
+  Map<String, String> get attributes {
+    return _node?.attributes?.map(
+      (key, value) {
         return MapEntry(key, value);
-      });
+      },
+    ) ?? Map<String, String>();
+  }
 
   dom.Element get element => _node;
 
