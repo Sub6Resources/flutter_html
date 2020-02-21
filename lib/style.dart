@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 
 ///This class represents all the available CSS attributes
@@ -15,6 +17,12 @@ class Style {
   /// Default: unspecified,
   Color color;
 
+  /// CSS attribute "`direction`"
+  ///
+  /// Inherited: yes,
+  /// Default: TextDirection.ltr,
+  TextDirection direction;
+
   /// CSS attribute "`display`"
   ///
   /// Inherited: no,
@@ -26,6 +34,12 @@ class Style {
   /// Inherited: yes,
   /// Default: Theme.of(context).style.textTheme.body1.fontFamily
   String fontFamily;
+
+  /// CSS attribute "`font-feature-settings`"
+  ///
+  /// Inherited: yes,
+  /// Default: normal
+  List<FontFeature> fontFeatureSettings;
 
   /// CSS attribute "`font-size`"
   ///
@@ -51,6 +65,12 @@ class Style {
   /// Default: Unspecified (null),
   double height;
 
+  /// CSS attribute "`letter-spacing`"
+  ///
+  /// Inherited: yes,
+  /// Default: normal (0),
+  double letterSpacing;
+
   /// CSS attribute "`list-style-type`"
   ///
   /// Inherited: yes,
@@ -69,17 +89,44 @@ class Style {
   /// Default: EdgeInsets.zero
   EdgeInsets margin;
 
+  /// CSS attribute "`text-align`"
+  ///
+  /// Inherited: yes,
+  /// Default: TextAlign.start,
+  TextAlign textAlign;
+
   /// CSS attribute "`text-decoration`"
   ///
   /// Inherited: no,
   /// Default: TextDecoration.none,
   TextDecoration textDecoration;
 
+  /// CSS attribute "`text-decoration-color`"
+  ///
+  /// Inherited: no,
+  /// Default: Current color
+  Color textDecorationColor;
+
   /// CSS attribute "`text-decoration-style`"
   ///
   /// Inherited: no,
   /// Default: TextDecorationStyle.solid,
   TextDecorationStyle textDecorationStyle;
+
+  /// Loosely based on CSS attribute "`text-decoration-thickness`"
+  ///
+  /// Uses a percent modifier based on the font size.
+  ///
+  /// Inherited: no,
+  /// Default: 1.0 (specified by font size)
+  // TODO(Sub6Resources): Possibly base this more closely on the CSS attribute.
+  double textDecorationThickness;
+
+  /// CSS attribute "`text-shadow`"
+  ///
+  /// Inherited: yes,
+  /// Default: none,
+  List<Shadow> textShadow;
 
   /// CSS attribute "`vertical-align`"
   ///
@@ -99,10 +146,15 @@ class Style {
   /// Default: unspecified (null)
   double width;
 
+  /// CSS attribute "`word-spacing`"
+  ///
+  /// Inherited: yes,
+  /// Default: normal (0)
+  double wordSpacing;
+
   //TODO modify these to match CSS styles
   String before;
   String after;
-  TextDirection textDirection;
   Border border;
   Alignment alignment;
   String markerContent;
@@ -110,23 +162,31 @@ class Style {
   Style({
     this.backgroundColor = Colors.transparent,
     this.color,
+    this.direction,
     this.display,
     this.fontFamily,
+    this.fontFeatureSettings,
     this.fontSize,
     this.fontStyle,
     this.fontWeight,
     this.height,
+    this.letterSpacing,
     this.listStyleType,
     this.padding,
     this.margin,
+    this.textAlign,
     this.textDecoration,
+    this.textDecorationColor,
     this.textDecorationStyle,
+    this.textDecorationThickness,
+    this.textShadow,
     this.verticalAlign,
     this.whiteSpace,
     this.width,
+    this.wordSpacing,
+
     this.before,
     this.after,
-    this.textDirection,
     this.border,
     this.alignment,
     this.markerContent,
@@ -137,17 +197,25 @@ class Style {
     }
   }
 
-  //TODO: all attributes of TextStyle likely have a CSS attribute and should be supported.
   TextStyle generateTextStyle() {
     return TextStyle(
       backgroundColor: backgroundColor,
       color: color,
       decoration: textDecoration,
+      decorationColor: textDecorationColor,
       decorationStyle: textDecorationStyle,
+      decorationThickness: textDecorationThickness,
       fontFamily: fontFamily,
+      fontFeatures: fontFeatureSettings,
       fontSize: fontSize?.size,
       fontStyle: fontStyle,
       fontWeight: fontWeight,
+      letterSpacing: letterSpacing,
+      shadows: textShadow,
+      wordSpacing: wordSpacing,
+      //TODO background
+      //TODO textBaseline
+      //TODO height
     );
   }
 
@@ -162,25 +230,33 @@ class Style {
     return copyWith(
       backgroundColor: other.backgroundColor,
       color: other.color,
+      direction: other.direction,
       display: other.display,
       fontFamily: other.fontFamily,
+      fontFeatureSettings: other.fontFeatureSettings,
       fontSize: other.fontSize,
       fontStyle: other.fontStyle,
       fontWeight: other.fontWeight,
       height: other.height,
+      letterSpacing: other.letterSpacing,
       listStyleType: other.listStyleType,
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
       //TODO merge EdgeInsets
+      textAlign: other.textAlign,
       textDecoration: other.textDecoration,
+      textDecorationColor: other.textDecorationColor,
       textDecorationStyle: other.textDecorationStyle,
+      textDecorationThickness: other.textDecorationThickness,
+      textShadow: other.textShadow,
       verticalAlign: other.verticalAlign,
       whiteSpace: other.whiteSpace,
       width: other.width,
+      wordSpacing: other.wordSpacing,
+
       before: other.before,
       after: other.after,
-      textDirection: other.textDirection,
       border: other.border,
       //TODO merge border
       alignment: other.alignment,
@@ -193,37 +269,49 @@ class Style {
 
     return child.copyWith(
       color: child.color ?? color,
+      direction: child.direction ?? direction,
       fontFamily: child.fontFamily ?? fontFamily,
+      fontFeatureSettings: child.fontFeatureSettings ?? fontFeatureSettings,
       fontSize: child.fontSize ?? fontSize,
       fontStyle: child.fontStyle ?? fontStyle,
       fontWeight: child.fontWeight ?? fontWeight,
+      letterSpacing: child.letterSpacing ?? letterSpacing,
       listStyleType: child.listStyleType ?? listStyleType,
+      textAlign: child.textAlign ?? textAlign,
+      textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
+      wordSpacing: child.wordSpacing ?? wordSpacing,
     );
   }
 
   Style copyWith({
     Color backgroundColor,
     Color color,
+    TextDirection direction,
     Display display,
     String fontFamily,
+    List<FontFeature> fontFeatureSettings,
     FontSize fontSize,
     FontStyle fontStyle,
     FontWeight fontWeight,
     double height,
+    double letterSpacing,
     ListStyleType listStyleType,
     EdgeInsets padding,
     EdgeInsets margin,
+    TextAlign textAlign,
     TextDecoration textDecoration,
+    Color textDecorationColor,
     TextDecorationStyle textDecorationStyle,
+    double textDecorationThickness,
+    List<Shadow> textShadow,
     VerticalAlign verticalAlign,
     WhiteSpace whiteSpace,
     double width,
-    bool preserveWhitespace,
-    int baselineOffset,
+    double wordSpacing,
+
     String before,
     String after,
-    TextDirection textDirection,
     Border border,
     Alignment alignment,
     String markerContent,
@@ -231,23 +319,31 @@ class Style {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
       color: color ?? this.color,
+      direction: direction ?? this.direction,
       display: display ?? this.display,
       fontFamily: fontFamily ?? this.fontFamily,
+      fontFeatureSettings: fontFeatureSettings ?? this.fontFeatureSettings,
       fontSize: fontSize ?? this.fontSize,
       fontStyle: fontStyle ?? this.fontStyle,
       fontWeight: fontWeight ?? this.fontWeight,
       height: height ?? this.height,
+      letterSpacing: letterSpacing ?? this.letterSpacing,
       listStyleType: listStyleType ?? this.listStyleType,
       padding: padding ?? this.padding,
       margin: margin ?? this.margin,
+      textAlign: textAlign ?? this.textAlign,
       textDecoration: textDecoration ?? this.textDecoration,
+      textDecorationColor: textDecorationColor ?? this.textDecorationColor,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
+      textDecorationThickness: textDecorationThickness ?? this.textDecorationThickness,
+      textShadow: textShadow ?? this.textShadow,
       verticalAlign: verticalAlign ?? this.verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
+      wordSpacing: wordSpacing ?? this.wordSpacing,
+
       before: before ?? this.before,
       after: after ?? this.after,
-      textDirection: textDirection ?? this.textDirection,
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,
@@ -258,11 +354,17 @@ class Style {
     this.backgroundColor = textStyle.backgroundColor;
     this.color = textStyle.color;
     this.textDecoration = textStyle.decoration;
+    this.textDecorationColor = textStyle.decorationColor;
     this.textDecorationStyle = textStyle.decorationStyle;
+    this.textDecorationThickness = textStyle.decorationThickness;
     this.fontFamily = textStyle.fontFamily;
+    this.fontFeatureSettings = textStyle.fontFeatures;
     this.fontSize = FontSize(textStyle.fontSize);
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
+    this.letterSpacing = textStyle.letterSpacing;
+    this.textShadow = textStyle.shadows;
+    this.wordSpacing = textStyle.wordSpacing;
   }
 }
 

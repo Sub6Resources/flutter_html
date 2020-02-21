@@ -110,7 +110,7 @@ void testNewParser() {
 
     Style style2 = Style(
       before: "* ",
-      textDirection: TextDirection.rtl,
+      direction: TextDirection.rtl,
       fontStyle: FontStyle.italic,
     );
 
@@ -118,7 +118,7 @@ void testNewParser() {
 
     expect(finalStyle.display, equals(Display.BLOCK));
     expect(finalStyle.before, equals("* "));
-    expect(finalStyle.textDirection, equals(TextDirection.rtl));
+    expect(finalStyle.direction, equals(TextDirection.rtl));
     expect(finalStyle.fontStyle, equals(FontStyle.italic));
     expect(finalStyle.fontWeight, equals(FontWeight.bold));
   });
