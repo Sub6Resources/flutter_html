@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 class ImageProperties {
   final String semanticLabel;
   final bool excludeFromSemantics;
+  final bool useWidthAttribute;
+  final bool useHeightAttribute;
   final double width;
   final double height;
   final Color color;
@@ -20,6 +22,8 @@ class ImageProperties {
     this.scale = 1,
     this.semanticLabel,
     this.excludeFromSemantics = false,
+    this.useWidthAttribute = true,
+    this.useHeightAttribute = true,
     this.width,
     this.height,
     this.color,

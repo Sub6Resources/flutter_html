@@ -739,12 +739,16 @@ class HtmlRichTextParser extends StatelessWidget {
             if (showImages) {
               if (node.attributes['src'] != null) {
                 final width = imageProperties?.width ??
-                    ((node.attributes['width'] != null)
-                        ? double.tryParse(node.attributes['width'])
+                    (imageProperties?.useWidthAttribute ?? true
+                        ? (node.attributes['width'] != null)
+                            ? double.tryParse(node.attributes['width'])
+                            : null
                         : null);
                 final height = imageProperties?.height ??
-                    ((node.attributes['height'] != null)
-                        ? double.tryParse(node.attributes['height'])
+                    (imageProperties?.useHeightAttribute ?? true
+                        ? (node.attributes['height'] != null)
+                            ? double.tryParse(node.attributes['height'])
+                            : null
                         : null);
 
                 if (node.attributes['src'].startsWith("data:image") &&
@@ -788,7 +792,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ));
                 } else if (node.attributes['src'].startsWith('asset:')) {
-                  final assetPath = node.attributes['src'].replaceFirst('asset:', '');
+                  final assetPath =
+                      node.attributes['src'].replaceFirst('asset:', '');
                   precacheImage(
                     AssetImage(assetPath),
                     buildContext,
