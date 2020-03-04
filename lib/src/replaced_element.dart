@@ -311,7 +311,7 @@ class RubyElement extends ReplacedElement {
     List<Widget> widgets = List<Widget>();
     //TODO calculate based off of parent font size.
     final rubySize = max(9.0, context.style.fontSize.size / 2);
-    final rubyYPos = rubySize + 2;
+    final rubyYPos = rubySize + rubySize / 2;
     element.nodes.forEach((c) {
       if (c.nodeType == dom.Node.TEXT_NODE) {
         textNode = c;
