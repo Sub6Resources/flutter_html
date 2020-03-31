@@ -27,6 +27,7 @@ class Html extends StatelessWidget {
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
     this.shrinkToFit = false,
+    this.crossAxisAlignment = CrossAxisAlignment.center,
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
@@ -43,6 +44,7 @@ class Html extends StatelessWidget {
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
   final bool shrinkToFit;
+  final CrossAxisAlignment crossAxisAlignment;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -69,6 +71,7 @@ class Html extends StatelessWidget {
         child: (useRichText)
             ? HtmlRichTextParser(
                 shrinkToFit: shrinkToFit,
+                crossAxisAlignment: crossAxisAlignment,
                 onLinkTap: onLinkTap,
                 renderNewlines: renderNewlines,
                 customEdgeInsets: customEdgeInsets,

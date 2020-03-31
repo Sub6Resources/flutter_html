@@ -150,6 +150,7 @@ class ParseContext {
 class HtmlRichTextParser extends StatelessWidget {
   HtmlRichTextParser({
     this.shrinkToFit,
+    this.crossAxisAlignment,
     this.onLinkTap,
     this.renderNewlines = false,
     this.html,
@@ -170,6 +171,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final double indentSize = 10.0;
 
   final bool shrinkToFit;
+  final CrossAxisAlignment crossAxisAlignment;
   final onLinkTap;
   final bool renderNewlines;
   final String html;
@@ -333,6 +335,7 @@ class HtmlRichTextParser extends StatelessWidget {
     });
 
     return Column(
+      crossAxisAlignment: crossAxisAlignment,
       children: children,
     );
   }
