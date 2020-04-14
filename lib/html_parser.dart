@@ -418,7 +418,7 @@ class HtmlParser extends StatelessWidget {
         tree.text = tree.text.replaceFirst(' ', '');
       }
 
-      if (tree.text.endsWith(' ')) {
+      if (tree.text.endsWith(' ') || tree.text.endsWith('\n')) {
         wpc.data = true;
       } else {
         wpc.data = false;
