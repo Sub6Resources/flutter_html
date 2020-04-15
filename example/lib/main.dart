@@ -44,6 +44,8 @@ const htmlData = """
         </ruby>
         &nbsp;is Japanese Kanji.
       </p>
+      <p>Hello<br />
+      World!</p>
       <h3>Support for <code>sub</code>/<code>sup</code></h3>
       Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
       <p>One of the most <span>common</span> equations in all of physics is <var>E</var>=<var>m</var><var>c</var><sup>2</sup>.</p>
