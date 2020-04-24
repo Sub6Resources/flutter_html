@@ -1,15 +1,33 @@
 name: flutter_html
-description: A Flutter widget for rendering static html tags as Flutter widgets. (Will render over 70 different html tags!)
-version: 0.11.1
-author: Matthew Whitaker <sub6resources@gmail.com>
+description: A Flutter widget rendering static HTML and CSS as Flutter widgets.
+version: 1.0.0-pre.1
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
-  sdk: '>=1.19.0 <3.0.0'
-  flutter: '>=0.5.0'
+  sdk: '>=2.2.2 <3.0.0'
+  flutter: '>=1.7.4'
 
 dependencies:
-  html: ^0.14.0
+  # Plugin for parsing html
+  html: ^0.14.0+3
+
+  # Plugins for parsing css
+  csslib: ^0.16.1
+  css_colors: ^1.0.2
+
+  # Plugins for rendering the <video> tag.
+  video_player: ^0.10.9+1
+  chewie: ^0.9.10
+
+  # Plugin for rendering the <iframe> tag.
+  webview_flutter: ^0.3.20+2
+
+  # Plugins for rendering the <audio> tag.
+  chewie_audio: ^1.0.0+1
+
+  # Plugins for rendering the <svg> tag.
+  flutter_svg: ^0.17.4
+
   flutter:
     sdk: flutter
 
