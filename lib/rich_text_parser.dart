@@ -165,6 +165,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.customImageProvider,
   });
 
   final double indentSize = 10.0;
@@ -181,6 +182,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
+  final ImageProvider customImageProvider;
 
   // style elements set a default style
   // for all child nodes
@@ -759,28 +761,52 @@ class HtmlRichTextParser extends StatelessWidget {
                     onError: onImageError ?? (_, __) {},
                   );
                   parseContext.rootWidgetList.add(GestureDetector(
-                    child: Image.memory(
-                      base64.decode(
-                          node.attributes['src'].split("base64,")[1].trim()),
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? width : null,
-                      scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
-                      centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
-                      alignment: imageProperties?.alignment ?? Alignment.center,
-                      colorBlendMode: imageProperties?.colorBlendMode,
-                      fit: imageProperties?.fit,
-                      color: imageProperties?.color,
-                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                      semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
-                    ),
+                    child: (customImageProvider == null)
+                        ? Image.memory(
+                            base64.decode(node.attributes['src']
+                                .split("base64,")[1]
+                                .trim()),
+                            width: (width ?? -1) > 0 ? width : null,
+                            height: (height ?? -1) > 0 ? width : null,
+                            scale: imageProperties?.scale ?? 1.0,
+                            matchTextDirection:
+                                imageProperties?.matchTextDirection ?? false,
+                            centerSlice: imageProperties?.centerSlice,
+                            filterQuality: imageProperties?.filterQuality ??
+                                FilterQuality.low,
+                            alignment:
+                                imageProperties?.alignment ?? Alignment.center,
+                            colorBlendMode: imageProperties?.colorBlendMode,
+                            fit: imageProperties?.fit,
+                            color: imageProperties?.color,
+                            repeat:
+                                imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                            semanticLabel: imageProperties?.semanticLabel,
+                            excludeFromSemantics:
+                                (imageProperties?.semanticLabel == null)
+                                    ? true
+                                    : false,
+                          )
+                        : Image(
+                            image: customImageProvider,
+                            width: (width ?? -1) > 0 ? width : null,
+                            height: (height ?? -1) > 0 ? width : null,
+                            centerSlice: imageProperties?.centerSlice,
+                            filterQuality: imageProperties?.filterQuality ??
+                                FilterQuality.low,
+                            alignment:
+                                imageProperties?.alignment ?? Alignment.center,
+                            colorBlendMode: imageProperties?.colorBlendMode,
+                            fit: imageProperties?.fit,
+                            color: imageProperties?.color,
+                            repeat:
+                                imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                            semanticLabel: imageProperties?.semanticLabel,
+                            excludeFromSemantics:
+                                (imageProperties?.semanticLabel == null)
+                                    ? true
+                                    : false,
+                          ),
                     onTap: () {
                       if (onImageTap != null) {
                         onImageTap(node.attributes['src']);
@@ -788,7 +814,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ));
                 } else if (node.attributes['src'].startsWith('asset:')) {
-                  final assetPath = node.attributes['src'].replaceFirst('asset:', '');
+                  final assetPath =
+                      node.attributes['src'].replaceFirst('asset:', '');
                   precacheImage(
                     AssetImage(assetPath),
                     buildContext,

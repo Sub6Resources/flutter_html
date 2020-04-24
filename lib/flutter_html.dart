@@ -30,6 +30,7 @@ class Html extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.customImageProvider,
   }) : super(key: key);
 
   final String data;
@@ -48,6 +49,8 @@ class Html extends StatelessWidget {
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
+  // Using a custom image provider
+  final ImageProvider customImageProvider;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -80,6 +83,7 @@ class Html extends StatelessWidget {
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,
+                customImageProvider : customImageProvider,
               )
             : HtmlOldParser(
                 width: width,
