@@ -55,6 +55,7 @@ class Html extends StatelessWidget {
   final CustomEdgeInsets customEdgeInsets;
   final CustomTextStyle customTextStyle;
   final CustomTextAlign customTextAlign;
+  final Widget imageLoader;
 
   @override
   Widget build(BuildContext context) {
@@ -80,6 +81,7 @@ class Html extends StatelessWidget {
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,
+                imageLoader :imageLoader,
               )
             : HtmlOldParser(
                 width: width,
@@ -91,6 +93,7 @@ class Html extends StatelessWidget {
                 onImageError: onImageError,
                 linkStyle: linkStyle,
                 showImages: showImages,
+                
               ),
       ),
     );

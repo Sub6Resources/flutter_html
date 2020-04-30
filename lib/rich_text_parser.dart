@@ -165,6 +165,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.imageLoader = const CircularProgressIndicator(),
   });
 
   final double indentSize = 10.0;
@@ -181,6 +182,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
+  final Widget imageLoader;
 
   // style elements set a default style
   // for all child nodes
@@ -788,7 +790,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ));
                 } else if (node.attributes['src'].startsWith('asset:')) {
-                  final assetPath = node.attributes['src'].replaceFirst('asset:', '');
+                  final assetPath =
+                      node.attributes['src'].replaceFirst('asset:', '');
                   precacheImage(
                     AssetImage(assetPath),
                     buildContext,
@@ -849,6 +852,13 @@ class HtmlRichTextParser extends StatelessWidget {
                   parseContext.rootWidgetList.add(GestureDetector(
                     child: Image.network(
                       node.attributes['src'],
+                      loadingBuilder: (BuildContext context, Widget child,
+                          ImageChunkEvent loadingProgress) {
+                        if (loadingProgress == null) return child;
+                        return Center(
+                          child: imageLoader,
+                        );
+                      },
                       frameBuilder: (context, child, frame, _) {
                         if (node.attributes['alt'] != null && frame == null) {
                           return BlockText(
@@ -862,6 +872,7 @@ class HtmlRichTextParser extends StatelessWidget {
                             shrinkToFit: shrinkToFit,
                           );
                         }
+                        
                         if (frame != null) {
                           return child;
                         }
