@@ -30,6 +30,7 @@ class Html extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.imageLoader = const CircularProgressIndicator(),
   }) : super(key: key);
 
   final String data;
