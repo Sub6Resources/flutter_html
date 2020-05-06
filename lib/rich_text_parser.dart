@@ -165,7 +165,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
-    this.imageLoader = const CircularProgressIndicator(),
+    this.imageLoader,
   });
 
   final double indentSize = 10.0;
@@ -872,7 +872,6 @@ class HtmlRichTextParser extends StatelessWidget {
                             shrinkToFit: shrinkToFit,
                           );
                         }
-                        
                         if (frame != null) {
                           return child;
                         }

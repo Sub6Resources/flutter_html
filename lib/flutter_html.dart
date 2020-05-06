@@ -82,7 +82,7 @@ class Html extends StatelessWidget {
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,
-                imageLoader :imageLoader,
+                imageLoader: imageLoader,
               )
             : HtmlOldParser(
                 width: width,
@@ -94,7 +94,6 @@ class Html extends StatelessWidget {
                 onImageError: onImageError,
                 linkStyle: linkStyle,
                 showImages: showImages,
-                
               ),
       ),
     );
