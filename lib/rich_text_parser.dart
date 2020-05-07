@@ -4,8 +4,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
+import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_advanced_networkimage/provider.dart';
 
 import 'image_properties.dart';
+import 'spoiler.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef CustomTextStyle = TextStyle Function(
@@ -16,6 +20,7 @@ typedef CustomTextAlign = TextAlign Function(dom.Element elem);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 typedef OnImageTap = void Function(String source);
+typedef GetMxcUrl = String Function(String mxc, double width, double height);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
@@ -165,6 +170,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.getMxcUrl,
   });
 
   final double indentSize = 10.0;
@@ -181,6 +187,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
+  final GetMxcUrl getMxcUrl;
 
   // style elements set a default style
   // for all child nodes
@@ -549,14 +556,29 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.indentLevel += 1;
             nextContext.blockType = 'blockquote';
             break;
+          case "span":
+            // we need to hackingly check the outerHtml as the atributes don't contain blank ones, somehow
+            if (node.attributes['data-mx-spoiler'] != null || node.outerHtml.split(">")[0].contains("data-mx-spoiler")) {
+              final reason = node.attributes['data-mx-spoiler'];
+              TextSpan span = TextSpan(
+                text: '',
+                children: <TextSpan>[],
+              );
+              Widget blockElement = Spoiler(
+                reason: reason,
+                child: RichText(text: span),
+              );
+              parseContext.rootWidgetList.add(blockElement);
+              nextContext.inBlock = true;
+              nextContext.parentElement = span;
+            }
+            break;
           case "ruby":
           case "rt":
           case "rp":
           case "bdi":
           case "data":
           case "time":
-          case "span":
-            //No additional styles
             break;
         }
 
@@ -747,152 +769,63 @@ class HtmlRichTextParser extends StatelessWidget {
                         ? double.tryParse(node.attributes['height'])
                         : null);
 
-                if (node.attributes['src'].startsWith("data:image") &&
-                    node.attributes['src'].contains("base64,")) {
-                  precacheImage(
-                    MemoryImage(
-                      base64.decode(
-                        node.attributes['src'].split("base64,")[1].trim(),
-                      ),
-                    ),
-                    buildContext,
-                    onError: onImageError ?? (_, __) {},
-                  );
-                  parseContext.rootWidgetList.add(GestureDetector(
-                    child: Image.memory(
-                      base64.decode(
-                          node.attributes['src'].split("base64,")[1].trim()),
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? width : null,
-                      scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
-                      centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
-                      alignment: imageProperties?.alignment ?? Alignment.center,
-                      colorBlendMode: imageProperties?.colorBlendMode,
-                      fit: imageProperties?.fit,
-                      color: imageProperties?.color,
-                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                      semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
-                    ),
-                    onTap: () {
-                      if (onImageTap != null) {
-                        onImageTap(node.attributes['src']);
-                      }
-                    },
-                  ));
-                } else if (node.attributes['src'].startsWith('asset:')) {
-                  final assetPath = node.attributes['src'].replaceFirst('asset:', '');
-                  precacheImage(
-                    AssetImage(assetPath),
-                    buildContext,
-                    onError: onImageError ?? (_, __) {},
-                  );
-                  parseContext.rootWidgetList.add(GestureDetector(
-                    child: Image.asset(
-                      assetPath,
-                      frameBuilder: (context, child, frame, _) {
-                        if (node.attributes['alt'] != null && frame == null) {
-                          return BlockText(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: node.attributes['alt'],
-                                style: nextContext.childStyle,
-                              ),
+                final url = node.attributes['src'].startsWith("mxc://") && getMxcUrl != null ?
+                    getMxcUrl(node.attributes['src'], width, height) : "";
+
+                precacheImage(
+                  AdvancedNetworkImage(
+                    url,
+                    useDiskCache: !kIsWeb,
+                  ),
+                  buildContext,
+                  onError: onImageError ?? (_, __) {},
+                );
+                parseContext.rootWidgetList.add(GestureDetector(
+                  child: Image.network(
+                    url,
+                    frameBuilder: (context, child, frame, _) {
+                      if (node.attributes['alt'] != null && frame == null) {
+                        return BlockText(
+                          child: RichText(
+                            textAlign: TextAlign.center,
+                            text: TextSpan(
+                              text: node.attributes['alt'],
+                              style: nextContext.childStyle,
                             ),
-                            shrinkToFit: shrinkToFit,
-                          );
-                        }
-                        if (frame != null) {
-                          return child;
-                        }
-                        return Container();
-                      },
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? height : null,
-                      scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
-                      centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
-                      alignment: imageProperties?.alignment ?? Alignment.center,
-                      colorBlendMode: imageProperties?.colorBlendMode,
-                      fit: imageProperties?.fit,
-                      color: imageProperties?.color,
-                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                      semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
-                    ),
-                    onTap: () {
-                      if (onImageTap != null) {
-                        onImageTap(node.attributes['src']);
+                          ),
+                          shrinkToFit: shrinkToFit,
+                        );
                       }
-                    },
-                  ));
-                } else {
-                  precacheImage(
-                    NetworkImage(node.attributes['src']),
-                    buildContext,
-                    onError: onImageError ?? (_, __) {},
-                  );
-                  parseContext.rootWidgetList.add(GestureDetector(
-                    child: Image.network(
-                      node.attributes['src'],
-                      frameBuilder: (context, child, frame, _) {
-                        if (node.attributes['alt'] != null && frame == null) {
-                          return BlockText(
-                            child: RichText(
-                              textAlign: TextAlign.center,
-                              text: TextSpan(
-                                text: node.attributes['alt'],
-                                style: nextContext.childStyle,
-                              ),
-                            ),
-                            shrinkToFit: shrinkToFit,
-                          );
-                        }
-                        if (frame != null) {
-                          return child;
-                        }
-                        return Container();
-                      },
-                      width: (width ?? -1) > 0 ? width : null,
-                      height: (height ?? -1) > 0 ? height : null,
-                      scale: imageProperties?.scale ?? 1.0,
-                      matchTextDirection:
-                          imageProperties?.matchTextDirection ?? false,
-                      centerSlice: imageProperties?.centerSlice,
-                      filterQuality:
-                          imageProperties?.filterQuality ?? FilterQuality.low,
-                      alignment: imageProperties?.alignment ?? Alignment.center,
-                      colorBlendMode: imageProperties?.colorBlendMode,
-                      fit: imageProperties?.fit,
-                      color: imageProperties?.color,
-                      repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
-                      semanticLabel: imageProperties?.semanticLabel,
-                      excludeFromSemantics:
-                          (imageProperties?.semanticLabel == null)
-                              ? true
-                              : false,
-                    ),
-                    onTap: () {
-                      if (onImageTap != null) {
-                        onImageTap(node.attributes['src']);
+                      if (frame != null) {
+                        return child;
                       }
+                      return Container();
                     },
-                  ));
-                }
+                    width: (width ?? -1) > 0 ? width : null,
+                    height: (height ?? -1) > 0 ? height : null,
+                    scale: imageProperties?.scale ?? 1.0,
+                    matchTextDirection:
+                        imageProperties?.matchTextDirection ?? false,
+                    centerSlice: imageProperties?.centerSlice,
+                    filterQuality:
+                        imageProperties?.filterQuality ?? FilterQuality.low,
+                    alignment: imageProperties?.alignment ?? Alignment.center,
+                    colorBlendMode: imageProperties?.colorBlendMode,
+                    fit: imageProperties?.fit,
+                    color: imageProperties?.color,
+                    repeat: imageProperties?.repeat ?? ImageRepeat.noRepeat,
+                    semanticLabel: imageProperties?.semanticLabel,
+                    excludeFromSemantics:
+                        (imageProperties?.semanticLabel == null)
+                            ? true
+                            : false,
+                  ),
+                  onTap: () {
+                    if (onImageTap != null) {
+                      onImageTap(node.attributes['src']);
+                    }
+                  },
+                ));
               }
             }
             break;

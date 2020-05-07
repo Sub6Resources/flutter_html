@@ -1,8 +1,8 @@
 library flutter_html;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/html_parser.dart';
-import 'package:flutter_html/rich_text_parser.dart';
+import 'html_parser.dart';
+import 'rich_text_parser.dart';
 
 import 'image_properties.dart';
 
@@ -30,6 +30,7 @@ class Html extends StatelessWidget {
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
+    this.getMxcUrl,
   }) : super(key: key);
 
   final String data;
@@ -43,6 +44,7 @@ class Html extends StatelessWidget {
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
   final bool shrinkToFit;
+  final GetMxcUrl getMxcUrl;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -80,6 +82,7 @@ class Html extends StatelessWidget {
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,
+                getMxcUrl: getMxcUrl,
               )
             : HtmlOldParser(
                 width: width,
