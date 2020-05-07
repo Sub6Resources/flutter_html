@@ -25,6 +25,9 @@ typedef GetMxcUrl = String Function(String mxc, double width, double height);
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
 
+final RegExp URL_REGEX = RegExp(
+    r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%.,_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\,+.~#?&//=]*)");
+
 class LinkTextSpan extends TextSpan {
   // Beware!
   //
@@ -396,11 +399,39 @@ class HtmlRichTextParser extends StatelessWidget {
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
 
-      // create a span by default
-      TextSpan span = TextSpan(
+      // craete a text span and detect links
+      TextSpan span;
+      final links = URL_REGEX.allMatches(finalText);
+      if (links.isEmpty) {
+        // create a span by default
+        span = TextSpan(
           text: finalText,
           children: <TextSpan>[],
           style: parseContext.childStyle);
+      } else {
+        TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
+        final textParts = finalText.split(URL_REGEX);
+        final textSpans = <TextSpan>[];
+        int i = 0;
+        textParts.forEach((textPart) {
+          textSpans.add(TextSpan(text: textPart));
+          if (i < links.length) {
+            final link = links.elementAt(i).group(0);
+            textSpans.add(LinkTextSpan(
+              style: _linkStyle,
+              url: link,
+              text: link,
+              onLinkTap: onLinkTap,
+            ));
+          }
+          i++;
+        });
+        span = TextSpan(
+          text: "",
+          children: textSpans,
+          style: parseContext.childStyle,
+        );
+      }
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
 
