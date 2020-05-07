@@ -117,6 +117,7 @@ class BlockText extends StatelessWidget {
 class ParseContext {
   List<Widget> rootWidgetList; // the widgetList accumulator
   dynamic parentElement; // the parent spans accumulator
+  RichText parentRichText;
   int indentLevel = 0;
   int listCount = 0;
   String listChar = '•';
@@ -129,6 +130,7 @@ class ParseContext {
   ParseContext({
     this.rootWidgetList,
     this.parentElement,
+    this.parentRichText,
     this.indentLevel = 0,
     this.listCount = 0,
     this.listChar = '•',
@@ -144,6 +146,7 @@ class ParseContext {
   ParseContext.fromContext(ParseContext parseContext) {
     rootWidgetList = parseContext.rootWidgetList;
     parentElement = parseContext.parentElement;
+    parentRichText = parseContext.parentRichText;
     indentLevel = parseContext.indentLevel;
     listCount = parseContext.listCount;
     listChar = parseContext.listChar;
@@ -152,6 +155,47 @@ class ParseContext {
     spansOnly = parseContext.spansOnly;
     inBlock = parseContext.inBlock;
     childStyle = parseContext.childStyle ?? TextStyle();
+  }
+
+  void addWidget(InlineSpan widget, {bool shrinkToFit}) {
+    if (parentElement is TextSpan) {
+      if (widget is WidgetSpan) {
+        if (parentRichText is RichText) {
+          parentElement.children.add(widget);
+          parentRichText.children.add(widget.child);
+        } else {
+          // we don't have a parent rich text.....as not to crash everything, let's just do our old backup
+          TextSpan span = TextSpan(
+            text: parentElement.text,
+            style: parentElement.style,
+            children: <InlineSpan>[...parentElement.children, widget],
+          );
+          RichText richText = RichText(text: span);
+          BlockText blockElement = BlockText(
+            shrinkToFit: shrinkToFit,
+            child: richText,
+          );
+          rootWidgetList.removeLast();
+          rootWidgetList.add(blockElement);
+          parentElement = span;
+          parentRichText = richText;
+        }
+      } else {
+        parentElement.children.add(widget);
+      }
+    } else {
+      TextSpan span = TextSpan(
+        children: <InlineSpan>[widget],
+      );
+      RichText richText = RichText(text: span);
+      BlockText blockElement = BlockText(
+        shrinkToFit: shrinkToFit,
+        child: richText,
+      );
+      rootWidgetList.add(blockElement);
+      parentElement = span;
+      parentRichText = richText;
+    }
   }
 }
 
@@ -447,6 +491,7 @@ class HtmlRichTextParser extends StatelessWidget {
         // if this is inside a context that should be treated like a block
         // but the context is not actually a block, create a block
         // and append it to the root widget tree
+        RichText richText;
         if (treatLikeBlock) {
           Decoration decoration;
           if (parseContext.blockType == 'blockquote') {
@@ -458,6 +503,10 @@ class HtmlRichTextParser extends StatelessWidget {
               fontStyle: FontStyle.italic,
             ));
           }
+          richText = RichText(
+            textAlign: TextAlign.left,
+            text: span,
+          );
           BlockText blockText = BlockText(
             shrinkToFit: shrinkToFit,
             margin: EdgeInsets.only(
@@ -466,21 +515,20 @@ class HtmlRichTextParser extends StatelessWidget {
                 left: parseContext.indentLevel * indentSize),
             padding: EdgeInsets.all(2.0),
             decoration: decoration,
-            child: RichText(
-              textAlign: TextAlign.left,
-              text: span,
-            ),
+            child: richText,
           );
           parseContext.rootWidgetList.add(blockText);
         } else {
+          richText = RichText(text: span);
           parseContext.rootWidgetList.add(BlockText(
-            child: RichText(text: span),
+            child: richText,
             shrinkToFit: shrinkToFit,
           ));
         }
 
         // this allows future items to be added as children of this item
         parseContext.parentElement = span;
+        parseContext.parentRichText = richText;
 
         // if the parent is a LinkTextSpan, keep the main attributes of that span going.
       } else if (parseContext.parentElement is LinkTextSpan) {
@@ -596,13 +644,16 @@ class HtmlRichTextParser extends StatelessWidget {
                 text: '',
                 children: <InlineSpan>[],
               );
-              Widget blockElement = Spoiler(
-                reason: reason,
-                child: RichText(text: span),
-              );
-              parseContext.rootWidgetList.add(blockElement);
+              RichText richText = RichText(text: span);
+              parseContext.addWidget(WidgetSpan(
+                child: Spoiler(
+                  reason: reason,
+                  child: richText,
+                ),
+              ), shrinkToFit: shrinkToFit);
               nextContext.inBlock = true;
               nextContext.parentElement = span;
+              nextContext.parentRichText = richText;
             }
             break;
           case "ruby":
@@ -644,6 +695,7 @@ class HtmlRichTextParser extends StatelessWidget {
                 children: <Widget>[],
               );
               nextContext.parentElement = linkContainer;
+              nextContext.parentRichText = null;
               nextContext.rootWidgetList.add(linkContainer);
             } else {
               TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
@@ -655,16 +707,19 @@ class HtmlRichTextParser extends StatelessWidget {
               );
               if (parseContext.parentElement is TextSpan) {
                 nextContext.parentElement.children.add(span);
+                nextContext.parentRichText = parseContext.parentRichText;
               } else {
                 // start a new block element for this link and its text
+                RichText richText = RichText(text: span);
                 BlockText blockElement = BlockText(
                   shrinkToFit: shrinkToFit,
                   margin: EdgeInsets.only(
                       left: parseContext.indentLevel * indentSize, top: 10.0),
-                  child: RichText(text: span),
+                  child: richText,
                 );
                 parseContext.rootWidgetList.add(blockElement);
                 nextContext.inBlock = true;
+                nextContext.parentRichText = richText;
               }
               nextContext.childStyle = linkStyle;
               nextContext.parentElement = span;
@@ -743,32 +798,7 @@ class HtmlRichTextParser extends StatelessWidget {
                     },
                   ),
                 );
-                if (parseContext.parentElement is TextSpan) {
-                  // for some reason we can't just .add() our widget
-                  // so instead....we create  a new thing!
-                  TextSpan span = TextSpan(
-                    text: parseContext.parentElement.text,
-                    style: parseContext.parentElement.style,
-                    children: <InlineSpan>[...parseContext.parentElement.children, widget],
-                  );
-                  BlockText blockElement = BlockText(
-                    shrinkToFit: shrinkToFit,
-                    child: RichText(text: span),
-                  );
-                  parseContext.rootWidgetList.removeLast();
-                  parseContext.rootWidgetList.add(blockElement);
-                  parseContext.parentElement = span;
-                } else {
-                  TextSpan span = TextSpan(
-                    children: <InlineSpan>[widget],
-                  );
-                  BlockText blockElement = BlockText(
-                    shrinkToFit: shrinkToFit,
-                    child: RichText(text: span),
-                  );
-                  parseContext.rootWidgetList.add(blockElement);
-                  parseContext.parentElement = span;
-                }
+                parseContext.addWidget(widget, shrinkToFit: shrinkToFit);
               }
             }
             break;
@@ -784,10 +814,12 @@ class HtmlRichTextParser extends StatelessWidget {
           case "table":
             // new block, so clear out the parent element
             parseContext.parentElement = null;
+            parseContext.parentRichText = null;
             nextContext.parentElement = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[],
             );
+            nextContext.parentRichText = null;
             nextContext.rootWidgetList.add(Container(
                 margin: EdgeInsets.symmetric(vertical: 12.0),
                 child: nextContext.parentElement));
@@ -817,6 +849,7 @@ class HtmlRichTextParser extends StatelessWidget {
             );
             nextContext.parentElement.children.add(cell);
             nextContext.parentElement = text.text;
+            nextContext.parentRichText = text;
             break;
 
           case "tr":
@@ -826,6 +859,7 @@ class HtmlRichTextParser extends StatelessWidget {
             );
             nextContext.parentElement.children.add(row);
             nextContext.parentElement = row;
+            nextContext.parentRichText = null;
             break;
 
           // treat captions like a row with one expanded cell
@@ -847,6 +881,7 @@ class HtmlRichTextParser extends StatelessWidget {
             row.children.add(cell);
             nextContext.parentElement.children.add(row);
             nextContext.parentElement = text.text;
+            nextContext.parentRichText = text;
             break;
           case "q":
             if (parseContext.parentElement != null &&
@@ -858,6 +893,7 @@ class HtmlRichTextParser extends StatelessWidget {
               parseContext.parentElement.children
                   .add(TextSpan(text: '"', children: []));
               nextContext.parentElement = content;
+              nextContext.parentRichText = parseContext.parentRichText;
             }
             break;
         }
@@ -876,6 +912,7 @@ class HtmlRichTextParser extends StatelessWidget {
         // block elements only show up at the "root" widget level
         // so if we have a block element, reset the parentElement to null
         parseContext.parentElement = null;
+        parseContext.parentRichText = null;
         TextAlign textAlign = TextAlign.left;
         if (customTextAlign != null) {
           textAlign = customTextAlign(node) ?? textAlign;
@@ -915,6 +952,7 @@ class HtmlRichTextParser extends StatelessWidget {
             );
             parseContext.rootWidgetList.add(blockText);
             nextContext.parentElement = blockText.child.text;
+            nextContext.parentRichText = blockText.child;
             nextContext.spansOnly = true;
             nextContext.inBlock = true;
             break;
@@ -993,6 +1031,7 @@ class HtmlRichTextParser extends StatelessWidget {
             );
             parseContext.rootWidgetList.add(blockText);
             nextContext.parentElement = blockText.child.text;
+            nextContext.parentRichText = blockText.child;
             nextContext.spansOnly = true;
             nextContext.inBlock = true;
         }
