@@ -576,13 +576,19 @@ class HtmlRichTextParser extends StatelessWidget {
 
     // OTHER ELEMENT NODES
     else if (node is dom.Element) {
-      if (!_supportedElements.contains(node.localName)) {
-        return;
-      }
-
       // make a copy of the current context so that we can modify
       // pieces of it for the next iteration of this function
       ParseContext nextContext = new ParseContext.fromContext(parseContext);
+
+      if (!_supportedElements.contains(node.localName)) {
+        if (node.localName == "mx-reply") { // drop reply fallback
+          return;
+        }
+        node.nodes.forEach((dom.Node childNode) {
+          _parseNode(childNode, nextContext, buildContext);
+        });
+        return;
+      }
 
       // handle style elements
       if (_supportedStyleElements.contains(node.localName)) {
