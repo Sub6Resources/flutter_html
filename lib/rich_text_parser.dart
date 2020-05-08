@@ -28,6 +28,29 @@ const OFFSET_TAGS_FONT_SIZE_FACTOR =
 final RegExp URL_REGEX = RegExp(
     r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%.,_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\,+.~#?&//=]*)");
 
+extension CssColor on Color {
+  static Color fromCss(String hexString) {
+    if (hexString == null) {
+      return null;
+    }
+    final matches = RegExp(r"^#((?:[0-9a-fA-F]{3}){1,2})$").firstMatch(hexString);
+    if (matches == null) {
+      return null;
+    }
+    hexString = matches[1];
+    final buffer = StringBuffer();
+    buffer.write("ff");
+    if (hexString.length == 3) {
+      for (final char in hexString.runes) {
+        buffer.write(char + char);
+      }
+    } else {
+      buffer.write(hexString);
+    }
+    return Color(int.parse(buffer.toString(), radix: 16));
+  }
+}
+
 class LinkTextSpan extends TextSpan {
   // Beware!
   //
@@ -272,6 +295,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "span",
     "big",
     "sub",
+    "font",
   ];
 
   // specialty elements require unique handling
@@ -637,6 +661,16 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.blockType = 'blockquote';
             break;
           case "span":
+            if (node.attributes['data-mx-color'] != null) {
+              childStyle = childStyle.merge(TextStyle(color: CssColor.fromCss(
+                node.attributes['data-mx-color'],
+              )));
+            }
+            if (node.attributes['data-mx-bg-color'] != null) {
+              childStyle = childStyle.merge(TextStyle(backgroundColor: CssColor.fromCss(
+                node.attributes['data-mx-bg-color'],
+              )));
+            }
             // we need to hackingly check the outerHtml as the atributes don't contain blank ones, somehow
             if (node.attributes['data-mx-spoiler'] != null || node.outerHtml.split(">")[0].contains("data-mx-spoiler")) {
               final reason = node.attributes['data-mx-spoiler'];
@@ -662,6 +696,18 @@ class HtmlRichTextParser extends StatelessWidget {
           case "bdi":
           case "data":
           case "time":
+            break;
+          case "font":
+            if (node.attributes['color'] != null || node.attributes['data-mx-color'] != null) {
+              childStyle = childStyle.merge(TextStyle(color: CssColor.fromCss(
+                node.attributes['color'] ?? node.attributes['data-mx-color'],
+              )));
+            }
+            if (node.attributes['data-mx-bg-color'] != null) {
+              childStyle = childStyle.merge(TextStyle(backgroundColor: CssColor.fromCss(
+                node.attributes['data-mx-bg-color'],
+              )));
+            }
             break;
         }
 
