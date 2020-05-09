@@ -110,27 +110,12 @@ class LinkBlock extends Container {
         );
 }
 
-class RichTextTag extends RichText {
-  final String tagName;
-  RichTextTag({
-    this.tagName,
-    @required InlineSpan text,
-    TextAlign textAlign,
-    int maxLines,
-  }) : super(
-    text: text,
-    textAlign: textAlign,
-    maxLines: maxLines,
-  );
-}
-
 class BlockText extends StatelessWidget {
   final RichText child;
   final EdgeInsets padding;
   final EdgeInsets margin;
   final Decoration decoration;
   final bool shrinkToFit;
-  final String tagName;
   double width;
 
   BlockText({
@@ -139,7 +124,6 @@ class BlockText extends StatelessWidget {
     this.padding,
     this.margin,
     this.decoration,
-    this.tagName,
   });
 
   @override
@@ -448,6 +432,7 @@ class HtmlRichTextParser extends StatelessWidget {
 
     return Column(
       children: children,
+      crossAxisAlignment: CrossAxisAlignment.start,
     );
   }
 
@@ -464,15 +449,15 @@ class HtmlRichTextParser extends StatelessWidget {
   // function can add child nodes to the parent if it should
   //
   // each iteration creates a new parseContext as a copy of the previous one if it needs to
-  ParseContext _parseNode(
-      dom.Node node, ParseContext parseContext, BuildContext buildContext, [ParseContext prevParseContext]) {
+  void _parseNode(
+      dom.Node node, ParseContext parseContext, BuildContext buildContext) {
     // TEXT ONLY NODES
     // a text only node is a child of a tag with no inner html
     if (node is dom.Text) {
       // WHITESPACE CONSIDERATIONS ---
       // truly empty nodes should just be ignored
       if (node.text.trim() == "" && node.text.indexOf(" ") == -1) {
-        return parseContext;
+        return;
       }
 
       // we might want to preserve internal whitespace
@@ -498,7 +483,7 @@ class HtmlRichTextParser extends StatelessWidget {
       }
 
       // if the finalText is actually empty, just return (unless it's just a space)
-      if (finalText.trim().isEmpty && finalText != " ") return parseContext;
+      if (finalText.trim().isEmpty && finalText != " ") return;
 
       // NOW WE HAVE OUR TRULY FINAL TEXT
       // debugPrint("Plain Text Node: '$finalText'");
@@ -608,7 +593,7 @@ class HtmlRichTextParser extends StatelessWidget {
       } else {
         // Doing nothing... we shouldn't ever get here
       }
-      return parseContext;
+      return;
     }
 
     // OTHER ELEMENT NODES
@@ -619,12 +604,12 @@ class HtmlRichTextParser extends StatelessWidget {
 
       if (!_supportedElements.contains(node.localName)) {
         if (node.localName == "mx-reply") { // drop reply fallback
-          return nextContext;
+          return;
         }
         node.nodes.forEach((dom.Node childNode) {
           _parseNode(childNode, nextContext, buildContext);
         });
-        return nextContext;
+        return;
       }
 
       // handle style elements
@@ -987,13 +972,6 @@ class HtmlRichTextParser extends StatelessWidget {
               nextContext.parentRichText = parseContext.parentRichText;
             }
             break;
-          case "p":
-            if (parseContext.parentElement != null &&
-                parseContext.parentElement is TextSpan) {
-                parseContext.parentElement.children
-                    .add(TextSpan(text: '\n\n', children: []));
-            }
-            break;
         }
 
         if (customTextStyle != null) {
@@ -1007,6 +985,10 @@ class HtmlRichTextParser extends StatelessWidget {
 
       // handle block elements
       else if (_supportedBlockElements.contains(node.localName)) {
+        // block elements only show up at the "root" widget level
+        // so if we have a block element, reset the parentElement to null
+        parseContext.parentElement = null;
+        parseContext.parentRichText = null;
         TextAlign textAlign = TextAlign.left;
         if (customTextAlign != null) {
           textAlign = customTextAlign(node) ?? textAlign;
@@ -1092,24 +1074,6 @@ class HtmlRichTextParser extends StatelessWidget {
             // no break here
             continue myDefault;
 
-          case "p":
-            if (
-              prevParseContext != null &&
-              prevParseContext.parentRichText != null &&
-              prevParseContext.parentRichText is RichTextTag &&
-              (prevParseContext.parentRichText as RichTextTag).tagName == "p" &&
-              prevParseContext.parentElement != null &&
-              prevParseContext.parentElement is TextSpan
-            ) {
-              prevParseContext.parentElement.children.add(TextSpan(text: "\n\n", children: <InlineSpan>[]));
-              nextContext.parentElement = prevParseContext.parentElement;
-              nextContext.parentRichText = prevParseContext.parentRichText;
-              nextContext.spansOnly = true;
-              nextContext.inBlock = true;
-              break;
-            }
-            continue myDefault;
-
           myDefault:
           default:
             Decoration decoration;
@@ -1136,8 +1100,7 @@ class HtmlRichTextParser extends StatelessWidget {
                 bottom: 2.0,
               ),
               decoration: decoration,
-              child: RichTextTag(
-                tagName: node.localName,
+              child: RichText(
                 textAlign: textAlign,
                 text: TextSpan(
                   text: '',
@@ -1163,13 +1126,10 @@ class HtmlRichTextParser extends StatelessWidget {
         }
       }
 
-      ParseContext nextPrevContext = null;
       node.nodes.forEach((dom.Node childNode) {
-        nextPrevContext = _parseNode(childNode, nextContext, buildContext, nextPrevContext);
+        _parseNode(childNode, nextContext, buildContext);
       });
-      return nextContext;
     }
-    return parseContext;
   }
 
   String condenseHtmlWhitespace(String stringToTrim) {
