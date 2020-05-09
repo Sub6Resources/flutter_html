@@ -31,6 +31,7 @@ class Html extends StatelessWidget {
     this.onImageTap,
     this.showImages = true,
     this.getMxcUrl,
+    this.maxLines,
   }) : super(key: key);
 
   final String data;
@@ -45,6 +46,7 @@ class Html extends StatelessWidget {
   final TextStyle linkStyle;
   final bool shrinkToFit;
   final GetMxcUrl getMxcUrl;
+  final int maxLines;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -83,6 +85,8 @@ class Html extends StatelessWidget {
                 onImageTap: onImageTap,
                 showImages: showImages,
                 getMxcUrl: getMxcUrl,
+                maxLines: maxLines,
+                defaultTextStyle: defaultTextStyle,
               )
             : HtmlOldParser(
                 width: width,
