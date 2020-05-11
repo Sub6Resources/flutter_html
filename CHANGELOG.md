@@ -1,3 +1,33 @@
+# [1.0.0]
+* BREAKING CHANGES (see the [Migration Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide) for a full overview of breaking changes.):
+  * The default parser has been completely rewritten and the RichText parser has been removed.
+  * `useRichText` no longer is necessary (The new parser uses RichText under the hood)
+  * `customRender` now works for the default parser.
+* Adds support for `<audio>`, `<video>`, `<iframe>`, `<svg>`, `<ruby>`, `<rt>`, `<rp>`, `<sub>`, and `<sup>`
+* Adds support for over 20 CSS attributes when using the `style` parameter.
+* Fixes many many issues (see the list at [#122](https://github.com/Sub6Resources/flutter_html/pull/122))
+* The following parameters of `Html` have been removed and should no longer be used (see the migration guide):
+  * `useRichText`
+  * `padding`
+  * `backgroundColor`
+  * `defaultTextStyle`
+  * `renderNewlines`
+  * `customEdgeInsets`
+  * `customTextStyle`
+  * `blockSpacing`
+  * `customTextAlign`
+  * `linkStyle`
+  * `imageProperties`
+  * `showImages`
+* The default text style now matches the app's Material `TextTheme.bodyText2` (Fixes [#18](https://github.com/Sub6Resources/flutter_html/issues/18)).
+* Requires Flutter v1.17.0 or greater
+* Fixed quite a few issues with `img`
+* Added a fancy new `style` attribute (this should be used in place of the deprecated styling parameters).
+
+## [1.0.0-pre.1] - December 27, 2019
+
+* For a list of pre-release changes, including several BREAKING CHANGES, see release notes for 1.0.0 above.
+
 ## [0.11.1] - December 14, 2019:
 
 * Add support for `AssetImage`s using the `asset:` prefix ([#162](https://github.com/Sub6Resources/flutter_html/pull/162)).
@@ -42,7 +72,6 @@
 * Add support for `address` tag in `RichText` parser.
 
 ## [0.9.7] - May 13, 2019:
-
 * Added onImageError callback
 * Added custom textstyle and edgeinsets callback ([#72](https://github.com/Sub6Resources/flutter_html/pull/72))
 * Update dependency versions ([#84](https://github.com/Sub6Resources/flutter_html/issues/84))
