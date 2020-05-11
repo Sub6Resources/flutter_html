@@ -24,7 +24,8 @@ const testData = <String, String>{
   'dl': '<dl>Hello, World!</dl>',
   'dt': '<dt>Hello, World!</dt>',
   'em': '<em>Hello, World!</em>',
-  'figcaption_figure': '<figure><figcaption>Hello, World!</figcaption></figure>',
+  'figcaption_figure':
+      '<figure><figcaption>Hello, World!</figcaption></figure>',
   'font': '<font>Hello, World!</font>',
   'footer': '<footer>Hello, World!</footer>',
   'h1': '<h1>Hello, World!</h1>',
@@ -36,7 +37,8 @@ const testData = <String, String>{
   'header': '<header>Hello, World!</header>',
   'hr': '<div>Hello</div><hr /><div>World!</div>',
   'i': '<i>Hello, World!</i>',
-  'img': '<img alt="Hello, World!" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" />',
+  'img':
+      '<img alt="Hello, World!" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_272x92dp.png" />',
   'img_alt': '<img alt="Hello, World!" src="" />',
   'ins': '<ins>Hello, World!</ins>',
   'kbd': '<kbd>Hello, World!</kbd>',
@@ -61,15 +63,22 @@ const testData = <String, String>{
   'strong': '<strong>Hello, World!</strong>',
   'sub': '<sub>Hello, World!</sub>',
   'sup': '<sup>Hello, World!</sup>',
-  'table': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
-  'tbody': '<table><tr><th>Hello</th><th>World!</th></tr><tbody><tr><td>Hello</td><td>World!</td></tr></tbody></table>',
-  'td': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'table':
+      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'tbody':
+      '<table><tr><th>Hello</th><th>World!</th></tr><tbody><tr><td>Hello</td><td>World!</td></tr></tbody></table>',
+  'td':
+      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
   'template': '<template>Hello, World!</template>',
-  'tfoot': '<table><tr><th>Hello</th><th>World!</th></tr><tfoot><tr><td>Hello</td><td>World!</td></tr></tfoot></table>',
-  'th': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
-  'thead': '<table><thead><tr><th>Hello</th><th>World!</th></tr></thead><tr><td>Hello</td><td>World!</td></tr></table>',
+  'tfoot':
+      '<table><tr><th>Hello</th><th>World!</th></tr><tfoot><tr><td>Hello</td><td>World!</td></tr></tfoot></table>',
+  'th':
+      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'thead':
+      '<table><thead><tr><th>Hello</th><th>World!</th></tr></thead><tr><td>Hello</td><td>World!</td></tr></table>',
   'time': '<time>3:00 PM</time>',
-  'tr': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'tr':
+      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
   'tt': '<tt>Hello, World!</tt>',
   'u': '<u>Hello, World!</u>',
   'var': '<var>Hello, World!</var>',

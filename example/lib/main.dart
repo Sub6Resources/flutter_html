@@ -132,7 +132,10 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: Text('flutter_html Example'), centerTitle: true,),
+      appBar: AppBar(
+        title: Text('flutter_html Example'),
+        centerTitle: true,
+      ),
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,

@@ -46,8 +46,7 @@ void main() {
   testWidgets('whitespace golden test', (WidgetTester tester) async {
     await tester.pumpWidget(
       TestApp(
-        Html(
-          data: """
+        Html(data: """
           <p id='whitespace'>
       These two lines should have an identical length:<br /><br />
 
@@ -60,8 +59,7 @@ void main() {
              dog.<br />
             The quick brown fox jumped over the lazy dog.
       </p>
-          """
-        ),
+          """),
       ),
     );
 //    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/whitespace.png'));

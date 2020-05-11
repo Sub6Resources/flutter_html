@@ -28,26 +28,37 @@ void testNewParser() {
   });
 
   test("lexDomTree works correctly", () {
-    StyledElement tree = HtmlParser.lexDomTree(HtmlParser.parseHTML(
-        "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"), [], []);
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML(
+            "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
+        [],
+        []);
     print(tree.toString());
   });
 
   test("InteractableElements work correctly", () {
-    StyledElement tree = HtmlParser.lexDomTree(HtmlParser.parseHTML(
-        "Hello, World! <a href='https://example.com'>This is a link</a>"), [], []);
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML(
+            "Hello, World! <a href='https://example.com'>This is a link</a>"),
+        [],
+        []);
     print(tree.toString());
   });
 
   test("ContentElements work correctly", () {
     StyledElement tree = HtmlParser.lexDomTree(
-        HtmlParser.parseHTML("<img src='https://image.example.com' />"), [], []);
+        HtmlParser.parseHTML("<img src='https://image.example.com' />"),
+        [],
+        []);
     print(tree.toString());
   });
 
   test("Nesting of elements works correctly", () {
-    StyledElement tree = HtmlParser.lexDomTree(HtmlParser.parseHTML(
-        "<div><div><div><div><a href='link'>Link</a><div>Hello, World! <b>Bold and <i>Italic</i></b></div></div></div></div></div>"), [], []);
+    StyledElement tree = HtmlParser.lexDomTree(
+        HtmlParser.parseHTML(
+            "<div><div><div><div><a href='link'>Link</a><div>Hello, World! <b>Bold and <i>Italic</i></b></div></div></div></div></div>"),
+        [],
+        []);
     print(tree.toString());
   });
 

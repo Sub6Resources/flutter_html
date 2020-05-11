@@ -184,7 +184,6 @@ class Style {
     this.whiteSpace,
     this.width,
     this.wordSpacing,
-
     this.before,
     this.after,
     this.border,
@@ -309,7 +308,6 @@ class Style {
     WhiteSpace whiteSpace,
     double width,
     double wordSpacing,
-
     String before,
     String after,
     Border border,
@@ -335,13 +333,13 @@ class Style {
       textDecoration: textDecoration ?? this.textDecoration,
       textDecorationColor: textDecorationColor ?? this.textDecorationColor,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
-      textDecorationThickness: textDecorationThickness ?? this.textDecorationThickness,
+      textDecorationThickness:
+          textDecorationThickness ?? this.textDecorationThickness,
       textShadow: textShadow ?? this.textShadow,
       verticalAlign: verticalAlign ?? this.verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
       wordSpacing: wordSpacing ?? this.wordSpacing,
-
       before: before ?? this.before,
       after: after ?? this.after,
       border: border ?? this.border,

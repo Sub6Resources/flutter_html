@@ -142,7 +142,6 @@ class HtmlParser extends StatelessWidget {
 
   ///TODO document
   static StyledElement applyCSS(StyledElement tree) {
-
     //Make sure style is never null.
     if (tree.style == null) {
       tree.style = Style();
@@ -398,7 +397,7 @@ class HtmlParser extends StatelessWidget {
     if (tree.style.display == Display.BLOCK) {
       wpc.data = false;
     }
-    
+
     if (tree is ImageContentElement || tree is SvgContentElement) {
       wpc.data = false;
     }
@@ -476,10 +475,12 @@ class HtmlParser extends StatelessWidget {
   /// properties.
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style?.before != null) {
-      tree.children?.insert(0, TextContentElement(text: tree.style.before, style: tree.style));
+      tree.children?.insert(
+          0, TextContentElement(text: tree.style.before, style: tree.style));
     }
     if (tree.style?.after != null) {
-      tree.children?.add(TextContentElement(text: tree.style.after, style: tree.style));
+      tree.children
+          ?.add(TextContentElement(text: tree.style.after, style: tree.style));
     } else {
       tree.children?.forEach(_processBeforesAndAfters);
     }
@@ -711,7 +712,10 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: style.display == Display.BLOCK || style.display == Display.LIST_ITEM? double.infinity: null,
+      width:
+          style.display == Display.BLOCK || style.display == Display.LIST_ITEM
+              ? double.infinity
+              : null,
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
