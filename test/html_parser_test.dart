@@ -19,20 +19,6 @@ void main() {
     );
   });
 
-  testWidgets("Check that RichText parser does not fail on empty data",
-      (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Html(
-            data: "",
-            useRichText: true,
-          ),
-        ),
-      ),
-    );
-  });
-
   testNewParser();
 }
 

@@ -1,4 +1,3 @@
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/html_parser.dart';
@@ -44,12 +43,10 @@ const htmlData = """
         </ruby>
         &nbsp;is Japanese Kanji.
       </p>
-      <p>Hello<br />
-      World!</p>
       <h3>Support for <code>sub</code>/<code>sup</code></h3>
       Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
-      <p>One of the most <span>common</span> equations in all of physics is <var>E</var>=<var>m</var><var>c</var><sup>2</sup>.</p>
-      <h3>Table support:</h3>
+      <p>One of the most <span>common</span> equations in all of physics is <br /><var>E</var>=<var>m</var><var>c</var><sup>2</sup>.</p>
+      <h3>Table support (with custom styling!):</h3>
       <table>
       <colgroup>
         <col width="50%" />
@@ -100,7 +97,7 @@ const htmlData = """
             <li>list</li>
             </ul>
             </li>
-            <li>list! Lorem ipsum dolor sit <b>amet cale aaihg aie a gama eia aai aia ia af a</b></li>
+            <li>list! Lorem ipsum dolor sit amet.</li>
             <li><h2>Header 2</h2></li>
             <h2><li>Header 2</li></h2>
       </ol>
@@ -114,26 +111,37 @@ const htmlData = """
         <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
         <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
       </p>
+      <!--
       <h3>Video support:</h3>
+      <video controls>
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
+      </video>
       <h3>Audio support:</h3>
+      <audio controls>
+        <source src="https://www.w3schools.com/html/horse.mp3" />
+      </audio>
       <h3>IFrame support:</h3>
-      
+      <iframe src="https://google.com"></iframe>
+      -->
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return new Scaffold(
-      appBar: AppBar(title: Text('flutter_html Example')),
+      appBar: AppBar(title: Text('flutter_html Example'), centerTitle: true,),
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
           //Optional parameters:
           style: {
             "html": Style(
-              backgroundColor: Colors.black,
-              color: Colors.white,
+              backgroundColor: Colors.black12,
+//              color: Colors.white,
             ),
+//            "h1": Style(
+//              textAlign: TextAlign.center,
+//            ),
             "table": Style(
               backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
             ),

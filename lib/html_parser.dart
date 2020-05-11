@@ -22,7 +22,6 @@ typedef CustomRender = Widget Function(
 
 class HtmlParser extends StatelessWidget {
   final String htmlData;
-  final String cssData;
   final OnTap onLinkTap;
   final OnTap onImageTap;
   final ImageErrorListener onImageError;
@@ -34,7 +33,6 @@ class HtmlParser extends StatelessWidget {
 
   HtmlParser({
     @required this.htmlData,
-    @required this.cssData,
     this.onLinkTap,
     this.onImageTap,
     this.onImageError,
@@ -47,13 +45,12 @@ class HtmlParser extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     dom.Document document = parseHTML(htmlData);
-    css.StyleSheet sheet = parseCSS(cssData);
     StyledElement lexedTree = lexDomTree(
       document,
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
     );
-    StyledElement styledTree = applyCSS(lexedTree, sheet);
+    StyledElement styledTree = applyCSS(lexedTree);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
     StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
     StyledElement cascadedStyledTree = _cascadeStyles(customStyledTree);
@@ -62,7 +59,7 @@ class HtmlParser extends StatelessWidget {
       RenderContext(
         buildContext: context,
         parser: this,
-        style: Style.fromTextStyle(Theme.of(context).textTheme.body1),
+        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
       ),
       cleanedTree,
     );
@@ -144,21 +141,14 @@ class HtmlParser extends StatelessWidget {
   }
 
   ///TODO document
-  static StyledElement applyCSS(StyledElement tree, css.StyleSheet sheet) {
-    //TODO
-//    sheet.topLevels.forEach((treeNode) {
-//      if (treeNode is css.RuleSet) {
-//        print(treeNode
-//            .selectorGroup.selectors.first.simpleSelectorSequences.first.simpleSelector.name);
-//      }
-//    });
+  static StyledElement applyCSS(StyledElement tree) {
 
     //Make sure style is never null.
     if (tree.style == null) {
       tree.style = Style();
     }
 
-    tree.children?.forEach((e) => applyCSS(e, sheet));
+    tree.children?.forEach((e) => applyCSS(e));
 
     return tree;
   }

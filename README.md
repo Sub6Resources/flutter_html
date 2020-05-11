@@ -7,6 +7,8 @@
 A Flutter widget for rendering html and css as Flutter widgets.
 
 <img alt="A Screenshot of flutter_html" src=".github/flutter_html_screenshot.png" width="300"/>
+<img alt="Another Screenshot of flutter_html" src=".github/flutter_html_screenshot2.png" width="300"/>
+<img alt="Yet another Screenshot of flutter_html" src=".github/flutter_html_screenshot3.png" width="300"/>
 
 ## Installing:
 
@@ -28,7 +30,7 @@ See the [development roadmap](https://github.com/Sub6Resources/flutter_html/wiki
 ## Why this package?
 
 This package is designed with simplicity in mind. Originally created to allow basic rendering of HTML content into the Flutter widget tree,
-this project has expanded to include support for basic CSS styling (both inline and in the `<style>` tag).
+this project has expanded to include support for basic styling as well!.
 
 ## Example Usage:
 (For a much more extensive example, look at example/main.dart).
