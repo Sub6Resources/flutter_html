@@ -47,6 +47,9 @@ const htmlData = """
       Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
       <p>One of the most <span>common</span> equations in all of physics is <br /><var>E</var>=<var>m</var><var>c</var><sup>2</sup>.</p>
       <h3>Table support (with custom styling!):</h3>
+      <p>
+      <q>Famous quote...</q>
+      </p>
       <table>
       <colgroup>
         <col width="50%" />

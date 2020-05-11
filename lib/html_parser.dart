@@ -476,12 +476,13 @@ class HtmlParser extends StatelessWidget {
   /// properties.
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style?.before != null) {
-      tree.children.insert(0, TextContentElement(text: tree.style.before));
+      tree.children?.insert(0, TextContentElement(text: tree.style.before, style: tree.style));
     }
     if (tree.style?.after != null) {
-      tree.children.add(TextContentElement(text: tree.style.after));
+      tree.children?.add(TextContentElement(text: tree.style.after, style: tree.style));
+    } else {
+      tree.children?.forEach(_processBeforesAndAfters);
     }
-    tree.children?.forEach(_processBeforesAndAfters);
     return tree;
   }
 
