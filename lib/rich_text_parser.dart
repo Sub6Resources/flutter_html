@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 
-import 'image_properties.dart';
+//import 'image_properties.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef CustomTextStyle = TextStyle Function(
@@ -162,7 +162,7 @@ class HtmlRichTextParser extends StatelessWidget {
       color: Colors.blueAccent,
       decorationColor: Colors.blueAccent,
     ),
-    this.imageProperties,
+    //this.imageProperties,
     this.onImageTap,
     this.showImages = true,
     this.imageLoader,
@@ -179,7 +179,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final CustomTextAlign customTextAlign;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
-  final ImageProperties imageProperties;
+  //final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
   final Widget imageLoader;

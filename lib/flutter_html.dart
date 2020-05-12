@@ -2,99 +2,80 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
-import 'package:flutter_html/rich_text_parser.dart';
-
-import 'image_properties.dart';
+import 'package:flutter_html/style.dart';
 
 class Html extends StatelessWidget {
+  /// The `Html` widget takes HTML as input and displays a RichText
+  /// tree of the parsed HTML content.
+  ///
+  /// **Attributes**
+  /// **data** *required* takes in a String of HTML data.
+  ///
+  ///
+  /// **onLinkTap** This function is called whenever a link (`<a href>`)
+  /// is tapped.
+  /// **customRender** This function allows you to return your own widgets
+  /// for existing or custom HTML tags.
+  /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/All-About-customRender) for more info.
+  ///
+  /// **onImageError** This is called whenever an image fails to load or
+  /// display on the page.
+  ///
+  /// **shrinkWrap** This makes the Html widget take up only the width it
+  /// needs and no more.
+  ///
+  /// **onImageTap** This is called whenever an image is tapped.
+  ///
+  /// **blacklistedElements** Tag names in this array are ignored during parsing and rendering.
+  ///
+  /// **style** Pass in the style information for the Html here.
+  /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
   Html({
     Key key,
     @required this.data,
-    this.padding,
-    this.backgroundColor,
-    this.defaultTextStyle,
     this.onLinkTap,
-    this.renderNewlines = false,
     this.customRender,
-    this.customEdgeInsets,
-    this.customTextStyle,
-    this.customTextAlign,
-    this.blockSpacing = 14.0,
-    this.useRichText = true,
     this.onImageError,
-    this.linkStyle = const TextStyle(
-        decoration: TextDecoration.underline,
-        color: Colors.blueAccent,
-        decorationColor: Colors.blueAccent),
-    this.shrinkToFit = false,
-    this.imageProperties,
+    this.shrinkWrap = false,
     this.onImageTap,
-    this.showImages = true,
+    this.blacklistedElements = const [],
+    this.style,
     this.imageLoader = const CircularProgressIndicator(),
   }) : super(key: key);
 
   final String data;
-  final EdgeInsetsGeometry padding;
-  final Color backgroundColor;
-  final TextStyle defaultTextStyle;
-  final OnLinkTap onLinkTap;
-  final bool renderNewlines;
-  final double blockSpacing;
-  final bool useRichText;
+  final OnTap onLinkTap;
   final ImageErrorListener onImageError;
-  final TextStyle linkStyle;
-  final bool shrinkToFit;
+  final bool shrinkWrap;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
-  final ImageProperties imageProperties;
-  final OnImageTap onImageTap;
-  final bool showImages;
+  final OnTap onImageTap;
+
+  final List<String> blacklistedElements;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
-  final CustomRender customRender;
-  final CustomEdgeInsets customEdgeInsets;
-  final CustomTextStyle customTextStyle;
-  final CustomTextAlign customTextAlign;
+  final Map<String, CustomRender> customRender;
   final Widget imageLoader;
+  /// Fancy New Parser parameters
+  final Map<String, Style> style;
 
   @override
   Widget build(BuildContext context) {
-    final double width = shrinkToFit ? null : MediaQuery.of(context).size.width;
+    final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(
-      padding: padding,
-      color: backgroundColor,
       width: width,
-      child: DefaultTextStyle.merge(
-        style: defaultTextStyle ?? DefaultTextStyle.of(context).style,
-        child: (useRichText)
-            ? HtmlRichTextParser(
-                shrinkToFit: shrinkToFit,
-                onLinkTap: onLinkTap,
-                renderNewlines: renderNewlines,
-                customEdgeInsets: customEdgeInsets,
-                customTextStyle: customTextStyle,
-                customTextAlign: customTextAlign,
-                html: data,
-                onImageError: onImageError,
-                linkStyle: linkStyle,
-                imageProperties: imageProperties,
-                onImageTap: onImageTap,
-                showImages: showImages,
-                imageLoader: imageLoader,
-              )
-            : HtmlOldParser(
-                width: width,
-                onLinkTap: onLinkTap,
-                renderNewlines: renderNewlines,
-                customRender: customRender,
-                html: data,
-                blockSpacing: blockSpacing,
-                onImageError: onImageError,
-                linkStyle: linkStyle,
-                showImages: showImages,
-              ),
+      child: HtmlParser(
+        htmlData: data,
+        onLinkTap: onLinkTap,
+        onImageTap: onImageTap,
+        onImageError: onImageError,
+        shrinkWrap: shrinkWrap,
+        style: style,
+        customRender: customRender,
+        blacklistedElements: blacklistedElements,
+        imageLoader: imageLoader,
       ),
     );
   }
