@@ -27,6 +27,8 @@ class Html extends StatelessWidget {
         color: Colors.blueAccent,
         decorationColor: Colors.blueAccent),
     this.shrinkToFit = false,
+    this.onPillTap,
+    this.getPillInfo,
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
@@ -47,6 +49,8 @@ class Html extends StatelessWidget {
   final bool shrinkToFit;
   final GetMxcUrl getMxcUrl;
   final int maxLines;
+  final OnPillTap onPillTap;
+  final GetPillInfo getPillInfo;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -81,6 +85,8 @@ class Html extends StatelessWidget {
                 html: data,
                 onImageError: onImageError,
                 linkStyle: linkStyle,
+                onPillTap: onPillTap,
+                getPillInfo: getPillInfo,
                 imageProperties: imageProperties,
                 onImageTap: onImageTap,
                 showImages: showImages,

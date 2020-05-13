@@ -6,10 +6,10 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:flutter_advanced_networkimage/provider.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
+import 'pill.dart';
 
 typedef CustomRender = Widget Function(dom.Node node, List<Widget> children);
 typedef CustomTextStyle = TextStyle Function(
@@ -20,13 +20,17 @@ typedef CustomTextAlign = TextAlign Function(dom.Element elem);
 typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 typedef OnImageTap = void Function(String source);
+typedef OnPillTap = void Function(String identifier);
 typedef GetMxcUrl = String Function(String mxc, double width, double height);
+typedef GetPillInfo = Future<Map<String, dynamic>> Function(String identifier);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
 
 final RegExp URL_REGEX = RegExp(
     r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%.,_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\,+.~#?&//=]*)");
+
+final MATRIX_TO_SCHEME = "https://matrix.to/#/";
 
 extension CssColor on Color {
   static Color fromCss(String hexString) {
@@ -153,6 +157,7 @@ class ParseContext {
   bool shrinkToFit;
   int maxLines;
   double indentPadding = 0;
+  bool skip = false;
 
   ParseContext({
     this.rootWidgetList,
@@ -168,7 +173,8 @@ class ParseContext {
     this.childStyle,
     this.shrinkToFit,
     this.maxLines,
-    indentPadding = 0,
+    this.indentPadding = 0,
+    this.skip = false,
   }) {
     childStyle = childStyle ?? TextStyle();
   }
@@ -188,6 +194,7 @@ class ParseContext {
     shrinkToFit = parseContext.shrinkToFit;
     maxLines = parseContext.maxLines;
     indentPadding = parseContext.indentPadding;
+    skip = false;
   }
 
   void addWidget(InlineSpan widget) {
@@ -247,6 +254,8 @@ class HtmlRichTextParser extends StatelessWidget {
       color: Colors.blueAccent,
       decorationColor: Colors.blueAccent,
     ),
+    this.onPillTap,
+    this.getPillInfo,
     this.imageProperties,
     this.onImageTap,
     this.showImages = true,
@@ -266,6 +275,8 @@ class HtmlRichTextParser extends StatelessWidget {
   final CustomTextAlign customTextAlign;
   final ImageErrorListener onImageError;
   final TextStyle linkStyle;
+  final OnPillTap onPillTap;
+  final GetPillInfo getPillInfo;
   final ImageProperties imageProperties;
   final OnImageTap onImageTap;
   final bool showImages;
@@ -759,6 +770,25 @@ class HtmlRichTextParser extends StatelessWidget {
             // a container and gesture recognizer for the entire
             // element, otherwise, we create a LinkTextSpan
             String url = node.attributes['href'] ?? null;
+            if (url != null && url.startsWith(MATRIX_TO_SCHEME)) {
+              // this might be a pill!
+              final identifier = url.substring(MATRIX_TO_SCHEME.length);
+              final pillMatch = RegExp(r"^[@#!][^:]+:[^\/]+$").firstMatch(identifier);
+              if (pillMatch != null) {
+                // we have a pill
+                parseContext.addWidget(WidgetSpan(
+                  alignment: PlaceholderAlignment.middle,
+                  child: Pill(
+                    identifier: identifier,
+                    future: this.getPillInfo != null ? this.getPillInfo(identifier) : null,
+                    onTap: this.onPillTap,
+                    getMxcUrl: this.getMxcUrl,
+                  ),
+                ));
+                nextContext.skip = true;
+                break;
+              }
+            }
 
             if (_hasBlockChild(node)) {
               LinkBlock linkContainer = LinkBlock(
@@ -1126,9 +1156,11 @@ class HtmlRichTextParser extends StatelessWidget {
         }
       }
 
-      node.nodes.forEach((dom.Node childNode) {
-        _parseNode(childNode, nextContext, buildContext);
-      });
+      if (!nextContext.skip) {
+        node.nodes.forEach((dom.Node childNode) {
+          _parseNode(childNode, nextContext, buildContext);
+        });
+      }
     }
   }
 
