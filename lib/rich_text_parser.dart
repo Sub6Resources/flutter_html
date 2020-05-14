@@ -157,7 +157,6 @@ class ParseContext {
   bool shrinkToFit;
   int maxLines;
   double indentPadding = 0;
-  bool skip = false;
 
   ParseContext({
     this.rootWidgetList,
@@ -174,7 +173,6 @@ class ParseContext {
     this.shrinkToFit,
     this.maxLines,
     this.indentPadding = 0,
-    this.skip = false,
   }) {
     childStyle = childStyle ?? TextStyle();
   }
@@ -194,7 +192,6 @@ class ParseContext {
     shrinkToFit = parseContext.shrinkToFit;
     maxLines = parseContext.maxLines;
     indentPadding = parseContext.indentPadding;
-    skip = false;
   }
 
   void addWidget(InlineSpan widget) {
@@ -785,8 +782,7 @@ class HtmlRichTextParser extends StatelessWidget {
                     getMxcUrl: this.getMxcUrl,
                   ),
                 ));
-                nextContext.skip = true;
-                break;
+                return; // we return here, as we do not want to render children
               }
             }
 
@@ -846,10 +842,12 @@ class HtmlRichTextParser extends StatelessWidget {
                     getMxcUrl(node.attributes['src'], width, height) : "";
 
                 precacheImage(
-                  AdvancedNetworkImage(
-                    url,
-                    useDiskCache: !kIsWeb,
-                  ),
+                  kIsWeb
+                    ? NetworkImage(url)
+                    : AdvancedNetworkImage(
+                      url,
+                      useDiskCache: true,
+                    ),
                   buildContext,
                   onError: onImageError ?? (_, __) {},
                 );
@@ -1156,11 +1154,9 @@ class HtmlRichTextParser extends StatelessWidget {
         }
       }
 
-      if (!nextContext.skip) {
-        node.nodes.forEach((dom.Node childNode) {
-          _parseNode(childNode, nextContext, buildContext);
-        });
-      }
+      node.nodes.forEach((dom.Node childNode) {
+        _parseNode(childNode, nextContext, buildContext);
+      });
     }
   }
 
