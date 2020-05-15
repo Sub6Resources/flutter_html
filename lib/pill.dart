@@ -58,12 +58,10 @@ class Pill extends StatelessWidget {
                 if (avatarUrl != null)
                   CircleAvatar(
                     radius: avatarSize / 2,
-                    backgroundImage: kIsWeb
-                      ? NetworkImage(url)
-                      : AdvancedNetworkImage(
-                        url,
-                        useDiskCache: true,
-                      ),
+                    backgroundImage: AdvancedNetworkImage(
+                      url,
+                      useDiskCache: !kIsWeb,
+                    ),
                   ),
                 Text(displayname, style: TextStyle(color: Colors.white)),
               ],

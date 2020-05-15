@@ -842,12 +842,10 @@ class HtmlRichTextParser extends StatelessWidget {
                     getMxcUrl(node.attributes['src'], width, height) : "";
 
                 precacheImage(
-                  kIsWeb
-                    ? NetworkImage(url)
-                    : AdvancedNetworkImage(
-                      url,
-                      useDiskCache: true,
-                    ),
+                  AdvancedNetworkImage(
+                    url,
+                    useDiskCache: !kIsWeb,
+                  ),
                   buildContext,
                   onError: onImageError ?? (_, __) {},
                 );
