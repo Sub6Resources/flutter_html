@@ -217,6 +217,8 @@ class HtmlParser extends StatelessWidget {
 
     if (customRender?.containsKey(tree.name) ?? false) {
       return WidgetSpan(
+        baseline: tree.style.customRenderAligment?.textBaseline,
+        alignment: tree.style.customRenderAligment?.placeholderAlignment ?? PlaceholderAlignment.bottom,
         child: ContainerSpan(
           newContext: newContext,
           style: tree.style,

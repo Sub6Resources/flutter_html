@@ -152,6 +152,8 @@ class Style {
   /// Default: normal (0)
   double wordSpacing;
 
+  CustomRenderAligment customRenderAligment;
+
   //TODO modify these to match CSS styles
   String before;
   String after;
@@ -189,6 +191,7 @@ class Style {
     this.border,
     this.alignment,
     this.markerContent,
+    this.customRenderAligment,
   }) {
     if (this.alignment == null &&
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
@@ -260,6 +263,8 @@ class Style {
       //TODO merge border
       alignment: other.alignment,
       markerContent: other.markerContent,
+
+      customRenderAligment: other.customRenderAligment,
     );
   }
 
@@ -313,6 +318,7 @@ class Style {
     Border border,
     Alignment alignment,
     String markerContent,
+    CustomRenderAligment customRenderAligment,
   }) {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -345,6 +351,7 @@ class Style {
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,
+      customRenderAligment: customRenderAligment ?? this.customRenderAligment,
     );
   }
 
@@ -399,6 +406,13 @@ class FontSize {
   static const xxLarge = FontSize(28.0);
   static const smaller = FontSize(-0.83);
   static const larger = FontSize(-1.2);
+}
+
+class CustomRenderAligment {
+  final TextBaseline textBaseline;
+  final PlaceholderAlignment placeholderAlignment;
+
+  CustomRenderAligment(this.textBaseline, this.placeholderAlignment);
 }
 
 enum ListStyleType {
