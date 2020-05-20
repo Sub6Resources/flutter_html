@@ -13,12 +13,8 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
 
 typedef OnTap = void Function(String url);
-typedef CustomRender = Widget Function(
-  RenderContext context,
-  Widget parsedChild,
-  Map<String, String> attributes,
-  dom.Element element,
-);
+typedef CustomRender = Widget Function(RenderContext context,
+    Widget parsedChild, Map<String, String> attributes, dom.Element element);
 
 class HtmlParser extends StatelessWidget {
   final String htmlData;
@@ -216,29 +212,30 @@ class HtmlParser extends StatelessWidget {
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
-      return WidgetSpan(
-        baseline: tree.style.customRenderAligment?.textBaseline,
-        alignment: tree.style.customRenderAligment?.placeholderAlignment ?? PlaceholderAlignment.bottom,
-        child: ContainerSpan(
+      final widget = customRender[tree.name].call(
+        newContext,
+        ContainerSpan(
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          child: customRender[tree.name].call(
-            newContext,
-            ContainerSpan(
-              newContext: newContext,
-              style: tree.style,
-              shrinkWrap: context.parser.shrinkWrap,
-              children: tree.children
-                      ?.map((tree) => parseTree(newContext, tree))
-                      ?.toList() ??
-                  [],
-            ),
-            tree.attributes,
-            tree.element,
-          ),
+          children: tree.children
+                  ?.map((tree) => parseTree(newContext, tree))
+                  ?.toList() ??
+              [],
         ),
+        tree.attributes,
+        tree.element,
       );
+      return widget is WidgetSpan
+          ? widget
+          : WidgetSpan(
+              child: ContainerSpan(
+                newContext: newContext,
+                style: tree.style,
+                shrinkWrap: context.parser.shrinkWrap,
+                child: widget,
+              ),
+            );
     }
 
     //Return the correct InlineSpan based on the element type.
