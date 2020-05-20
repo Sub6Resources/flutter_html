@@ -13,7 +13,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
 
 typedef OnTap = void Function(String url);
-typedef CustomRender = Widget Function(RenderContext context,
+typedef CustomRender = dynamic Function(RenderContext context,
     Widget parsedChild, Map<String, String> attributes, dom.Element element);
 
 class HtmlParser extends StatelessWidget {
@@ -212,7 +212,7 @@ class HtmlParser extends StatelessWidget {
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
-      final widget = customRender[tree.name].call(
+      final render = customRender[tree.name].call(
         newContext,
         ContainerSpan(
           newContext: newContext,
@@ -226,14 +226,14 @@ class HtmlParser extends StatelessWidget {
         tree.attributes,
         tree.element,
       );
-      return widget is WidgetSpan
-          ? widget
+      return render is InlineSpan
+          ? render
           : WidgetSpan(
               child: ContainerSpan(
                 newContext: newContext,
                 style: tree.style,
                 shrinkWrap: context.parser.shrinkWrap,
-                child: widget,
+                child: render,
               ),
             );
     }
