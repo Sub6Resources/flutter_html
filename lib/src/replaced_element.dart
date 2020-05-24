@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:chewie/chewie.dart';
@@ -107,6 +108,24 @@ class ImageContentElement extends ReplacedElement {
       );
       imageWidget = Image.asset(
         assetPath,
+        frameBuilder: (ctx, child, frame, _) {
+          if (frame == null) {
+            return Text(alt ?? "", style: context.style.generateTextStyle());
+          }
+          return child;
+        },
+      );
+    } else if (src.startsWith("file:")) {
+      final File file = File(src.replaceFirst('file:', ''));
+      precacheImage(
+        FileImage(file),
+        context.buildContext,
+        onError: (exception, StackTrace stackTrace) {
+          context.parser.onImageError?.call(exception, stackTrace);
+        },
+      );
+      imageWidget = Image.file(
+        file,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
             return Text(alt ?? "", style: context.style.generateTextStyle());
