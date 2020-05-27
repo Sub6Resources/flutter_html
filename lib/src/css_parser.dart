@@ -15,6 +15,10 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'color':
         style.color = ExpressionMapping.expressionToColor(value.first);
         break;
+      case 'text-align':
+        style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
+        break;
+
     }
   });
   return style;
@@ -104,5 +108,25 @@ class ExpressionMapping {
     } catch (e) {
       return null;
     }
+  }
+
+  static TextAlign expressionToTextAlign(css.Expression value) {
+    if (value is css.LiteralTerm) {
+      switch(value.text) {
+        case "center":
+          return TextAlign.center;
+        case "left":
+          return TextAlign.left;
+        case "right":
+          return TextAlign.right;
+        case "justify":
+          return TextAlign.justify;
+        case "end":
+          return TextAlign.end;
+        case "start":
+          return TextAlign.start;
+      }
+    }
+    return TextAlign.start;
   }
 }
