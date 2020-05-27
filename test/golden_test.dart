@@ -32,7 +32,7 @@ void testHtml(String name, String htmlData) {
       ),
     );
     expect(find.byType(Html), findsOneWidget);
-//    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/$name.png'));
+    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/$name.png'));
   });
 }
 
