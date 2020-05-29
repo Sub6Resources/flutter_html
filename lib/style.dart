@@ -152,6 +152,16 @@ class Style {
   /// Default: normal (0)
   double wordSpacing;
 
+  /// CSS attribute "`line-height`"
+  ///
+  /// Supported values: double values
+  ///
+  /// Unsupported values: normal, 80%, ..
+  ///
+  /// Inherited: no,
+  /// Default: Unspecified (null),
+  double lineHeight;
+
   //TODO modify these to match CSS styles
   String before;
   String after;
@@ -170,6 +180,7 @@ class Style {
     this.fontStyle,
     this.fontWeight,
     this.height,
+    this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
     this.padding,
@@ -212,9 +223,9 @@ class Style {
       letterSpacing: letterSpacing,
       shadows: textShadow,
       wordSpacing: wordSpacing,
+      height: lineHeight,
       //TODO background
       //TODO textBaseline
-      //TODO height
     );
   }
 
@@ -237,6 +248,7 @@ class Style {
       fontStyle: other.fontStyle,
       fontWeight: other.fontWeight,
       height: other.height,
+      lineHeight: other.lineHeight,
       letterSpacing: other.letterSpacing,
       listStyleType: other.listStyleType,
       padding: other.padding,
@@ -294,6 +306,7 @@ class Style {
     FontStyle fontStyle,
     FontWeight fontWeight,
     double height,
+    double lineHeight,
     double letterSpacing,
     ListStyleType listStyleType,
     EdgeInsets padding,
@@ -325,6 +338,7 @@ class Style {
       fontStyle: fontStyle ?? this.fontStyle,
       fontWeight: fontWeight ?? this.fontWeight,
       height: height ?? this.height,
+      lineHeight: lineHeight ?? this.lineHeight,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       listStyleType: listStyleType ?? this.listStyleType,
       padding: padding ?? this.padding,
@@ -363,6 +377,7 @@ class Style {
     this.letterSpacing = textStyle.letterSpacing;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
+    this.lineHeight = textStyle.height;
   }
 }
 
