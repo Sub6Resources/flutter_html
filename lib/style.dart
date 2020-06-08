@@ -77,6 +77,12 @@ class Style {
   /// Default: ListStyleType.DISC
   ListStyleType listStyleType;
 
+  /// CSS attribute "`list-style-position`"
+  ///
+  /// Inherited: yes,
+  /// Default: ListStylePosition.OUTSIDE
+  ListStylePosition listStylePosition;
+
   /// CSS attribute "`padding`"
   ///
   /// Inherited: no,
@@ -172,6 +178,7 @@ class Style {
     this.height,
     this.letterSpacing,
     this.listStyleType,
+    this.listStylePosition,
     this.padding,
     this.margin,
     this.textAlign,
@@ -193,6 +200,9 @@ class Style {
     if (this.alignment == null &&
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
       this.alignment = Alignment.centerLeft;
+    }
+    if (this.listStylePosition == null && display == Display.LIST_ITEM) {
+      this.listStylePosition = ListStylePosition.OUTSIDE;
     }
   }
 
@@ -239,6 +249,7 @@ class Style {
       height: other.height,
       letterSpacing: other.letterSpacing,
       listStyleType: other.listStyleType,
+      listStylePosition: other.listStylePosition,
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
@@ -276,6 +287,7 @@ class Style {
       fontWeight: child.fontWeight ?? fontWeight,
       letterSpacing: child.letterSpacing ?? letterSpacing,
       listStyleType: child.listStyleType ?? listStyleType,
+      listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
@@ -296,6 +308,7 @@ class Style {
     double height,
     double letterSpacing,
     ListStyleType listStyleType,
+    ListStylePosition listStylePosition,
     EdgeInsets padding,
     EdgeInsets margin,
     TextAlign textAlign,
@@ -327,6 +340,7 @@ class Style {
       height: height ?? this.height,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       listStyleType: listStyleType ?? this.listStyleType,
+      listStylePosition: listStylePosition ?? this.listStylePosition,
       padding: padding ?? this.padding,
       margin: margin ?? this.margin,
       textAlign: textAlign ?? this.textAlign,
@@ -404,6 +418,11 @@ class FontSize {
 enum ListStyleType {
   DISC,
   DECIMAL,
+}
+
+enum ListStylePosition {
+  OUTSIDE,
+  INSIDE,
 }
 
 enum VerticalAlign {
