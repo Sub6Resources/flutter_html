@@ -177,7 +177,8 @@ class IframeContentElement extends ReplacedElement {
         initialUrl: src,
         javascriptMode: JavascriptMode.unrestricted,
         gestureRecognizers: {
-          Factory(() => PlatformViewVerticalGestureRecognizer())
+          Factory<VerticalDragGestureRecognizer>(
+              () => VerticalDragGestureRecognizer()),
         },
       ),
     );
