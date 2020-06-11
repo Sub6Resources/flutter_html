@@ -265,7 +265,7 @@ packages:
       name: video_player
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.10.10"
+    version: "0.10.11+1"
   video_player_platform_interface:
     dependency: transitive
     description:
@@ -279,7 +279,7 @@ packages:
       name: video_player_web
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.1.3"
+    version: "0.1.3+1"
   wakelock:
     dependency: transitive
     description:
@@ -293,7 +293,7 @@ packages:
       name: webview_flutter
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.21"
+    version: "0.3.22+1"
   xml:
     dependency: transitive
     description:
