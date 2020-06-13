@@ -35,6 +35,7 @@ const htmlData = """
 <h4>Header 4</h4>
 <h5>Header 5</h5>
 <h6>Header 6</h6>
+<a href='https://google.com'><div>Test</div> Other test</a>
 <h3>Ruby Support:</h3>
       <p>
         <ruby>
@@ -114,6 +115,7 @@ const htmlData = """
         <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
         <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
       </p>
+      <a></a>
       <!--
       <h3>Video support:</h3>
       <video controls>
