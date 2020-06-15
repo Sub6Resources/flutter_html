@@ -680,6 +680,13 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.indentLevel += 1;
             nextContext.listChar = '#';
             nextContext.listCount = 0;
+            if (node.attributes['start'] != null) {
+              try {
+                nextContext.listCount = int.parse(node.attributes['start']) - 1;
+              } catch (_) {
+                // discard
+              }
+            }
             nextContext.blockType = 'ol';
             break;
           case "ul":
