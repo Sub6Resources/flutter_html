@@ -157,6 +157,8 @@ class ParseContext {
   bool shrinkToFit;
   int maxLines;
   double indentPadding = 0;
+  double indentSize = 10.0;
+  TextStyle defaultTextStyle;
 
   ParseContext({
     this.rootWidgetList,
@@ -173,6 +175,8 @@ class ParseContext {
     this.shrinkToFit,
     this.maxLines,
     this.indentPadding = 0,
+    this.indentSize = 10.0,
+    this.defaultTextStyle,
   }) {
     childStyle = childStyle ?? TextStyle();
   }
@@ -192,6 +196,8 @@ class ParseContext {
     shrinkToFit = parseContext.shrinkToFit;
     maxLines = parseContext.maxLines;
     indentPadding = parseContext.indentPadding;
+    indentSize = parseContext.indentSize;
+    defaultTextStyle = parseContext.defaultTextStyle;
   }
 
   void addWidget(InlineSpan widget) {
@@ -221,17 +227,50 @@ class ParseContext {
         parentElement.children.add(widget);
       }
     } else {
-      TextSpan span = TextSpan(
+      // the parseContext might actually be a block level style element, so we
+      // need to honor the indent and styling specified by that block style.
+      // e.g. ol, ul, blockquote
+      bool treatLikeBlock =
+          ['blockquote', 'ul', 'ol'].indexOf(blockType) != -1;
+      TextSpan span = widget is TextSpan ? widget : TextSpan(
         children: <InlineSpan>[widget],
       );
-      RichText richText = RichText(text: span, maxLines: maxLines);
-      BlockText blockElement = BlockText(
-        shrinkToFit: shrinkToFit,
-        child: richText,
-      );
-      rootWidgetList.add(blockElement);
       parentElement = span;
-      parentRichText = richText;
+      if (treatLikeBlock) {
+        Decoration decoration;
+        if (blockType == 'blockquote') {
+          decoration = BoxDecoration(
+            border:
+                Border(left: BorderSide(color: defaultTextStyle.color, width: 3)),
+          );
+        }
+        parentRichText = RichText(
+          textAlign: TextAlign.left,
+          text: parentElement,
+          maxLines: maxLines,
+        );
+        BlockText blockText = BlockText(
+          shrinkToFit: shrinkToFit,
+          margin: EdgeInsets.only(
+              top: rootWidgetList.length > 0 ? 8.0 : 0.0,
+              left: indentLevel * indentSize),
+          padding: EdgeInsets.only(
+            top: 2.0,
+            left: indentPadding == 0.0 ? 2.0 : indentPadding,
+            right: 2.0,
+            bottom: 2.0,
+          ),
+          decoration: decoration,
+          child: parentRichText,
+        );
+        rootWidgetList.add(blockText);
+      } else {
+        parentRichText = RichText(text: parentElement, maxLines: maxLines);
+        rootWidgetList.add(BlockText(
+          shrinkToFit: shrinkToFit,
+          child: parentRichText,
+        ));
+      }
     }
   }
 }
@@ -346,7 +385,6 @@ class HtmlRichTextParser extends StatelessWidget {
   static const _supportedBlockElements = [
     "article",
     "aside",
-    "body",
     "center",
     "dd",
     "dfn",
@@ -412,6 +450,8 @@ class HtmlRichTextParser extends StatelessWidget {
       childStyle: DefaultTextStyle.of(context).style,
       shrinkToFit: shrinkToFit,
       maxLines: maxLines,
+      indentSize: indentSize,
+      defaultTextStyle: defaultTextStyle,
     );
 
     // don't ignore the top level "body"
@@ -533,56 +573,12 @@ class HtmlRichTextParser extends StatelessWidget {
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
 
-      // the parseContext might actually be a block level style element, so we
-      // need to honor the indent and styling specified by that block style.
-      // e.g. ol, ul, blockquote
-      bool treatLikeBlock =
-          ['blockquote', 'ul', 'ol'].indexOf(parseContext.blockType) != -1;
-
       // if there is no parentElement, contain the span in a BlockText
       if (parseContext.parentElement == null) {
         // if this is inside a context that should be treated like a block
         // but the context is not actually a block, create a block
         // and append it to the root widget tree
-        RichText richText;
-        if (treatLikeBlock) {
-          Decoration decoration;
-          if (parseContext.blockType == 'blockquote') {
-            decoration = BoxDecoration(
-              border:
-                  Border(left: BorderSide(color: Colors.black38, width: 2.0)),
-            );
-            parseContext.childStyle = parseContext.childStyle.merge(TextStyle(
-              fontStyle: FontStyle.italic,
-            ));
-          }
-          richText = RichText(
-            textAlign: TextAlign.left,
-            text: span,
-            maxLines: maxLines,
-          );
-          BlockText blockText = BlockText(
-            shrinkToFit: shrinkToFit,
-            margin: EdgeInsets.only(
-                top: 8.0,
-                bottom: 8.0,
-                left: parseContext.indentLevel * indentSize),
-            padding: EdgeInsets.all(2.0),
-            decoration: decoration,
-            child: richText,
-          );
-          parseContext.rootWidgetList.add(blockText);
-        } else {
-          richText = RichText(text: span, maxLines: maxLines);
-          parseContext.rootWidgetList.add(BlockText(
-            child: richText,
-            shrinkToFit: shrinkToFit,
-          ));
-        }
-
-        // this allows future items to be added as children of this item
-        parseContext.parentElement = span;
-        parseContext.parentRichText = richText;
+        parseContext.addWidget(span);
 
         // if the parent is a LinkTextSpan, keep the main attributes of that span going.
       } else if (parseContext.parentElement is LinkTextSpan) {
@@ -1111,14 +1107,11 @@ class HtmlRichTextParser extends StatelessWidget {
             }
             BlockText blockText = BlockText(
               shrinkToFit: shrinkToFit,
-              margin: node.localName != 'body'
-                  ? _customEdgeInsets ??
-                      EdgeInsets.only(
-                        // > 1 because there is the body tag, too
-                        top: parseContext.rootWidgetList.length > 1 ? 8.0 : 0.0,
-                        left: parseContext.indentLevel * indentSize
-                      )
-                  : EdgeInsets.zero,
+              margin:  _customEdgeInsets ??
+                EdgeInsets.only(
+                  top: parseContext.rootWidgetList.length > 0 ? 8.0 : 0.0,
+                  left: parseContext.indentLevel * indentSize
+                ),
               padding: EdgeInsets.only(
                 top: 2.0,
                 left: parseContext.indentPadding == 0.0 ? 2.0 : parseContext.indentPadding,
