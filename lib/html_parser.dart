@@ -253,57 +253,40 @@ class HtmlParser extends StatelessWidget {
         ),
       );
     } else if (tree.style?.display == Display.LIST_ITEM) {
-      List<Widget> children;
-      if (tree.style?.listStylePosition == ListStylePosition.OUTSIDE) {
-        children = [
-          PositionedDirectional(
-            width: 30, //TODO derive this from list padding.
-            start: 0,
-            child: Text('${newContext.style.markerContent}\t',
-                textAlign: TextAlign.right,
-                style: newContext.style.generateTextStyle()),
-          ),
-          Padding(
-            padding:
-                EdgeInsets.only(left: 30), //TODO derive this from list padding.
-            child: StyledText(
-              textSpan: TextSpan(
-                children: tree.children
-                        ?.map((tree) => parseTree(newContext, tree))
-                        ?.toList() ??
-                    [],
-                style: newContext.style.generateTextStyle(),
-              ),
-              style: newContext.style,
-            ),
-          )
-        ];
-      } else if (tree.style?.listStylePosition == ListStylePosition.INSIDE) {
-        children = [
-          Padding(
-            padding:
-                EdgeInsets.only(left: 30), //TODO derive this from list padding.
-            child: StyledText(
-              textSpan: TextSpan(
-                text: '${newContext.style.markerContent}\t',
-                children: tree.children
-                        ?.map((tree) => parseTree(newContext, tree))
-                        ?.toList() ??
-                    [],
-                style: newContext.style.generateTextStyle(),
-              ),
-              style: newContext.style,
-            ),
-          )
-        ];
-      }
       return WidgetSpan(
         child: ContainerSpan(
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
           child: Stack(
-            children: children,
+            children: [
+              if (tree.style?.listStylePosition == ListStylePosition.OUTSIDE || tree.style?.listStylePosition == null)
+                PositionedDirectional(
+                  width: 30, //TODO derive this from list padding.
+                  start: 0,
+                  child: Text('${newContext.style.markerContent}\t',
+                      textAlign: TextAlign.right,
+                      style: newContext.style.generateTextStyle()),
+                ),
+              Padding(
+                padding: EdgeInsets.only(
+                    left: 30), //TODO derive this from list padding.
+                child: StyledText(
+                  textSpan: TextSpan(
+                    text: (tree.style?.listStylePosition ==
+                            ListStylePosition.INSIDE)
+                        ? '${newContext.style.markerContent}\t'
+                        : null,
+                    children: tree.children
+                            ?.map((tree) => parseTree(newContext, tree))
+                            ?.toList() ??
+                        [],
+                    style: newContext.style.generateTextStyle(),
+                  ),
+                  style: newContext.style,
+                ),
+              )
+            ],
           ),
         ),
       );

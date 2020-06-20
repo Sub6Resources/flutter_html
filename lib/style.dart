@@ -201,9 +201,6 @@ class Style {
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
       this.alignment = Alignment.centerLeft;
     }
-    if (this.listStylePosition == null && display == Display.LIST_ITEM) {
-      this.listStylePosition = ListStylePosition.OUTSIDE;
-    }
   }
 
   TextStyle generateTextStyle() {
