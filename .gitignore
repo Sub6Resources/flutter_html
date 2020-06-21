@@ -146,5 +146,4 @@ modules.xml
 # End of https://www.gitignore.io/api/flutter,jetbrains+all
 
 **/.flutter-plugins-dependencies
-
-**/flutter_export_environment.sh
+pubspec.lock
