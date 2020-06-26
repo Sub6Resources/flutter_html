@@ -200,7 +200,7 @@ class ParseContext {
     defaultTextStyle = parseContext.defaultTextStyle;
   }
 
-  void addWidget(InlineSpan widget) {
+  void addWidget(InlineSpan widget, {bool isBlock = false}) {
     if (parentElement is TextSpan) {
       if (widget is WidgetSpan) {
         if (parentRichText is RichText) {
@@ -234,9 +234,10 @@ class ParseContext {
           ['blockquote', 'ul', 'ol'].indexOf(blockType) != -1;
       TextSpan span = widget is TextSpan ? widget : TextSpan(
         children: <InlineSpan>[widget],
+        style: childStyle,
       );
       parentElement = span;
-      if (treatLikeBlock) {
+      if (isBlock || treatLikeBlock) {
         Decoration decoration;
         if (blockType == 'blockquote') {
           decoration = BoxDecoration(
@@ -343,7 +344,6 @@ class HtmlRichTextParser extends StatelessWidget {
     "mark",
     "ol",
     "ul",
-    "blockquote",
     "del",
     "s",
     "strike",
@@ -385,6 +385,7 @@ class HtmlRichTextParser extends StatelessWidget {
   static const _supportedBlockElements = [
     "article",
     "aside",
+    "blockquote",
     "center",
     "dd",
     "dfn",
@@ -573,15 +574,7 @@ class HtmlRichTextParser extends StatelessWidget {
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
 
-      // if there is no parentElement, contain the span in a BlockText
-      if (parseContext.parentElement == null) {
-        // if this is inside a context that should be treated like a block
-        // but the context is not actually a block, create a block
-        // and append it to the root widget tree
-        parseContext.addWidget(span);
-
-        // if the parent is a LinkTextSpan, keep the main attributes of that span going.
-      } else if (parseContext.parentElement is LinkTextSpan) {
+      if (parseContext.parentElement is LinkTextSpan) {
         // add this node to the parent as another LinkTextSpan
         parseContext.parentElement.children.add(LinkTextSpan(
           style:
@@ -590,12 +583,8 @@ class HtmlRichTextParser extends StatelessWidget {
           text: finalText,
           onLinkTap: onLinkTap,
         ));
-
-        // if the parent is a normal span, just add this to that list
-      } else if (!(parseContext.parentElement.children is List<Widget>)) {
-        parseContext.parentElement.children.add(span);
       } else {
-        // Doing nothing... we shouldn't ever get here
+        parseContext.addWidget(span);
       }
       return;
     }
@@ -610,9 +599,7 @@ class HtmlRichTextParser extends StatelessWidget {
         if (node.localName == "mx-reply") { // drop reply fallback
           return;
         }
-        node.nodes.forEach((dom.Node childNode) {
-          _parseNode(childNode, nextContext, buildContext);
-        });
+        _propagateChildren(node.nodes, nextContext, buildContext);
         return;
       }
 
@@ -694,10 +681,6 @@ class HtmlRichTextParser extends StatelessWidget {
             nextContext.listChar = '•';
             nextContext.listCount = 0;
             nextContext.blockType = 'ul';
-            break;
-          case "blockquote":
-            nextContext.indentPadding += 6.0;
-            nextContext.blockType = 'blockquote';
             break;
           case "span":
             if (node.attributes['data-mx-color'] != null) {
@@ -844,19 +827,15 @@ class HtmlRichTextParser extends StatelessWidget {
                 final url = node.attributes['src'].startsWith("mxc://") && getMxcUrl != null ?
                     getMxcUrl(node.attributes['src'], width, height) : "";
 
-                precacheImage(
-                  AdvancedNetworkImage(
-                    url,
-                    useDiskCache: !kIsWeb,
-                  ),
-                  buildContext,
-                  onError: onImageError ?? (_, __) {},
-                );
                 WidgetSpan widget = WidgetSpan(
                   alignment: PlaceholderAlignment.bottom,
                   child: GestureDetector(
-                    child: Image.network(
-                      url,
+                    child: Image(
+                      image: AdvancedNetworkImage(
+                        url,
+                        useDiskCache: !kIsWeb,
+                        scale: imageProperties?.scale ?? 1.0,
+                      ),
                       frameBuilder: (context, child, frame, _) {
                         if (node.attributes['alt'] != null && frame == null) {
                           return BlockText(
@@ -878,7 +857,6 @@ class HtmlRichTextParser extends StatelessWidget {
                       },
                       width: (width ?? -1) > 0 ? width : null,
                       height: (height ?? -1) > 0 ? height : null,
-                      scale: imageProperties?.scale ?? 1.0,
                       matchTextDirection:
                           imageProperties?.matchTextDirection ?? false,
                       centerSlice: imageProperties?.centerSlice,
@@ -1029,6 +1007,10 @@ class HtmlRichTextParser extends StatelessWidget {
         }
 
         switch (node.localName) {
+          case "blockquote":
+            nextContext.indentPadding += 6.0;
+            nextContext.blockType = 'blockquote';
+            continue myDefault;
           case "hr":
             parseContext.rootWidgetList
                 .add(Divider(height: 1.0, color: Colors.black38));
@@ -1105,40 +1087,10 @@ class HtmlRichTextParser extends StatelessWidget {
 
           myDefault:
           default:
-            Decoration decoration;
-            if (parseContext.blockType == 'blockquote') {
-              decoration = BoxDecoration(
-                border:
-                    Border(left: BorderSide(color: defaultTextStyle.color, width: 3)),
-              );
-            }
-            BlockText blockText = BlockText(
-              shrinkToFit: shrinkToFit,
-              margin:  _customEdgeInsets ??
-                EdgeInsets.only(
-                  top: parseContext.rootWidgetList.length > 0 ? 8.0 : 0.0,
-                  left: parseContext.indentLevel * indentSize
-                ),
-              padding: EdgeInsets.only(
-                top: 2.0,
-                left: parseContext.indentPadding == 0.0 ? 2.0 : parseContext.indentPadding,
-                right: 2.0,
-                bottom: 2.0,
-              ),
-              decoration: decoration,
-              child: RichText(
-                textAlign: textAlign,
-                text: TextSpan(
-                  text: '',
-                  style: nextContext.childStyle,
-                  children: <InlineSpan>[],
-                ),
-                maxLines: maxLines,
-              ),
-            );
-            parseContext.rootWidgetList.add(blockText);
-            nextContext.parentElement = blockText.child.text;
-            nextContext.parentRichText = blockText.child;
+            nextContext.addWidget(TextSpan(
+              style: nextContext.childStyle,
+              children: <InlineSpan>[],
+            ), isBlock: true);
             nextContext.spansOnly = true;
             nextContext.inBlock = true;
         }
@@ -1152,10 +1104,21 @@ class HtmlRichTextParser extends StatelessWidget {
         }
       }
 
-      node.nodes.forEach((dom.Node childNode) {
-        _parseNode(childNode, nextContext, buildContext);
-      });
+      _propagateChildren(node.nodes, nextContext, buildContext);
     }
+  }
+
+  void _propagateChildren(List<dom.Node> nodes, ParseContext nextContext, BuildContext buildContext) {
+    var maybeAddDummyNode = nodes.any((n) => n is dom.Text);
+    nodes.forEach((dom.Node childNode) {
+      if (maybeAddDummyNode && (childNode is dom.Element) && !_supportedBlockElements.contains(childNode.localName) && nextContext.parentElement == null) {
+        nextContext.addWidget(TextSpan(
+          children: <InlineSpan>[],
+          style: nextContext.childStyle,
+        ));
+      }
+      _parseNode(childNode, nextContext, buildContext);
+    });
   }
 
   String condenseHtmlWhitespace(String stringToTrim) {
