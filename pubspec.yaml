@@ -17,7 +17,8 @@ dependencies:
 
   # Plugins for rendering the <video> tag.
   video_player: ^0.10.10
-  chewie: ^0.9.10
+  chewie: 
+    git: https://github.com/TudoTech/chewie.git
 
   # Plugin for rendering the <iframe> tag.
   webview_flutter: ^0.3.21
