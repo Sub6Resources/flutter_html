@@ -35,7 +35,7 @@ This package is designed with simplicity in mind. Originally created to allow ba
 this project has expanded to include support for basic styling as well!.
 
 ## Example Usage:
-(For a much more extensive example, look at [example](https://github.com/hey24sheep/flutter_html/tree/master/example).
+(For a much more extensive example, look at [example](https://github.com/Sub6Resources/flutter_html/tree/master/example).
 ```dart
     Widget html = Html(
       data: """
