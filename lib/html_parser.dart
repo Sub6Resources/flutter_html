@@ -726,13 +726,8 @@ class StyledText extends StatelessWidget {
           style.display == Display.BLOCK || style.display == Display.LIST_ITEM
               ? double.infinity
               : null,
-      child: Text.rich(
-        textSpan,
-        style: style.generateTextStyle(),
-        textAlign: style.textAlign,
-        textDirection: style.direction,
-        textScaleFactor: textScaleFactor,
-      ),
+      child: Text.rich(textSpan,
+          style: style.generateTextStyle(), textAlign: style.textAlign, textDirection: style.direction, textScaleFactor: 1.0)
     );
   }
 }
