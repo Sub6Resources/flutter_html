@@ -219,7 +219,7 @@ class Style {
       letterSpacing: letterSpacing,
       shadows: textShadow,
       wordSpacing: wordSpacing,
-      lineHeight: lineHeight,
+      height: lineHeight,
       //TODO background
       //TODO textBaseline
     );
