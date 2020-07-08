@@ -64,6 +64,12 @@ class Style {
   /// Inherited: no,
   /// Default: Unspecified (null),
   double height;
+  
+  /// CSS attribute "`line-height`"
+  ///
+  /// Inherited: yes
+  /// Default: Unspecifed (null),
+  double lineHeight;
 
   /// CSS attribute "`letter-spacing`"
   ///
@@ -170,6 +176,7 @@ class Style {
     this.fontStyle,
     this.fontWeight,
     this.height,
+    this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
     this.padding,
@@ -212,9 +219,9 @@ class Style {
       letterSpacing: letterSpacing,
       shadows: textShadow,
       wordSpacing: wordSpacing,
+      lineHeight: lineHeight,
       //TODO background
       //TODO textBaseline
-      //TODO height
     );
   }
 
@@ -237,6 +244,7 @@ class Style {
       fontStyle: other.fontStyle,
       fontWeight: other.fontWeight,
       height: other.height,
+      lineHeight: other.lineHeight,
       letterSpacing: other.letterSpacing,
       listStyleType: other.listStyleType,
       padding: other.padding,
@@ -280,6 +288,7 @@ class Style {
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
+      lineHeight: child.lineHeight ?? lineHeight,
     );
   }
 
@@ -295,6 +304,7 @@ class Style {
     FontWeight fontWeight,
     double height,
     double letterSpacing,
+    double lineHeight,
     ListStyleType listStyleType,
     EdgeInsets padding,
     EdgeInsets margin,
@@ -325,6 +335,7 @@ class Style {
       fontStyle: fontStyle ?? this.fontStyle,
       fontWeight: fontWeight ?? this.fontWeight,
       height: height ?? this.height,
+      lineHeight: lineHeight ?? this.lineHeight,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       listStyleType: listStyleType ?? this.listStyleType,
       padding: padding ?? this.padding,
@@ -361,6 +372,7 @@ class Style {
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
     this.letterSpacing = textStyle.letterSpacing;
+    this.lineHeight = textStyle.height;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
   }
