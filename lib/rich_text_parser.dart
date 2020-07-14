@@ -1109,9 +1109,8 @@ class HtmlRichTextParser extends StatelessWidget {
   }
 
   void _propagateChildren(List<dom.Node> nodes, ParseContext nextContext, BuildContext buildContext) {
-    var maybeAddDummyNode = nodes.any((n) => n is dom.Text);
     nodes.forEach((dom.Node childNode) {
-      if (maybeAddDummyNode && (childNode is dom.Element) && !_supportedBlockElements.contains(childNode.localName) && nextContext.parentElement == null) {
+      if ((childNode is dom.Element) && !_supportedBlockElements.contains(childNode.localName) && nextContext.parentElement == null) {
         nextContext.addWidget(TextSpan(
           children: <InlineSpan>[],
           style: nextContext.childStyle,
