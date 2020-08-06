@@ -11,7 +11,10 @@ dependencies:
   html: ^0.14.0
   flutter:
     sdk: flutter
-  flutter_advanced_networkimage: any
+  flutter_advanced_networkimage:
+    git:
+      url: https://github.com/mchome/flutter_advanced_networkimage
+      ref: master
 
 dev_dependencies:
   flutter_test:
