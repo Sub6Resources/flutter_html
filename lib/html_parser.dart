@@ -64,7 +64,15 @@ class HtmlParser extends StatelessWidget {
       cleanedTree,
     );
 
-    return StyledText(textSpan: parsedTree, style: cleanedTree.style);
+    // This is the final scaling that assumes any other StyledText instances are
+    // using textScaleFactor = 1.0 (which is the default). This ensures the correct
+    // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
+    // to wrap everything when larger accessibility fonts are used.
+    return StyledText(
+      textSpan: parsedTree, 
+      style: cleanedTree.style,
+      textScaleFactor: MediaQuery.of(context).textScaleFactor,
+    );
   }
 
   /// [parseHTML] converts a string of HTML to a DOM document using the dart `html` library.
@@ -703,10 +711,12 @@ class ContainerSpan extends StatelessWidget {
 class StyledText extends StatelessWidget {
   final InlineSpan textSpan;
   final Style style;
+  final double textScaleFactor;
 
   const StyledText({
     this.textSpan,
     this.style,
+    this.textScaleFactor = 1.0,
   });
 
   @override
@@ -721,6 +731,7 @@ class StyledText extends StatelessWidget {
         style: style.generateTextStyle(),
         textAlign: style.textAlign,
         textDirection: style.direction,
+        textScaleFactor: textScaleFactor,
       ),
     );
   }
