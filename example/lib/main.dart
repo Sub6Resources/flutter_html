@@ -46,6 +46,16 @@ const htmlData = """
       <h3>Support for <code>sub</code>/<code>sup</code></h3>
       Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
       <p>One of the most <span>common</span> equations in all of physics is <br /><var>E</var>=<var>m</var><var>c</var><sup>2</sup>.</p>
+      <h3>Inline Styles:</h3>
+      <p>The should be <span style='color: blue;'>BLUE style='color: blue;'</span></p>
+      <p>The should be <span style='color: red;'>RED style='color: red;'</span></p>
+      <p>The should be <span style='color: rgba(0, 0, 0, 0.10);'>BLACK with 10% alpha style='color: rgba(0, 0, 0, 0.10);</span></p>
+      <p>The should be <span style='color: rgb(0, 97, 0);'>GREEN style='color: rgb(0, 97, 0);</span></p>
+      <p>The should be <span style='background-color: red; color: rgb(0, 97, 0);'>GREEN style='color: rgb(0, 97, 0);</span></p>
+      <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
+      <p style="text-align: right;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
+      <p style="text-align: justify;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
+      <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
       <h3>Table support (with custom styling!):</h3>
       <p>
       <q>Famous quote...</q>
@@ -53,18 +63,17 @@ const htmlData = """
       <table>
       <colgroup>
         <col width="50%" />
-        <col width="25%" />
-        <col width="25%" />
+        <col span="2" width="25%" />
       </colgroup>
       <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
       </thead>
       <tbody>
       <tr>
-        <td>Data</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
-        <td>Data</td><td>Data</td><td>Data</td>
+        <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
       </tr>
       </tbody>
       <tfoot>
@@ -110,22 +119,20 @@ const htmlData = """
       </p>
       <h3>Image support:</h3>
       <p>
-        <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
-        <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
+        <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /><br />
+        <a href='https://google.com'>A linked image: <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
         <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
       </p>
-      <!--
       <h3>Video support:</h3>
       <video controls>
         <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
       </video>
       <h3>Audio support:</h3>
       <audio controls>
-        <source src="https://www.w3schools.com/html/horse.mp3" />
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
       </audio>
       <h3>IFrame support:</h3>
       <iframe src="https://google.com"></iframe>
-      -->
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -160,6 +167,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             "td": Style(
               padding: EdgeInsets.all(6),
+              alignment: Alignment.topLeft,
             ),
             "var": Style(fontFamily: 'serif'),
           },

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -5,16 +6,16 @@ import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter_html/src/utils.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:video_player/video_player.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:video_player/video_player.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 /// A [ReplacedElement] is a type of [StyledElement] that does not require its [children] to be rendered.
 ///
@@ -71,7 +72,12 @@ class ImageContentElement extends ReplacedElement {
     this.src,
     this.alt,
     dom.Element node,
-  }) : super(name: name, style: style, node: node);
+  }) : super(
+          name: name,
+          style: style,
+          node: node,
+          alignment: PlaceholderAlignment.middle,
+        );
 
   @override
   Widget toWidget(RenderContext context) {
@@ -114,6 +120,8 @@ class ImageContentElement extends ReplacedElement {
           return child;
         },
       );
+    } else if (src.endsWith(".svg")) {
+      return SvgPicture.network(src);
     } else {
       precacheImage(
         NetworkImage(src),
@@ -122,13 +130,45 @@ class ImageContentElement extends ReplacedElement {
           context.parser.onImageError?.call(exception, stackTrace);
         },
       );
-      imageWidget = Image.network(
-        src,
-        frameBuilder: (ctx, child, frame, _) {
-          if (frame == null) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
-          }
+      Completer<Size> completer = Completer();
+      Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+        if (frame == null) {
+          completer.completeError("error");
           return child;
+        } else {
+          return child;
+        }
+      });
+      image.image.resolve(ImageConfiguration()).addListener(
+            ImageStreamListener((ImageInfo image, bool synchronousCall) {
+              var myImage = image.image;
+              Size size =
+                  Size(myImage.width.toDouble(), myImage.height.toDouble());
+              completer.complete(size);
+            }, onError: (object, stacktrace) {
+              completer.completeError(object);
+            }),
+          );
+      imageWidget = FutureBuilder<Size>(
+        future: completer.future,
+        builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
+          if (snapshot.hasData) {
+            return new Image.network(
+              src,
+              width: snapshot.data.width,
+              frameBuilder: (ctx, child, frame, _) {
+                if (frame == null) {
+                  return Text(alt ?? "",
+                      style: context.style.generateTextStyle());
+                }
+                return child;
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Text(alt ?? "", style: context.style.generateTextStyle());
+          } else {
+            return new CircularProgressIndicator();
+          }
         },
       );
     }
@@ -158,6 +198,7 @@ class IframeContentElement extends ReplacedElement {
   final String src;
   final double width;
   final double height;
+  final NavigationDelegate navigationDelegate;
 
   IframeContentElement({
     String name,
@@ -166,16 +207,21 @@ class IframeContentElement extends ReplacedElement {
     this.width,
     this.height,
     dom.Element node,
+    this.navigationDelegate,
   }) : super(name: name, style: style, node: node);
 
   @override
   Widget toWidget(RenderContext context) {
+    final sandboxMode = attributes["sandbox"];
     return Container(
       width: width ?? (height ?? 150) * 2,
       height: height ?? (width ?? 300) / 2,
       child: WebView(
         initialUrl: src,
-        javascriptMode: JavascriptMode.unrestricted,
+        javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
+            ? JavascriptMode.unrestricted
+            : JavascriptMode.disabled,
+        navigationDelegate: navigationDelegate,
         gestureRecognizers: {
           Factory(() => PlatformViewVerticalGestureRecognizer())
         },
@@ -251,20 +297,23 @@ class VideoContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     final double _width = width ?? (height ?? 150) * 2;
     final double _height = height ?? (width ?? 300) / 2;
-    return Container(
-      child: Chewie(
-        controller: ChewieController(
-          videoPlayerController: VideoPlayerController.network(
-            src.first ?? "",
+    return AspectRatio(
+      aspectRatio: _width / _height,
+      child: Container(
+        child: Chewie(
+          controller: ChewieController(
+            videoPlayerController: VideoPlayerController.network(
+              src.first ?? "",
+            ),
+            placeholder: poster != null
+                ? Image.network(poster)
+                : Container(color: Colors.black),
+            autoPlay: autoplay,
+            looping: loop,
+            showControls: showControls,
+            autoInitialize: true,
+            aspectRatio: _width / _height,
           ),
-          placeholder: poster != null
-              ? Image.network(poster)
-              : Container(color: Colors.black),
-          autoPlay: autoplay,
-          looping: loop,
-          showControls: showControls,
-          autoInitialize: true,
-          aspectRatio: _width / _height,
         ),
       ),
     );
@@ -350,7 +399,10 @@ class RubyElement extends ReplacedElement {
   }
 }
 
-ReplacedElement parseReplacedElement(dom.Element element) {
+ReplacedElement parseReplacedElement(
+  dom.Element element,
+  NavigationDelegate navigationDelegateForIframe,
+) {
   switch (element.localName) {
     case "audio":
       final sources = <String>[
@@ -373,11 +425,12 @@ ReplacedElement parseReplacedElement(dom.Element element) {
       );
     case "iframe":
       return IframeContentElement(
-        name: "iframe",
-        src: element.attributes['src'],
-        width: double.tryParse(element.attributes['width'] ?? ""),
-        height: double.tryParse(element.attributes['height'] ?? ""),
-      );
+          name: "iframe",
+          src: element.attributes['src'],
+          width: double.tryParse(element.attributes['width'] ?? ""),
+          height: double.tryParse(element.attributes['height'] ?? ""),
+          navigationDelegate: navigationDelegateForIframe,
+          node: element);
     case "img":
       return ImageContentElement(
         name: "img",
