@@ -224,27 +224,31 @@ class HtmlParser extends StatelessWidget {
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
-      return WidgetSpan(
-        child: ContainerSpan(
+      dynamic customRenderForElement = customRender[tree.name].call(
+        newContext,
+        ContainerSpan(
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          child: customRender[tree.name].call(
-            newContext,
-            ContainerSpan(
-              newContext: newContext,
-              style: tree.style,
-              shrinkWrap: context.parser.shrinkWrap,
-              children: tree.children
-                      ?.map((tree) => parseTree(newContext, tree))
-                      ?.toList() ??
-                  [],
-            ),
-            tree.attributes,
-            tree.element,
-          ),
+          children: tree.children
+                  ?.map((tree) => parseTree(newContext, tree))
+                  ?.toList() ??
+              [],
         ),
+        tree.attributes,
+        tree.element,
       );
+
+      if (customRenderForElement != null) {
+        return WidgetSpan(
+          child: ContainerSpan(
+            newContext: newContext,
+            style: tree.style,
+            shrinkWrap: context.parser.shrinkWrap,
+            child: builder,
+          ),
+        );
+      }
     }
 
     //Return the correct InlineSpan based on the element type.
