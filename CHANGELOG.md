@@ -1,3 +1,6 @@
+## [0.1.3] - ???
+- Use `Text.rich` instead of `RichText`
+
 ## [0.1.2] - 14th July 2020:
 - Fix some tags incorrectly linebreaking
 
