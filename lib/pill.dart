@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'rich_text_parser.dart';
 
 class Pill extends StatelessWidget {
@@ -17,27 +17,30 @@ class Pill extends StatelessWidget {
     this.getMxcUrl,
   }) : super(key: key);
 
-  @override build(BuildContext context) {
+  @override
+  build(BuildContext context) {
     return FutureBuilder<Map<String, dynamic>>(
       future: this.future ?? Future.value(null),
-      builder: (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+      builder:
+          (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         String displayname = this.identifier;
         String avatarUrl;
         if (snapshot.hasData && snapshot.data != null) {
-          if (snapshot.data['displayname'] is String && snapshot.data['displayname'].isNotEmpty) {
+          if (snapshot.data['displayname'] is String &&
+              snapshot.data['displayname'].isNotEmpty) {
             displayname = snapshot.data['displayname'];
           }
-          if (
-            snapshot.data['avatar_url'] is String &&
-            snapshot.data['avatar_url'].isNotEmpty &&
-            this.getMxcUrl != null
-          ) {
+          if (snapshot.data['avatar_url'] is String &&
+              snapshot.data['avatar_url'].isNotEmpty &&
+              this.getMxcUrl != null) {
             avatarUrl = snapshot.data['avatar_url'];
             displayname = " ${displayname}";
           }
         }
         final avatarSize = DefaultTextStyle.of(context).style.fontSize;
-        String url = avatarUrl != null ? this.getMxcUrl(avatarUrl, avatarSize, avatarSize) : null;
+        String url = avatarUrl != null
+            ? this.getMxcUrl(avatarUrl, avatarSize, avatarSize)
+            : null;
         final padding = avatarSize / 20;
         return InkWell(
           child: Container(
@@ -49,7 +52,8 @@ class Pill extends StatelessWidget {
             ),
             decoration: BoxDecoration(
               color: Colors.grey[800],
-              borderRadius: BorderRadius.all(Radius.circular(avatarSize + padding)),
+              borderRadius:
+                  BorderRadius.all(Radius.circular(avatarSize + padding)),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.center,
@@ -58,10 +62,7 @@ class Pill extends StatelessWidget {
                 if (avatarUrl != null)
                   CircleAvatar(
                     radius: avatarSize / 2,
-                    backgroundImage: AdvancedNetworkImage(
-                      url,
-                      useDiskCache: !kIsWeb,
-                    ),
+                    backgroundImage: CachedNetworkImageProvider(url),
                   ),
                 Text(displayname, style: TextStyle(color: Colors.white)),
               ],

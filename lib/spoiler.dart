@@ -27,7 +27,8 @@ class _SpoilerState extends State<Spoiler> {
               padding: EdgeInsets.only(
                 top: DefaultTextStyle.of(context).style.fontSize * 0.15,
               ),
-              child: Text("(${this.widget.reason})",
+              child: Text(
+                "(${this.widget.reason})",
                 style: TextStyle(
                   fontSize: DefaultTextStyle.of(context).style.fontSize * 0.7,
                 ),

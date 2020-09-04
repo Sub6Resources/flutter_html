@@ -1,5 +1,7 @@
 ## [0.1.3] - ???
 - Use `Text.rich` instead of `RichText`
+- Use `CachedNetworkImage` instead of `AdvancedNetworkImage`
+- Fix lists sometimes rendering incorrectly
 
 ## [0.1.2] - 14th July 2020:
 - Fix some tags incorrectly linebreaking

@@ -4,7 +4,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
-import 'package:flutter_advanced_networkimage/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 
 import 'image_properties.dart';
@@ -37,7 +37,8 @@ extension CssColor on Color {
     if (hexString == null) {
       return null;
     }
-    final matches = RegExp(r"^#((?:[0-9a-fA-F]{3}){1,2})$").firstMatch(hexString);
+    final matches =
+        RegExp(r"^#((?:[0-9a-fA-F]{3}){1,2})$").firstMatch(hexString);
     if (matches == null) {
       return null;
     }
@@ -204,19 +205,20 @@ class ParseContext {
       // the parseContext might actually be a block level style element, so we
       // need to honor the indent and styling specified by that block style.
       // e.g. ol, ul, blockquote
-      bool treatLikeBlock =
-          ['blockquote', 'ul', 'ol'].indexOf(blockType) != -1;
-      TextSpan span = widget is TextSpan ? widget : TextSpan(
-        children: <InlineSpan>[widget],
-        style: childStyle,
-      );
+      bool treatLikeBlock = ['blockquote', 'ul', 'ol'].indexOf(blockType) != -1;
+      TextSpan span = widget is TextSpan
+          ? widget
+          : TextSpan(
+              children: <InlineSpan>[widget],
+              style: childStyle,
+            );
       parentElement = span;
       if (isBlock || treatLikeBlock) {
         Decoration decoration;
         if (blockType == 'blockquote') {
           decoration = BoxDecoration(
-            border:
-                Border(left: BorderSide(color: defaultTextStyle.color, width: 3)),
+            border: Border(
+                left: BorderSide(color: defaultTextStyle.color, width: 3)),
           );
         }
         BlockText blockText = BlockText(
@@ -568,7 +570,8 @@ class HtmlRichTextParser extends StatelessWidget {
       ParseContext nextContext = new ParseContext.fromContext(parseContext);
 
       if (!_supportedElements.contains(node.localName)) {
-        if (node.localName == "mx-reply") { // drop reply fallback
+        if (node.localName == "mx-reply") {
+          // drop reply fallback
           return;
         }
         _propagateChildren(node.nodes, nextContext, buildContext);
@@ -647,26 +650,31 @@ class HtmlRichTextParser extends StatelessWidget {
               }
             }
             nextContext.blockType = 'ol';
+            parseContext.parentElement = null;
             break;
           case "ul":
             nextContext.indentLevel += 1;
             nextContext.listChar = '•';
             nextContext.listCount = 0;
             nextContext.blockType = 'ul';
+            parseContext.parentElement = null;
             break;
           case "span":
             if (node.attributes['data-mx-color'] != null) {
-              childStyle = childStyle.merge(TextStyle(color: CssColor.fromCss(
+              childStyle = childStyle.merge(TextStyle(
+                  color: CssColor.fromCss(
                 node.attributes['data-mx-color'],
               )));
             }
             if (node.attributes['data-mx-bg-color'] != null) {
-              childStyle = childStyle.merge(TextStyle(backgroundColor: CssColor.fromCss(
+              childStyle = childStyle.merge(TextStyle(
+                  backgroundColor: CssColor.fromCss(
                 node.attributes['data-mx-bg-color'],
               )));
             }
             // we need to hackingly check the outerHtml as the atributes don't contain blank ones, somehow
-            if (node.attributes['data-mx-spoiler'] != null || node.outerHtml.split(">")[0].contains("data-mx-spoiler")) {
+            if (node.attributes['data-mx-spoiler'] != null ||
+                node.outerHtml.split(">")[0].contains("data-mx-spoiler")) {
               final reason = node.attributes['data-mx-spoiler'];
               TextSpan span = TextSpan(
                 text: '',
@@ -691,13 +699,16 @@ class HtmlRichTextParser extends StatelessWidget {
           case "time":
             break;
           case "font":
-            if (node.attributes['color'] != null || node.attributes['data-mx-color'] != null) {
-              childStyle = childStyle.merge(TextStyle(color: CssColor.fromCss(
+            if (node.attributes['color'] != null ||
+                node.attributes['data-mx-color'] != null) {
+              childStyle = childStyle.merge(TextStyle(
+                  color: CssColor.fromCss(
                 node.attributes['color'] ?? node.attributes['data-mx-color'],
               )));
             }
             if (node.attributes['data-mx-bg-color'] != null) {
-              childStyle = childStyle.merge(TextStyle(backgroundColor: CssColor.fromCss(
+              childStyle = childStyle.merge(TextStyle(
+                  backgroundColor: CssColor.fromCss(
                 node.attributes['data-mx-bg-color'],
               )));
             }
@@ -727,14 +738,17 @@ class HtmlRichTextParser extends StatelessWidget {
             if (url != null && url.startsWith(MATRIX_TO_SCHEME)) {
               // this might be a pill!
               final identifier = url.substring(MATRIX_TO_SCHEME.length);
-              final pillMatch = RegExp(r"^[@#!][^:]+:[^\/]+$").firstMatch(identifier);
+              final pillMatch =
+                  RegExp(r"^[@#!][^:]+:[^\/]+$").firstMatch(identifier);
               if (pillMatch != null) {
                 // we have a pill
                 parseContext.addWidget(WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: Pill(
                     identifier: identifier,
-                    future: this.getPillInfo != null ? this.getPillInfo(identifier) : null,
+                    future: this.getPillInfo != null
+                        ? this.getPillInfo(identifier)
+                        : null,
                     onTap: this.onPillTap,
                     getMxcUrl: this.getMxcUrl,
                   ),
@@ -792,16 +806,17 @@ class HtmlRichTextParser extends StatelessWidget {
                         ? double.tryParse(node.attributes['height'])
                         : null);
 
-                final url = node.attributes['src'].startsWith("mxc://") && getMxcUrl != null ?
-                    getMxcUrl(node.attributes['src'], width, height) : "";
+                final url = node.attributes['src'].startsWith("mxc://") &&
+                        getMxcUrl != null
+                    ? getMxcUrl(node.attributes['src'], width, height)
+                    : "";
 
                 WidgetSpan widget = WidgetSpan(
                   alignment: PlaceholderAlignment.bottom,
                   child: GestureDetector(
                     child: Image(
-                      image: AdvancedNetworkImage(
+                      image: CachedNetworkImageProvider(
                         url,
-                        useDiskCache: !kIsWeb,
                         scale: imageProperties?.scale ?? 1.0,
                       ),
                       frameBuilder: (context, child, frame, _) {
@@ -889,8 +904,8 @@ class HtmlRichTextParser extends StatelessWidget {
                 fontWeight: (node.localName == 'th')
                     ? FontWeight.bold
                     : FontWeight.normal));
-            Text text =
-                Text.rich(TextSpan(text: '', children: <InlineSpan>[]), maxLines: maxLines);
+            Text text = Text.rich(TextSpan(text: '', children: <InlineSpan>[]),
+                maxLines: maxLines);
             Expanded cell = Expanded(
               flex: colspan,
               child: Container(padding: EdgeInsets.all(1.0), child: text),
@@ -917,8 +932,7 @@ class HtmlRichTextParser extends StatelessWidget {
             );
 
             // create an expanded cell
-            Text text = Text.rich(
-                TextSpan(text: '', children: <InlineSpan>[]),
+            Text text = Text.rich(TextSpan(text: '', children: <InlineSpan>[]),
                 textAlign: TextAlign.center,
                 textScaleFactor: 1.2,
                 maxLines: maxLines);
@@ -1047,10 +1061,12 @@ class HtmlRichTextParser extends StatelessWidget {
 
           myDefault:
           default:
-            nextContext.addWidget(TextSpan(
-              style: nextContext.childStyle,
-              children: <InlineSpan>[],
-            ), isBlock: true);
+            nextContext.addWidget(
+                TextSpan(
+                  style: nextContext.childStyle,
+                  children: <InlineSpan>[],
+                ),
+                isBlock: true);
             nextContext.spansOnly = true;
             nextContext.inBlock = true;
         }
@@ -1068,9 +1084,12 @@ class HtmlRichTextParser extends StatelessWidget {
     }
   }
 
-  void _propagateChildren(List<dom.Node> nodes, ParseContext nextContext, BuildContext buildContext) {
+  void _propagateChildren(List<dom.Node> nodes, ParseContext nextContext,
+      BuildContext buildContext) {
     nodes.forEach((dom.Node childNode) {
-      if ((childNode is dom.Element) && !_supportedBlockElements.contains(childNode.localName) && nextContext.parentElement == null) {
+      if ((childNode is dom.Element) &&
+          !_supportedBlockElements.contains(childNode.localName) &&
+          nextContext.parentElement == null) {
         nextContext.addWidget(TextSpan(
           children: <InlineSpan>[],
           style: nextContext.childStyle,
