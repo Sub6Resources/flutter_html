@@ -6,6 +6,7 @@ import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
+import 'package:matrix_link_text/link_text.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
@@ -26,9 +27,6 @@ typedef GetPillInfo = Future<Map<String, dynamic>> Function(String identifier);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
-
-final RegExp URL_REGEX = RegExp(
-    r"https?:\/\/(www\.)?[-a-zA-Z0-9@:%.,_\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\,+.~#?&//=]*)");
 
 final MATRIX_TO_SCHEME = "https://matrix.to/#/";
 
@@ -54,38 +52,6 @@ extension CssColor on Color {
     }
     return Color(int.parse(buffer.toString(), radix: 16));
   }
-}
-
-class LinkTextSpan extends TextSpan {
-  // Beware!
-  //
-  // This class is only safe because the TapGestureRecognizer is not
-  // given a deadline and therefore never allocates any resources.
-  //
-  // In any other situation -- setting a deadline, using any of the less trivial
-  // recognizers, etc -- you would have to manage the gesture recognizer's
-  // lifetime and call dispose() when the TextSpan was no longer being rendered.
-  //
-  // Since TextSpan itself is @immutable, this means that you would have to
-  // manage the recognizer from outside the TextSpan, e.g. in the State of a
-  // stateful widget that then hands the recognizer to the TextSpan.
-  final String url;
-
-  LinkTextSpan(
-      {TextStyle style,
-      this.url,
-      String text,
-      OnLinkTap onLinkTap,
-      List<InlineSpan> children})
-      : super(
-          style: style,
-          text: text,
-          children: children ?? <InlineSpan>[],
-          recognizer: TapGestureRecognizer()
-            ..onTap = () {
-              onLinkTap?.call(url);
-            },
-        );
 }
 
 class LinkBlock extends Container {
@@ -512,39 +478,13 @@ class HtmlRichTextParser extends StatelessWidget {
       // debugPrint("Plain Text Node: '$finalText'");
 
       // craete a text span and detect links
-      TextSpan span;
-      final links = URL_REGEX.allMatches(finalText);
-      if (links.isEmpty) {
-        // create a span by default
-        span = TextSpan(
-          children: <InlineSpan>[
-            TextSpan(text: finalText),
-          ],
-          style: parseContext.childStyle,
-        );
-      } else {
-        TextStyle _linkStyle = parseContext.childStyle.merge(linkStyle);
-        final textParts = finalText.split(URL_REGEX);
-        final textSpans = <InlineSpan>[];
-        int i = 0;
-        textParts.forEach((textPart) {
-          textSpans.add(TextSpan(text: textPart));
-          if (i < links.length) {
-            final link = links.elementAt(i).group(0);
-            textSpans.add(LinkTextSpan(
-              style: _linkStyle,
-              url: link,
-              text: link,
-              onLinkTap: onLinkTap,
-            ));
-          }
-          i++;
-        });
-        span = TextSpan(
-          children: textSpans,
-          style: parseContext.childStyle,
-        );
-      }
+      TextSpan span = LinkTextSpans(
+        text: finalText,
+        themeData: Theme.of(buildContext),
+        onLinkTap: onLinkTap,
+        textStyle: parseContext.childStyle,
+        linkStyle: parseContext.childStyle.merge(linkStyle),
+      );
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
 
@@ -739,7 +679,7 @@ class HtmlRichTextParser extends StatelessWidget {
               // this might be a pill!
               final identifier = url.substring(MATRIX_TO_SCHEME.length);
               final pillMatch =
-                  RegExp(r"^[@#!][^:]+:[^\/]+$").firstMatch(identifier);
+                  RegExp(r"^[@#!+][^:]+:[^\/]+$").firstMatch(identifier);
               if (pillMatch != null) {
                 // we have a pill
                 parseContext.addWidget(WidgetSpan(

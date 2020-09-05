@@ -12,6 +12,7 @@ dependencies:
   flutter:
     sdk: flutter
   cached_network_image: any
+  matrix_link_text: any
 
 dev_dependencies:
   flutter_test:
