@@ -272,12 +272,12 @@ class HtmlParser extends StatelessWidget {
                 width: 30, //TODO derive this from list padding.
                 start: 0,
                 child: Text('${newContext.style.markerContent}\t',
-                    textAlign: TextAlign.right,
+                    textAlign: TextAlign.end,
                     style: newContext.style.generateTextStyle()),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                    left: 30), //TODO derive this from list padding.
+                padding: EdgeInsetsDirectional.only(
+                    start: 30), //TODO derive this from list padding.
                 child: StyledText(
                   textSpan: TextSpan(
                     children: tree.children
