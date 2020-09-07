@@ -77,6 +77,12 @@ class Style {
   /// Default: ListStyleType.DISC
   ListStyleType listStyleType;
 
+  /// CSS attribute "`list-style-position`"
+  ///
+  /// Inherited: yes,
+  /// Default: ListStylePosition.OUTSIDE
+  ListStylePosition listStylePosition;
+
   /// CSS attribute "`padding`"
   ///
   /// Inherited: no,
@@ -183,6 +189,7 @@ class Style {
     this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
+    this.listStylePosition,
     this.padding,
     this.margin,
     this.textAlign,
@@ -251,6 +258,7 @@ class Style {
       lineHeight: other.lineHeight,
       letterSpacing: other.letterSpacing,
       listStyleType: other.listStyleType,
+      listStylePosition: other.listStylePosition,
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
@@ -288,6 +296,7 @@ class Style {
       fontWeight: child.fontWeight ?? fontWeight,
       letterSpacing: child.letterSpacing ?? letterSpacing,
       listStyleType: child.listStyleType ?? listStyleType,
+      listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
@@ -309,6 +318,7 @@ class Style {
     double lineHeight,
     double letterSpacing,
     ListStyleType listStyleType,
+    ListStylePosition listStylePosition,
     EdgeInsets padding,
     EdgeInsets margin,
     TextAlign textAlign,
@@ -341,6 +351,7 @@ class Style {
       lineHeight: lineHeight ?? this.lineHeight,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       listStyleType: listStyleType ?? this.listStyleType,
+      listStylePosition: listStylePosition ?? this.listStylePosition,
       padding: padding ?? this.padding,
       margin: margin ?? this.margin,
       textAlign: textAlign ?? this.textAlign,
@@ -419,6 +430,11 @@ class FontSize {
 enum ListStyleType {
   DISC,
   DECIMAL,
+}
+
+enum ListStylePosition {
+  OUTSIDE,
+  INSIDE,
 }
 
 enum VerticalAlign {
