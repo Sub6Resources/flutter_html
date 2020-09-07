@@ -77,6 +77,12 @@ class Style {
   /// Default: ListStyleType.DISC
   ListStyleType listStyleType;
 
+  /// CSS attribute "`list-style-position`"
+  ///
+  /// Inherited: yes,
+  /// Default: ListStylePosition.OUTSIDE
+  ListStylePosition listStylePosition;
+
   /// CSS attribute "`padding`"
   ///
   /// Inherited: no,
@@ -152,6 +158,16 @@ class Style {
   /// Default: normal (0)
   double wordSpacing;
 
+  /// CSS attribute "`line-height`"
+  ///
+  /// Supported values: double values
+  ///
+  /// Unsupported values: normal, 80%, ..
+  ///
+  /// Inherited: no,
+  /// Default: Unspecified (null),
+  double lineHeight;
+
   //TODO modify these to match CSS styles
   String before;
   String after;
@@ -170,8 +186,10 @@ class Style {
     this.fontStyle,
     this.fontWeight,
     this.height,
+    this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
+    this.listStylePosition,
     this.padding,
     this.margin,
     this.textAlign,
@@ -212,9 +230,9 @@ class Style {
       letterSpacing: letterSpacing,
       shadows: textShadow,
       wordSpacing: wordSpacing,
+      height: lineHeight,
       //TODO background
       //TODO textBaseline
-      //TODO height
     );
   }
 
@@ -237,8 +255,10 @@ class Style {
       fontStyle: other.fontStyle,
       fontWeight: other.fontWeight,
       height: other.height,
+      lineHeight: other.lineHeight,
       letterSpacing: other.letterSpacing,
       listStyleType: other.listStyleType,
+      listStylePosition: other.listStylePosition,
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
@@ -276,6 +296,7 @@ class Style {
       fontWeight: child.fontWeight ?? fontWeight,
       letterSpacing: child.letterSpacing ?? letterSpacing,
       listStyleType: child.listStyleType ?? listStyleType,
+      listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
@@ -294,8 +315,10 @@ class Style {
     FontStyle fontStyle,
     FontWeight fontWeight,
     double height,
+    double lineHeight,
     double letterSpacing,
     ListStyleType listStyleType,
+    ListStylePosition listStylePosition,
     EdgeInsets padding,
     EdgeInsets margin,
     TextAlign textAlign,
@@ -325,8 +348,10 @@ class Style {
       fontStyle: fontStyle ?? this.fontStyle,
       fontWeight: fontWeight ?? this.fontWeight,
       height: height ?? this.height,
+      lineHeight: lineHeight ?? this.lineHeight,
       letterSpacing: letterSpacing ?? this.letterSpacing,
       listStyleType: listStyleType ?? this.listStyleType,
+      listStylePosition: listStylePosition ?? this.listStylePosition,
       padding: padding ?? this.padding,
       margin: margin ?? this.margin,
       textAlign: textAlign ?? this.textAlign,
@@ -363,6 +388,7 @@ class Style {
     this.letterSpacing = textStyle.letterSpacing;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
+    this.lineHeight = textStyle.height;
   }
 }
 
@@ -404,6 +430,11 @@ class FontSize {
 enum ListStyleType {
   DISC,
   DECIMAL,
+}
+
+enum ListStylePosition {
+  OUTSIDE,
+  INSIDE,
 }
 
 enum VerticalAlign {
