@@ -162,11 +162,7 @@ const htmlData = """
           style: {
             "html": Style(
               backgroundColor: Colors.black12,
-//              color: Colors.white,
             ),
-//            "h1": Style(
-//              textAlign: TextAlign.center,
-//            ),
             "table": Style(
               backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
             ),
