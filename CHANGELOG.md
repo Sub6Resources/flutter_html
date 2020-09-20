@@ -1,3 +1,7 @@
+## [0.1.5] - 20th Sept 2020:
+- Don't allow propagation of onTap inot spoilers, if they are hidden
+- Add emoteSize property, to be able to set your own emote size
+
 ## [0.1.4] - 5th Sept 2020:
 - Use matrix_link_text to properly determine links
 

@@ -34,6 +34,7 @@ class Html extends StatelessWidget {
     this.showImages = true,
     this.getMxcUrl,
     this.maxLines,
+    this.emoteSize,
   }) : super(key: key);
 
   final String data;
@@ -51,6 +52,7 @@ class Html extends StatelessWidget {
   final int maxLines;
   final OnPillTap onPillTap;
   final GetPillInfo getPillInfo;
+  final double emoteSize;
 
   /// Properties for the Image widget that gets rendered by the rich text parser
   final ImageProperties imageProperties;
@@ -92,6 +94,7 @@ class Html extends StatelessWidget {
                 showImages: showImages,
                 getMxcUrl: getMxcUrl,
                 maxLines: maxLines,
+                emoteSize: emoteSize,
                 defaultTextStyle: defaultTextStyle,
               )
             : HtmlOldParser(

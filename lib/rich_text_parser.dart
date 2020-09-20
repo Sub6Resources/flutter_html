@@ -239,6 +239,7 @@ class HtmlRichTextParser extends StatelessWidget {
     this.getMxcUrl,
     this.maxLines,
     this.defaultTextStyle,
+    this.emoteSize,
   });
 
   final double indentSize = 10.0;
@@ -260,6 +261,7 @@ class HtmlRichTextParser extends StatelessWidget {
   final GetMxcUrl getMxcUrl;
   final int maxLines;
   final TextStyle defaultTextStyle;
+  final double emoteSize;
 
   // style elements set a default style
   // for all child nodes
@@ -737,14 +739,28 @@ class HtmlRichTextParser extends StatelessWidget {
           case "img":
             if (showImages) {
               if (node.attributes['src'] != null) {
-                final width = imageProperties?.width ??
+                var width = imageProperties?.width ??
                     ((node.attributes['width'] != null)
                         ? double.tryParse(node.attributes['width'])
                         : null);
-                final height = imageProperties?.height ??
+                var height = imageProperties?.height ??
                     ((node.attributes['height'] != null)
                         ? double.tryParse(node.attributes['height'])
                         : null);
+
+                if (emoteSize != null &&
+                    (node.attributes['data-mx-emote'] != null ||
+                        node.outerHtml
+                            .split(">")[0]
+                            .contains("data-mx-emote") ||
+                        node.attributes['data-mx-emoticon'] != null ||
+                        node.outerHtml
+                            .split(">")[0]
+                            .contains("data-mx-emoticon"))) {
+                  // we have an emote and a set emote size....use that instead!
+                  width = null;
+                  height = emoteSize;
+                }
 
                 final url = node.attributes['src'].startsWith("mxc://") &&
                         getMxcUrl != null
