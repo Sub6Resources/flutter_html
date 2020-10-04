@@ -1,8 +1,10 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'rich_text_parser.dart';
-import 'package:fluffychat/utils/platform_infos.dart';
+import 'package:flutter/foundation.dart';
 
 class Pill extends StatelessWidget {
   final String identifier;
@@ -63,7 +65,7 @@ class Pill extends StatelessWidget {
                 if (avatarUrl != null)
                   CircleAvatar(
                     radius: avatarSize / 2,
-                    backgroundImage: PlatformInfos.isBetaDesktop
+                    backgroundImage: !kIsWeb && (Platform.isWindows || Platform.isLinux)
                         ? NetworkImage(url)
                         : CachedNetworkImageProvider(url),
                   ),

@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:html/parser.dart' as parser;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
-import 'package:fluffychat/utils/platform_infos.dart';
+import 'package:flutter/foundation.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
@@ -926,7 +927,7 @@ class HtmlRichTextParser extends StatelessWidget {
                   alignment: PlaceholderAlignment.bottom,
                   child: GestureDetector(
                     child: Image(
-                      image: PlatformInfos.isBetaDesktop
+                      image: !kIsWeb && (Platform.isWindows || Platform.isLinux)
                           ? NetworkImage(
                               url,
                               scale: imageProperties?.scale ?? 1.0,

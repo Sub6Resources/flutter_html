@@ -1,4 +1,7 @@
-## [0.1.6] - ???
+## [0.1.7] - 4th Oct 2020:
+- Fix a fubar
+
+## [0.1.6] - 4th Oct 2020:
 - Support CSS colour names, e.g. `red`
 - Support images on desktop
 
