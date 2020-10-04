@@ -1,3 +1,7 @@
+## [0.1.6] - ???
+- Support CSS colour names, e.g. `red`
+- Support images on desktop
+
 ## [0.1.5] - 20th Sept 2020:
 - Don't allow propagation of onTap inot spoilers, if they are hidden
 - Add emoteSize property, to be able to set your own emote size
