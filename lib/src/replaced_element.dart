@@ -249,9 +249,9 @@ class VideoContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    final double _width = width ?? (height ?? 150) * 2;
+    final double _height = height ?? (width ?? 300) / 2;
     return Container(
-      width: width ?? (height ?? 150) * 2,
-      height: height ?? (width ?? 300) / 2,
       child: Chewie(
         controller: ChewieController(
           videoPlayerController: VideoPlayerController.network(
@@ -264,6 +264,7 @@ class VideoContentElement extends ReplacedElement {
           looping: loop,
           showControls: showControls,
           autoInitialize: true,
+          aspectRatio: _width / _height,
         ),
       ),
     );
