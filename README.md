@@ -6,9 +6,11 @@
 
 A Flutter widget for rendering html and css as Flutter widgets.
 
+<p>
 <img alt="A Screenshot of flutter_html" src=".github/flutter_html_screenshot.png" width="300"/>
 <img alt="Another Screenshot of flutter_html" src=".github/flutter_html_screenshot2.png" width="300"/>
 <img alt="Yet another Screenshot of flutter_html" src=".github/flutter_html_screenshot3.png" width="300"/>
+</p>
 
 ## Installing:
 
@@ -33,7 +35,7 @@ This package is designed with simplicity in mind. Originally created to allow ba
 this project has expanded to include support for basic styling as well!.
 
 ## Example Usage:
-(For a much more extensive example, look at example/main.dart).
+(For a much more extensive example, look at [example](https://github.com/Sub6Resources/flutter_html/tree/master/example).
 ```dart
     Widget html = Html(
       data: """
@@ -70,3 +72,12 @@ this project has expanded to include support for basic styling as well!.
         // Display the image in large form.
       },
     );
+```
+
+## Migration Guides
+- For Version 1.0 [Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide)
+
+## Contribution Guide
+> Coming soon!
+>
+> Meanwhile, PRs are always welcome
