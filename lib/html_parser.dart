@@ -69,7 +69,7 @@ class HtmlParser extends StatelessWidget {
     // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
     // to wrap everything when larger accessibility fonts are used.
     return StyledText(
-      textSpan: parsedTree, 
+      textSpan: parsedTree,
       style: cleanedTree.style,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
     );
@@ -439,13 +439,15 @@ class HtmlParser extends StatelessWidget {
   /// (2) Replace all newlines with a space
   /// (3) Replace all tabs with a space
   /// (4) Replace any instances of two or more spaces with a single space.
+  /// (5) Remove remaining leading and trailing spaces.
   static String _removeUnnecessaryWhitespace(String text) {
     return text
         .replaceAll(RegExp("\ *(?=\n)"), "\n")
         .replaceAll(RegExp("(?:\n)\ *"), "\n")
         .replaceAll("\n", " ")
         .replaceAll("\t", " ")
-        .replaceAll(RegExp(" {2,}"), " ");
+        .replaceAll(RegExp(" {2,}"), " ")
+        .trim();
   }
 
   /// [processListCharacters] adds list characters to the front of all list items.
