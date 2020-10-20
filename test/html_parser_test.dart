@@ -19,25 +19,6 @@ void main() {
     );
   });
 
-  testWidgets("Parser trims whitepaces", (WidgetTester tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: Html(
-            data: """
-              <div>
-                content
-              </div>
-            """,
-          ),
-        ),
-      ),
-    );
-    expect(find.byType(Html), findsOneWidget);
-    expect(find.text("content"), findsOneWidget);
-    expect(find.text(" content "), findsNothing);
-  });
-
   testNewParser();
 }
 
