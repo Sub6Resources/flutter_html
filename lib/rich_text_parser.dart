@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
 import 'package:flutter/foundation.dart';
+import 'custom_catex.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
@@ -788,6 +789,14 @@ class HtmlRichTextParser extends StatelessWidget {
               nextContext.inBlock = true;
               nextContext.parentElement = span;
             }
+            // do we have latex stuffs?
+            if (node.attributes['data-mx-maths'] != null) {
+              parseContext.addWidget(WidgetSpan(
+                child: CustomCaTeX(node.attributes['data-mx-maths']),
+                alignment: PlaceholderAlignment.middle,
+              ));
+              return; // we don't want to render the children (which is a fallback)
+            }
             break;
           case "ruby":
           case "rt":
@@ -1174,6 +1183,14 @@ class HtmlRichTextParser extends StatelessWidget {
           case "center":
             textAlign = TextAlign.center;
             // no break here
+            continue myDefault;
+
+          case "div":
+            if (node.attributes['data-mx-maths'] != null) {
+              parseContext.rootWidgetList
+                  .add(CustomCaTeX(node.attributes['data-mx-maths']));
+              return;
+            }
             continue myDefault;
 
           myDefault:

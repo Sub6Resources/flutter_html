@@ -1,6 +1,6 @@
 name: flutter_matrix_html
 description: A Flutter widget for rendering static matrix html tags as Flutter widgets. (Will render over 70 different html tags!)
-version: 0.1.7
+version: 0.1.8
 homepage: https://github.com/Sorunome/flutter_matrix_html
 
 environment:
@@ -13,6 +13,7 @@ dependencies:
     sdk: flutter
   cached_network_image: any
   matrix_link_text: any
+  catex: ^0.0.1+6
 
 dev_dependencies:
   flutter_test:

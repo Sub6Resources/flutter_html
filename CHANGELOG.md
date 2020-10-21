@@ -1,3 +1,6 @@
+## [0.1.8] - 21st Oct 2020:
+- Support data-mx-maths using CaTeX rendering
+
 ## [0.1.7] - 4th Oct 2020:
 - Fix a fubar
 
