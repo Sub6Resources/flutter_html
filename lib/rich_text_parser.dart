@@ -8,7 +8,6 @@ import 'package:html/parser.dart' as parser;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
-import 'package:flutter/foundation.dart';
 import 'custom_catex.dart';
 
 import 'image_properties.dart';

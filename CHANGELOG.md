@@ -1,5 +1,6 @@
 ## [0.1.8] - 21st Oct 2020:
 - Support data-mx-maths using CaTeX rendering
+- Remove desktop fallback as cached_network_image has support for that by now
 
 ## [0.1.7] - 4th Oct 2020:
 - Fix a fubar
