@@ -935,15 +935,10 @@ class HtmlRichTextParser extends StatelessWidget {
                   alignment: PlaceholderAlignment.bottom,
                   child: GestureDetector(
                     child: Image(
-                      image: !kIsWeb && (Platform.isWindows || Platform.isLinux)
-                          ? NetworkImage(
-                              url,
-                              scale: imageProperties?.scale ?? 1.0,
-                            )
-                          : CachedNetworkImageProvider(
-                              url,
-                              scale: imageProperties?.scale ?? 1.0,
-                            ),
+                      image: CachedNetworkImageProvider(
+                        url,
+                        scale: imageProperties?.scale ?? 1.0,
+                      ),
                       frameBuilder: (context, child, frame, _) {
                         if (node.attributes['alt'] != null && frame == null) {
                           return BlockText(
