@@ -86,9 +86,25 @@ class TableSectionLayoutElement extends LayoutElement {
   }
 
   List<TableRow> toTableRows(RenderContext context) {
+    int largest = 0;
+    children.forEach((element) {
+      if (element.children != null) {
+        element.children.removeWhere((element1) => element1.children == null);
+      }
+      if (element.children != null && element.children.toList().length > largest) {
+        largest = element.children.toList().length;
+      }
+    });
+    children.forEach((element) {
+      if (element.children != null && element.children.toList().length != largest) {
+        element.differenceBetweenLargest = largest - element.children.toList().length;
+      }
+    });
+    print("largest row contains $largest items");
     return children.map((c) {
       if (c is TableRowLayoutElement) {
-        return c.toTableRow(context);
+        print("difference between element length and largest row length ${c.differenceBetweenLargest}");
+        return c.toTableRow(context, c.differenceBetweenLargest);
       }
       return null;
     }).where((t) {
@@ -109,31 +125,43 @@ class TableRowLayoutElement extends LayoutElement {
     return Container(child: Text("TABLE ROW"));
   }
 
-  TableRow toTableRow(RenderContext context) {
+  TableRow toTableRow(RenderContext context, int difference) {
+    List<TableCell> extraCells = [];
+    if (difference != null && difference != 0) {
+      int iterator = 1;
+      print("adding $difference extra cells to equalize row lengths");
+      while (iterator <= difference) {
+        extraCells.add(TableCell(child: Container()));
+        iterator++;
+      }
+    }
+    List<Widget> rowChildren = children
+        .map((c) {
+      if (c is StyledElement && c.name == 'td' || c.name == 'th') {
+        return TableCell(
+            child: Container(
+                padding: c.style.padding,
+                decoration: BoxDecoration(
+                  color: c.style.backgroundColor,
+                  border: c.style.border,
+                ),
+                child: StyledText(
+                  textSpan: context.parser.parseTree(context, c),
+                  style: c.style,
+                )));
+      }
+      return null;
+    })
+        .where((c) => c != null)
+        .toList();
+    rowChildren.addAll(extraCells);
+    print("new length for row ${rowChildren.length} (should equal largest row length)");
     return TableRow(
         decoration: BoxDecoration(
           border: style.border,
           color: style.backgroundColor,
         ),
-        children: children
-            .map((c) {
-              if (c is StyledElement && c.name == 'td' || c.name == 'th') {
-                return TableCell(
-                    child: Container(
-                        padding: c.style.padding,
-                        decoration: BoxDecoration(
-                          color: c.style.backgroundColor,
-                          border: c.style.border,
-                        ),
-                        child: StyledText(
-                          textSpan: context.parser.parseTree(context, c),
-                          style: c.style,
-                        )));
-              }
-              return null;
-            })
-            .where((c) => c != null)
-            .toList());
+        children: rowChildren);
   }
 }
 

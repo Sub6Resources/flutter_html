@@ -12,6 +12,7 @@ class StyledElement {
   List<StyledElement> children;
   Style style;
   final dom.Node _node;
+  int differenceBetweenLargest = 0;
 
   StyledElement({
     this.name = "[[No name]]",
@@ -19,6 +20,7 @@ class StyledElement {
     this.elementClasses,
     this.children,
     this.style,
+    this.differenceBetweenLargest,
     dom.Element node,
   }) : this._node = node;
 
