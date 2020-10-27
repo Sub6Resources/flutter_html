@@ -14,6 +14,8 @@ dependencies:
   cached_network_image: any
   matrix_link_text: any
   catex: ^0.0.1+6
+  flutter_highlight: ^0.6.0
+  isolate: ^2.0.3
 
 dev_dependencies:
   flutter_test:

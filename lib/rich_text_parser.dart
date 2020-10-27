@@ -9,6 +9,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
 import 'custom_catex.dart';
+import 'code_block.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
@@ -396,6 +397,8 @@ class HtmlRichTextParser extends StatelessWidget {
     this.maxLines,
     this.defaultTextStyle,
     this.emoteSize,
+    this.setCodeLanguage,
+    this.getCodeLanguage,
   });
 
   final double indentSize = 10.0;
@@ -418,6 +421,8 @@ class HtmlRichTextParser extends StatelessWidget {
   final int maxLines;
   final TextStyle defaultTextStyle;
   final double emoteSize;
+  final SetCodeLanguage setCodeLanguage;
+  final GetCodeLanguage getCodeLanguage;
 
   // style elements set a default style
   // for all child nodes
@@ -1171,6 +1176,30 @@ class HtmlRichTextParser extends StatelessWidget {
             continue myDefault;
 
           case "pre":
+            final textNodes = List<dom.Node>.from(node.nodes);
+            textNodes.removeWhere((n) => !(n is dom.Text));
+            final elementNodes = List<dom.Node>.from(node.nodes);
+            elementNodes.removeWhere((n) => !(n is dom.Element));
+            if (textNodes.every((n) => n.text.trim().isEmpty) &&
+                elementNodes.length == 1 &&
+                (elementNodes.first as dom.Element).localName == "code") {
+              // alright, we have a <pre><code> which means code block
+              // soooo....let's syntax-highlight it properly!
+              final language = (elementNodes.first as dom.Element)
+                  .classes
+                  .firstWhere((s) => s.startsWith('language-'),
+                      orElse: () => null)
+                  ?.substring('language-'.length);
+              final code = elementNodes.first.text;
+              parseContext.rootWidgetList.add(CodeBlock(
+                code,
+                language: language,
+                setCodeLanguage: setCodeLanguage,
+                getCodeLanguage: getCodeLanguage,
+                borderColor: defaultTextStyle.color,
+              ));
+              return;
+            }
             nextContext.condenseWhitespace = false;
             continue myDefault;
 

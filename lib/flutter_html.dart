@@ -5,6 +5,7 @@ import 'html_parser.dart';
 import 'rich_text_parser.dart';
 
 import 'image_properties.dart';
+import 'code_block.dart';
 
 class Html extends StatelessWidget {
   Html({
@@ -35,6 +36,8 @@ class Html extends StatelessWidget {
     this.getMxcUrl,
     this.maxLines,
     this.emoteSize,
+    this.getCodeLanguage,
+    this.setCodeLanguage,
   }) : super(key: key);
 
   final String data;
@@ -66,6 +69,10 @@ class Html extends StatelessWidget {
   final CustomTextStyle customTextStyle;
   final CustomTextAlign customTextAlign;
 
+  /// Setting and getting code langauge cache
+  final SetCodeLanguage setCodeLanguage;
+  final GetCodeLanguage getCodeLanguage;
+
   @override
   Widget build(BuildContext context) {
     final double width = shrinkToFit ? null : MediaQuery.of(context).size.width;
@@ -96,6 +103,8 @@ class Html extends StatelessWidget {
                 maxLines: maxLines,
                 emoteSize: emoteSize,
                 defaultTextStyle: defaultTextStyle,
+                setCodeLanguage: setCodeLanguage,
+                getCodeLanguage: getCodeLanguage,
               )
             : HtmlOldParser(
                 width: width,

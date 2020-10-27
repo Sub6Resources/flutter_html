@@ -1,3 +1,6 @@
+## [0.2.0] - ???
+- Code blocks displayed more nicely
+
 ## [0.1.9] - 21st Oct 2020:
 - Fix fubar
 

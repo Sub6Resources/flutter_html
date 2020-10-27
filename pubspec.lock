@@ -159,10 +159,10 @@ packages:
   matrix_link_text:
     dependency: "direct main"
     description:
-      name: matrix_link_text
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.1.5"
+      path: "/home/sorunome/repos/matrix_link_text"
+      relative: false
+    source: path
+    version: "0.3.0"
   meta:
     dependency: transitive
     description:
