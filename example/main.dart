@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_matrix_html/flutter_html.dart';
 import 'package:html/dom.dart' as dom;
 
 void main() => runApp(new MyApp());
@@ -71,7 +71,7 @@ class _MyHomePageState extends State<MyHomePage> {
         In the example below, usernames are shown along with the number of points in a contest.
         If the bdi element is not supported in the browser, the username of the Arabic user would confuse the text (the bidirectional algorithm would put the colon and the number "90" next to the word "User" rather than next to the word "points").
         </p>
-        
+
         <ul>
          <li>User <bdi>hrefs</bdi>: 60 points</li>
          <li>User <bdi>jdoe</bdi>: 80 points</li>

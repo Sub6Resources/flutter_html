@@ -1,3 +1,5 @@
+// ignore_for_file: implementation_imports, invalid_use_of_protected_member
+
 import 'package:catex/src/lookup/context.dart';
 import 'package:catex/src/lookup/exception.dart';
 import 'package:catex/src/lookup/fonts.dart';

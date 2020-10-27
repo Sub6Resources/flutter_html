@@ -4,7 +4,7 @@ version: 0.1.9
 homepage: https://github.com/Sorunome/flutter_matrix_html
 
 environment:
-  sdk: '>=1.19.0 <3.0.0'
+  sdk: '>=2.6.0 <3.0.0'
   flutter: '>=0.5.0'
 
 dependencies:

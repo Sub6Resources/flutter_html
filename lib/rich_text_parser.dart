@@ -1,7 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
@@ -31,7 +27,7 @@ typedef GetPillInfo = Future<Map<String, dynamic>> Function(String identifier);
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
 
-final MATRIX_TO_SCHEME = "https://matrix.to/#/";
+const MATRIX_TO_SCHEME = "https://matrix.to/#/";
 
 extension CssColor on Color {
   static Map<String, String> _cssReplacements = {
@@ -244,7 +240,7 @@ class BlockText extends StatelessWidget {
   final EdgeInsets margin;
   final Decoration decoration;
   final bool shrinkToFit;
-  double width;
+  final double width;
 
   BlockText({
     @required this.child,
@@ -252,6 +248,7 @@ class BlockText extends StatelessWidget {
     this.padding,
     this.margin,
     this.decoration,
+    this.width,
   });
 
   @override
@@ -1099,11 +1096,6 @@ class HtmlRichTextParser extends StatelessWidget {
         TextAlign textAlign = TextAlign.left;
         if (customTextAlign != null) {
           textAlign = customTextAlign(node) ?? textAlign;
-        }
-
-        EdgeInsets _customEdgeInsets;
-        if (customEdgeInsets != null) {
-          _customEdgeInsets = customEdgeInsets(node);
         }
 
         switch (node.localName) {

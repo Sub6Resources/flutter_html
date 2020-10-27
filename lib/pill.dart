@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -36,7 +34,7 @@ class Pill extends StatelessWidget {
               snapshot.data['avatar_url'].isNotEmpty &&
               this.getMxcUrl != null) {
             avatarUrl = snapshot.data['avatar_url'];
-            displayname = " ${displayname}";
+            displayname = ' $displayname';
           }
         }
         final avatarSize = DefaultTextStyle.of(context).style.fontSize;
