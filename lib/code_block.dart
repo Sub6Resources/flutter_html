@@ -79,7 +79,7 @@ class _CodeBlockState extends State<CodeBlock> {
         borderRadius: BorderRadius.all(Radius.circular(10)),
       ),
       child: ClipRRect(
-        borderRadius: BorderRadius.all(Radius.circular(10)),
+        borderRadius: BorderRadius.all(Radius.circular(9.5)),
         child: ConstrainedBox(
           constraints: BoxConstraints(maxHeight: 250),
           child: Scrollbar(

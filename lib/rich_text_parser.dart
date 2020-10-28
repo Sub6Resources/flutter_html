@@ -6,6 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
 import 'custom_catex.dart';
 import 'code_block.dart';
+import 'package:flutter_highlight/themes/monokai.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
@@ -701,7 +702,17 @@ class HtmlRichTextParser extends StatelessWidget {
           case "samp":
           case "tt":
           case "code":
-            childStyle = childStyle.merge(TextStyle(fontFamily: 'monospace'));
+            childStyle = childStyle.merge(TextStyle(
+              fontFamily: 'monospace',
+//              background: Paint()
+//                ..color = defaultTextStyle.color
+//                ..style = PaintingStyle.stroke
+//                ..strokeCap = StrokeCap.round
+//                ..strokeJoin = StrokeJoin.round
+//                ..strokeWidth = 1.0,
+              backgroundColor: monokaiTheme['root'].backgroundColor,
+              color: monokaiTheme['root'].color,
+            ));
             break;
           case "ins":
           case "u":
