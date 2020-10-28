@@ -16,6 +16,8 @@ dependencies:
   catex: ^0.0.1+6
   flutter_highlight: ^0.6.0
   isolate: ^2.0.3
+  highlight: ^0.6.0
+  crypto: ^2.1.5
 
 dev_dependencies:
   flutter_test:
