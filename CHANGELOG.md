@@ -1,3 +1,6 @@
+## [0.1.11] - 16th Nov 2020:
+- Fix empty code blocks
+
 ## [0.1.10] - 28th Oct 2020:
 - Code blocks displayed more nicely
 - Inline code also displayed more nicely

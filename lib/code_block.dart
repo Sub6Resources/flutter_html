@@ -40,7 +40,7 @@ class _CodeBlockState extends State<CodeBlock> {
     super.initState();
     if (widget.language == null) {
       final hashKey = sha1.convert(utf8.encode(widget.code)).toString();
-      if (_detectionMap.containsKey(hashKey)) {
+      if (_detectionMap[hashKey] != null) {
         language = _detectionMap[hashKey];
       } else {
         _futureDetectionMap[hashKey] ??= () async {
@@ -144,7 +144,7 @@ Future<String> _autodetectLanguage(String code) async {
       return 'plain';
     }
     try {
-      return await isolate.run(_autodetectLanguageSync, code);
+      return (await isolate.run(_autodetectLanguageSync, code)) ?? 'plain';
     } finally {
       await isolate.close();
     }
