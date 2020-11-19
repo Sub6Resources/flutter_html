@@ -211,6 +211,7 @@ class AudioContentElement extends ReplacedElement {
         controller: ChewieAudioController(
           videoPlayerController: VideoPlayerController.network(
             src.first ?? "",
+            isAudio: true,
           ),
           autoPlay: autoplay,
           looping: loop,

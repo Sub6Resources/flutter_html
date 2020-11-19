@@ -16,7 +16,12 @@ dependencies:
   css_colors: ^1.0.2
 
   # Plugins for rendering the <video> tag.
-  video_player: ^0.10.11+2
+  video_player:
+    git:
+      url: https://github.com/ragnor-rs/plugins.git
+      path: packages/video_player/video_player
+      ref: 2c93b944923ae9415898d91cdd2111f39e7ae236
+      
   chewie: ^0.9.10
 
   # Plugin for rendering the <iframe> tag.
