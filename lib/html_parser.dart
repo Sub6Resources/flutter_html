@@ -245,7 +245,7 @@ class HtmlParser extends StatelessWidget {
             newContext: newContext,
             style: tree.style,
             shrinkWrap: context.parser.shrinkWrap,
-            child: builder,
+            child: customRenderForElement,
           ),
         );
       }
