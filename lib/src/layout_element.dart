@@ -40,7 +40,7 @@ class TableLayoutElement extends LayoutElement {
               return FractionColumnWidth(width);
             } else {
               final width = double.tryParse(widthStr);
-              return FixedColumnWidth(width);
+              return width != null ? FixedColumnWidth(width) : null;
             }
           });
         })
