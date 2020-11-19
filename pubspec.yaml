@@ -20,7 +20,7 @@ dependencies:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player
-      ref: f18a89a36ecbf3d32561233d0ab663edbba71f7c
+      ref: feature/is-audio-flag
       
   chewie: ^0.9.10
 
