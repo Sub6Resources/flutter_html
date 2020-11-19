@@ -16,14 +16,17 @@ dependencies:
   css_colors: ^1.0.2
 
   # Plugins for rendering the <video> tag.
-  video_player: ^0.10.11+2
-  chewie: ^0.9.10
+  video_player: ^1.0.1
+  chewie: ^0.12.0
 
   # Plugin for rendering the <iframe> tag.
   webview_flutter: ^1.0.0
 
   # Plugins for rendering the <audio> tag.
-  chewie_audio: ^1.0.0+1
+  chewie_audio:
+    git:
+      url: git@github.com:vrtdev/chewie.git
+      ref: d4eb9567c36300b435502fcf5f782c595ce50ca9
 
   # Plugins for rendering the <svg> tag.
   flutter_svg: ^0.19.0
