@@ -20,7 +20,7 @@ dependencies:
     git:
       url: https://github.com/ragnor-rs/plugins.git
       path: packages/video_player/video_player
-      ref: 2c93b944923ae9415898d91cdd2111f39e7ae236
+      ref: 3c996c24ee55299fc2062d41c49ac71fecd79a16
       
   chewie: ^0.9.10
 
