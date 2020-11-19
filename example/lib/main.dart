@@ -61,10 +61,10 @@ const htmlData = """
       </thead>
       <tbody>
       <tr>
-        <td>Data</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\n</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
-        <td>Data</td><td>Data</td><td>Data</td>
+        <td colspan="2">Colpsan</td>
       </tr>
       </tbody>
       <tfoot>
@@ -109,12 +109,12 @@ const htmlData = """
         Linking to <a href='https://github.com'>websites</a> has never been easier.
       </p>
       <h3>Image support:</h3>
+      <!--
       <p>
         <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
         <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
         <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
       </p>
-      <!--
       <h3>Video support:</h3>
       <video controls>
         <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
