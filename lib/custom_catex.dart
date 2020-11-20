@@ -40,6 +40,8 @@ final defaultCaTeXContext = CaTeXContext(
 /// It simply means that CaTeX will start out in this mode.
 const startParsingMode = CaTeXMode.math;
 
+final _errorsMap = <String, Exception>{};
+
 /// Widget that displays TeX using the CaTeX library.
 ///
 /// You can style the base text color and text size using
@@ -92,7 +94,9 @@ class _CaTeXState extends State<CustomCaTeX> {
 
   @override
   Widget build(BuildContext context) {
+    exception ??= _errorsMap[widget.input];
     if (exception != null) {
+      _errorsMap[widget.input] = exception;
       // Throwing the parsing exception here will make sure that it is
       // displayed by the Flutter ErrorWidget.
       return Text(widget.input, style: TextStyle(fontFamily: 'monospace'));
@@ -144,7 +148,7 @@ class CustomSingleChildRenderObjectElement
       super.mount(parent, newSlot);
     } catch (e) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        state.setState(() => state.exception = e);
+        state.setState(() => state.exception = e is Exception ? e : Exception(e));
       });
     }
   }
@@ -160,7 +164,7 @@ class CustomRenderTree extends RenderTree {
       super.performLayout();
     } catch (e) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        state.setState(() => state.exception = e);
+        state.setState(() => state.exception = e is Exception ? e : Exception(e));
       });
     }
   }

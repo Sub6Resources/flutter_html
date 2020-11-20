@@ -1,3 +1,6 @@
+## [0.1.12] - 20th Nov 2020:
+- Fix Latex widget crashing sometimes
+
 ## [0.1.11] - 16th Nov 2020:
 - Fix empty code blocks
 
