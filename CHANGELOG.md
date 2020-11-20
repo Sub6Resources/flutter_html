@@ -1,3 +1,6 @@
+## [0.1.13] - 20th Nov 2020:
+- Switch latex rendering to flutter_math
+
 ## [0.1.12] - 20th Nov 2020:
 - Fix Latex widget crashing sometimes
 

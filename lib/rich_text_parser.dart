@@ -4,9 +4,9 @@ import 'package:html/parser.dart' as parser;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
-import 'custom_catex.dart';
 import 'code_block.dart';
 import 'package:flutter_highlight/themes/monokai.dart';
+import 'package:flutter_math/flutter_math.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
@@ -804,7 +804,16 @@ class HtmlRichTextParser extends StatelessWidget {
             // do we have latex stuffs?
             if (node.attributes['data-mx-maths'] != null) {
               parseContext.addWidget(WidgetSpan(
-                child: CustomCaTeX(node.attributes['data-mx-maths']),
+                child: SingleChildScrollView(
+                  child: Math.tex(
+                    node.attributes['data-mx-maths'],
+                    onErrorFallback: (_) =>
+                        Text(node.attributes['data-mx-maths']),
+                    textStyle: parseContext.childStyle,
+                    mathStyle: MathStyle.text,
+                  ),
+                  scrollDirection: Axis.horizontal,
+                ),
                 alignment: PlaceholderAlignment.middle,
               ));
               return; // we don't want to render the children (which is a fallback)
@@ -1213,8 +1222,16 @@ class HtmlRichTextParser extends StatelessWidget {
 
           case "div":
             if (node.attributes['data-mx-maths'] != null) {
-              parseContext.rootWidgetList
-                  .add(CustomCaTeX(node.attributes['data-mx-maths']));
+              parseContext.rootWidgetList.add(SingleChildScrollView(
+                child: Math.tex(
+                  node.attributes['data-mx-maths'],
+                  onErrorFallback: (_) =>
+                      Text(node.attributes['data-mx-maths']),
+                  textStyle: parseContext.childStyle,
+                  mathStyle: MathStyle.display,
+                ),
+                scrollDirection: Axis.horizontal,
+              ));
               return;
             }
             continue myDefault;
