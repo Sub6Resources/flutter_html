@@ -61,10 +61,10 @@ const htmlData = """
       </thead>
       <tbody>
       <tr>
-        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\n</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
-        <td colspan="2">Colpsan</td>
+        <td colspan="2">Colpsan\nColpsan\nColpsan</td>
       </tr>
       </tbody>
       <tfoot>

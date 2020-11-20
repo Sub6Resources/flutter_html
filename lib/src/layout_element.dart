@@ -64,17 +64,12 @@ class TableLayoutElement extends LayoutElement {
     final rowSizes =
         List.generate(rows.length, (_) => IntrinsicContentTrackSize());
 
-    // Calculate column bounds to handle rowspan skipping
-    int columnMax = rows.map((row) {
-      return row.children
-          .where((tag) => tag.name == "th" || tag.name == "td")
-          .fold(0, (int value, child) {
-        final colspanText = child.attributes["colspan"];
-        final colspan =
-            colspanText == null ? 1 : int.tryParse(colspanText) ?? 1;
-        return value + colspan;
-      });
-    }).fold(0, max);
+    // Calculate column bounds
+    int columnMax = rows
+        .map((row) => row.children
+            .whereType<TableCellElement>()
+            .fold(0, (int value, child) => value + child.colspan))
+        .fold(0, max);
 
     final cells = <GridPlacement>[];
     final columnRowOffset = List.generate(columnMax + 1, (_) => 0);
@@ -86,13 +81,7 @@ class TableLayoutElement extends LayoutElement {
           columnRowOffset[columni] = columnRowOffset[columni] - 1;
           columni++;
         }
-        if (child.name == "th" || child.name == "td") {
-          final colspanText = child.attributes["colspan"];
-          final rowspanText = child.attributes["rowspan"];
-          final colspan =
-              colspanText == null ? 1 : int.tryParse(colspanText) ?? 1;
-          final rowspan =
-              rowspanText == null ? 1 : int.tryParse(rowspanText) ?? 1;
+        if (child is TableCellElement) {
           cells.add(GridPlacement(
             child: Container(
               width: double.infinity,
@@ -107,12 +96,12 @@ class TableLayoutElement extends LayoutElement {
               ),
             ),
             columnStart: columni,
-            columnSpan: colspan,
+            columnSpan: child.colspan,
             rowStart: rowi,
-            rowSpan: rowspan,
+            rowSpan: child.rowspan,
           ));
-          columnRowOffset[columni] = rowspan - 1;
-          columni += colspan;
+          columnRowOffset[columni] = child.rowspan - 1;
+          columni += child.colspan;
         }
       }
       rowi++;
@@ -161,6 +150,52 @@ class TableRowLayoutElement extends LayoutElement {
   Widget toWidget(RenderContext context) {
     return Container(child: Text("TABLE ROW"));
   }
+}
+
+class TableCellElement extends StyledElement {
+  int colspan = 1;
+  int rowspan = 1;
+
+  TableCellElement({
+    String name,
+    String elementId,
+    List<String> elementClasses,
+    @required List<StyledElement> children,
+    Style style,
+    dom.Element node,
+  }) : super(
+      name: name,
+      elementId: elementId,
+      elementClasses: elementClasses,
+      children: children,
+      style: style,
+      node: node) {
+    colspan = _parseSpan(this, "colspan");
+    rowspan = _parseSpan(this, "rowspan");
+  }
+
+  static int _parseSpan(StyledElement element, String attributeName) {
+    final spanValue = element.attributes[attributeName];
+    return spanValue == null ? 1 : int.tryParse(spanValue) ?? 1;
+  }
+}
+
+TableCellElement parseTableCellElement(dom.Element element,
+    List<StyledElement> children,
+) {
+  final cell = TableCellElement(
+    name: element.localName,
+    elementId: element.id,
+    elementClasses: element.classes.toList(),
+    children: children,
+    node: element,
+  );
+  if (element.localName == "th") {
+    cell.style = Style(
+      fontWeight: FontWeight.bold,
+    );
+  }
+  return cell;
 }
 
 class TableStyleElement extends StyledElement {

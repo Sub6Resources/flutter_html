@@ -349,8 +349,6 @@ StyledElement parseStyledElement(
         verticalAlign: VerticalAlign.SUPER,
       );
       break;
-    case "th":
-      continue bold;
     case "tt":
       continue monospace;
     underline:
