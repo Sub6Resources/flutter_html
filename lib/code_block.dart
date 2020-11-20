@@ -59,7 +59,7 @@ class _CodeBlockState extends State<CodeBlock> {
           }
           if (mounted) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
-              setState(() => language = lang);
+              if (mounted) setState(() => language = lang);
             });
           }
         });
