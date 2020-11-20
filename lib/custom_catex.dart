@@ -148,7 +148,8 @@ class CustomSingleChildRenderObjectElement
       super.mount(parent, newSlot);
     } catch (e) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        state.setState(() => state.exception = e is Exception ? e : Exception(e));
+        state.setState(
+            () => state.exception = e is Exception ? e : Exception(e));
       });
     }
   }
@@ -164,7 +165,8 @@ class CustomRenderTree extends RenderTree {
       super.performLayout();
     } catch (e) {
       SchedulerBinding.instance.addPostFrameCallback((_) {
-        state.setState(() => state.exception = e is Exception ? e : Exception(e));
+        state.setState(
+            () => state.exception = e is Exception ? e : Exception(e));
       });
     }
   }
