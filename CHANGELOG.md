@@ -1,4 +1,4 @@
-## [1.0.1] - August 8, 2020:
+## [1.0.2] - August 8, 2020:
 * Fix text scaling issues
 * Update dependencies
 
