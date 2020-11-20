@@ -34,7 +34,7 @@ class TableLayoutElement extends LayoutElement {
     final rows = <TableRowLayoutElement>[];
     List<TrackSize> columnSizes;
     for (var child in children) {
-      if (child.name == "colgroup") {
+      if (child is TableStyleElement) {
         // Map <col> tags to predetermined column track sizes
         columnSizes = child.children.where((c) => c.name == "col").map((c) {
           final colWidth = c.attributes["width"];
@@ -90,9 +90,15 @@ class TableLayoutElement extends LayoutElement {
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
                 border: child.style.border ?? row.style.border,
               ),
-              child: StyledText(
-                textSpan: context.parser.parseTree(context, child),
-                style: child.style,
+              child: SizedBox.expand(
+                child: Container(
+                  alignment: child.style.alignment ?? style.alignment ??
+                      Alignment.centerLeft,
+                  child: StyledText(
+                    textSpan: context.parser.parseTree(context, child),
+                    style: child.style,
+                  ),
+                ),
               ),
             ),
             columnStart: columni,
@@ -135,6 +141,7 @@ class TableSectionLayoutElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    // Not rendered; TableLayoutElement will instead consume its children
     return Container(child: Text("TABLE SECTION"));
   }
 }
@@ -148,6 +155,7 @@ class TableRowLayoutElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    // Not rendered; TableLayoutElement will instead consume its children
     return Container(child: Text("TABLE ROW"));
   }
 }

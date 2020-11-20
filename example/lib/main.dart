@@ -160,6 +160,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             "td": Style(
               padding: EdgeInsets.all(6),
+              alignment: Alignment.topLeft,
             ),
             "var": Style(fontFamily: 'serif'),
           },
