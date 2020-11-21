@@ -71,7 +71,12 @@ class ImageContentElement extends ReplacedElement {
     this.src,
     this.alt,
     dom.Element node,
-  }) : super(name: name, style: style, node: node);
+  }) : super(
+          name: name,
+          style: style,
+          node: node,
+          alignment: PlaceholderAlignment.middle,
+        );
 
   @override
   Widget toWidget(RenderContext context) {
