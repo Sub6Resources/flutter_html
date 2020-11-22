@@ -11,6 +11,7 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
+import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(String url);
 typedef CustomRender = Widget Function(
@@ -30,6 +31,7 @@ class HtmlParser extends StatelessWidget {
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
   final List<String> blacklistedElements;
+  final NavigationDelegate navigationDelegateForIframe;
 
   HtmlParser({
     @required this.htmlData,
@@ -40,6 +42,7 @@ class HtmlParser extends StatelessWidget {
     this.style,
     this.customRender,
     this.blacklistedElements,
+    this.navigationDelegateForIframe,
   });
 
   @override
@@ -49,6 +52,7 @@ class HtmlParser extends StatelessWidget {
       document,
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
+      navigationDelegateForIframe,
     );
     StyledElement styledTree = applyCSS(lexedTree);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
@@ -69,7 +73,7 @@ class HtmlParser extends StatelessWidget {
     // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
     // to wrap everything when larger accessibility fonts are used.
     return StyledText(
-      textSpan: parsedTree, 
+      textSpan: parsedTree,
       style: cleanedTree.style,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
     );
@@ -90,6 +94,7 @@ class HtmlParser extends StatelessWidget {
     dom.Document html,
     List<String> customRenderTags,
     List<String> blacklistedElements,
+    NavigationDelegate navigationDelegateForIframe,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
@@ -98,8 +103,12 @@ class HtmlParser extends StatelessWidget {
     );
 
     html.nodes.forEach((node) {
-      tree.children
-          .add(_recursiveLexer(node, customRenderTags, blacklistedElements));
+      tree.children.add(_recursiveLexer(
+        node,
+        customRenderTags,
+        blacklistedElements,
+        navigationDelegateForIframe,
+      ));
     });
 
     return tree;
@@ -113,12 +122,17 @@ class HtmlParser extends StatelessWidget {
     dom.Node node,
     List<String> customRenderTags,
     List<String> blacklistedElements,
+    NavigationDelegate navigationDelegateForIframe,
   ) {
     List<StyledElement> children = List<StyledElement>();
 
     node.nodes.forEach((childNode) {
-      children.add(
-          _recursiveLexer(childNode, customRenderTags, blacklistedElements));
+      children.add(_recursiveLexer(
+        childNode,
+        customRenderTags,
+        blacklistedElements,
+        navigationDelegateForIframe,
+      ));
     });
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
@@ -131,7 +145,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node);
+        return parseReplacedElement(node, navigationDelegateForIframe);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_STYLE_ELEMENTS.contains(node.localName)) {
@@ -267,19 +281,25 @@ class HtmlParser extends StatelessWidget {
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
           child: Stack(
-            children: <Widget>[
-              PositionedDirectional(
-                width: 30, //TODO derive this from list padding.
-                start: 0,
-                child: Text('${newContext.style.markerContent}\t',
-                    textAlign: TextAlign.right,
-                    style: newContext.style.generateTextStyle()),
-              ),
+            children: [
+              if (tree.style?.listStylePosition == ListStylePosition.OUTSIDE ||
+                  tree.style?.listStylePosition == null)
+                PositionedDirectional(
+                  width: 30, //TODO derive this from list padding.
+                  start: 0,
+                  child: Text('${newContext.style.markerContent}\t',
+                      textAlign: TextAlign.right,
+                      style: newContext.style.generateTextStyle()),
+                ),
               Padding(
-                padding: EdgeInsets.only(
-                    left: 30), //TODO derive this from list padding.
+                padding: EdgeInsetsDirectional.only(
+                    start: 30), //TODO derive this from list padding.
                 child: StyledText(
                   textSpan: TextSpan(
+                    text: (tree.style?.listStylePosition ==
+                            ListStylePosition.INSIDE)
+                        ? '${newContext.style.markerContent}\t'
+                        : null,
                     children: tree.children
                             ?.map((tree) => parseTree(newContext, tree))
                             ?.toList() ??

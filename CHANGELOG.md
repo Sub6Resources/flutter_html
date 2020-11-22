@@ -1,3 +1,10 @@
+## [1.0.2] - August 8, 2020:
+* Fix text scaling issues
+* Update dependencies
+
+## [1.0.1] - August 8, 2020:
+* Fixed flutter_svg: ^0.18.0
+
 # [1.0.0]
 * BREAKING CHANGES (see the [Migration Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide) for a full overview of breaking changes.):
   * The default parser has been completely rewritten and the RichText parser has been removed.
