@@ -1,6 +1,6 @@
 name: flutter_html
 description: A Flutter widget rendering static HTML and CSS as Flutter widgets.
-version: 1.1.0
+version: 1.1.1
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
@@ -23,10 +23,7 @@ dependencies:
   webview_flutter: ^1.0.0
 
   # Plugins for rendering the <audio> tag.
-  chewie_audio:
-    git:
-      url: git@github.com:vrtdev/chewie.git
-      ref: d4eb9567c36300b435502fcf5f782c595ce50ca9
+  chewie_audio: ^1.1.1
 
   # Plugins for rendering the <svg> tag.
   flutter_svg: ^0.19.0
