@@ -1,3 +1,6 @@
+## [1.1.1] - November 22, 2020:
+* Update dependencies
+
 ## [1.1.0] - November 22, 2020:
 * Add support for inline styles
 * Update dependencies
