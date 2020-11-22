@@ -25,9 +25,11 @@ class StyledElement {
   bool matchesSelector(String selector) =>
       _node != null && matches(_node, selector);
 
-  Map<String, String> get attributes => _node.attributes.map((key, value) {
+  Map<String, String> get attributes =>
+      _node?.attributes?.map((key, value) {
         return MapEntry(key, value);
-      });
+      }) ??
+      Map<String, String>();
 
   dom.Element get element => _node;
 
