@@ -1,3 +1,7 @@
+## [1.1.0] - November 22, 2020:
+* Add support for inline styles
+* Update dependencies
+
 ## [1.0.2] - August 8, 2020:
 * Fix text scaling issues
 * Update dependencies
