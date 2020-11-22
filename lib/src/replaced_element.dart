@@ -5,16 +5,16 @@ import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
-import 'package:flutter_html/src/utils.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:video_player/video_player.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:video_player/video_player.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 /// A [ReplacedElement] is a type of [StyledElement] that does not require its [children] to be rendered.
 ///
@@ -163,6 +163,7 @@ class IframeContentElement extends ReplacedElement {
   final String src;
   final double width;
   final double height;
+  final NavigationDelegate navigationDelegate;
 
   IframeContentElement({
     String name,
@@ -171,6 +172,7 @@ class IframeContentElement extends ReplacedElement {
     this.width,
     this.height,
     dom.Element node,
+    this.navigationDelegate,
   }) : super(name: name, style: style, node: node);
 
   @override
@@ -181,6 +183,7 @@ class IframeContentElement extends ReplacedElement {
       child: WebView(
         initialUrl: src,
         javascriptMode: JavascriptMode.unrestricted,
+        navigationDelegate: navigationDelegate,
         gestureRecognizers: {
           Factory(() => PlatformViewVerticalGestureRecognizer())
         },
@@ -355,7 +358,10 @@ class RubyElement extends ReplacedElement {
   }
 }
 
-ReplacedElement parseReplacedElement(dom.Element element) {
+ReplacedElement parseReplacedElement(
+  dom.Element element,
+  NavigationDelegate navigationDelegateForIframe,
+) {
   switch (element.localName) {
     case "audio":
       final sources = <String>[
@@ -382,6 +388,7 @@ ReplacedElement parseReplacedElement(dom.Element element) {
         src: element.attributes['src'],
         width: double.tryParse(element.attributes['width'] ?? ""),
         height: double.tryParse(element.attributes['height'] ?? ""),
+        navigationDelegate: navigationDelegateForIframe,
       );
     case "img":
       return ImageContentElement(
