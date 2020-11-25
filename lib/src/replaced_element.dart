@@ -143,7 +143,7 @@ class ImageContentElement extends ReplacedElement {
       newContext: context,
       shrinkWrap: context.parser.shrinkWrap,
       child: RawGestureDetector(
-        child: imageWidget,
+        child: IntrinsicHeight(child: imageWidget),
         gestures: {
           MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
               MultipleTapGestureRecognizer>(
