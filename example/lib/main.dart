@@ -78,7 +78,7 @@ const htmlData = """
       </tr>
       </tbody>
       <tfoot>
-      <tr><td colspan='3'><img src='https://flutter.dev/assets/flutter-lockup-1caf6476beed76adec3c477586da54de6b552b2f42108ec5bc68dc63bae2df75.png' /></td></tr>
+      <tr><td>fData</td><td>fData</td><td>fData</td></tr>
       </tfoot>
       </table>
       <h3>Custom Element Support:</h3>
