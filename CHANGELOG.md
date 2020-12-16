@@ -1,4 +1,4 @@
-## ???
+## [0.1.14] - 16th Dec 2020:
 - Fix assuming css color names are lowercase
 - Fix too much whitespace between table and tr tags causing issues
 - Properly handle links inside of `<code>` blocks
