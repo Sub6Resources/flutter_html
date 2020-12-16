@@ -186,8 +186,8 @@ extension CssColor on Color {
     if (hexString == null) {
       return null;
     }
-    if (_cssReplacements.containsKey(hexString)) {
-      hexString = _cssReplacements[hexString];
+    if (_cssReplacements.containsKey(hexString.toLowerCase())) {
+      hexString = _cssReplacements[hexString.toLowerCase()];
     }
     final matches =
         RegExp(r"^#((?:[0-9a-fA-F]{3}){1,2})$").firstMatch(hexString);
@@ -606,7 +606,10 @@ class HtmlRichTextParser extends StatelessWidget {
     if (node is dom.Text) {
       // WHITESPACE CONSIDERATIONS ---
       // truly empty nodes should just be ignored
-      if (node.text.trim() == "" && node.text.indexOf(" ") == -1) {
+      if (node.text.trim() == "" &&
+          (node.text.indexOf(" ") == -1 ||
+              (parseContext.parentElement != null &&
+                  !(parseContext.parentElement is TextSpan)))) {
         return;
       }
 
@@ -1052,8 +1055,10 @@ class HtmlRichTextParser extends StatelessWidget {
               flex: colspan,
               child: Container(padding: EdgeInsets.all(1.0), child: text),
             );
-            nextContext.parentElement.children.add(cell);
-            nextContext.parentElement = text.textSpan;
+            if (nextContext.parentElement is Row) {
+              nextContext.parentElement.children.add(cell);
+              nextContext.parentElement = text.textSpan;
+            }
             break;
 
           case "tr":
@@ -1061,8 +1066,10 @@ class HtmlRichTextParser extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[],
             );
-            nextContext.parentElement.children.add(row);
-            nextContext.parentElement = row;
+            if (nextContext.parentElement is Column) {
+              nextContext.parentElement.children.add(row);
+              nextContext.parentElement = row;
+            }
             break;
 
           // treat captions like a row with one expanded cell
