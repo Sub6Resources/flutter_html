@@ -275,6 +275,7 @@ class ParseContext {
   bool spansOnly = false;
   bool inBlock = false;
   TextStyle childStyle;
+  TextStyle linkStyle;
   bool shrinkToFit;
   int maxLines;
   double indentPadding = 0;
@@ -292,6 +293,7 @@ class ParseContext {
     this.spansOnly = false,
     this.inBlock = false,
     this.childStyle,
+    this.linkStyle,
     this.shrinkToFit,
     this.maxLines,
     this.indentPadding = 0,
@@ -312,6 +314,7 @@ class ParseContext {
     spansOnly = parseContext.spansOnly;
     inBlock = parseContext.inBlock;
     childStyle = parseContext.childStyle ?? TextStyle();
+    linkStyle = parseContext.linkStyle ?? TextStyle();
     shrinkToFit = parseContext.shrinkToFit;
     maxLines = parseContext.maxLines;
     indentPadding = parseContext.indentPadding;
@@ -550,6 +553,7 @@ class HtmlRichTextParser extends StatelessWidget {
     ParseContext parseContext = ParseContext(
       rootWidgetList: widgetList,
       childStyle: DefaultTextStyle.of(context).style,
+      linkStyle: linkStyle ?? TextStyle(),
       shrinkToFit: shrinkToFit,
       maxLines: maxLines,
       indentSize: indentSize,
@@ -647,7 +651,7 @@ class HtmlRichTextParser extends StatelessWidget {
         themeData: Theme.of(buildContext),
         onLinkTap: onLinkTap,
         textStyle: parseContext.childStyle,
-        linkStyle: parseContext.childStyle.merge(linkStyle),
+        linkStyle: parseContext.childStyle.merge(parseContext.linkStyle),
       );
 
       // in this class, a ParentElement must be a BlockText, LinkTextSpan, Row, Column, TextSpan
@@ -715,6 +719,10 @@ class HtmlRichTextParser extends StatelessWidget {
 //                ..strokeWidth = 1.0,
               backgroundColor: monokaiTheme['root'].backgroundColor,
               color: monokaiTheme['root'].color,
+            ));
+            nextContext.linkStyle = parseContext.linkStyle.merge(TextStyle(
+              fontFamily: 'monospace',
+              backgroundColor: monokaiTheme['root'].backgroundColor,
             ));
             break;
           case "ins":

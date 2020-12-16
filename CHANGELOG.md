@@ -1,6 +1,7 @@
 ## ???
 - Fix assuming css color names are lowercase
 - Fix too much whitespace between table and tr tags causing issues
+- Properly handle links inside of `<code>` blocks
 
 ## [0.1.13] - 20th Nov 2020:
 - Switch latex rendering to flutter_math
