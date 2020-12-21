@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
@@ -127,13 +128,46 @@ class ImageContentElement extends ReplacedElement {
           context.parser.onImageError?.call(exception, stackTrace);
         },
       );
-      imageWidget = Image.network(
-        src,
-        frameBuilder: (ctx, child, frame, _) {
-          if (frame == null) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
-          }
+      Completer<Size> completer = Completer();
+      Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+        if (frame == null) {
+          completer.completeError("error");
           return child;
+        } else {
+          return child;
+        }
+      });
+      image.image.resolve(ImageConfiguration()).addListener(
+        ImageStreamListener(
+              (ImageInfo image, bool synchronousCall) {
+            var myImage = image.image;
+            Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+            completer.complete(size);
+          }, onError: (object, stacktrace) {
+            completer.completeError(object);
+          }
+        ),
+      );
+      imageWidget = FutureBuilder<Size>(
+        future: completer.future,
+        builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
+          if (snapshot.hasData) {
+            return new Image.network(
+              src,
+              width: snapshot.data.width,
+              height: snapshot.data.height,
+              frameBuilder: (ctx, child, frame, _) {
+                if (frame == null) {
+                  return Text(alt ?? "", style: context.style.generateTextStyle());
+                }
+                return child;
+              },
+            );
+          } else if (snapshot.hasError) {
+            return Text(alt ?? "", style: context.style.generateTextStyle());
+          } else {
+            return new CircularProgressIndicator();
+          }
         },
       );
     }

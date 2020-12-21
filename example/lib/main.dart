@@ -35,6 +35,27 @@ const htmlData = """
 <h4>Header 4</h4>
 <h5>Header 5</h5>
 <h6>Header 6</h6>
+<table>
+<colgroup>
+  <col width="50%" />
+  <col width="25%" />
+  <col width="25%" />
+</colgroup>
+<thead>
+<tr><th>One</th><th>Two</th><th>Three</th></tr>
+</thead>
+<tbody>
+<tr>
+  <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
+</tr>
+<tr>
+  <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
+</tr>
+</tbody>
+<tfoot>
+<tr><td>fData</td><td>fData</td><td>fData</td></tr>
+</tfoot>
+</table>
 <h3>Ruby Support:</h3>
       <p>
         <ruby>
@@ -60,27 +81,6 @@ const htmlData = """
       <p>
       <q>Famous quote...</q>
       </p>
-      <table>
-      <colgroup>
-        <col width="50%" />
-        <col width="25%" />
-        <col width="25%" />
-      </colgroup>
-      <thead>
-      <tr><th>One</th><th>Two</th><th>Three</th></tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
-      </tr>
-      <tr>
-        <td colspan="2">Colpsan\nColpsan\nColpsan</td>
-      </tr>
-      </tbody>
-      <tfoot>
-      <tr><td>fData</td><td>fData</td><td>fData</td></tr>
-      </tfoot>
-      </table>
       <h3>Custom Element Support:</h3>
       <flutter></flutter>
       <flutter horizontal></flutter>
@@ -119,7 +119,6 @@ const htmlData = """
         Linking to <a href='https://github.com'>websites</a> has never been easier.
       </p>
       <h3>Image support:</h3>
-      <!--
       <p>
         <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
         <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
