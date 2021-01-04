@@ -71,10 +71,10 @@ const htmlData = """
       </thead>
       <tbody>
       <tr>
-        <td>Data</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
-        <td>Data</td><td>Data</td><td>Data</td>
+        <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
       </tr>
       </tbody>
       <tfoot>
@@ -168,6 +168,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             "td": Style(
               padding: EdgeInsets.all(6),
+              alignment: Alignment.topLeft,
             ),
             "var": Style(fontFamily: 'serif'),
           },

@@ -30,8 +30,6 @@ const STYLED_ELEMENTS = [
   "strong",
   "sub",
   "sup",
-  "td",
-  "th",
   "time",
   "tt",
   "u",
@@ -97,7 +95,9 @@ const LAYOUT_ELEMENTS = [
   "thead",
 ];
 
-const TABLE_STYLE_ELEMENTS = ["col", "colgroup"];
+const TABLE_CELL_ELEMENTS = ["th", "td"];
+
+const TABLE_DEFINITION_ELEMENTS = ["col", "colgroup"];
 
 /**
   Here is a list of elements with planned support:

@@ -149,7 +149,9 @@ class HtmlParser extends StatelessWidget {
         return parseReplacedElement(node, navigationDelegateForIframe);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
-      } else if (TABLE_STYLE_ELEMENTS.contains(node.localName)) {
+      } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
+        return parseTableCellElement(node, children);
+      } else if (TABLE_DEFINITION_ELEMENTS.contains(node.localName)) {
         return parseTableDefinitionElement(node, children);
       } else if (customRenderTags.contains(node.localName)) {
         return parseStyledElement(node, children);
