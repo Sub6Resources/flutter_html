@@ -32,27 +32,35 @@ class TableLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     final rows = <TableRowLayoutElement>[];
-    List<TrackSize> columnSizes;
+    List<TrackSize> columnSizes = <TrackSize>[];
     for (var child in children) {
       if (child is TableStyleElement) {
         // Map <col> tags to predetermined column track sizes
-        columnSizes = child.children.where((c) => c.name == "col").map((c) {
-          final colWidth = c.attributes["width"];
-          if (colWidth != null && colWidth.endsWith("%")) {
-            final percentageSize =
-                double.tryParse(colWidth.substring(0, colWidth.length - 1));
-            return percentageSize != null
-                ? FlexibleTrackSize(percentageSize * 0.01)
-                : FlexibleTrackSize(1);
-          } else if (colWidth != null) {
-            final fixedPxSize = double.tryParse(colWidth);
-            return fixedPxSize != null
-                ? FixedTrackSize(fixedPxSize)
-                : FlexibleTrackSize(1);
-          } else {
-            return FlexibleTrackSize(1);
-          }
-        }).toList(growable: false);
+        columnSizes = child.children
+            .where((c) => c.name == "col")
+            .map((c) {
+              final span =
+                  int.parse(c.attributes["span"] ?? "1", onError: (_) => 1);
+              final colWidth = c.attributes["width"];
+              return List.generate(span, (index) {
+                if (colWidth != null && colWidth.endsWith("%")) {
+                  final percentageSize = double.tryParse(
+                      colWidth.substring(0, colWidth.length - 1));
+                  return percentageSize != null
+                      ? FlexibleTrackSize(percentageSize * 0.01)
+                      : FlexibleTrackSize(1);
+                } else if (colWidth != null) {
+                  final fixedPxSize = double.tryParse(colWidth);
+                  return fixedPxSize != null
+                      ? FixedTrackSize(fixedPxSize)
+                      : FlexibleTrackSize(1);
+                } else {
+                  return FlexibleTrackSize(1);
+                }
+              });
+            })
+            .expand((element) => element)
+            .toList(growable: false);
       } else if (child is TableSectionLayoutElement) {
         rows.addAll(child.children.whereType());
       } else if (child is TableRowLayoutElement) {
@@ -71,6 +79,7 @@ class TableLayoutElement extends LayoutElement {
             .fold(0, (int value, child) => value + child.colspan))
         .fold(0, max);
 
+    // Place the cells in the rows/columns
     final cells = <GridPlacement>[];
     final columnRowOffset = List.generate(columnMax + 1, (_) => 0);
     int rowi = 0;
@@ -113,8 +122,12 @@ class TableLayoutElement extends LayoutElement {
       rowi++;
     }
 
-    final finalColumnSizes =
-        columnSizes ?? List.generate(columnMax, (_) => FlexibleTrackSize(1));
+    // Create column tracks (insofar there were no colgroups that already defined them)
+    List<TrackSize> finalColumnSizes = (columnSizes ?? <TrackSize>[]).take(
+        columnMax).toList();
+    finalColumnSizes += List.generate(
+        max(0, columnMax - finalColumnSizes.length),
+            (_) => FlexibleTrackSize(1));
     return Container(
       decoration: BoxDecoration(
         color: style.backgroundColor,
