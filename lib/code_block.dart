@@ -17,11 +17,13 @@ class CodeBlock extends StatefulWidget {
   final SetCodeLanguage setCodeLanguage;
   final GetCodeLanguage getCodeLanguage;
   final Color borderColor;
+  final int maxLines;
   CodeBlock(this.code,
       {this.language,
       this.setCodeLanguage,
       this.getCodeLanguage,
-      this.borderColor});
+      this.borderColor,
+      this.maxLines});
 
   @override
   _CodeBlockState createState() => _CodeBlockState();
@@ -88,7 +90,8 @@ class _CodeBlockState extends State<CodeBlock> {
       child: ClipRRect(
         borderRadius: BorderRadius.all(Radius.circular(9.5)),
         child: ConstrainedBox(
-          constraints: BoxConstraints(maxHeight: 250),
+          constraints:
+              BoxConstraints(maxHeight: widget.maxLines == 1 ? 20 : 250),
           child: Scrollbar(
             isAlwaysShown: true,
             controller: _horizontalScrollController,
@@ -106,7 +109,10 @@ class _CodeBlockState extends State<CodeBlock> {
                     language: language,
                     tabSize: 4,
                     theme: monokaiTheme,
-                    padding: EdgeInsets.all(10.0),
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 10.0,
+                      vertical: widget.maxLines == 1 ? 2.0 : 10.0,
+                    ),
                   ),
                 ),
               ),

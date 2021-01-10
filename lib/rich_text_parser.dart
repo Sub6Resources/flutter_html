@@ -1060,11 +1060,19 @@ class HtmlRichTextParser extends StatelessWidget {
             parseContext.parentElement = null;
             nextContext.parentElement = Column(
               crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
               children: <Widget>[],
             );
             nextContext.rootWidgetList.add(Container(
-                margin: EdgeInsets.symmetric(vertical: 12.0),
-                child: nextContext.parentElement));
+              margin: EdgeInsets.symmetric(vertical: 12.0),
+              child: nextContext.parentElement,
+              decoration: BoxDecoration(
+                border: Border(
+                  right: BorderSide(color: nextContext.childStyle.color),
+                  bottom: BorderSide(color: nextContext.childStyle.color),
+                ),
+              ),
+            ));
             break;
 
           // we don't handle tbody, thead, or tfoot elements separately for now
@@ -1087,7 +1095,14 @@ class HtmlRichTextParser extends StatelessWidget {
                 maxLines: maxLines);
             Expanded cell = Expanded(
               flex: colspan,
-              child: Container(padding: EdgeInsets.all(1.0), child: text),
+              child: Container(
+                padding: EdgeInsets.all(1.0),
+                child: text,
+                decoration: BoxDecoration(
+                  border: Border(
+                      left: BorderSide(color: nextContext.childStyle.color)),
+                ),
+              ),
             );
             if (nextContext.parentElement is Row) {
               nextContext.parentElement.children.add(cell);
@@ -1097,11 +1112,17 @@ class HtmlRichTextParser extends StatelessWidget {
 
           case "tr":
             Row row = Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[],
             );
             if (nextContext.parentElement is Column) {
-              nextContext.parentElement.children.add(row);
+              nextContext.parentElement.children.add(Container(
+                decoration: BoxDecoration(
+                  border: Border(
+                      top: BorderSide(color: nextContext.childStyle.color)),
+                ),
+                child: IntrinsicHeight(child: row),
+              ));
               nextContext.parentElement = row;
             }
             break;
@@ -1250,6 +1271,7 @@ class HtmlRichTextParser extends StatelessWidget {
                 setCodeLanguage: setCodeLanguage,
                 getCodeLanguage: getCodeLanguage,
                 borderColor: defaultTextStyle.color,
+                maxLines: maxLines,
               ));
               return;
             }
