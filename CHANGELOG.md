@@ -1,4 +1,4 @@
-## [0.2.0]
+## [0.2.0] - 10th Jan 2021
 - Add support for matrix: URI scheme
 - Add support for `animated` URL parameter of mxc URLs
 - Add borders to tables
