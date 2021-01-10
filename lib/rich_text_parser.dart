@@ -22,13 +22,15 @@ typedef CustomEdgeInsets = EdgeInsets Function(dom.Node node);
 typedef OnLinkTap = void Function(String url);
 typedef OnImageTap = void Function(String source);
 typedef OnPillTap = void Function(String identifier);
-typedef GetMxcUrl = String Function(String mxc, double width, double height);
+typedef GetMxcUrl = String Function(String mxc, double width, double height,
+    {bool animated});
 typedef GetPillInfo = Future<Map<String, dynamic>> Function(String identifier);
 
 const OFFSET_TAGS_FONT_SIZE_FACTOR =
     0.7; //The ratio of the parent font for each of the offset tags: sup or sub
 
 const MATRIX_TO_SCHEME = "https://matrix.to/#/";
+const MATRIX_SCHEME = "matrix:";
 
 extension CssColor on Color {
   static Map<String, String> _cssReplacements = {
@@ -873,21 +875,44 @@ class HtmlRichTextParser extends StatelessWidget {
             // if this item has block children, we create
             // a container and gesture recognizer for the entire
             // element, otherwise, we create a LinkTextSpan
-            String url = node.attributes['href'] ?? null;
-            if (url != null && url.startsWith(MATRIX_TO_SCHEME)) {
+            final url = node.attributes['href'] ?? null;
+            final urlLower = url?.toLowerCase();
+            if (urlLower != null &&
+                (urlLower.startsWith(MATRIX_SCHEME) ||
+                    urlLower.startsWith(MATRIX_TO_SCHEME))) {
               // this might be a pill!
-              final identifier = url.substring(MATRIX_TO_SCHEME.length);
-              final pillMatch =
-                  RegExp(r"^[@#!+][^:]+:[^\/]+$").firstMatch(identifier);
-              if (pillMatch != null) {
+              var isPill = true;
+              var identifier = url;
+              if (urlLower.startsWith(MATRIX_TO_SCHEME)) {
+                identifier = Uri.decodeComponent(
+                    url.substring(MATRIX_TO_SCHEME.length).split('?').first);
+                isPill =
+                    RegExp(r"^[@#!+][^:]+:[^\/]+$").firstMatch(identifier) !=
+                        null;
+              } else {
+                final match =
+                    RegExp(r"^matrix:(room|group|roomid|user)\/([^\/]+)$")
+                        .firstMatch(urlLower.split('?').first.split('#').first);
+                isPill = match != null;
+                if (isPill) {
+                  identifier = {
+                        'room': '#',
+                        'group': '+',
+                        'roomid': '!',
+                        'user': '@',
+                      }[match.group(1)] +
+                      match.group(2);
+                }
+              }
+              if (isPill) {
                 // we have a pill
                 parseContext.addWidget(WidgetSpan(
                   alignment: PlaceholderAlignment.middle,
                   child: Pill(
                     identifier: identifier,
-                    future: this.getPillInfo != null
-                        ? this.getPillInfo(identifier)
-                        : null,
+                    url: url,
+                    future:
+                        this.getPillInfo != null ? this.getPillInfo(url) : null,
                     onTap: this.onPillTap,
                     getMxcUrl: this.getMxcUrl,
                   ),
@@ -959,9 +984,10 @@ class HtmlRichTextParser extends StatelessWidget {
                   height = emoteSize;
                 }
 
-                final url = node.attributes['src'].startsWith("mxc://") &&
+                final url = node.attributes['src'].startsWith("mxc:") &&
                         getMxcUrl != null
-                    ? getMxcUrl(node.attributes['src'], width, height)
+                    ? getMxcUrl(node.attributes['src'], width, height,
+                        animated: true)
                     : "";
 
                 WidgetSpan widget = WidgetSpan(

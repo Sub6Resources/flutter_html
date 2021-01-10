@@ -5,6 +5,7 @@ import 'rich_text_parser.dart';
 
 class Pill extends StatelessWidget {
   final String identifier;
+  final String url;
   final Future<Map<String, dynamic>> future;
   final OnPillTap onTap;
   final GetMxcUrl getMxcUrl;
@@ -12,6 +13,7 @@ class Pill extends StatelessWidget {
   const Pill({
     Key key,
     this.identifier,
+    this.url,
     this.future,
     this.onTap,
     this.getMxcUrl,
@@ -39,7 +41,7 @@ class Pill extends StatelessWidget {
         }
         final avatarSize = DefaultTextStyle.of(context).style.fontSize;
         String url = avatarUrl != null
-            ? this.getMxcUrl(avatarUrl, avatarSize, avatarSize)
+            ? this.getMxcUrl(avatarUrl, avatarSize, avatarSize, animated: false)
             : null;
         final padding = avatarSize / 20;
         return InkWell(
@@ -70,7 +72,7 @@ class Pill extends StatelessWidget {
           ),
           onTap: () {
             if (this.onTap != null) {
-              this.onTap(this.identifier);
+              this.onTap(this.url);
             }
           },
         );

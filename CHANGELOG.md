@@ -1,3 +1,7 @@
+## [0.2.0]
+- Add support for matrix: URI scheme
+- Add support for `animated` URL parameter of mxc URLs
+
 ## [0.1.14] - 16th Dec 2020:
 - Fix assuming css color names are lowercase
 - Fix too much whitespace between table and tr tags causing issues

@@ -70,6 +70,13 @@ class _CodeBlockState extends State<CodeBlock> {
   }
 
   @override
+  void dispose() {
+    _verticalScrollController.dispose();
+    _horizontalScrollController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
