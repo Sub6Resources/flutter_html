@@ -257,8 +257,8 @@ class HtmlParser extends StatelessWidget {
         tree.attributes,
         tree.element,
       );
-      assert(render is InlineSpan || render is Widget);
       if (render != null) {
+        assert(render is InlineSpan || render is Widget);
         return render is InlineSpan
             ? render
             : WidgetSpan(
