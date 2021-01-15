@@ -34,6 +34,7 @@ void testNewParser() {
       [],
       [],
       null,
+      null,
     );
     print(tree.toString());
   });
@@ -44,6 +45,7 @@ void testNewParser() {
             "Hello, World! <a href='https://example.com'>This is a link</a>"),
         [],
         [],
+        null,
         null);
     print(tree.toString());
   });
@@ -54,6 +56,7 @@ void testNewParser() {
       [],
       [],
       null,
+      null
     );
     print(tree.toString());
   });
@@ -65,6 +68,7 @@ void testNewParser() {
       [],
       [],
       null,
+      null
     );
     print(tree.toString());
   });
@@ -78,7 +82,7 @@ void testNewParser() {
        Your browser does not support the video tag.
       </video>
     """).getElementsByTagName("video")[0],
-      null,
+      null, null
     );
 
     expect(videoContentElement, isA<VideoContentElement>());
@@ -98,7 +102,7 @@ void testNewParser() {
         <source src='audio.wav' type='audio/wav'>
         Your browser does not support the audio tag.
       </audio>
-    """).getElementsByTagName("audio")[0],
+    """).getElementsByTagName("audio")[0], null,
       null,
     );
     expect(audioContentElement, isA<AudioContentElement>());

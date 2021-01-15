@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
@@ -125,15 +124,15 @@ class ImageContentElement extends ReplacedElement {
       );
     } else {
       precacheImage(
-        CachedNetworkImageProvider(src, headers: imageHeaders),
-        // NetworkImage(src),
+        NetworkImage(src, headers: imageHeaders),
         context.buildContext,
         onError: (exception, StackTrace stackTrace) {
           context.parser.onImageError?.call(exception, stackTrace);
         },
       );
       Completer<Size> completer = Completer();
-      Image image = Image.network(src, headers: imageHeaders, frameBuilder: (ctx, child, frame, _) {
+      Image image = Image.network(src, headers: imageHeaders,
+          frameBuilder: (ctx, child, frame, _) {
         if (frame == null) {
           completer.completeError("error");
           return child;
@@ -142,16 +141,15 @@ class ImageContentElement extends ReplacedElement {
         }
       });
       image.image.resolve(ImageConfiguration()).addListener(
-        ImageStreamListener(
-              (ImageInfo image, bool synchronousCall) {
-            var myImage = image.image;
-            Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-            completer.complete(size);
-          }, onError: (object, stacktrace) {
-            completer.completeError(object);
-          }
-        ),
-      );
+            ImageStreamListener((ImageInfo image, bool synchronousCall) {
+              var myImage = image.image;
+              Size size =
+                  Size(myImage.width.toDouble(), myImage.height.toDouble());
+              completer.complete(size);
+            }, onError: (object, stacktrace) {
+              completer.completeError(object);
+            }),
+          );
       imageWidget = FutureBuilder<Size>(
         future: completer.future,
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
@@ -162,7 +160,8 @@ class ImageContentElement extends ReplacedElement {
               width: snapshot.data.width,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
-                  return Text(alt ?? "", style: context.style.generateTextStyle());
+                  return Text(alt ?? "",
+                      style: context.style.generateTextStyle());
                 }
                 return child;
               },
@@ -397,10 +396,9 @@ class RubyElement extends ReplacedElement {
 }
 
 ReplacedElement parseReplacedElement(
-  dom.Element element,
-  NavigationDelegate navigationDelegateForIframe,
-    Map<String, String> imageHeaders
-) {
+    dom.Element element,
+    NavigationDelegate navigationDelegateForIframe,
+    Map<String, String> imageHeaders) {
   switch (element.localName) {
     case "audio":
       final sources = <String>[

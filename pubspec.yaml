@@ -31,8 +31,6 @@ dependencies:
   # Plugins for rendering the <svg> tag.
   flutter_svg: ^0.19.0
 
-  cached_network_image: ^2.4.1
-
   flutter:
     sdk: flutter
 
