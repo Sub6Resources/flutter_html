@@ -155,7 +155,6 @@ class ImageContentElement extends ReplacedElement {
             return new Image.network(
               src,
               width: snapshot.data.width,
-              height: snapshot.data.height,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
                   return Text(alt ?? "", style: context.style.generateTextStyle());
