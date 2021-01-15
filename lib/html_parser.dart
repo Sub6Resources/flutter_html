@@ -15,7 +15,7 @@ import 'package:html/parser.dart' as htmlparser;
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(String url);
-typedef CustomRender = Widget Function(
+typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
   Map<String, String> attributes,
@@ -243,27 +243,31 @@ class HtmlParser extends StatelessWidget {
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
-      return WidgetSpan(
-        child: ContainerSpan(
+      final render = customRender[tree.name].call(
+        newContext,
+        ContainerSpan(
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          child: customRender[tree.name].call(
-            newContext,
-            ContainerSpan(
-              newContext: newContext,
-              style: tree.style,
-              shrinkWrap: context.parser.shrinkWrap,
-              children: tree.children
-                      ?.map((tree) => parseTree(newContext, tree))
-                      ?.toList() ??
-                  [],
-            ),
-            tree.attributes,
-            tree.element,
-          ),
+          children: tree.children
+                  ?.map((tree) => parseTree(newContext, tree))
+                  ?.toList() ??
+              [],
         ),
+        tree.attributes,
+        tree.element,
       );
+      assert(render is InlineSpan || render is Widget);
+      return render is InlineSpan
+          ? render
+          : WidgetSpan(
+              child: ContainerSpan(
+                newContext: newContext,
+                style: tree.style,
+                shrinkWrap: context.parser.shrinkWrap,
+                child: render,
+              ),
+            );
     }
 
     //Return the correct InlineSpan based on the element type.

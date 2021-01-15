@@ -81,7 +81,7 @@ const htmlData = """
       <tr><td>fData</td><td>fData</td><td>fData</td></tr>
       </tfoot>
       </table>
-      <h3>Custom Element Support:</h3>
+      <h3>Custom Element Support (inline: <bird></bird> and as block):</h3>
       <flutter></flutter>
       <flutter horizontal></flutter>
       <h3>SVG support:</h3>
@@ -122,7 +122,6 @@ const htmlData = """
       <p>
         <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
         <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
-        <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
       </p>
       <h3>Video support:</h3>
       <video controls>
@@ -173,6 +172,9 @@ class _MyHomePageState extends State<MyHomePage> {
             "var": Style(fontFamily: 'serif'),
           },
           customRender: {
+            "bird": (RenderContext context, Widget child, attributes, _) {
+              return TextSpan(text: "🐦");
+            },
             "flutter": (RenderContext context, Widget child, attributes, _) {
               return FlutterLogo(
                 style: (attributes['horizontal'] != null)
