@@ -34,6 +34,7 @@ class Html extends StatelessWidget {
   Html({
     Key key,
     @required this.data,
+    this.imageHeaders,
     this.onLinkTap,
     this.customRender,
     this.onImageError,
@@ -45,6 +46,7 @@ class Html extends StatelessWidget {
   }) : super(key: key);
 
   final String data;
+  final Map<String, String> imageHeaders;
   final OnTap onLinkTap;
   final ImageErrorListener onImageError;
   final bool shrinkWrap;
@@ -74,6 +76,7 @@ class Html extends StatelessWidget {
       width: width,
       child: HtmlParser(
         htmlData: data,
+        imageHeaders: imageHeaders,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
         onImageError: onImageError,

@@ -24,6 +24,7 @@ typedef CustomRender = Widget Function(
 
 class HtmlParser extends StatelessWidget {
   final String htmlData;
+  final Map<String, String> imageHeaders;
   final OnTap onLinkTap;
   final OnTap onImageTap;
   final ImageErrorListener onImageError;
@@ -36,6 +37,7 @@ class HtmlParser extends StatelessWidget {
 
   HtmlParser({
     @required this.htmlData,
+    this.imageHeaders,
     this.onLinkTap,
     this.onImageTap,
     this.onImageError,
@@ -54,6 +56,7 @@ class HtmlParser extends StatelessWidget {
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
       navigationDelegateForIframe,
+      imageHeaders
     );
     StyledElement styledTree = applyCSS(lexedTree);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
@@ -96,11 +99,13 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
+      Map<String,String> header
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: new List<StyledElement>(),
       node: html.documentElement,
+      map: header
     );
 
     html.nodes.forEach((node) {
@@ -109,6 +114,7 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
+        header
       ));
     });
 
@@ -124,6 +130,7 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
+    Map <String,String>header
   ) {
     List<StyledElement> children = List<StyledElement>();
 
@@ -133,6 +140,7 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
+        header
       ));
     });
 
@@ -146,7 +154,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, navigationDelegateForIframe);
+        return parseReplacedElement(node, navigationDelegateForIframe, header);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {

@@ -146,6 +146,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
+          imageHeaders: {"cookie": "kkk"},
           //Optional parameters:
           style: {
             "html": Style(

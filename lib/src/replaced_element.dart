@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
@@ -64,11 +65,13 @@ class TextContentElement extends ReplacedElement {
 /// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
 class ImageContentElement extends ReplacedElement {
   final String src;
+  final Map<String, String> imageHeaders;
   final String alt;
 
   ImageContentElement({
     String name,
     Style style,
+    this.imageHeaders,
     this.src,
     this.alt,
     dom.Element node,
@@ -122,14 +125,15 @@ class ImageContentElement extends ReplacedElement {
       );
     } else {
       precacheImage(
-        NetworkImage(src),
+        CachedNetworkImageProvider(src, headers: imageHeaders),
+        // NetworkImage(src),
         context.buildContext,
         onError: (exception, StackTrace stackTrace) {
           context.parser.onImageError?.call(exception, stackTrace);
         },
       );
       Completer<Size> completer = Completer();
-      Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+      Image image = Image.network(src, headers: imageHeaders, frameBuilder: (ctx, child, frame, _) {
         if (frame == null) {
           completer.completeError("error");
           return child;
@@ -154,6 +158,7 @@ class ImageContentElement extends ReplacedElement {
           if (snapshot.hasData) {
             return new Image.network(
               src,
+              headers: imageHeaders,
               width: snapshot.data.width,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
@@ -394,6 +399,7 @@ class RubyElement extends ReplacedElement {
 ReplacedElement parseReplacedElement(
   dom.Element element,
   NavigationDelegate navigationDelegateForIframe,
+    Map<String, String> imageHeaders
 ) {
   switch (element.localName) {
     case "audio":
@@ -426,6 +432,7 @@ ReplacedElement parseReplacedElement(
     case "img":
       return ImageContentElement(
         name: "img",
+        imageHeaders: imageHeaders,
         src: element.attributes['src'],
         alt: element.attributes['alt'],
         node: element,

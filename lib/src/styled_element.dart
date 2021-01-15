@@ -20,6 +20,7 @@ class StyledElement {
     this.children,
     this.style,
     dom.Element node,
+    Map<String ,String> map,
   }) : this._node = node;
 
   bool matchesSelector(String selector) =>
