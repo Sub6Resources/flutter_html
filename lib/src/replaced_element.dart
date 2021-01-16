@@ -120,6 +120,8 @@ class ImageContentElement extends ReplacedElement {
           return child;
         },
       );
+    } else if (src.endsWith(".svg")) {
+      return SvgPicture.network(src);
     } else {
       precacheImage(
         NetworkImage(src),
