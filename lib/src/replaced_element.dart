@@ -292,20 +292,23 @@ class VideoContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     final double _width = width ?? (height ?? 150) * 2;
     final double _height = height ?? (width ?? 300) / 2;
-    return Container(
-      child: Chewie(
-        controller: ChewieController(
-          videoPlayerController: VideoPlayerController.network(
-            src.first ?? "",
+    return AspectRatio(
+      aspectRatio: _width / _height,
+      child: Container(
+        child: Chewie(
+          controller: ChewieController(
+            videoPlayerController: VideoPlayerController.network(
+              src.first ?? "",
+            ),
+            placeholder: poster != null
+                ? Image.network(poster)
+                : Container(color: Colors.black),
+            autoPlay: autoplay,
+            looping: loop,
+            showControls: showControls,
+            autoInitialize: true,
+            aspectRatio: _width / _height,
           ),
-          placeholder: poster != null
-              ? Image.network(poster)
-              : Container(color: Colors.black),
-          autoPlay: autoplay,
-          looping: loop,
-          showControls: showControls,
-          autoInitialize: true,
-          aspectRatio: _width / _height,
         ),
       ),
     );
