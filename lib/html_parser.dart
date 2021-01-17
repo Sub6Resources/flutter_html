@@ -779,6 +779,8 @@ class StyledText extends StatelessWidget {
 /// ignoring taps on images, prefixing a certain path on images with relative paths,
 /// ignoring the width and height tags of images, overriding the image loader,
 /// overriding the set `Alt Text` for a broken image, or overriding the `Alt Text` widget itself.
+/// It also supports setting all the options for an [Image] widget or an [SvgPicture] widget with
+/// [CustomImageOptions] and [CustomSvgOptions], respectively.
 /// These changes can be on a per-image basis, by supplying an exact URL or just a relative domain
 /// in the [customImage] parameter of [Html].
 /// To apply a [CustomImage] to all images, use "." as the key.
@@ -792,6 +794,8 @@ class CustomImage {
   final Widget overrideImageLoader;
   final String overrideAltText;
   final Widget overrideAltTextWidget;
+  final CustomImageOptions customImageOptions;
+  final CustomSvgOptions customSvgOptions;
 
   const CustomImage({
     this.headers,
@@ -802,5 +806,73 @@ class CustomImage {
     this.overrideImageLoader,
     this.overrideAltText,
     this.overrideAltTextWidget,
+    this.customImageOptions,
+    this.customSvgOptions
+  });
+}
+
+/// The [CustomImageOptions] is a class that can define all the options for the [Image] widget when rendering <img> tags.
+class CustomImageOptions {
+  final double width;
+  final double height;
+  final Color color;
+  final FilterQuality filterQuality;
+  final BlendMode colorBlendMode;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final ImageRepeat repeat;
+  final Rect centerSlice;
+  final bool matchTextDirection;
+  final bool gaplessPlayback;
+  final String semanticLabel;
+  final bool excludeFromSemantics;
+  final bool isAntiAlias;
+
+  CustomImageOptions({
+    this.width,
+    this.height,
+    this.color,
+    this.filterQuality,
+    this.colorBlendMode,
+    this.fit,
+    this.alignment,
+    this.repeat,
+    this.centerSlice,
+    this.matchTextDirection,
+    this.gaplessPlayback,
+    this.semanticLabel,
+    this.excludeFromSemantics,
+    this.isAntiAlias,
+  });
+}
+
+/// The [CustomSvgOptions] is a class that can define all the options for the [SvgPicture] widget when rendering <img> tags that have an svg as their src.
+class CustomSvgOptions {
+  final double width;
+  final double height;
+  final BoxFit fit;
+  final AlignmentGeometry alignment;
+  final bool matchTextDirection;
+  final bool allowDrawingOutsideViewBox;
+  final Color color;
+  final BlendMode colorBlendMode;
+  final String semanticsLabel;
+  final bool excludeFromSemantics;
+  final Clip clipBehavior;
+  final bool cacheColorFilter;
+
+  CustomSvgOptions({
+    this.allowDrawingOutsideViewBox,
+    this.semanticsLabel,
+    this.clipBehavior,
+    this.cacheColorFilter,
+    this.width,
+    this.height,
+    this.color,
+    this.colorBlendMode,
+    this.fit,
+    this.alignment,
+    this.matchTextDirection,
+    this.excludeFromSemantics,
   });
 }

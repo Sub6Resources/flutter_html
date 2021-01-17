@@ -103,6 +103,20 @@ class ImageContentElement extends ReplacedElement {
       );
       imageWidget = Image.memory(
         decodedImage,
+        width: customOptions?.ignoreWidth == true ? null : customOptions?.customImageOptions?.width ?? null,
+        semanticLabel: customOptions?.customImageOptions?.semanticLabel ?? null,
+        excludeFromSemantics: customOptions?.customImageOptions?.excludeFromSemantics ?? false,
+        height: customOptions?.ignoreWidth == true ? null : customOptions?.customImageOptions?.width ?? null,
+        color: customOptions?.customImageOptions?.color ?? null,
+        colorBlendMode: customOptions?.customImageOptions?.colorBlendMode ?? null,
+        fit: customOptions?.customImageOptions?.fit ?? null,
+        alignment: customOptions?.customImageOptions?.alignment ?? Alignment.center,
+        repeat: customOptions?.customImageOptions?.repeat ?? ImageRepeat.noRepeat,
+        centerSlice: customOptions?.customImageOptions?.centerSlice ?? null,
+        matchTextDirection: customOptions?.customImageOptions?.matchTextDirection ?? false,
+        gaplessPlayback: customOptions?.customImageOptions?.gaplessPlayback ?? false,
+        filterQuality: customOptions?.customImageOptions?.filterQuality ?? FilterQuality.low,
+        isAntiAlias: customOptions?.customImageOptions?.isAntiAlias ?? false,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
             return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
@@ -121,6 +135,20 @@ class ImageContentElement extends ReplacedElement {
       );
       imageWidget = Image.asset(
         assetPath,
+        width: customOptions?.ignoreWidth == true ? null : customOptions?.customImageOptions?.width ?? null,
+        semanticLabel: customOptions?.customImageOptions?.semanticLabel ?? null,
+        excludeFromSemantics: customOptions?.customImageOptions?.excludeFromSemantics ?? false,
+        height: customOptions?.ignoreWidth == true ? null : customOptions?.customImageOptions?.width ?? null,
+        color: customOptions?.customImageOptions?.color ?? null,
+        colorBlendMode: customOptions?.customImageOptions?.colorBlendMode ?? null,
+        fit: customOptions?.customImageOptions?.fit ?? null,
+        alignment: customOptions?.customImageOptions?.alignment ?? Alignment.center,
+        repeat: customOptions?.customImageOptions?.repeat ?? ImageRepeat.noRepeat,
+        centerSlice: customOptions?.customImageOptions?.centerSlice ?? null,
+        matchTextDirection: customOptions?.customImageOptions?.matchTextDirection ?? false,
+        gaplessPlayback: customOptions?.customImageOptions?.gaplessPlayback ?? false,
+        filterQuality: customOptions?.customImageOptions?.filterQuality ?? FilterQuality.low,
+        isAntiAlias: customOptions?.customImageOptions?.isAntiAlias ?? false,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
             return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
@@ -129,8 +157,22 @@ class ImageContentElement extends ReplacedElement {
         },
       );
     } else if (newSrc.endsWith(".svg")) {
-      return SvgPicture.network(newSrc, headers: customOptions?.headers ?? null,
-          placeholderBuilder: (BuildContext context) => customOptions?.overrideImageLoader ?? CircularProgressIndicator());
+      imageWidget = SvgPicture.network(newSrc,
+          headers: customOptions?.headers ?? null,
+          placeholderBuilder: (BuildContext context) => customOptions?.overrideImageLoader ?? CircularProgressIndicator(),
+          width: customOptions?.ignoreWidth == true ? null : customOptions?.customSvgOptions?.width ?? null,
+          semanticsLabel: customOptions?.customSvgOptions?.semanticsLabel ?? null,
+          excludeFromSemantics: customOptions?.customSvgOptions?.excludeFromSemantics ?? false,
+          height: customOptions?.ignoreWidth == true ? null : customOptions?.customSvgOptions?.width ?? null,
+          color: customOptions?.customSvgOptions?.color ?? null,
+          colorBlendMode: customOptions?.customSvgOptions?.colorBlendMode ?? BlendMode.srcIn,
+          fit: customOptions?.customSvgOptions?.fit ?? BoxFit.contain,
+          alignment: customOptions?.customSvgOptions?.alignment ?? Alignment.center,
+          matchTextDirection: customOptions?.customSvgOptions?.matchTextDirection ?? false,
+          allowDrawingOutsideViewBox: customOptions?.customSvgOptions?.allowDrawingOutsideViewBox ?? false,
+          cacheColorFilter: customOptions?.customSvgOptions?.cacheColorFilter ?? false,
+          clipBehavior: customOptions?.customSvgOptions?.clipBehavior ?? Clip.hardEdge,
+      );
     } else {
       precacheImage(
         NetworkImage(newSrc, headers: customOptions?.headers ?? null),
@@ -166,7 +208,20 @@ class ImageContentElement extends ReplacedElement {
             return new Image.network(
               newSrc,
               headers: customOptions?.headers ?? null,
-              width: customOptions?.ignoreWidth == true ? null : snapshot.data.width,
+              width: customOptions?.ignoreWidth == true ? null : customOptions?.customImageOptions?.width ?? snapshot.data.width,
+              semanticLabel: customOptions?.customImageOptions?.semanticLabel ?? null,
+              excludeFromSemantics: customOptions?.customImageOptions?.excludeFromSemantics ?? false,
+              height: customOptions?.ignoreWidth == true ? null : customOptions?.customImageOptions?.width ?? null,
+              color: customOptions?.customImageOptions?.color ?? null,
+              colorBlendMode: customOptions?.customImageOptions?.colorBlendMode ?? null,
+              fit: customOptions?.customImageOptions?.fit ?? null,
+              alignment: customOptions?.customImageOptions?.alignment ?? Alignment.center,
+              repeat: customOptions?.customImageOptions?.repeat ?? ImageRepeat.noRepeat,
+              centerSlice: customOptions?.customImageOptions?.centerSlice ?? null,
+              matchTextDirection: customOptions?.customImageOptions?.matchTextDirection ?? false,
+              gaplessPlayback: customOptions?.customImageOptions?.gaplessPlayback ?? false,
+              filterQuality: customOptions?.customImageOptions?.filterQuality ?? FilterQuality.low,
+              isAntiAlias: customOptions?.customImageOptions?.isAntiAlias ?? false,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
                   return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
