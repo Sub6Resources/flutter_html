@@ -63,8 +63,7 @@ const htmlData = """
       <table>
       <colgroup>
         <col width="50%" />
-        <col width="25%" />
-        <col width="25%" />
+        <col span="2" width="25%" />
       </colgroup>
       <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>

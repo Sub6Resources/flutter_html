@@ -1,3 +1,7 @@
+## [1.2.0] - January 14, 2021:
+* Support irregular table sizes
+* Allow for returning `null` from a customRender function to disable the widget
+
 ## [1.1.1] - November 22, 2020:
 * Update dependencies
 
