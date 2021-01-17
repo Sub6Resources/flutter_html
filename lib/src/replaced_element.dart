@@ -140,16 +140,15 @@ class ImageContentElement extends ReplacedElement {
         }
       });
       image.image.resolve(ImageConfiguration()).addListener(
-        ImageStreamListener(
-              (ImageInfo image, bool synchronousCall) {
-            var myImage = image.image;
-            Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-            completer.complete(size);
-          }, onError: (object, stacktrace) {
-            completer.completeError(object);
-          }
-        ),
-      );
+            ImageStreamListener((ImageInfo image, bool synchronousCall) {
+              var myImage = image.image;
+              Size size =
+                  Size(myImage.width.toDouble(), myImage.height.toDouble());
+              completer.complete(size);
+            }, onError: (object, stacktrace) {
+              completer.completeError(object);
+            }),
+          );
       imageWidget = FutureBuilder<Size>(
         future: completer.future,
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
@@ -159,7 +158,8 @@ class ImageContentElement extends ReplacedElement {
               width: snapshot.data.width,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
-                  return Text(alt ?? "", style: context.style.generateTextStyle());
+                  return Text(alt ?? "",
+                      style: context.style.generateTextStyle());
                 }
                 return child;
               },
@@ -422,12 +422,12 @@ ReplacedElement parseReplacedElement(
       );
     case "iframe":
       return IframeContentElement(
-        name: "iframe",
-        src: element.attributes['src'],
-        width: double.tryParse(element.attributes['width'] ?? ""),
-        height: double.tryParse(element.attributes['height'] ?? ""),
-        navigationDelegate: navigationDelegateForIframe,
-      );
+          name: "iframe",
+          src: element.attributes['src'],
+          width: double.tryParse(element.attributes['width'] ?? ""),
+          height: double.tryParse(element.attributes['height'] ?? ""),
+          navigationDelegate: navigationDelegateForIframe,
+          node: element);
     case "img":
       return ImageContentElement(
         name: "img",
