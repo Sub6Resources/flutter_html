@@ -35,6 +35,12 @@ const htmlData = """
 <h4>Header 4</h4>
 <h5>Header 5</h5>
 <h6>Header 6</h6>
+ <p>
+  <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+  <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
+  <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
+  <img alt='Alt Text of an intentionally broken image' src='/show/117055/small-duck.svg' />
+</p>
 <h3>Ruby Support:</h3>
       <p>
         <ruby>
@@ -118,11 +124,6 @@ const htmlData = """
         Linking to <a href='https://github.com'>websites</a> has never been easier.
       </p>
       <h3>Image support:</h3>
-      <p>
-        <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
-        <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
-        <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
-      </p>
       <h3>Video support:</h3>
       <video controls>
         <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
@@ -190,6 +191,17 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           onImageError: (exception, stackTrace) {
             print(exception);
+          },
+          customImage: {
+            "google.com": CustomImage(
+                overrideImageLoader: LinearProgressIndicator(value: 50,),
+                overrideAltTextWidget: ListTile(leading: Icon(Icons.error), title: Text("There was an error while loading this image"),
+                )
+            ),
+            "small-duck.svg" : CustomImage(
+              suppressTaps: true,
+              pathPrefix: "https://svgrepo.com",
+            )
           },
         ),
       ),
