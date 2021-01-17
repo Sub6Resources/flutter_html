@@ -195,7 +195,9 @@ class _MyHomePageState extends State<MyHomePage> {
           customImage: {
             "google.com": CustomImage(
                 overrideImageLoader: LinearProgressIndicator(value: 50,),
-                overrideAltTextWidget: ListTile(leading: Icon(Icons.error), title: Text("There was an error while loading this image"),
+                overrideAltTextWidget: ListTile(leading: Icon(Icons.error), title: Text("There was an error while loading this image")),
+                customImageOptions: CustomImageOptions(
+                  color: Colors.red
                 )
             ),
             "small-duck.svg" : CustomImage(
