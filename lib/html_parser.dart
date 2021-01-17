@@ -33,6 +33,7 @@ class HtmlParser extends StatelessWidget {
   final Map<String, CustomRender> customRender;
   final List<String> blacklistedElements;
   final NavigationDelegate navigationDelegateForIframe;
+  final Map<String, CustomImage> customImage;
 
   HtmlParser({
     @required this.htmlData,
@@ -44,6 +45,7 @@ class HtmlParser extends StatelessWidget {
     this.customRender,
     this.blacklistedElements,
     this.navigationDelegateForIframe,
+    this.customImage,
   });
 
   @override
@@ -54,6 +56,7 @@ class HtmlParser extends StatelessWidget {
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
       navigationDelegateForIframe,
+      customImage
     );
     StyledElement styledTree = applyCSS(lexedTree);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
@@ -96,6 +99,7 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
+    Map<String, CustomImage> customImage,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
@@ -109,6 +113,7 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
+        customImage
       ));
     });
 
@@ -124,6 +129,7 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
+    Map<String, CustomImage> customImage,
   ) {
     List<StyledElement> children = List<StyledElement>();
 
@@ -133,6 +139,7 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
+        customImage,
       ));
     });
 
@@ -146,7 +153,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, navigationDelegateForIframe);
+        return parseReplacedElement(node, navigationDelegateForIframe, customImage);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
@@ -764,4 +771,36 @@ class StyledText extends StatelessWidget {
       ),
     );
   }
+}
+
+/// The [CustomImage] is a class that can define certain options when rendering <img> tags.
+///
+/// [CustomImage] supports setting headers when getting an image from a URL,
+/// ignoring taps on images, prefixing a certain path on images with relative paths,
+/// ignoring the width and height tags of images, overriding the image loader,
+/// overriding the set `Alt Text` for a broken image, or overriding the `Alt Text` widget itself.
+/// These changes can be on a per-image basis, by supplying an exact URL or just a relative domain
+/// in the [customImage] parameter of [Html].
+/// To apply a [CustomImage] to all images, use "." as the key.
+/// Make sure to put that key last in case you want to have a different [CustomImage] for certain domains.
+class CustomImage {
+  final Map<String, String> headers;
+  final bool suppressTaps;
+  final String pathPrefix;
+  final bool ignoreWidth;
+  final bool ignoreHeight;
+  final Widget overrideImageLoader;
+  final String overrideAltText;
+  final Widget overrideAltTextWidget;
+
+  const CustomImage({
+    this.headers,
+    this.suppressTaps,
+    this.pathPrefix,
+    this.ignoreWidth,
+    this.ignoreHeight,
+    this.overrideImageLoader,
+    this.overrideAltText,
+    this.overrideAltTextWidget,
+  });
 }

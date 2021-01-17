@@ -42,6 +42,7 @@ class Html extends StatelessWidget {
     this.blacklistedElements = const [],
     this.style,
     this.navigationDelegateForIframe,
+    this.customImage,
   }) : super(key: key);
 
   final String data;
@@ -66,6 +67,11 @@ class Html extends StatelessWidget {
   /// to use NavigationDelegate.
   final NavigationDelegate navigationDelegateForIframe;
 
+  /// Provides custom options while rendering images. See [CustomImage] for currently supported options.
+  /// Set an exact image URL or a relative domain as a key in the map,
+  /// and use [CustomImage] as the value to define how images with that URL/domain should be rendered.
+  final Map<String, CustomImage> customImage;
+
   @override
   Widget build(BuildContext context) {
     final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
@@ -82,6 +88,7 @@ class Html extends StatelessWidget {
         customRender: customRender,
         blacklistedElements: blacklistedElements,
         navigationDelegateForIframe: navigationDelegateForIframe,
+        customImage: customImage,
       ),
     );
   }

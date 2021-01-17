@@ -65,12 +65,14 @@ class TextContentElement extends ReplacedElement {
 class ImageContentElement extends ReplacedElement {
   final String src;
   final String alt;
+  final Map<String, CustomImage> customImage;
 
   ImageContentElement({
     String name,
     Style style,
     this.src,
     this.alt,
+    this.customImage,
     dom.Element node,
   }) : super(
           name: name,
@@ -82,10 +84,16 @@ class ImageContentElement extends ReplacedElement {
   @override
   Widget toWidget(RenderContext context) {
     Widget imageWidget;
-    if (src == null) {
-      imageWidget = Text(alt ?? "", style: context.style.generateTextStyle());
-    } else if (src.startsWith("data:image") && src.contains("base64,")) {
-      final decodedImage = base64.decode(src.split("base64,")[1].trim());
+    CustomImage customOptions = customImage?.keys?.firstWhere((element) => src?.contains(element), orElse: null) == null ? null :
+      customImage[customImage?.keys?.firstWhere((element) => src?.contains(element))];
+    String newSrc = src;
+    if (customOptions?.pathPrefix != null) {
+      newSrc = customOptions.pathPrefix + src;
+    }
+    if (newSrc == null) {
+      imageWidget = customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
+    } else if (newSrc.startsWith("data:image") && newSrc.contains("base64,")) {
+      final decodedImage = base64.decode(newSrc.split("base64,")[1].trim());
       precacheImage(
         MemoryImage(decodedImage),
         context.buildContext,
@@ -97,13 +105,13 @@ class ImageContentElement extends ReplacedElement {
         decodedImage,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
+            return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
           }
           return child;
         },
       );
-    } else if (src.startsWith("asset:")) {
-      final assetPath = src.replaceFirst('asset:', '');
+    } else if (newSrc.startsWith("asset:")) {
+      final assetPath = newSrc.replaceFirst('asset:', '');
       precacheImage(
         AssetImage(assetPath),
         context.buildContext,
@@ -115,23 +123,25 @@ class ImageContentElement extends ReplacedElement {
         assetPath,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
+            return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
           }
           return child;
         },
       );
-    } else if (src.endsWith(".svg")) {
-      return SvgPicture.network(src);
+    } else if (newSrc.endsWith(".svg")) {
+      return SvgPicture.network(newSrc, headers: customOptions?.headers ?? null,
+          placeholderBuilder: (BuildContext context) => customOptions?.overrideImageLoader ?? CircularProgressIndicator());
     } else {
       precacheImage(
-        NetworkImage(src),
+        NetworkImage(newSrc, headers: customOptions?.headers ?? null),
         context.buildContext,
         onError: (exception, StackTrace stackTrace) {
           context.parser.onImageError?.call(exception, stackTrace);
         },
       );
       Completer<Size> completer = Completer();
-      Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+      Image image = Image.network(newSrc, headers: customOptions?.headers ?? null,
+      frameBuilder: (ctx, child, frame, _) {
         if (frame == null) {
           completer.completeError("error");
           return child;
@@ -154,20 +164,20 @@ class ImageContentElement extends ReplacedElement {
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
           if (snapshot.hasData) {
             return new Image.network(
-              src,
-              width: snapshot.data.width,
+              newSrc,
+              headers: customOptions?.headers ?? null,
+              width: customOptions?.ignoreWidth == true ? null : snapshot.data.width,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
-                  return Text(alt ?? "",
-                      style: context.style.generateTextStyle());
+                  return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
                 }
                 return child;
               },
             );
           } else if (snapshot.hasError) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
+            return customOptions?.overrideAltTextWidget ?? Text(alt ?? customOptions?.overrideAltText ?? "", style: context.style.generateTextStyle());
           } else {
-            return new CircularProgressIndicator();
+            return customOptions?.overrideImageLoader ?? CircularProgressIndicator();
           }
         },
       );
@@ -179,12 +189,12 @@ class ImageContentElement extends ReplacedElement {
       shrinkWrap: context.parser.shrinkWrap,
       child: RawGestureDetector(
         child: imageWidget,
-        gestures: {
+        gestures: customOptions?.suppressTaps == true ? const <Type, GestureRecognizerFactory>{} : {
           MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
               MultipleTapGestureRecognizer>(
             () => MultipleTapGestureRecognizer(),
             (instance) {
-              instance..onTap = () => context.parser.onImageTap?.call(src);
+              instance..onTap = () => context.parser.onImageTap?.call(newSrc);
             },
           ),
         },
@@ -399,6 +409,7 @@ class RubyElement extends ReplacedElement {
 ReplacedElement parseReplacedElement(
   dom.Element element,
   NavigationDelegate navigationDelegateForIframe,
+  Map<String, CustomImage> customImage,
 ) {
   switch (element.localName) {
     case "audio":
@@ -434,6 +445,7 @@ ReplacedElement parseReplacedElement(
         src: element.attributes['src'],
         alt: element.attributes['alt'],
         node: element,
+        customImage: customImage,
       );
     case "video":
       final sources = <String>[
