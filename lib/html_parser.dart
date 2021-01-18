@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
@@ -335,28 +336,39 @@ class HtmlParser extends StatelessWidget {
         );
       }
     } else if (tree is InteractableElement) {
-      return WidgetSpan(
-        child: RawGestureDetector(
-          gestures: {
-            MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
-                MultipleTapGestureRecognizer>(
-              () => MultipleTapGestureRecognizer(),
-              (instance) {
-                instance..onTap = () => onLinkTap?.call(tree.href);
-              },
-            ),
-          },
-          child: StyledText(
-            textSpan: TextSpan(
-              style: newContext.style.generateTextStyle(),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList() ??
-                  [],
-            ),
-            style: newContext.style,
-          ),
-        ),
+      return TextSpan(
+        children: tree.children
+                .map((tree) => parseTree(newContext, tree))
+                .map((childSpan) {
+              if (childSpan is TextSpan) {
+                return TextSpan(
+                  text: childSpan.text,
+                  children: childSpan.children,
+                  style: (childSpan.style ?? TextStyle())
+                      .merge(newContext.style.generateTextStyle()),
+                  semanticsLabel: childSpan.semanticsLabel,
+                  recognizer: TapGestureRecognizer()
+                    ..onTap = () => onLinkTap?.call(tree.href),
+                );
+              } else {
+                return WidgetSpan(
+                  child: RawGestureDetector(
+                    gestures: {
+                      MultipleTapGestureRecognizer:
+                          GestureRecognizerFactoryWithHandlers<
+                              MultipleTapGestureRecognizer>(
+                        () => MultipleTapGestureRecognizer(),
+                        (instance) {
+                          instance..onTap = () => onLinkTap?.call(tree.href);
+                        },
+                      ),
+                    },
+                    child: (childSpan as WidgetSpan).child,
+                  ),
+                );
+              }
+            }).toList() ??
+            [],
       );
     } else if (tree is LayoutElement) {
       return WidgetSpan(
