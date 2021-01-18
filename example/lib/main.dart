@@ -146,6 +146,9 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
+          imageResolvers: [
+            DefaultNetworkResolver(suppressImageTaps: true, overrideAltText: "testing override alt text"),
+          ],
           //Optional parameters:
           style: {
             "html": Style(
