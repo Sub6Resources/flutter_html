@@ -331,7 +331,6 @@ class HtmlParser extends StatelessWidget {
       }
     } else if (tree is InteractableElement) {
       return TextSpan(
-        style: newContext.style.generateTextStyle(),
         children: tree.children
                 .map((tree) => parseTree(newContext, tree))
                 .map((childSpan) {
@@ -339,7 +338,8 @@ class HtmlParser extends StatelessWidget {
                 return TextSpan(
                   text: childSpan.text,
                   children: childSpan.children,
-                  style: childSpan.style,
+                  style: (childSpan.style ?? TextStyle())
+                      .merge(newContext.style.generateTextStyle()),
                   semanticsLabel: childSpan.semanticsLabel,
                   recognizer: TapGestureRecognizer()
                     ..onTap = () => onLinkTap?.call(tree.href),
@@ -357,10 +357,11 @@ class HtmlParser extends StatelessWidget {
                         },
                       ),
                     },
-                    child: StyledText(
-                      style: newContext.style,
-                      textSpan: childSpan,
-                    ),
+                    child: (childSpan as WidgetSpan).child,
+                    // child: StyledText(
+                    //   style: newContext.style.copyWith(textDecoration: null),
+                    //   textSpan: childSpan,
+                    // ),
                   ),
                 );
               }
