@@ -358,10 +358,6 @@ class HtmlParser extends StatelessWidget {
                       ),
                     },
                     child: (childSpan as WidgetSpan).child,
-                    // child: StyledText(
-                    //   style: newContext.style.copyWith(textDecoration: null),
-                    //   textSpan: childSpan,
-                    // ),
                   ),
                 );
               }
