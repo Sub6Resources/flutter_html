@@ -120,6 +120,8 @@ class ImageContentElement extends ReplacedElement {
           return child;
         },
       );
+    } else if (src.endsWith(".svg")) {
+      return SvgPicture.network(src);
     } else {
       precacheImage(
         NetworkImage(src),
@@ -138,16 +140,15 @@ class ImageContentElement extends ReplacedElement {
         }
       });
       image.image.resolve(ImageConfiguration()).addListener(
-        ImageStreamListener(
-              (ImageInfo image, bool synchronousCall) {
-            var myImage = image.image;
-            Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-            completer.complete(size);
-          }, onError: (object, stacktrace) {
-            completer.completeError(object);
-          }
-        ),
-      );
+            ImageStreamListener((ImageInfo image, bool synchronousCall) {
+              var myImage = image.image;
+              Size size =
+                  Size(myImage.width.toDouble(), myImage.height.toDouble());
+              completer.complete(size);
+            }, onError: (object, stacktrace) {
+              completer.completeError(object);
+            }),
+          );
       imageWidget = FutureBuilder<Size>(
         future: completer.future,
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
@@ -155,10 +156,10 @@ class ImageContentElement extends ReplacedElement {
             return new Image.network(
               src,
               width: snapshot.data.width,
-              height: snapshot.data.height,
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
-                  return Text(alt ?? "", style: context.style.generateTextStyle());
+                  return Text(alt ?? "",
+                      style: context.style.generateTextStyle());
                 }
                 return child;
               },
@@ -293,20 +294,23 @@ class VideoContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     final double _width = width ?? (height ?? 150) * 2;
     final double _height = height ?? (width ?? 300) / 2;
-    return Container(
-      child: Chewie(
-        controller: ChewieController(
-          videoPlayerController: VideoPlayerController.network(
-            src.first ?? "",
+    return AspectRatio(
+      aspectRatio: _width / _height,
+      child: Container(
+        child: Chewie(
+          controller: ChewieController(
+            videoPlayerController: VideoPlayerController.network(
+              src.first ?? "",
+            ),
+            placeholder: poster != null
+                ? Image.network(poster)
+                : Container(color: Colors.black),
+            autoPlay: autoplay,
+            looping: loop,
+            showControls: showControls,
+            autoInitialize: true,
+            aspectRatio: _width / _height,
           ),
-          placeholder: poster != null
-              ? Image.network(poster)
-              : Container(color: Colors.black),
-          autoPlay: autoplay,
-          looping: loop,
-          showControls: showControls,
-          autoInitialize: true,
-          aspectRatio: _width / _height,
         ),
       ),
     );
@@ -418,12 +422,12 @@ ReplacedElement parseReplacedElement(
       );
     case "iframe":
       return IframeContentElement(
-        name: "iframe",
-        src: element.attributes['src'],
-        width: double.tryParse(element.attributes['width'] ?? ""),
-        height: double.tryParse(element.attributes['height'] ?? ""),
-        navigationDelegate: navigationDelegateForIframe,
-      );
+          name: "iframe",
+          src: element.attributes['src'],
+          width: double.tryParse(element.attributes['width'] ?? ""),
+          height: double.tryParse(element.attributes['height'] ?? ""),
+          navigationDelegate: navigationDelegateForIframe,
+          node: element);
     case "img":
       return ImageContentElement(
         name: "img",

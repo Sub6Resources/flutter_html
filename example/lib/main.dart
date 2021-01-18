@@ -63,8 +63,7 @@ const htmlData = """
       <table>
       <colgroup>
         <col width="50%" />
-        <col width="25%" />
-        <col width="25%" />
+        <col span="2" width="25%" />
       </colgroup>
       <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
@@ -81,7 +80,7 @@ const htmlData = """
       <tr><td>fData</td><td>fData</td><td>fData</td></tr>
       </tfoot>
       </table>
-      <h3>Custom Element Support:</h3>
+      <h3>Custom Element Support (inline: <bird></bird> and as block):</h3>
       <flutter></flutter>
       <flutter horizontal></flutter>
       <h3>SVG support:</h3>
@@ -173,6 +172,9 @@ class _MyHomePageState extends State<MyHomePage> {
             "var": Style(fontFamily: 'serif'),
           },
           customRender: {
+            "bird": (RenderContext context, Widget child, attributes, _) {
+              return TextSpan(text: "🐦");
+            },
             "flutter": (RenderContext context, Widget child, attributes, _) {
               return FlutterLogo(
                 style: (attributes['horizontal'] != null)
