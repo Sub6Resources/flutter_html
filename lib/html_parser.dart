@@ -8,6 +8,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
+import 'package:flutter_html/resolvers.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
@@ -31,6 +32,7 @@ class HtmlParser extends StatelessWidget {
 
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
+  final List<ImageResolver> imageResolvers;
   final List<String> blacklistedElements;
   final NavigationDelegate navigationDelegateForIframe;
 
@@ -42,6 +44,7 @@ class HtmlParser extends StatelessWidget {
     this.shrinkWrap,
     this.style,
     this.customRender,
+    this.imageResolvers,
     this.blacklistedElements,
     this.navigationDelegateForIframe,
   });
@@ -54,6 +57,7 @@ class HtmlParser extends StatelessWidget {
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
       navigationDelegateForIframe,
+      imageResolvers
     );
     StyledElement styledTree = applyCSS(lexedTree);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
@@ -96,6 +100,7 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
+    List<ImageResolver> imageResolvers,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
@@ -109,6 +114,7 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
+        imageResolvers
       ));
     });
 
@@ -124,6 +130,7 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
+    List<ImageResolver> imageResolvers,
   ) {
     List<StyledElement> children = List<StyledElement>();
 
@@ -133,6 +140,7 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
+        imageResolvers,
       ));
     });
 
@@ -146,7 +154,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, navigationDelegateForIframe);
+        return parseReplacedElement(node, navigationDelegateForIframe, imageResolvers);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {

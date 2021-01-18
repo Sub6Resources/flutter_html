@@ -2,6 +2,8 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+export 'package:flutter_html/resolvers.dart';
+import 'package:flutter_html/resolvers.dart';
 import 'package:flutter_html/style.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -36,13 +38,15 @@ class Html extends StatelessWidget {
     @required this.data,
     this.onLinkTap,
     this.customRender,
+    this.imageResolvers = const [],
     this.onImageError,
     this.shrinkWrap = false,
     this.onImageTap,
     this.blacklistedElements = const [],
     this.style,
     this.navigationDelegateForIframe,
-  }) : super(key: key);
+  }) :  assert(!imageResolvers.contains(null)),
+        super(key: key);
 
   final String data;
   final OnTap onLinkTap;
@@ -57,6 +61,19 @@ class Html extends StatelessWidget {
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
   final Map<String, CustomRender> customRender;
+
+  /// Set a list of custom resolvers that extend [ImageResolver].
+  /// Defaults to the default resolvers (see lib/resolvers.dart)
+  /// If you define resolvers here, they will be checked in the order defined,
+  /// and then the default resolvers will be checked.
+  ///
+  /// NOTE: Remember to keep your [isMatch] function as exact as possible!!
+  /// If you want to make an image resolver that overrides only remote/network images with a certain src,
+  /// make sure that your [isMatch] function checks that the image is indeed from remote
+  /// (i.e. check if the src contains "http://" or "https://")! Otherwise images
+  /// that have similar paths but are images from a different source (local directory) or different MIME types (SVGs)
+  /// will also get overridden, causing unwanted exceptions!
+  final List<ImageResolver> imageResolvers;
 
   /// Fancy New Parser parameters
   final Map<String, Style> style;
@@ -82,6 +99,7 @@ class Html extends StatelessWidget {
         customRender: customRender,
         blacklistedElements: blacklistedElements,
         navigationDelegateForIframe: navigationDelegateForIframe,
+        imageResolvers: imageResolvers
       ),
     );
   }

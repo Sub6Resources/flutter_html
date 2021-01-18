@@ -10,6 +10,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/resolvers.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -65,12 +66,21 @@ class TextContentElement extends ReplacedElement {
 class ImageContentElement extends ReplacedElement {
   final String src;
   final String alt;
+  final List<ImageResolver> imageResolvers;
+  final List<ImageResolver> defaultResolvers = [
+    DefaultNullResolver(),
+    DefaultBase64Resolver(),
+    DefaultAssetResolver(),
+    DefaultSvgResolver(),
+    DefaultNetworkResolver()
+  ];
 
   ImageContentElement({
     String name,
     Style style,
     this.src,
     this.alt,
+    this.imageResolvers,
     dom.Element node,
   }) : super(
           name: name,
@@ -81,96 +91,25 @@ class ImageContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    Widget imageWidget;
-    if (src == null) {
-      imageWidget = Text(alt ?? "", style: context.style.generateTextStyle());
-    } else if (src.startsWith("data:image") && src.contains("base64,")) {
-      final decodedImage = base64.decode(src.split("base64,")[1].trim());
-      precacheImage(
-        MemoryImage(decodedImage),
-        context.buildContext,
-        onError: (exception, StackTrace stackTrace) {
-          context.parser.onImageError?.call(exception, stackTrace);
-        },
-      );
-      imageWidget = Image.memory(
-        decodedImage,
-        frameBuilder: (ctx, child, frame, _) {
-          if (frame == null) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
-          }
-          return child;
-        },
-      );
-    } else if (src.startsWith("asset:")) {
-      final assetPath = src.replaceFirst('asset:', '');
-      precacheImage(
-        AssetImage(assetPath),
-        context.buildContext,
-        onError: (exception, StackTrace stackTrace) {
-          context.parser.onImageError?.call(exception, stackTrace);
-        },
-      );
-      imageWidget = Image.asset(
-        assetPath,
-        frameBuilder: (ctx, child, frame, _) {
-          if (frame == null) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
-          }
-          return child;
-        },
-      );
-    } else if (src.endsWith(".svg")) {
-      return SvgPicture.network(src);
-    } else {
-      precacheImage(
-        NetworkImage(src),
-        context.buildContext,
-        onError: (exception, StackTrace stackTrace) {
-          context.parser.onImageError?.call(exception, stackTrace);
-        },
-      );
-      Completer<Size> completer = Completer();
-      Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
-        if (frame == null) {
-          completer.completeError("error");
-          return child;
-        } else {
-          return child;
-        }
-      });
-      image.image.resolve(ImageConfiguration()).addListener(
-            ImageStreamListener((ImageInfo image, bool synchronousCall) {
-              var myImage = image.image;
-              Size size =
-                  Size(myImage.width.toDouble(), myImage.height.toDouble());
-              completer.complete(size);
-            }, onError: (object, stacktrace) {
-              completer.completeError(object);
-            }),
-          );
-      imageWidget = FutureBuilder<Size>(
-        future: completer.future,
-        builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
-          if (snapshot.hasData) {
-            return new Image.network(
-              src,
-              width: snapshot.data.width,
-              frameBuilder: (ctx, child, frame, _) {
-                if (frame == null) {
-                  return Text(alt ?? "",
-                      style: context.style.generateTextStyle());
-                }
-                return child;
-              },
-            );
-          } else if (snapshot.hasError) {
-            return Text(alt ?? "", style: context.style.generateTextStyle());
-          } else {
-            return new CircularProgressIndicator();
-          }
-        },
-      );
+    Widget imageWidget = Text("No match found in image resolvers list!");
+    /// todo
+    /// there's probably a better way to do this, I could only think of this for now.
+    /// maintains the set order for our default resolvers, but if a user overrides a default resolver,
+    /// then the rest of the default resolvers will be placed under them (thus breaking our set order).
+    if (imageResolvers.firstWhere((element) => element is DefaultNullResolver, orElse: () => null) == null) imageResolvers.add(DefaultNullResolver());
+    if (imageResolvers.firstWhere((element) => element is DefaultBase64Resolver, orElse: () => null) == null) imageResolvers.add(DefaultBase64Resolver());
+    if (imageResolvers.firstWhere((element) => element is DefaultAssetResolver, orElse: () => null) == null) imageResolvers.add(DefaultAssetResolver());
+    if (imageResolvers.firstWhere((element) => element is DefaultSvgResolver, orElse: () => null) == null) imageResolvers.add(DefaultSvgResolver());
+    if (imageResolvers.firstWhere((element) => element is DefaultNetworkResolver, orElse: () => null) == null) imageResolvers.add(DefaultNetworkResolver());
+    bool suppressImageTaps = false;
+    String pathPrefix = "";
+    for (ImageResolver resolver in imageResolvers) {
+      if (resolver.isMatch(this)) {
+        imageWidget = resolver.render(this, context);
+        if (resolver.suppressImageTaps == true) suppressImageTaps = true;
+        if (resolver.pathPrefix != null) pathPrefix = resolver.pathPrefix;
+        break;
+      }
     }
 
     return ContainerSpan(
@@ -179,12 +118,12 @@ class ImageContentElement extends ReplacedElement {
       shrinkWrap: context.parser.shrinkWrap,
       child: RawGestureDetector(
         child: imageWidget,
-        gestures: {
+        gestures: suppressImageTaps == true ? const <Type, GestureRecognizerFactory>{} : {
           MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
               MultipleTapGestureRecognizer>(
             () => MultipleTapGestureRecognizer(),
             (instance) {
-              instance..onTap = () => context.parser.onImageTap?.call(src);
+              instance..onTap = () => context.parser.onImageTap?.call(pathPrefix + src);
             },
           ),
         },
@@ -399,6 +338,7 @@ class RubyElement extends ReplacedElement {
 ReplacedElement parseReplacedElement(
   dom.Element element,
   NavigationDelegate navigationDelegateForIframe,
+  List<ImageResolver> imageResolvers,
 ) {
   switch (element.localName) {
     case "audio":
@@ -434,6 +374,7 @@ ReplacedElement parseReplacedElement(
         src: element.attributes['src'],
         alt: element.attributes['alt'],
         node: element,
+        imageResolvers: imageResolvers,
       );
     case "video":
       final sources = <String>[
