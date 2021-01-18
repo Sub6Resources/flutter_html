@@ -2,6 +2,7 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/style.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
@@ -36,6 +37,7 @@ class Html extends StatelessWidget {
     @required this.data,
     this.onLinkTap,
     this.customRender,
+    this.customImageRenders = const {},
     this.onImageError,
     this.shrinkWrap = false,
     this.onImageTap,
@@ -46,6 +48,7 @@ class Html extends StatelessWidget {
 
   final String data;
   final OnTap onLinkTap;
+  final Map<ImageSourceMatcher, ImageRender> customImageRenders;
   final ImageErrorListener onImageError;
   final bool shrinkWrap;
 
@@ -80,6 +83,9 @@ class Html extends StatelessWidget {
         shrinkWrap: shrinkWrap,
         style: style,
         customRender: customRender,
+        imageRenders: {}
+          ..addAll(customImageRenders)
+          ..addAll(defaultImageRenders),
         blacklistedElements: blacklistedElements,
         navigationDelegateForIframe: navigationDelegateForIframe,
       ),

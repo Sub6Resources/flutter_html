@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/style.dart';
 
 void main() => runApp(new MyApp());
@@ -119,6 +120,7 @@ const htmlData = """
       </p>
       <h3>Image support:</h3>
       <p>
+        <img alt='Flutter' src='https://flutter.dev/assets/flutter-lockup-1caf6476beed76adec3c477586da54de6b552b2f42108ec5bc68dc63bae2df75.png' />
         <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
         <a href='https://google.com'><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
       </p>
@@ -183,6 +185,16 @@ class _MyHomePageState extends State<MyHomePage> {
                 size: context.style.fontSize.size * 5,
               );
             },
+          },
+          customImageRenders: {
+            networkSourceMatcher(domains: ["flutter.dev"]):
+                (context, attributes, element) {
+              return FlutterLogo(size: 36);
+            },
+            networkSourceMatcher(): networkImageRender(
+              headers: {"Custom-Header": "some-value"},
+              altWidget: (alt) => Text(alt),
+            ),
           },
           onLinkTap: (url) {
             print("Opening $url...");
