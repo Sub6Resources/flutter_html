@@ -57,7 +57,6 @@ class HtmlParser extends StatelessWidget {
       customRender?.keys?.toList() ?? [],
       blacklistedElements,
       navigationDelegateForIframe,
-      imageResolvers
     );
     StyledElement styledTree = applyCSS(lexedTree);
     StyledElement inlineStyledTree = applyInlineStyles(styledTree);
@@ -100,7 +99,6 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
-    List<ImageResolver> imageResolvers,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
@@ -114,7 +112,6 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
-        imageResolvers
       ));
     });
 
@@ -130,7 +127,6 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
-    List<ImageResolver> imageResolvers,
   ) {
     List<StyledElement> children = List<StyledElement>();
 
@@ -140,7 +136,6 @@ class HtmlParser extends StatelessWidget {
         customRenderTags,
         blacklistedElements,
         navigationDelegateForIframe,
-        imageResolvers,
       ));
     });
 
@@ -154,7 +149,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, navigationDelegateForIframe, imageResolvers);
+        return parseReplacedElement(node, navigationDelegateForIframe);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {

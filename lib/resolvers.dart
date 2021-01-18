@@ -389,3 +389,11 @@ class CustomSvgOptions {
     this.excludeFromSemantics,
   });
 }
+
+final List<ImageResolver> defaultResolvers = [
+  DefaultNullResolver(),
+  DefaultBase64Resolver(),
+  DefaultAssetResolver(),
+  DefaultSvgResolver(),
+  DefaultNetworkResolver()
+];

@@ -66,21 +66,12 @@ class TextContentElement extends ReplacedElement {
 class ImageContentElement extends ReplacedElement {
   final String src;
   final String alt;
-  final List<ImageResolver> imageResolvers;
-  final List<ImageResolver> defaultResolvers = [
-    DefaultNullResolver(),
-    DefaultBase64Resolver(),
-    DefaultAssetResolver(),
-    DefaultSvgResolver(),
-    DefaultNetworkResolver()
-  ];
 
   ImageContentElement({
     String name,
     Style style,
     this.src,
     this.alt,
-    this.imageResolvers,
     dom.Element node,
   }) : super(
           name: name,
@@ -92,6 +83,7 @@ class ImageContentElement extends ReplacedElement {
   @override
   Widget toWidget(RenderContext context) {
     Widget imageWidget = Text("No match found in image resolvers list!");
+    List<ImageResolver> imageResolvers = context.parser.imageResolvers;
     /// todo
     /// there's probably a better way to do this, I could only think of this for now.
     /// maintains the set order for our default resolvers, but if a user overrides a default resolver,
@@ -338,7 +330,6 @@ class RubyElement extends ReplacedElement {
 ReplacedElement parseReplacedElement(
   dom.Element element,
   NavigationDelegate navigationDelegateForIframe,
-  List<ImageResolver> imageResolvers,
 ) {
   switch (element.localName) {
     case "audio":
@@ -374,7 +365,6 @@ ReplacedElement parseReplacedElement(
         src: element.attributes['src'],
         alt: element.attributes['alt'],
         node: element,
-        imageResolvers: imageResolvers,
       );
     case "video":
       final sources = <String>[
