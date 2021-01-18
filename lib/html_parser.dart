@@ -16,7 +16,7 @@ import 'package:html/parser.dart' as htmlparser;
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(String url);
-typedef CustomRender = Widget Function(
+typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
   Map<String, String> attributes,
@@ -251,7 +251,7 @@ class HtmlParser extends StatelessWidget {
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
-      dynamic customRenderForElement = customRender[tree.name].call(
+      final render = customRender[tree.name].call(
         newContext,
         ContainerSpan(
           newContext: newContext,
@@ -265,16 +265,18 @@ class HtmlParser extends StatelessWidget {
         tree.attributes,
         tree.element,
       );
-
-      if (customRenderForElement != null) {
-        return WidgetSpan(
-          child: ContainerSpan(
-            newContext: newContext,
-            style: tree.style,
-            shrinkWrap: context.parser.shrinkWrap,
-            child: customRenderForElement,
-          ),
-        );
+      if (render != null) {
+        assert(render is InlineSpan || render is Widget);
+        return render is InlineSpan
+            ? render
+            : WidgetSpan(
+                child: ContainerSpan(
+                  newContext: newContext,
+                  style: tree.style,
+                  shrinkWrap: context.parser.shrinkWrap,
+                  child: render,
+                ),
+              );
       }
     }
 
