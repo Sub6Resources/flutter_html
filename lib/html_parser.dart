@@ -338,24 +338,36 @@ class HtmlParser extends StatelessWidget {
     } else if (tree is InteractableElement) {
       return TextSpan(
         children: tree.children
-                .map((tree) => parseTree(newContext, tree))
-                .map((childSpan) {
-              if (childSpan is TextSpan) {
-                return TextSpan(
-                  text: childSpan.text,
-                  children: childSpan.children,
-                  style: (childSpan.style ?? TextStyle())
-                      .merge(newContext.style.generateTextStyle()),
-                  semanticsLabel: childSpan.semanticsLabel,
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () => onLinkTap?.call(tree.href),
-                );
-              } else {
-                return WidgetSpan(
-                  child: tree.toWidget(context, childSpan: childSpan),
-                );
-              }
-            }).toList() ??
+            .map((tree) => parseTree(newContext, tree))
+            .map((childSpan) {
+          if (childSpan is TextSpan) {
+            return TextSpan(
+              text: childSpan.text,
+              children: childSpan.children,
+              style: (childSpan.style ?? TextStyle())
+                  .merge(newContext.style.generateTextStyle()),
+              semanticsLabel: childSpan.semanticsLabel,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => onLinkTap?.call(tree.href),
+            );
+          } else {
+            return WidgetSpan(
+              child: RawGestureDetector(
+                gestures: {
+                  MultipleTapGestureRecognizer:
+                  GestureRecognizerFactoryWithHandlers<
+                      MultipleTapGestureRecognizer>(
+                        () => MultipleTapGestureRecognizer(),
+                        (instance) {
+                      instance..onTap = () => onLinkTap?.call(tree.href);
+                    },
+                  ),
+                },
+                child: (childSpan as WidgetSpan).child,
+              ),
+            );
+          }
+        }).toList() ??
             [],
       );
     } else if (tree is LayoutElement) {

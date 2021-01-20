@@ -72,7 +72,6 @@ const STYLED_ELEMENTS = [
 
 const INTERACTABLE_ELEMENTS = [
   "a",
-  "details",
 ];
 
 const REPLACED_ELEMENTS = [
@@ -90,6 +89,7 @@ const REPLACED_ELEMENTS = [
 ];
 
 const LAYOUT_ELEMENTS = [
+  "details",
   "table",
   "tr",
   "tbody",

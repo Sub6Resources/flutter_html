@@ -244,10 +244,57 @@ TableStyleElement parseTableDefinitionElement(dom.Element element,
   }
 }
 
-LayoutElement parseLayoutElement(dom.Element element,
+class DetailsContentElement extends LayoutElement {
+  List<dom.Element> title;
+
+  DetailsContentElement({
+    String name,
+    List<StyledElement> children,
+    dom.Element node,
+    this.title,
+  }) : super(name: name, node: node, children: children);
+
+  @override
+  Widget toWidget(RenderContext context) {
+    return ExpansionTile(
+        title: title.first.localName == "summary" && children != null ? StyledText(
+          textSpan: TextSpan(
+            style: style.generateTextStyle(),
+            children: [children
+                .map((tree) => context.parser.parseTree(context, tree))
+                .toList().first] ??
+                [],
+          ),
+          style: style,
+        ) : Text("Details"),
+        children: [
+          StyledText(
+            textSpan: TextSpan(
+              style: style.generateTextStyle(),
+              children: children
+                  .map((tree) => context.parser.parseTree(context, tree))
+                  .toList() ??
+                  [],
+            ),
+            style: style,
+          ),
+        ]
+    );
+  }
+}
+
+LayoutElement parseLayoutElement(
+    dom.Element element,
     List<StyledElement> children,
 ) {
   switch (element.localName) {
+    case "details":
+      return DetailsContentElement(
+          node: element,
+          name: element.localName,
+          children: element.children.first.localName == "summary" ? children : children,
+          title: element.children
+      );
     case "table":
       return TableLayoutElement(
         name: element.localName,
