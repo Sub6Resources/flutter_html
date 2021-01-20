@@ -17,7 +17,7 @@ abstract class InteractableElement extends StyledElement {
     dom.Node node,
   }) : super(name: name, children: children, style: style, node: node);
 
-  Widget toWidget(RenderContext context);
+  Widget toWidget(RenderContext context, {InlineSpan childSpan});
 }
 
 /// A [Gesture] indicates the type of interaction by a user.
@@ -38,7 +38,7 @@ class LinkedContentElement extends InteractableElement {
   }) : super(name: name, node: node, children: children);
 
   @override
-  Widget toWidget(RenderContext context) {
+  Widget toWidget(RenderContext context, {InlineSpan childSpan}) {
     return RawGestureDetector(
       gestures: {
         MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
@@ -49,16 +49,7 @@ class LinkedContentElement extends InteractableElement {
           },
         ),
       },
-      child: StyledText(
-        textSpan: TextSpan(
-          style: style.generateTextStyle(),
-          children: children
-              .map((tree) => context.parser.parseTree(context, tree))
-              .toList() ??
-              [],
-        ),
-        style: style,
-      ),
+      child: (childSpan as WidgetSpan).child,
     );
   }
 }
@@ -74,7 +65,7 @@ class DetailsContentElement extends InteractableElement {
   }) : super(name: name, node: node, children: children);
 
   @override
-  Widget toWidget(RenderContext context) {
+  Widget toWidget(RenderContext context, {InlineSpan childSpan}) {
     return ExpansionTile(
       title: title.first.localName == "summary" ? StyledText(
         textSpan: TextSpan(
@@ -107,7 +98,7 @@ class EmptyInteractableElement extends InteractableElement {
   EmptyInteractableElement({String name = "empty"}) : super(name: name);
 
   @override
-  Widget toWidget(_) => null;
+  Widget toWidget(_, {InlineSpan childSpan}) => null;
 }
 
 InteractableElement parseInteractableElement(

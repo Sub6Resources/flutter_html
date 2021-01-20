@@ -352,7 +352,7 @@ class HtmlParser extends StatelessWidget {
                 );
               } else {
                 return WidgetSpan(
-                  child: tree.toWidget(context),
+                  child: tree.toWidget(context, childSpan: childSpan),
                 );
               }
             }).toList() ??
