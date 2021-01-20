@@ -212,12 +212,15 @@ class IframeContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    final sandboxMode = attributes["sandbox"];
     return Container(
       width: width ?? (height ?? 150) * 2,
       height: height ?? (width ?? 300) / 2,
       child: WebView(
         initialUrl: src,
-        javascriptMode: JavascriptMode.unrestricted,
+        javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
+            ? JavascriptMode.unrestricted
+            : JavascriptMode.disabled,
         navigationDelegate: navigationDelegate,
         gestureRecognizers: {
           Factory(() => PlatformViewVerticalGestureRecognizer())
