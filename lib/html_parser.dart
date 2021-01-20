@@ -334,27 +334,7 @@ class HtmlParser extends StatelessWidget {
       }
     } else if (tree is InteractableElement) {
       return WidgetSpan(
-        child: RawGestureDetector(
-          gestures: {
-            MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<
-                MultipleTapGestureRecognizer>(
-              () => MultipleTapGestureRecognizer(),
-              (instance) {
-                instance..onTap = () => onLinkTap?.call(tree.href);
-              },
-            ),
-          },
-          child: StyledText(
-            textSpan: TextSpan(
-              style: newContext.style.generateTextStyle(),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList() ??
-                  [],
-            ),
-            style: newContext.style,
-          ),
-        ),
+        child: tree.toWidget(context),
       );
     } else if (tree is LayoutElement) {
       return WidgetSpan(

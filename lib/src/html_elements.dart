@@ -66,11 +66,13 @@ const STYLED_ELEMENTS = [
   "p",
   "pre",
   "section",
+  "summary",
   "ul",
 ];
 
 const INTERACTABLE_ELEMENTS = [
   "a",
+  "details",
 ];
 
 const REPLACED_ELEMENTS = [
