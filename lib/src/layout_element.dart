@@ -292,6 +292,8 @@ LayoutElement parseLayoutElement(
       return DetailsContentElement(
           node: element,
           name: element.localName,
+          //todo
+          //need to remove the summary tag itself before passing the children to the widget build function somehow
           children: element.children.first.localName == "summary" ? children : children,
           title: element.children
       );
