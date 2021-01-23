@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:chewie/chewie.dart';
-import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +10,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
+import 'package:flutter_html/src/widgets/custom_audio_widget.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
@@ -253,17 +253,7 @@ class AudioContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     return Container(
       width: context.style.width ?? 300,
-      child: ChewieAudio(
-        controller: ChewieAudioController(
-          videoPlayerController: VideoPlayerController.network(
-            src.first ?? "",
-          ),
-          autoPlay: autoplay,
-          looping: loop,
-          showControls: showControls,
-          autoInitialize: true,
-        ),
-      ),
+      child: CustomAudioWidget(showControls: showControls, src: src, autoplay: autoplay, loop: loop, context: context, muted: muted)
     );
   }
 }

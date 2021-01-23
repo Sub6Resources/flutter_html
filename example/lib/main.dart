@@ -35,6 +35,9 @@ const htmlData = """
 <h4>Header 4</h4>
 <h5>Header 5</h5>
 <h6>Header 6</h6>
+<audio controls>
+        <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
+      </audio>
 <h3>Ruby Support:</h3>
       <p>
         <ruby>
@@ -128,9 +131,7 @@ const htmlData = """
         <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
       </video>
       <h3>Audio support:</h3>
-      <audio controls>
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
-      </audio>
+     
       <h3>IFrame support:</h3>
       <iframe src="https://google.com"></iframe>
 """;
