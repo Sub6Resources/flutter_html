@@ -96,45 +96,49 @@ class CustomAudioWidgetState extends State<CustomAudioWidget> with SingleTickerP
                     Expanded(
                       child: Padding(
                         padding: const EdgeInsets.only(right: 20.0),
-                        child: GestureDetector(
-                          onHorizontalDragStart: (DragStartDetails details) {
-                            wasPlaying = info.isPlaying;
-                            if (info.isPlaying) {
-                              assetsAudioPlayer.pause();
-                            }
-                          },
-                          onHorizontalDragUpdate: (DragUpdateDetails details) {
-                            final box = context.findRenderObject() as RenderBox;
-                            final Offset tapPos = box.globalToLocal(details.globalPosition);
-                            final double relative = tapPos.dx / box.size.width;
-                            final Duration position = info.duration * relative;
-                            assetsAudioPlayer.seek(position);
-                          },
-                          onHorizontalDragEnd: (DragEndDetails details) {
-                            if (wasPlaying) {
-                              assetsAudioPlayer.play();
-                            }
-                          },
-                          onTapDown: (TapDownDetails details) {
-                            final box = context.findRenderObject() as RenderBox;
-                            final Offset tapPos = box.globalToLocal(details.globalPosition);
-                            final double relative = tapPos.dx / box.size.width;
-                            final Duration position = info.duration * relative;
-                            assetsAudioPlayer.seek(position);
-                          },
-                          child: Center(
-                            child: Container(
-                              height: MediaQuery.of(context).size.height / 2,
-                              width: MediaQuery.of(context).size.width,
-                              color: Colors.transparent,
-                              child: CustomPaint(
-                                painter: MaterialProgressBarPainter(
-                                  info,
-                                  ProgressColors(playedColor: Theme.of(context).primaryColor, handleColor: Theme.of(context).primaryColor),
+                        child: Builder(
+                          builder: (BuildContext progressContext) {
+                            return GestureDetector(
+                              onHorizontalDragStart: (DragStartDetails details) {
+                                wasPlaying = info.isPlaying;
+                                if (info.isPlaying) {
+                                  assetsAudioPlayer.pause();
+                                }
+                              },
+                              onHorizontalDragUpdate: (DragUpdateDetails details) {
+                                final box = progressContext.findRenderObject() as RenderBox;
+                                final Offset tapPos = box.globalToLocal(details.globalPosition);
+                                final double relative = tapPos.dx / box.size.width;
+                                final Duration position = info.duration * relative;
+                                assetsAudioPlayer.seek(position);
+                              },
+                              onHorizontalDragEnd: (DragEndDetails details) {
+                                if (wasPlaying) {
+                                  assetsAudioPlayer.play();
+                                }
+                              },
+                              onTapDown: (TapDownDetails details) {
+                                final box = progressContext.findRenderObject() as RenderBox;
+                                final Offset tapPos = box.globalToLocal(details.globalPosition);
+                                final double relative = tapPos.dx / box.size.width;
+                                final Duration position = info.duration * relative;
+                                assetsAudioPlayer.seek(position);
+                              },
+                              child: Center(
+                                child: Container(
+                                  height: MediaQuery.of(progressContext).size.height,
+                                  width: MediaQuery.of(progressContext).size.width,
+                                  color: Colors.transparent,
+                                  child: CustomPaint(
+                                    painter: MaterialProgressBarPainter(
+                                      info,
+                                      ProgressColors(playedColor: Theme.of(context).primaryColor, handleColor: Theme.of(context).primaryColor),
+                                    ),
+                                  ),
                                 ),
                               ),
-                            ),
-                          ),
+                            );
+                          },
                         ),
                       ),
                     ),
@@ -255,50 +259,54 @@ class CustomAudioWidgetState extends State<CustomAudioWidget> with SingleTickerP
                           Expanded(
                             child: Padding(
                                 padding: const EdgeInsets.only(right: 12.0),
-                                child: GestureDetector(
-                                  onHorizontalDragStart: (DragStartDetails details) {
-                                    wasPlaying = info.isPlaying;
-                                    if (info.isPlaying) {
-                                      assetsAudioPlayer.pause();
-                                    }
-                                  },
-                                  onHorizontalDragUpdate: (DragUpdateDetails details) {
-                                    final box = context.findRenderObject() as RenderBox;
-                                    final Offset tapPos = box.globalToLocal(details.globalPosition);
-                                    final double relative = tapPos.dx / box.size.width;
-                                    final Duration position = info.duration * relative;
-                                    assetsAudioPlayer.seek(position);
-                                  },
-                                  onHorizontalDragEnd: (DragEndDetails details) {
-                                    if (wasPlaying) {
-                                      assetsAudioPlayer.play();
-                                    }
-                                  },
-                                  onTapDown: (TapDownDetails details) {
-                                    final box = context.findRenderObject() as RenderBox;
-                                    final Offset tapPos = box.globalToLocal(details.globalPosition);
-                                    final double relative = tapPos.dx / box.size.width;
-                                    final Duration position = info.duration * relative;
-                                    assetsAudioPlayer.seek(position);
-                                  },
-                                  child: Center(
-                                    child: Container(
-                                      height: MediaQuery.of(context).size.height,
-                                      width: MediaQuery.of(context).size.width,
-                                      color: Colors.transparent,
-                                      child: CustomPaint(
-                                        painter: CupertinoProgressBarPainter(
-                                          info,
-                                          ProgressColors(
-                                            playedColor: const Color.fromARGB(120, 255, 255, 255,),
-                                            handleColor: const Color.fromARGB(255, 255, 255, 255,),
-                                            bufferedColor: const Color.fromARGB(60, 255, 255, 255,),
-                                            backgroundColor: const Color.fromARGB(20, 255, 255, 255,),
+                                child: Builder(
+                                  builder: (BuildContext progressContext) {
+                                    return GestureDetector(
+                                      onHorizontalDragStart: (DragStartDetails details) {
+                                        wasPlaying = info.isPlaying;
+                                        if (info.isPlaying) {
+                                          assetsAudioPlayer.pause();
+                                        }
+                                      },
+                                      onHorizontalDragUpdate: (DragUpdateDetails details) {
+                                        final box = progressContext.findRenderObject() as RenderBox;
+                                        final Offset tapPos = box.globalToLocal(details.globalPosition);
+                                        final double relative = tapPos.dx / box.size.width;
+                                        final Duration position = info.duration * relative;
+                                        assetsAudioPlayer.seek(position);
+                                      },
+                                      onHorizontalDragEnd: (DragEndDetails details) {
+                                        if (wasPlaying) {
+                                          assetsAudioPlayer.play();
+                                        }
+                                      },
+                                      onTapDown: (TapDownDetails details) {
+                                        final box = progressContext.findRenderObject() as RenderBox;
+                                        final Offset tapPos = box.globalToLocal(details.globalPosition);
+                                        final double relative = tapPos.dx / box.size.width;
+                                        final Duration position = info.duration * relative;
+                                        assetsAudioPlayer.seek(position);
+                                      },
+                                      child: Center(
+                                        child: Container(
+                                          height: MediaQuery.of(progressContext).size.height,
+                                          width: MediaQuery.of(progressContext).size.width,
+                                          color: Colors.transparent,
+                                          child: CustomPaint(
+                                            painter: CupertinoProgressBarPainter(
+                                              info,
+                                              ProgressColors(
+                                                playedColor: const Color.fromARGB(120, 255, 255, 255,),
+                                                handleColor: const Color.fromARGB(255, 255, 255, 255,),
+                                                bufferedColor: const Color.fromARGB(60, 255, 255, 255,),
+                                                backgroundColor: const Color.fromARGB(20, 255, 255, 255,),
+                                              ),
+                                            ),
                                           ),
                                         ),
                                       ),
-                                    ),
-                                  ),
+                                    );
+                                  },
                                 )
                             ),
                           ),
