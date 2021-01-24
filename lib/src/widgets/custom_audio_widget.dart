@@ -194,7 +194,7 @@ class CustomAudioWidgetState extends State<CustomAudioWidget> with SingleTickerP
                                 right: 6.0,
                               ),
                               child: Icon(
-                                CupertinoIcons.gobackward_15,
+                                CupertinoIcons.gobackward_10,
                                 color: Color.fromARGB(255, 200, 200, 200),
                                 size: 18.0,
                               ),
@@ -236,7 +236,7 @@ class CustomAudioWidgetState extends State<CustomAudioWidget> with SingleTickerP
                                 right: 8.0,
                               ),
                               child: Icon(
-                                CupertinoIcons.goforward_15,
+                                CupertinoIcons.goforward_10,
                                 color: Color.fromARGB(255, 200, 200, 200),
                                 size: 18.0,
                               ),
