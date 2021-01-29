@@ -347,8 +347,6 @@ class HtmlParser extends StatelessWidget {
                 childSpan.style == null
                     ? childStyle
                     : childStyle.merge(childSpan.style)),
-            // style: (childSpan.style ?? TextStyle())
-            //     .merge(newContext.style.generateTextStyle()),
             semanticsLabel: childSpan.semanticsLabel,
             recognizer: TapGestureRecognizer()
               ..onTap = () => onLinkTap?.call(tree.href),
