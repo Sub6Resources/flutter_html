@@ -16,7 +16,7 @@ dependencies:
   css_colors: ^1.0.2
 
   # Plugins for rendering the <table> tag.
-  flutter_layout_grid: ^0.10.2
+  flutter_layout_grid: ^0.10.5
 
   # Plugins for rendering the <video> tag.
   video_player: ^1.0.1
