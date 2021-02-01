@@ -225,104 +225,65 @@ Packages used: [`data_connection_checker`](https://pub.dev/packages/data_connect
 <details><summary>View code</summary>
 
 ```dart
-class CustomRenderExample extends StatefulWidget {
-  CustomRenderExample({Key key, this.title}) : super(key: key);
-  
-    final String title;
-  
-    @override
-    CustomRenderExampleState createState() => new CustomRenderExampleState();
-}
-
-class CustomRenderExampleState extends State<CustomRenderExample> {
-  bool result = false;
-  
-  @override
-  void initState() async {
-    // store current internet connection status
-    result = await DataConnectionChecker().hasConnection;
-    super.initState();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-        title: Text('flutter_html Example'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: Html(
-             data: """
-             <h3>YouTube iframe:</h3>
-             <iframe src="https://google.com"></iframe>
-             <h3>Google iframe:</h3>
-             <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
-             """,
-             customRender: {
-                 "iframe": (RenderContext context, Widget child, Map<String, String> attributes, _) {
-                   // check internet connection
-                   if (!result) {
-                     return Container(
-                       child: ListTile(
-                         leading: Icon(Icons.error, color: Colors.red),
-                         title: Text("Cannot load iframe. You are offline, please check connection and try again.")
-                       )
-                     );
-                   } else if (attributes != null) {
-                     double width = double.tryParse(attributes['width'] ?? "");
-                     double height = double.tryParse(attributes['height'] ?? "");
-                     print(attributes['src']);
-                     return Container(
-                       width: width ?? (height ?? 150) * 2,
-                       height: height ?? (width ?? 300) / 2,
-                       child: InAppWebView(
-                         initialUrl: attributes['src'],
-                         // recommended options when using this implementation
-                         initialOptions: InAppWebViewGroupOptions(
-                           crossPlatform: InAppWebViewOptions(
-                             javaScriptEnabled: true,
-                             cacheEnabled: false,
-                             disableVerticalScroll: attributes['src'].contains("youtube.com/embed") ? true : false,
-                             disableHorizontalScroll: attributes['src'].contains("youtube.com/embed") ? true : false,
-                             useShouldOverrideUrlLoading: true,
-                           ),
-                           ios: IOSInAppWebViewOptions(
-                             allowsLinkPreview: false,
-                           ),
-                           android: AndroidInAppWebViewOptions(
-                             useHybridComposition: true,
-                           )
-                         ),
-                         // no need for a scrolling gesture recognizer for embedded youtube videos so we only use VerticalDragGestureRecognizer when the iframe does not display embedded youtube videos
-                         gestureRecognizers: attributes['src'].contains("youtube.com/embed") ? null : [
-                           Factory(() => VerticalDragGestureRecognizer())
-                         ].toSet(),
-                         // no need to load other urls when displaying embedded youtube videos so we block url loading requests when this is the case
-                         shouldOverrideUrlLoading: (controller, request) async {
-                           if (attributes['src'].contains("youtube.com/embed")) {
-                             if (!request.url.contains("youtube.com/embed")) {
-                               return ShouldOverrideUrlLoadingAction.CANCEL;
-                             } else {
-                               return ShouldOverrideUrlLoadingAction.ALLOW;
-                             }
-                           } else {
-                             return ShouldOverrideUrlLoadingAction.ALLOW;
-                           }
-                         },
-                       ),
-                     );
-                   // if the src of the iframe is null then do not render anything
+Widget html = Html(
+   data: """
+   <h3>Google iframe:</h3>
+   <iframe src="https://google.com"></iframe>
+   <h3>YouTube iframe:</h3>
+   <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
+   """,
+   customRender: {
+      "iframe": (RenderContext context, Widget child, Map<String, String> attributes, _) {
+         if (attributes != null) {
+           double width = double.tryParse(attributes['width'] ?? "");
+           double height = double.tryParse(attributes['height'] ?? "");
+           print(attributes['src']);
+           return Container(
+             width: width ?? (height ?? 150) * 2,
+             height: height ?? (width ?? 300) / 2,
+             child: InAppWebView(
+               initialUrl: attributes['src'],
+               // recommended options when using this implementation
+               initialOptions: InAppWebViewGroupOptions(
+                 crossPlatform: InAppWebViewOptions(
+                   javaScriptEnabled: true,
+                   cacheEnabled: false,
+                   disableVerticalScroll: attributes['src'].contains("youtube.com/embed") ? true : false,
+                   disableHorizontalScroll: attributes['src'].contains("youtube.com/embed") ? true : false,
+                   useShouldOverrideUrlLoading: true,
+                 ),
+                 ios: IOSInAppWebViewOptions(
+                   allowsLinkPreview: false,
+                 ),
+                 android: AndroidInAppWebViewOptions(
+                   useHybridComposition: true,
+                 )
+               ),
+               // no need for a scrolling gesture recognizer for embedded youtube videos so we only use VerticalDragGestureRecognizer when the iframe does not display embedded youtube videos
+               gestureRecognizers: attributes['src'].contains("youtube.com/embed") ? null : [
+                 Factory(() => VerticalDragGestureRecognizer())
+               ].toSet(),
+               // no need to load other urls when displaying embedded youtube videos so we block url loading requests when this is the case
+               shouldOverrideUrlLoading: (controller, request) async {
+                 if (attributes['src'].contains("youtube.com/embed")) {
+                   if (!request.url.contains("youtube.com/embed")) {
+                     return ShouldOverrideUrlLoadingAction.CANCEL;
                    } else {
-                     return Container(height: 0);
+                     return ShouldOverrideUrlLoadingAction.ALLOW;
                    }
+                 } else {
+                   return ShouldOverrideUrlLoadingAction.ALLOW;
                  }
-               }
-           ),
-      ),
-    );
-  }
-}
+               },
+             ),
+           );
+         // if the src of the iframe is null then do not render anything
+         } else {
+           return Container(height: 0);
+         }
+       }
+     }
+ ),
 ```
 </details>
 
@@ -363,12 +324,17 @@ Widget html = Html(
 A list of elements the `Html` widget should not render. The list should contain the tags of the HTML elements you wish to blacklist.
 
 #### Example Usage - blacklistedElements:
-`h1` will render, but `h2` will not render
+You may have instances where you can choose between two different types of HTML tags to display the same content. In the example below, the `<video>` and `<iframe>` elements are going to display the same content.
+
+The `blacklistedElements` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `blacklistedElements` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
 ```dart
 Widget html = Html(
-  data: """<h1>Header 1</h1>
-  <h2>Header 2</h2>""",
-  blacklistedElements: [h2]
+  data: """
+  <video controls>
+    <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
+  </video>
+  <iframe src="https://www.w3schools.com/html/mov_bbb.mp4"></iframe>""",
+  blacklistedElements: [Platform.isAndroid ? "iframe" : "video"]
 );
 ```
 
