@@ -67,7 +67,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
     
 - [Rendering Reference](#rendering-reference)
 
-  - [Images](#images)
+  - [Image](#image)
   
   - [Iframe](#iframe)
   
@@ -326,6 +326,8 @@ class CustomRenderExampleState extends State<CustomRenderExample> {
 ```
 </details>
 
+More example usages and in-depth details available [here](https://github.com/Sub6Resources/flutter_html/wiki/All-About-customRender).
+
 ### onImageError:
 
 A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation.
@@ -426,6 +428,8 @@ Widget html = Html(
   }
 );
 ```
+
+More examples and in-depth details available [here](https://github.com/Sub6Resources/flutter_html/wiki/Style).
 
 ### navigationDelegateForIframe:
 
