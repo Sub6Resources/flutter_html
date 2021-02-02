@@ -18,7 +18,9 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'text-align':
         style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
         break;
-
+      case 'font-size':
+        style.fontSize = ExpressionMapping.expressionToFontSize(value.first);
+        break;
     }
   });
   return style;
@@ -66,6 +68,37 @@ class ExpressionMapping {
       } else if (value.text == 'rgb') {
         return rgbOrRgbaToColor(value.span.text);
       }
+    }
+    return null;
+  }
+
+  static FontSize expressionToFontSize(css.Expression value) {
+    if (value is css.NumberTerm) {
+      return FontSize(double.tryParse(value.text));
+    } else if (value is css.PercentageTerm) {
+      return FontSize.percent(int.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'),'')));
+    } else if (value is css.EmTerm) {
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'), '')));
+    } else if (value is css.RemTerm) {
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'), '')));
+    } else if (value is css.LiteralTerm) {
+      switch (value.text) {
+        case "xx-small":
+          return FontSize.xxSmall;
+        case "x-small":
+          return FontSize.xSmall;
+        case "small":
+          return FontSize.small;
+        case "medium":
+          return FontSize.medium;
+        case "large":
+          return FontSize.large;
+        case "x-large":
+          return FontSize.xLarge;
+        case "xx-large":
+          return FontSize.xxLarge;
+      }
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'), '')));
     }
     return null;
   }

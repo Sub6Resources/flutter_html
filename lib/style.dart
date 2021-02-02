@@ -409,6 +409,9 @@ class FontSize {
     return FontSize(percent.toDouble() / -100.0);
   }
 
+  factory FontSize.em(int em) {
+    return FontSize(em.toDouble() * 16 - 2);
+  }
   // These values are calculated based off of the default (`medium`)
   // being 14px.
   //
