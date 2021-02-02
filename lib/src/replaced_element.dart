@@ -409,7 +409,11 @@ ReplacedElement parseReplacedElement(
         if (element.attributes['src'] != null) element.attributes['src'],
         ...ReplacedElement.parseMediaSources(element.children),
       ];
-      if (sources == null || sources.isEmpty) {
+      bool matchFound = false;
+      for (String s in sources) {
+        matchFound = s == null ? false : RegExp(r"^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(\:[0-9]{1,5})*(/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*$").hasMatch(s);
+      }
+      if (sources == null || sources.isEmpty || !matchFound) {
         return EmptyContentElement();
       }
       return AudioContentElement(
@@ -446,7 +450,11 @@ ReplacedElement parseReplacedElement(
         if (element.attributes['src'] != null) element.attributes['src'],
         ...ReplacedElement.parseMediaSources(element.children),
       ];
-      if (sources == null || sources.isEmpty) {
+      bool matchFound = false;
+      for (String s in sources) {
+        matchFound = s == null ? false : RegExp(r"^((((H|h)(T|t)|(F|f))(T|t)(P|p)((S|s)?))\://)?(www.|[a-zA-Z0-9].)[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,6}(\:[0-9]{1,5})*(/($|[a-zA-Z0-9\.\,\;\?\'\\\+&amp;%\$#\=~_\-]+))*$").hasMatch(s);
+      }
+      if (sources == null || sources.isEmpty || !matchFound) {
         return EmptyContentElement();
       }
       return VideoContentElement(
