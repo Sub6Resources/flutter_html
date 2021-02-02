@@ -220,8 +220,6 @@ Widget html = Html(
 
 2. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content
 
-Packages used: [`data_connection_checker`](https://pub.dev/packages/data_connection_checker) and [`flutter_inappwebview`](https://pub.dev/packages/flutter_inappwebview)
-
 <details><summary>View code</summary>
 
 ```dart
@@ -241,43 +239,29 @@ Widget html = Html(
            return Container(
              width: width ?? (height ?? 150) * 2,
              height: height ?? (width ?? 300) / 2,
-             child: InAppWebView(
-               initialUrl: attributes['src'],
-               // recommended options when using this implementation
-               initialOptions: InAppWebViewGroupOptions(
-                 crossPlatform: InAppWebViewOptions(
-                   javaScriptEnabled: true,
-                   cacheEnabled: false,
-                   disableVerticalScroll: attributes['src'].contains("youtube.com/embed") ? true : false,
-                   disableHorizontalScroll: attributes['src'].contains("youtube.com/embed") ? true : false,
-                   useShouldOverrideUrlLoading: true,
-                 ),
-                 ios: IOSInAppWebViewOptions(
-                   allowsLinkPreview: false,
-                 ),
-                 android: AndroidInAppWebViewOptions(
-                   useHybridComposition: true,
-                 )
-               ),
-               // no need for a scrolling gesture recognizer for embedded youtube videos so we only use VerticalDragGestureRecognizer when the iframe does not display embedded youtube videos
-               gestureRecognizers: attributes['src'].contains("youtube.com/embed") ? null : [
-                 Factory(() => VerticalDragGestureRecognizer())
-               ].toSet(),
-               // no need to load other urls when displaying embedded youtube videos so we block url loading requests when this is the case
-               shouldOverrideUrlLoading: (controller, request) async {
-                 if (attributes['src'].contains("youtube.com/embed")) {
-                   if (!request.url.contains("youtube.com/embed")) {
-                     return ShouldOverrideUrlLoadingAction.CANCEL;
-                   } else {
-                     return ShouldOverrideUrlLoadingAction.ALLOW;
-                   }
-                 } else {
-                   return ShouldOverrideUrlLoadingAction.ALLOW;
-                 }
-               },
-             ),
-           );
-         // if the src of the iframe is null then do not render anything
+             child: WebView(
+                initialUrl: attributes['src'],
+                javascriptMode: JavascriptMode.unrestricted,
+                //no need for scrolling gesture recognizers on embedded youtube, so set gestureRecognizers null
+                //on other iframe content scrolling might be necessary, so use VerticalDragGestureRecognizer
+                gestureRecognizers: attributes['src'].contains("youtube.com/embed") ? null : [
+                  Factory(() => VerticalDragGestureRecognizer())
+                ].toSet(),
+                navigationDelegate: (NavigationRequest request) async {
+                //no need to load any url besides the embedded youtube url when displaying embedded youtube, so prevent url loading
+                //on other iframe content allow all url loading
+                  if (attributes['src'].contains("youtube.com/embed")) {
+                    if (!request.url.contains("youtube.com/embed")) {
+                      return NavigationDecision.prevent;
+                    } else {
+                      return NavigationDecision.navigate;
+                    }
+                  } else {
+                    return NavigationDecision.navigate;
+                  }
+                },
+              ),
+            );
          } else {
            return Container(height: 0);
          }
