@@ -289,6 +289,7 @@ class Style {
     return child.copyWith(
       color: child.color ?? color,
       direction: child.direction ?? direction,
+      display: display == Display.NONE ? display : child.display,
       fontFamily: child.fontFamily ?? fontFamily,
       fontFeatureSettings: child.fontFeatureSettings ?? fontFeatureSettings,
       fontSize: child.fontSize != null ?
@@ -401,6 +402,7 @@ enum Display {
   INLINE,
   INLINE_BLOCK,
   LIST_ITEM,
+  NONE,
 }
 
 class FontSize {

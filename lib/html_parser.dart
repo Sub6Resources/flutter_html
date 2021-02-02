@@ -661,6 +661,8 @@ class HtmlParser extends StatelessWidget {
           child.text.trim().isEmpty &&
           lastChildBlock) {
         toRemove.add(child);
+      } else if (child.style.display == Display.NONE) {
+        toRemove.add(child);
       } else {
         _removeEmptyElements(child);
       }

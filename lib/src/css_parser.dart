@@ -9,17 +9,31 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   declarations.forEach((property, value) {
     switch (property) {
       case 'background-color':
-        style.backgroundColor =
-            ExpressionMapping.expressionToColor(value.first);
+        style.backgroundColor = ExpressionMapping.expressionToColor(value.first);
         break;
       case 'color':
         style.color = ExpressionMapping.expressionToColor(value.first);
         break;
-      case 'text-align':
-        style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
+      case 'direction':
+        style.direction = ExpressionMapping.expressionToDirection(value.first);
+        break;
+      case 'display':
+        style.display = ExpressionMapping.expressionToDisplay(value.first);
+        break;
+      case 'font-family':
+        style.fontFamily = ExpressionMapping.expressionToFontFamily(value.first);
         break;
       case 'font-size':
         style.fontSize = ExpressionMapping.expressionToFontSize(value.first);
+        break;
+      case 'font-style':
+        style.fontStyle = ExpressionMapping.expressionToFontStyle(value.first);
+        break;
+      case 'font-weight':
+        style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
+        break;
+      case 'text-align':
+        style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
         break;
     }
   });
@@ -72,6 +86,36 @@ class ExpressionMapping {
     return null;
   }
 
+  static TextDirection expressionToDirection(css.Expression value) {
+    if (value is css.LiteralTerm) {
+      switch(value.text) {
+        case "ltr":
+          return TextDirection.ltr;
+        case "rtl":
+          return TextDirection.rtl;
+      }
+    }
+    return TextDirection.ltr;
+  }
+
+  static Display expressionToDisplay(css.Expression value) {
+    if (value is css.LiteralTerm) {
+      switch(value.text) {
+        case 'block':
+          return Display.BLOCK;
+        case 'inline-block':
+          return Display.INLINE_BLOCK;
+        case 'inline':
+          return Display.INLINE;
+        case 'list-item':
+          return Display.LIST_ITEM;
+        case 'none':
+          return Display.NONE;
+      }
+    }
+    return Display.INLINE;
+  }
+
   static FontSize expressionToFontSize(css.Expression value) {
     if (value is css.NumberTerm) {
       return FontSize(double.tryParse(value.text), "");
@@ -100,6 +144,59 @@ class ExpressionMapping {
       }
       return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "");
     }
+    return null;
+  }
+
+  static FontStyle expressionToFontStyle(css.Expression value) {
+    if (value is css.LiteralTerm) {
+      switch(value.text) {
+        case "italic":
+        case "oblique":
+          return FontStyle.italic;
+      }
+      return FontStyle.normal;
+    }
+    return FontStyle.normal;
+  }
+
+  static FontWeight expressionToFontWeight(css.Expression value) {
+    if (value is css.NumberTerm) {
+      switch (value.text) {
+        case "100":
+          return FontWeight.w100;
+        case "200":
+          return FontWeight.w200;
+        case "300":
+          return FontWeight.w300;
+        case "400":
+          return FontWeight.w400;
+        case "500":
+          return FontWeight.w500;
+        case "600":
+          return FontWeight.w600;
+        case "700":
+          return FontWeight.w700;
+        case "800":
+          return FontWeight.w800;
+        case "900":
+          return FontWeight.w900;
+      }
+    } else if (value is css.LiteralTerm) {
+      switch(value.text) {
+        case "bold":
+          return FontWeight.bold;
+        case "bolder":
+          return FontWeight.w900;
+        case "lighter":
+          return FontWeight.w200;
+      }
+      return FontWeight.normal;
+    }
+    return FontWeight.normal;
+  }
+
+  static String expressionToFontFamily(css.Expression value) {
+    if (value is css.LiteralTerm) return value.text;
     return null;
   }
 
