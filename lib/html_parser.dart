@@ -683,7 +683,7 @@ class HtmlParser extends StatelessWidget {
     tree.children?.forEach((child) {
       if ((child.style.fontSize?.size ?? parentFontSize) < 0) {
         child.style.fontSize =
-            FontSize(parentFontSize * -child.style.fontSize.size);
+            FontSize(parentFontSize * -child.style.fontSize.size, "");
       }
 
       _processFontSize(child);

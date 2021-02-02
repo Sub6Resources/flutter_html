@@ -291,7 +291,11 @@ class Style {
       direction: child.direction ?? direction,
       fontFamily: child.fontFamily ?? fontFamily,
       fontFeatureSettings: child.fontFeatureSettings ?? fontFeatureSettings,
-      fontSize: child.fontSize ?? fontSize,
+      fontSize: child.fontSize != null ?
+        fontSize != null && child.fontSize?.units == "em" ?
+          FontSize(child.fontSize.size * fontSize.size, "") : child.fontSize
+        : fontSize != null && fontSize.size < 0 ?
+          FontSize.percent(100) : fontSize,
       fontStyle: child.fontStyle ?? fontStyle,
       fontWeight: child.fontWeight ?? fontWeight,
       letterSpacing: child.letterSpacing ?? letterSpacing,
@@ -382,7 +386,7 @@ class Style {
     this.textDecorationThickness = textStyle.decorationThickness;
     this.fontFamily = textStyle.fontFamily;
     this.fontFeatureSettings = textStyle.fontFeatures;
-    this.fontSize = FontSize(textStyle.fontSize);
+    this.fontSize = FontSize(textStyle.fontSize, "");
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
     this.letterSpacing = textStyle.letterSpacing;
@@ -401,16 +405,22 @@ enum Display {
 
 class FontSize {
   final double size;
+  final String units;
 
-  const FontSize(this.size);
+  const FontSize(this.size, this.units);
 
   /// A percentage of the parent style's font size.
   factory FontSize.percent(int percent) {
-    return FontSize(percent.toDouble() / -100.0);
+    return FontSize(percent.toDouble() / -100.0, "%");
   }
 
-  factory FontSize.em(int em) {
-    return FontSize(em.toDouble() * 16 - 2);
+  factory FontSize.em(double em) {
+    return FontSize(em, "em");
+  }
+
+  factory FontSize.rem(double rem) {
+    print(rem * 16 - 2);
+    return FontSize(rem * 16 - 2, "rem");
   }
   // These values are calculated based off of the default (`medium`)
   // being 14px.
@@ -419,15 +429,15 @@ class FontSize {
   //
   // Negative values are computed during parsing to be a percentage of
   // the parent style's font size.
-  static const xxSmall = FontSize(7.875);
-  static const xSmall = FontSize(8.75);
-  static const small = FontSize(11.375);
-  static const medium = FontSize(14.0);
-  static const large = FontSize(15.75);
-  static const xLarge = FontSize(21.0);
-  static const xxLarge = FontSize(28.0);
-  static const smaller = FontSize(-0.83);
-  static const larger = FontSize(-1.2);
+  static const xxSmall = FontSize(7.875, "");
+  static const xSmall = FontSize(8.75, "");
+  static const small = FontSize(11.375, "");
+  static const medium = FontSize(14.0, "");
+  static const large = FontSize(15.75, "");
+  static const xLarge = FontSize(21.0, "");
+  static const xxLarge = FontSize(28.0, "");
+  static const smaller = FontSize(-0.83, "");
+  static const larger = FontSize(-1.2, "");
 }
 
 enum ListStyleType {

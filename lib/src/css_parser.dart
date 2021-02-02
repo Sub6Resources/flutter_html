@@ -74,13 +74,13 @@ class ExpressionMapping {
 
   static FontSize expressionToFontSize(css.Expression value) {
     if (value is css.NumberTerm) {
-      return FontSize(double.tryParse(value.text));
+      return FontSize(double.tryParse(value.text), "");
     } else if (value is css.PercentageTerm) {
-      return FontSize.percent(int.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'),'')));
+      return FontSize.percent(int.tryParse(value.text));
     } else if (value is css.EmTerm) {
-      return FontSize.em(int.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'), '')));
+      return FontSize.em(double.tryParse(value.text));
     } else if (value is css.RemTerm) {
-      return FontSize.em(int.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'), '')));
+      return FontSize.rem(double.tryParse(value.text));
     } else if (value is css.LiteralTerm) {
       switch (value.text) {
         case "xx-small":
@@ -98,7 +98,7 @@ class ExpressionMapping {
         case "xx-large":
           return FontSize.xxLarge;
       }
-      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'[^0-9]'), '')));
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "");
     }
     return null;
   }
