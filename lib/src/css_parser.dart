@@ -23,6 +23,9 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'font-family':
         style.fontFamily = ExpressionMapping.expressionToFontFamily(value.first);
         break;
+      case 'font-feature-settings':
+        style.fontFeatureSettings = ExpressionMapping.expressionToFontFeatureSettings(value);
+        break;
       case 'font-size':
         style.fontSize = ExpressionMapping.expressionToFontSize(value.first);
         break;
@@ -114,6 +117,29 @@ class ExpressionMapping {
       }
     }
     return Display.INLINE;
+  }
+
+  static List<FontFeature> expressionToFontFeatureSettings(List<css.Expression> value) {
+    List<FontFeature> fontFeatures = [];
+    for (int i = 0; i < value.length; i++) {
+      css.Expression exp = value[i];
+      if (exp is css.LiteralTerm) {
+        if (exp.text != "on" && exp.text != "off" && exp.text != "1" && exp.text != "0") {
+          if (i < value.length - 1) {
+            css.Expression nextExp = value[i+1];
+            if (nextExp is css.LiteralTerm && (nextExp.text == "on" || nextExp.text == "off" || nextExp.text == "1" || nextExp.text == "0")) {
+              fontFeatures.add(FontFeature(exp.text, nextExp.text == "on" || nextExp.text == "1" ? 1 : 0));
+            } else {
+              fontFeatures.add(FontFeature.enable(exp.text));
+            }
+          } else {
+            fontFeatures.add(FontFeature.enable(exp.text));
+          }
+        }
+      }
+    }
+    fontFeatures.toSet().toList();
+    return fontFeatures;
   }
 
   static FontSize expressionToFontSize(css.Expression value) {
