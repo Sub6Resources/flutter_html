@@ -133,7 +133,9 @@ class ImageContentElement extends ReplacedElement {
       Completer<Size> completer = Completer();
       Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
         if (frame == null) {
-          completer.completeError("error");
+          if (!completer.isCompleted) {
+            completer.completeError("error");
+          }
           return child;
         } else {
           return child;
@@ -142,11 +144,14 @@ class ImageContentElement extends ReplacedElement {
       image.image.resolve(ImageConfiguration()).addListener(
             ImageStreamListener((ImageInfo image, bool synchronousCall) {
               var myImage = image.image;
-              Size size =
-                  Size(myImage.width.toDouble(), myImage.height.toDouble());
-              completer.complete(size);
+              Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+              if (!completer.isCompleted) {
+                completer.complete(size);
+              }
             }, onError: (object, stacktrace) {
-              completer.completeError(object);
+              if (!completer.isCompleted) {
+                completer.completeError(object);
+              }
             }),
           );
       imageWidget = FutureBuilder<Size>(
