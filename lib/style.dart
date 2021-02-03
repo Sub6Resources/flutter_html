@@ -293,7 +293,7 @@ class Style {
         FontSize.percent(100) : fontSize;
     LineHeight finalLineHeight = child.lineHeight != null ?
       child.lineHeight?.units == "length" ?
-        LineHeight(child.lineHeight.size / (finalFontSize == null ? 14 : finalFontSize.size), "") : child.lineHeight
+        LineHeight(child.lineHeight.size / (finalFontSize == null ? 14 : finalFontSize.size) * 1.2, "") : child.lineHeight
       : lineHeight;
     return child.copyWith(
       color: child.color ?? color,
@@ -399,7 +399,7 @@ class Style {
     this.letterSpacing = textStyle.letterSpacing;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
-    this.lineHeight = LineHeight(textStyle.height ?? 1.0, "");
+    this.lineHeight = LineHeight(textStyle.height ?? 1.2, "");
   }
 }
 
@@ -454,22 +454,22 @@ class LineHeight {
   const LineHeight(this.size, this.units);
 
   factory LineHeight.percent(double percent) {
-    return LineHeight(percent / 100.0, "%");
+    return LineHeight(percent / 100.0 * 1.2, "%");
   }
 
   factory LineHeight.em(double em) {
-    return LineHeight(em, "em");
+    return LineHeight(em * 1.2, "em");
   }
 
   factory LineHeight.rem(double rem) {
-    return LineHeight(rem, "rem");
+    return LineHeight(rem * 1.2, "rem");
   }
 
   factory LineHeight.number(double num) {
-    return LineHeight(num, "number");
+    return LineHeight(num * 1.2, "number");
   }
 
-  static const normal = LineHeight(1.0, "");
+  static const normal = LineHeight(1.2, "");
 }
 
 enum ListStyleType {
