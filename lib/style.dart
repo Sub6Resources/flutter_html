@@ -288,12 +288,12 @@ class Style {
 
     FontSize finalFontSize = child.fontSize != null ?
       fontSize != null && child.fontSize?.units == "em" ?
-        FontSize(child.fontSize.size * fontSize.size, "") : child.fontSize
+        FontSize(child.fontSize.size * fontSize.size) : child.fontSize
       : fontSize != null && fontSize.size < 0 ?
         FontSize.percent(100) : fontSize;
     LineHeight finalLineHeight = child.lineHeight != null ?
       child.lineHeight?.units == "length" ?
-        LineHeight(child.lineHeight.size / (finalFontSize == null ? 14 : finalFontSize.size) * 1.2, "") : child.lineHeight
+        LineHeight(child.lineHeight.size / (finalFontSize == null ? 14 : finalFontSize.size) * 1.2) : child.lineHeight
       : lineHeight;
     return child.copyWith(
       color: child.color ?? color,
@@ -393,13 +393,13 @@ class Style {
     this.textDecorationThickness = textStyle.decorationThickness;
     this.fontFamily = textStyle.fontFamily;
     this.fontFeatureSettings = textStyle.fontFeatures;
-    this.fontSize = FontSize(textStyle.fontSize, "");
+    this.fontSize = FontSize(textStyle.fontSize);
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
     this.letterSpacing = textStyle.letterSpacing;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
-    this.lineHeight = LineHeight(textStyle.height ?? 1.2, "");
+    this.lineHeight = LineHeight(textStyle.height ?? 1.2);
   }
 }
 
@@ -415,19 +415,19 @@ class FontSize {
   final double size;
   final String units;
 
-  const FontSize(this.size, this.units);
+  const FontSize(this.size, {this.units = ""});
 
   /// A percentage of the parent style's font size.
   factory FontSize.percent(int percent) {
-    return FontSize(percent.toDouble() / -100.0, "%");
+    return FontSize(percent.toDouble() / -100.0, units: "%");
   }
 
   factory FontSize.em(double em) {
-    return FontSize(em, "em");
+    return FontSize(em, units: "em");
   }
 
   factory FontSize.rem(double rem) {
-    return FontSize(rem * 16 - 2, "rem");
+    return FontSize(rem * 16 - 2, units: "rem");
   }
   // These values are calculated based off of the default (`medium`)
   // being 14px.
@@ -436,40 +436,40 @@ class FontSize {
   //
   // Negative values are computed during parsing to be a percentage of
   // the parent style's font size.
-  static const xxSmall = FontSize(7.875, "");
-  static const xSmall = FontSize(8.75, "");
-  static const small = FontSize(11.375, "");
-  static const medium = FontSize(14.0, "");
-  static const large = FontSize(15.75, "");
-  static const xLarge = FontSize(21.0, "");
-  static const xxLarge = FontSize(28.0, "");
-  static const smaller = FontSize(-0.83, "");
-  static const larger = FontSize(-1.2, "");
+  static const xxSmall = FontSize(7.875);
+  static const xSmall = FontSize(8.75);
+  static const small = FontSize(11.375);
+  static const medium = FontSize(14.0);
+  static const large = FontSize(15.75);
+  static const xLarge = FontSize(21.0);
+  static const xxLarge = FontSize(28.0);
+  static const smaller = FontSize(-0.83);
+  static const larger = FontSize(-1.2);
 }
 
 class LineHeight {
   final double size;
   final String units;
 
-  const LineHeight(this.size, this.units);
+  const LineHeight(this.size, {this.units = ""});
 
   factory LineHeight.percent(double percent) {
-    return LineHeight(percent / 100.0 * 1.2, "%");
+    return LineHeight(percent / 100.0 * 1.2, units: "%");
   }
 
   factory LineHeight.em(double em) {
-    return LineHeight(em * 1.2, "em");
+    return LineHeight(em * 1.2, units: "em");
   }
 
   factory LineHeight.rem(double rem) {
-    return LineHeight(rem * 1.2, "rem");
+    return LineHeight(rem * 1.2, units: "rem");
   }
 
   factory LineHeight.number(double num) {
-    return LineHeight(num * 1.2, "number");
+    return LineHeight(num * 1.2, units: "number");
   }
 
-  static const normal = LineHeight(1.2, "");
+  static const normal = LineHeight(1.2);
 }
 
 enum ListStyleType {

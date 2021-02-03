@@ -42,15 +42,17 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
         break;
       case 'text-decoration':
-        List<css.LiteralTerm> exp1  = value.whereType<css.LiteralTerm>().toList();
-        exp1.removeWhere((element) => element.text != "overline" && element.text != "underline" && element.text != "line-through");
-        css.Expression exp2 = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
+        List<css.LiteralTerm> textDecorationList  = value.whereType<css.LiteralTerm>().toList();
+        /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
+        textDecorationList.removeWhere((element) => element.text != "overline" && element.text != "underline" && element.text != "line-through");
+        css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
         List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
-        temp.removeWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm);
-        css.LiteralTerm exp3 = temp.last ?? null;
-        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(exp1);
-        if (exp2 != null) style.textDecorationColor = ExpressionMapping.expressionToColor(exp2);
-        if (exp3 != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(exp3);
+        /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
+        temp.removeWhere((element) => element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
+        css.LiteralTerm textDecorationStyle = temp.last ?? null;
+        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
+        if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor);
+        if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
         break;
       case 'text-decoration-color':
         style.textDecorationColor = ExpressionMapping.expressionToColor(value.first);
@@ -170,7 +172,7 @@ class ExpressionMapping {
 
   static FontSize expressionToFontSize(css.Expression value) {
     if (value is css.NumberTerm) {
-      return FontSize(double.tryParse(value.text), "");
+      return FontSize(double.tryParse(value.text));
     } else if (value is css.PercentageTerm) {
       return FontSize.percent(int.tryParse(value.text));
     } else if (value is css.EmTerm) {
@@ -178,7 +180,7 @@ class ExpressionMapping {
     } else if (value is css.RemTerm) {
       return FontSize.rem(double.tryParse(value.text));
     } else if (value is css.LengthTerm) {
-      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "");
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')));
     } else if (value is css.LiteralTerm) {
       switch (value.text) {
         case "xx-small":
@@ -263,7 +265,7 @@ class ExpressionMapping {
     } else if (value is css.RemTerm) {
       return LineHeight.rem(double.tryParse(value.text));
     } else if (value is css.LengthTerm) {
-      return LineHeight(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "length");
+      return LineHeight(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), units: "length");
     }
     return LineHeight.normal;
   }

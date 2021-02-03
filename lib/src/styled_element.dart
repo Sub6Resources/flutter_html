@@ -196,7 +196,7 @@ StyledElement parseStyledElement(
       break;
     case "h3":
       styledElement.style = Style(
-        fontSize: FontSize(16.38, ""),
+        fontSize: FontSize(16.38),
         fontWeight: FontWeight.bold,
         margin: EdgeInsets.symmetric(vertical: 16.5),
         display: Display.BLOCK,
@@ -212,7 +212,7 @@ StyledElement parseStyledElement(
       break;
     case "h5":
       styledElement.style = Style(
-        fontSize: FontSize(11.62, ""),
+        fontSize: FontSize(11.62),
         fontWeight: FontWeight.bold,
         margin: EdgeInsets.symmetric(vertical: 19.25),
         display: Display.BLOCK,
@@ -220,7 +220,7 @@ StyledElement parseStyledElement(
       break;
     case "h6":
       styledElement.style = Style(
-        fontSize: FontSize(9.38, ""),
+        fontSize: FontSize(9.38),
         fontWeight: FontWeight.bold,
         margin: EdgeInsets.symmetric(vertical: 22),
         display: Display.BLOCK,
