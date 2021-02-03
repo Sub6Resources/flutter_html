@@ -409,6 +409,9 @@ ReplacedElement parseReplacedElement(
         if (element.attributes['src'] != null) element.attributes['src'],
         ...ReplacedElement.parseMediaSources(element.children),
       ];
+      if (sources == null || sources.isEmpty || sources.first == null) {
+        return EmptyContentElement();
+      }
       return AudioContentElement(
         name: "audio",
         src: sources,
@@ -443,6 +446,9 @@ ReplacedElement parseReplacedElement(
         if (element.attributes['src'] != null) element.attributes['src'],
         ...ReplacedElement.parseMediaSources(element.children),
       ];
+      if (sources == null || sources.isEmpty || sources.first == null) {
+        return EmptyContentElement();
+      }
       return VideoContentElement(
         name: "video",
         src: sources,
