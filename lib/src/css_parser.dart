@@ -20,6 +20,9 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'display':
         style.display = ExpressionMapping.expressionToDisplay(value.first);
         break;
+      case 'line-height':
+        style.lineHeight = ExpressionMapping.expressionToLineHeight(value.first);
+        break;
       case 'font-family':
         style.fontFamily = ExpressionMapping.expressionToFontFamily(value.first);
         break;
@@ -37,6 +40,9 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         break;
       case 'text-align':
         style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
+        break;
+      case 'text-shadow':
+        style.textShadow = ExpressionMapping.expressionToTextShadow(value);
         break;
     }
   });
@@ -151,6 +157,8 @@ class ExpressionMapping {
       return FontSize.em(double.tryParse(value.text));
     } else if (value is css.RemTerm) {
       return FontSize.rem(double.tryParse(value.text));
+    } else if (value is css.LengthTerm) {
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "");
     } else if (value is css.LiteralTerm) {
       switch (value.text) {
         case "xx-small":
@@ -168,7 +176,6 @@ class ExpressionMapping {
         case "xx-large":
           return FontSize.xxLarge;
       }
-      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "");
     }
     return null;
   }
@@ -226,44 +233,19 @@ class ExpressionMapping {
     return null;
   }
 
-  static Color stringToColor(String _text) {
-    var text = _text.replaceFirst('#', '');
-    if (text.length == 3)
-      text = text.replaceAllMapped(
-          RegExp(r"[a-f]|\d"), (match) => '${match.group(0)}${match.group(0)}');
-    int color = int.parse(text, radix: 16);
-
-    if (color <= 0xffffff) {
-      return new Color(color).withAlpha(255);
-    } else {
-      return new Color(color);
+  static LineHeight expressionToLineHeight(css.Expression value) {
+    if (value is css.NumberTerm) {
+      return LineHeight.number(double.tryParse(value.text));
+    } else if (value is css.PercentageTerm) {
+      return LineHeight.percent(double.tryParse(value.text));
+    } else if (value is css.EmTerm) {
+      return LineHeight.em(double.tryParse(value.text));
+    } else if (value is css.RemTerm) {
+      return LineHeight.rem(double.tryParse(value.text));
+    } else if (value is css.LengthTerm) {
+      return LineHeight(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), "length");
     }
-  }
-
-  static Color rgbOrRgbaToColor(String text) {
-    final rgbaText = text.replaceAll(')', '').replaceAll(' ', '');
-    try {
-      final rgbaValues =
-          rgbaText.split(',').map((value) => double.parse(value)).toList();
-      if (rgbaValues.length == 4) {
-        return Color.fromRGBO(
-          rgbaValues[0].toInt(),
-          rgbaValues[1].toInt(),
-          rgbaValues[2].toInt(),
-          rgbaValues[3],
-        );
-      } else if (rgbaValues.length == 3) {
-        return Color.fromRGBO(
-          rgbaValues[0].toInt(),
-          rgbaValues[1].toInt(),
-          rgbaValues[2].toInt(),
-          1.0,
-        );
-      }
-      return null;
-    } catch (e) {
-      return null;
-    }
+    return LineHeight.normal;
   }
 
   static TextAlign expressionToTextAlign(css.Expression value) {
@@ -284,5 +266,96 @@ class ExpressionMapping {
       }
     }
     return TextAlign.start;
+  }
+
+  static List<Shadow> expressionToTextShadow(List<css.Expression> value) {
+    List<Shadow> shadow = [];
+    List<int> indices = [];
+    List<List<css.Expression>> valueList = [];
+    for (css.Expression e in value) {
+      if (e is css.OperatorComma) {
+        indices.add(value.indexOf(e));
+      }
+    }
+    indices.add(value.length);
+    int previousIndex = 0;
+    for (int i in indices) {
+      valueList.add(value.sublist(previousIndex, i));
+      previousIndex = i + 1;
+    }
+    for (List<css.Expression> list in valueList) {
+      css.Expression exp = list[0];
+      css.Expression exp2 = list[1];
+      css.LiteralTerm exp3 = list.length > 2 ? list[2] : null;
+      css.LiteralTerm exp4 = list.length > 3 ? list[3] : null;
+      RegExp nonNumberRegex = RegExp(r'\s+(\d+\.\d+)\s+');
+      if (exp is css.LiteralTerm && exp2 is css.LiteralTerm) {
+        if (exp3 != null && (exp3 is css.HexColorTerm || exp3 is css.FunctionTerm)) {
+          shadow.add(Shadow(
+              color: expressionToColor(exp3), 
+              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, '')))
+          ));
+        } else if (exp3 != null && exp3 is css.LiteralTerm) {
+          if (exp4 != null && (exp4 is css.HexColorTerm || exp4 is css.FunctionTerm)) {
+            shadow.add(Shadow(
+                color: expressionToColor(exp4), 
+                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))), 
+                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))
+            ));
+          } else {
+            shadow.add(Shadow(
+                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))), 
+                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))
+            ));
+          }
+        } else {
+          shadow.add(Shadow(
+              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, '')))
+          ));
+        }
+      }
+    }
+    shadow.toSet().toList();
+    return shadow;
+  }
+
+  static Color stringToColor(String _text) {
+    var text = _text.replaceFirst('#', '');
+    if (text.length == 3)
+      text = text.replaceAllMapped(
+          RegExp(r"[a-f]|\d"), (match) => '${match.group(0)}${match.group(0)}');
+    int color = int.parse(text, radix: 16);
+
+    if (color <= 0xffffff) {
+      return new Color(color).withAlpha(255);
+    } else {
+      return new Color(color);
+    }
+  }
+
+  static Color rgbOrRgbaToColor(String text) {
+    final rgbaText = text.replaceAll(')', '').replaceAll(' ', '');
+    try {
+      final rgbaValues =
+      rgbaText.split(',').map((value) => double.parse(value)).toList();
+      if (rgbaValues.length == 4) {
+        return Color.fromRGBO(
+          rgbaValues[0].toInt(),
+          rgbaValues[1].toInt(),
+          rgbaValues[2].toInt(),
+          rgbaValues[3],
+        );
+      } else if (rgbaValues.length == 3) {
+        return Color.fromRGBO(
+          rgbaValues[0].toInt(),
+          rgbaValues[1].toInt(),
+          rgbaValues[2].toInt(),
+          1.0,
+        );
+      }
+      return null;
+    } catch (e) {
+      return null;
+    }
   }
 }

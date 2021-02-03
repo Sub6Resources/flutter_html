@@ -166,7 +166,7 @@ class Style {
   ///
   /// Inherited: no,
   /// Default: Unspecified (null),
-  double lineHeight;
+  LineHeight lineHeight;
 
   //TODO modify these to match CSS styles
   String before;
@@ -230,7 +230,7 @@ class Style {
       letterSpacing: letterSpacing,
       shadows: textShadow,
       wordSpacing: wordSpacing,
-      height: lineHeight,
+      height: lineHeight?.size ?? 1.0,
       //TODO background
       //TODO textBaseline
     );
@@ -286,19 +286,25 @@ class Style {
   Style copyOnlyInherited(Style child) {
     if (child == null) return this;
 
+    FontSize finalFontSize = child.fontSize != null ?
+      fontSize != null && child.fontSize?.units == "em" ?
+        FontSize(child.fontSize.size * fontSize.size, "") : child.fontSize
+      : fontSize != null && fontSize.size < 0 ?
+        FontSize.percent(100) : fontSize;
+    LineHeight finalLineHeight = child.lineHeight != null ?
+      child.lineHeight?.units == "length" ?
+        LineHeight(child.lineHeight.size / (finalFontSize == null ? 14 : finalFontSize.size), "") : child.lineHeight
+      : lineHeight;
     return child.copyWith(
       color: child.color ?? color,
       direction: child.direction ?? direction,
       display: display == Display.NONE ? display : child.display,
       fontFamily: child.fontFamily ?? fontFamily,
       fontFeatureSettings: child.fontFeatureSettings ?? fontFeatureSettings,
-      fontSize: child.fontSize != null ?
-        fontSize != null && child.fontSize?.units == "em" ?
-          FontSize(child.fontSize.size * fontSize.size, "") : child.fontSize
-        : fontSize != null && fontSize.size < 0 ?
-          FontSize.percent(100) : fontSize,
+      fontSize: finalFontSize,
       fontStyle: child.fontStyle ?? fontStyle,
       fontWeight: child.fontWeight ?? fontWeight,
+      lineHeight: finalLineHeight,
       letterSpacing: child.letterSpacing ?? letterSpacing,
       listStyleType: child.listStyleType ?? listStyleType,
       listStylePosition: child.listStylePosition ?? listStylePosition,
@@ -320,7 +326,7 @@ class Style {
     FontStyle fontStyle,
     FontWeight fontWeight,
     double height,
-    double lineHeight,
+    LineHeight lineHeight,
     double letterSpacing,
     ListStyleType listStyleType,
     ListStylePosition listStylePosition,
@@ -393,7 +399,7 @@ class Style {
     this.letterSpacing = textStyle.letterSpacing;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
-    this.lineHeight = textStyle.height;
+    this.lineHeight = LineHeight(textStyle.height ?? 1.0, "");
   }
 }
 
@@ -421,7 +427,6 @@ class FontSize {
   }
 
   factory FontSize.rem(double rem) {
-    print(rem * 16 - 2);
     return FontSize(rem * 16 - 2, "rem");
   }
   // These values are calculated based off of the default (`medium`)
@@ -440,6 +445,31 @@ class FontSize {
   static const xxLarge = FontSize(28.0, "");
   static const smaller = FontSize(-0.83, "");
   static const larger = FontSize(-1.2, "");
+}
+
+class LineHeight {
+  final double size;
+  final String units;
+
+  const LineHeight(this.size, this.units);
+
+  factory LineHeight.percent(double percent) {
+    return LineHeight(percent / 100.0, "%");
+  }
+
+  factory LineHeight.em(double em) {
+    return LineHeight(em, "em");
+  }
+
+  factory LineHeight.rem(double rem) {
+    return LineHeight(rem, "rem");
+  }
+
+  factory LineHeight.number(double num) {
+    return LineHeight(num, "number");
+  }
+
+  static const normal = LineHeight(1.0, "");
 }
 
 enum ListStyleType {
