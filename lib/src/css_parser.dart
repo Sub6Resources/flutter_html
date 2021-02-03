@@ -41,6 +41,26 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'text-align':
         style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
         break;
+      case 'text-decoration':
+        List<css.LiteralTerm> exp1  = value.whereType<css.LiteralTerm>().toList();
+        exp1.removeWhere((element) => element.text != "overline" && element.text != "underline" && element.text != "line-through");
+        css.Expression exp2 = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
+        List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
+        temp.removeWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm);
+        css.LiteralTerm exp3 = temp.last ?? null;
+        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(exp1);
+        if (exp2 != null) style.textDecorationColor = ExpressionMapping.expressionToColor(exp2);
+        if (exp3 != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(exp3);
+        break;
+      case 'text-decoration-color':
+        style.textDecorationColor = ExpressionMapping.expressionToColor(value.first);
+        break;
+      case 'text-decoration-line':
+        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(value);
+        break;
+      case 'text-decoration-style':
+        style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(value.first);
+        break;
       case 'text-shadow':
         style.textShadow = ExpressionMapping.expressionToTextShadow(value);
         break;
@@ -266,6 +286,42 @@ class ExpressionMapping {
       }
     }
     return TextAlign.start;
+  }
+
+  static TextDecoration expressionToTextDecorationLine(List<css.LiteralTerm> value) {
+    List<TextDecoration> decorationList = [];
+    for (css.LiteralTerm term in value) {
+      switch(term.text) {
+        case "overline":
+          decorationList.add(TextDecoration.overline);
+          break;
+        case "underline":
+          decorationList.add(TextDecoration.underline);
+          break;
+        case "line-through":
+          decorationList.add(TextDecoration.lineThrough);
+          break;
+        default:
+          decorationList.add(TextDecoration.none);
+          break;
+      }
+    }
+    return TextDecoration.combine(decorationList);
+  }
+
+  static TextDecorationStyle expressionToTextDecorationStyle(css.LiteralTerm value) {
+    switch(value.text) {
+      case "wavy":
+        return TextDecorationStyle.wavy;
+      case "dotted":
+        return TextDecorationStyle.dotted;
+      case "dashed":
+        return TextDecorationStyle.dashed;
+      case "double":
+        return TextDecorationStyle.double;
+      default:
+        return TextDecorationStyle.solid;
+    }
   }
 
   static List<Shadow> expressionToTextShadow(List<css.Expression> value) {
