@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_html/style.dart';
 
 Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
@@ -44,7 +45,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'text-decoration':
         List<css.LiteralTerm> textDecorationList  = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
-        textDecorationList.removeWhere((element) => element.text != "overline" && element.text != "underline" && element.text != "line-through");
+        textDecorationList.removeWhere((element) => element.text != "none" && element.text != "overline" && element.text != "underline" && element.text != "line-through");
         css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
         List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
@@ -166,8 +167,8 @@ class ExpressionMapping {
         }
       }
     }
-    fontFeatures.toSet().toList();
-    return fontFeatures;
+    List<FontFeature> finalFontFeatures = fontFeatures.toSet().toList();
+    return finalFontFeatures;
   }
 
   static FontSize expressionToFontSize(css.Expression value) {
@@ -308,6 +309,7 @@ class ExpressionMapping {
           break;
       }
     }
+    if (decorationList.contains(TextDecoration.none)) decorationList = [TextDecoration.none];
     return TextDecoration.combine(decorationList);
   }
 
@@ -373,8 +375,8 @@ class ExpressionMapping {
         }
       }
     }
-    shadow.toSet().toList();
-    return shadow;
+    List<Shadow> finalShadows = shadow.toSet().toList();
+    return finalShadows;
   }
 
   static Color stringToColor(String _text) {
