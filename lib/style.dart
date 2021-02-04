@@ -166,7 +166,7 @@ class Style {
   ///
   /// Inherited: no,
   /// Default: Unspecified (null),
-  double lineHeight;
+  LineHeight lineHeight;
 
   //TODO modify these to match CSS styles
   String before;
@@ -230,7 +230,7 @@ class Style {
       letterSpacing: letterSpacing,
       shadows: textShadow,
       wordSpacing: wordSpacing,
-      height: lineHeight,
+      height: lineHeight?.size ?? 1.0,
       //TODO background
       //TODO textBaseline
     );
@@ -286,14 +286,25 @@ class Style {
   Style copyOnlyInherited(Style child) {
     if (child == null) return this;
 
+    FontSize finalFontSize = child.fontSize != null ?
+      fontSize != null && child.fontSize?.units == "em" ?
+        FontSize(child.fontSize.size * fontSize.size) : child.fontSize
+      : fontSize != null && fontSize.size < 0 ?
+        FontSize.percent(100) : fontSize;
+    LineHeight finalLineHeight = child.lineHeight != null ?
+      child.lineHeight?.units == "length" ?
+        LineHeight(child.lineHeight.size / (finalFontSize == null ? 14 : finalFontSize.size) * 1.2) : child.lineHeight
+      : lineHeight;
     return child.copyWith(
       color: child.color ?? color,
       direction: child.direction ?? direction,
+      display: display == Display.NONE ? display : child.display,
       fontFamily: child.fontFamily ?? fontFamily,
       fontFeatureSettings: child.fontFeatureSettings ?? fontFeatureSettings,
-      fontSize: child.fontSize ?? fontSize,
+      fontSize: finalFontSize,
       fontStyle: child.fontStyle ?? fontStyle,
       fontWeight: child.fontWeight ?? fontWeight,
+      lineHeight: finalLineHeight,
       letterSpacing: child.letterSpacing ?? letterSpacing,
       listStyleType: child.listStyleType ?? listStyleType,
       listStylePosition: child.listStylePosition ?? listStylePosition,
@@ -315,7 +326,7 @@ class Style {
     FontStyle fontStyle,
     FontWeight fontWeight,
     double height,
-    double lineHeight,
+    LineHeight lineHeight,
     double letterSpacing,
     ListStyleType listStyleType,
     ListStylePosition listStylePosition,
@@ -388,7 +399,7 @@ class Style {
     this.letterSpacing = textStyle.letterSpacing;
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
-    this.lineHeight = textStyle.height;
+    this.lineHeight = LineHeight(textStyle.height ?? 1.2);
   }
 }
 
@@ -397,18 +408,27 @@ enum Display {
   INLINE,
   INLINE_BLOCK,
   LIST_ITEM,
+  NONE,
 }
 
 class FontSize {
   final double size;
+  final String units;
 
-  const FontSize(this.size);
+  const FontSize(this.size, {this.units = ""});
 
   /// A percentage of the parent style's font size.
   factory FontSize.percent(int percent) {
-    return FontSize(percent.toDouble() / -100.0);
+    return FontSize(percent.toDouble() / -100.0, units: "%");
   }
 
+  factory FontSize.em(double em) {
+    return FontSize(em, units: "em");
+  }
+
+  factory FontSize.rem(double rem) {
+    return FontSize(rem * 16 - 2, units: "rem");
+  }
   // These values are calculated based off of the default (`medium`)
   // being 14px.
   //
@@ -425,6 +445,31 @@ class FontSize {
   static const xxLarge = FontSize(28.0);
   static const smaller = FontSize(-0.83);
   static const larger = FontSize(-1.2);
+}
+
+class LineHeight {
+  final double size;
+  final String units;
+
+  const LineHeight(this.size, {this.units = ""});
+
+  factory LineHeight.percent(double percent) {
+    return LineHeight(percent / 100.0 * 1.2, units: "%");
+  }
+
+  factory LineHeight.em(double em) {
+    return LineHeight(em * 1.2, units: "em");
+  }
+
+  factory LineHeight.rem(double rem) {
+    return LineHeight(rem * 1.2, units: "rem");
+  }
+
+  factory LineHeight.number(double num) {
+    return LineHeight(num * 1.2, units: "number");
+  }
+
+  static const normal = LineHeight(1.2);
 }
 
 enum ListStyleType {
