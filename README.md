@@ -65,6 +65,14 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
     - [Example](#example-usage---navigationdelegateforiframe)
     
+  - [customImageRender](#customimagerender)
+  
+    - [typedef ImageSourceMatcher (with examples)](#typedef-imagesourcematcher)
+    
+    - [typedef ImageRender (with examples)](#typedef-imagerender)
+    
+    - [Examples](#example-usages---customimagerender)
+    
 - [Rendering Reference](#rendering-reference)
 
   - [Image](#image)
@@ -140,6 +148,7 @@ Below, you will find brief descriptions of the parameters the`Html` widget accep
 | `blacklistedElements` | A list of elements the `Html` widget should not render. The list should contain the tags of the HTML elements you wish to blacklist.  |
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
+| `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
 
 ### Data:
 
@@ -267,7 +276,7 @@ Widget html = Html(
          }
        }
      }
- ),
+ );
 ```
 </details>
 
@@ -404,6 +413,175 @@ Widget html = Html(
   },
 );
 ```
+
+### customImageRender:
+
+A powerful API that allows you to customize what the `Html` widget does when rendering an image, down to the most minute detail.
+
+`customImageRender` accepts a `Map<ImageSourceMatcher, ImageRender>`. `ImageSourceMatcher` provides the matching function, while `ImageRender` provides the widget to be rendered.
+
+The default image renders are:
+
+```dart
+final Map<ImageSourceMatcher, ImageRender> defaultImageRenders = {
+  base64UriMatcher(): base64ImageRender(),
+  networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
+  networkSourceMatcher(): networkImageRender(),
+};
+```
+
+See [the source code](https://github.com/Sub6Resources/flutter_html/blob/master/lib/image_render.dart) for details on how these are implemented.
+
+When setting `customImageRenders`, the package will prioritize the custom renders first, while the default ones are used as a fallback.
+
+Note: Order is very important when you set `customImageRenders`. The more specific your `ImageSourceMatcher`, the higher up in the `customImageRender` list it should be.
+
+#### typedef ImageSourceMatcher
+
+This is type defined as a function that passes the attributes as a `Map<String, String>` and the DOM element as `dom.Element`. This type is used to define how an image should be matched i.e. whether the package should override the default rendering method and instead use your custom implementation.
+
+A typical usage would look something like this:
+
+```dart
+ImageSourceMatcher base64UriMatcher() => (attributes, element) =>
+    attributes["src"].startsWith("data:image") &&
+    attributes["src"].contains("base64,");
+```
+
+In the above example, the matcher checks whether the image's `src` either starts with "data:image" or contains "base64,", since these indicate an image in base64 format.
+
+You can also declare your own variables in the function itself, which would look like this:
+
+```dart
+ImageSourceMatcher networkSourceMatcher({
+/// all three are optional, you don't need to have these in the function
+  List<String> schemas: const ["https", "http"],
+  List<String> domains: const ["your domain 1", "your domain 2"],
+  String extension: "your extension",
+}) =>
+    (attributes, element) {
+      final src = Uri.parse(attributes["src"]);
+      return schemas.contains(src.scheme) &&
+          (domains == null || domains.contains(src.host)) &&
+          (extension == null || src.path.endsWith(".$extension"));
+    };
+```
+
+In the above example, the possible schemas are checked against the scheme of the `src`, and optionally the domains and extensions are also checked. This implementation allows for extremely granular control over what images are matched, and could even be changed on the fly with a variable.
+
+#### typedef ImageRender
+
+This is a type defined as a function that passes the attributes of the image as a `Map<String, String>`, the current [`RenderContext`](https://github.com/Sub6Resources/flutter_html/wiki/All-About-customRender#rendercontext-context), and the DOM element as `dom.Element`. This type is used to define the widget that should be rendered when used in conjunction with an `ImageSourceMatcher`.
+
+A typical usage might look like this:
+
+```dart
+ImageRender base64ImageRender() => (context, attributes, element) {
+      final decodedImage = base64.decode(attributes["src"].split("base64,")[1].trim());
+      return Image.memory(
+        decodedImage,
+      );
+    };
+```
+
+The above example should be used with the `base64UriMatcher()` in the examples for `ImageSourceMatcher`.
+
+Just like functions for `ImageSourceMatcher`, you can declare your own variables in the function itself:
+
+```dart
+ImageRender networkImageRender({
+  Map<String, String> headers,
+  double width,
+  double height,
+  Widget Function(String) altWidget,
+}) =>
+    (context, attributes, element) {
+      return Image.network(
+        attributes["src"],
+        headers: headers,
+        width: width,
+        height: height,
+        frameBuilder: (ctx, child, frame, _) {
+          if (frame == null) {
+            return altWidget.call(attributes["alt"]) ??
+                Text(attributes["alt"] ?? "",
+                    style: context.style.generateTextStyle());
+          }
+          return child;
+        },
+      );
+    };
+```
+
+Implementing these variables allows you to customize every last detail of how the widget is rendered.
+
+#### Example Usages - customImageRender:
+
+`customImageRender` can be used in two different ways:
+
+1. Overriding a default render:
+```dart
+Widget html = Html(
+  data: """
+  <img alt='Flutter' src='https://flutter.dev/assets/flutter-lockup-1caf6476beed76adec3c477586da54de6b552b2f42108ec5bc68dc63bae2df75.png' /><br />
+  <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /><br />
+  """,
+  customImageRenders: {
+    networkSourceMatcher(domains: ["flutter.dev"]):
+        (context, attributes, element) {
+      return FlutterLogo(size: 36);
+    },
+    networkSourceMatcher(): networkImageRender(
+      headers: {"Custom-Header": "some-value"},
+      altWidget: (alt) => Text(alt),
+    ),
+  },
+);
+```
+
+Above, there are two `networkSourceMatcher`s. One is overriden to only apply to images on the URL `flutter.dev`, while the other covers the rest of the cases.
+When an image with URL `flutter.dev` is detected, rather than displaying the image, the render will display the flutter logo. If the image is any other image, it keeps the default widget, but just sets the headers and the alt text in case that image happens to be broken. 
+
+2. Creating your own renders:
+```dart
+ImageSourceMatcher classAndIdMatcher({String classToMatch, String idToMatch}) => (attributes, element) =>
+    attributes["class"].contains(classToMatch) ||
+    attributes["id"].contains(idToMatch);
+
+ImageRender classAndIdRender({String classToMatch, String idToMatch}) => (context, attributes, element) {
+  if (attributes["class"].contains(classToMatch)) {
+    return Image.asset(attributes["src"]);
+  } else {
+    return Image.network(
+      attributes["src"],
+      semanticLabel: attributes["longdesc"],
+      width: attributes["width"],
+      height: attributes["height"],
+      color: context.style.color,
+      frameBuilder: (ctx, child, frame, _) {
+          if (frame == null) {
+            return Text(attributes["alt"] ?? "", style: context.style.generateTextStyle());
+          }
+          return child;
+        },
+    ); 
+  }
+};
+
+Widget html = Html(
+  data: """
+  <img alt='alt text' class='class1-class2' src='assets/flutter.png' /><br />
+  <img alt='alt text 2' id='imageId' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /><br />
+  """,
+  customImageRenders: {
+    classAndIdMatcher(classToMatch: "class1", idToMatch: "imageId"): classAndIdRender(classToMatch: "class1", idToMatch: "imageId")
+  },
+);
+```
+
+The above example has a matcher that checks for either a class or an id, and then returns two different widgets based on whether a class was matched or an id was matched. 
+
+The sky is the limit when using the custom image renders. You can make it as granular as you want, or as all-encompassing as you want, and you have full control of everything. Plus you get the package's style parsing to use in your custom widgets, so your code looks neat and readable!
 
 ## Rendering Reference
 
