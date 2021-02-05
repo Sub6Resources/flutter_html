@@ -86,7 +86,7 @@ class ImageContentElement extends ReplacedElement {
         }
       }
     }
-    return Container();
+    return SizedBox(width: 0, height: 0);
   }
 }
 
