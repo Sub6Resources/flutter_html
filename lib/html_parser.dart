@@ -651,7 +651,7 @@ class HtmlParser extends StatelessWidget {
     List<StyledElement> toRemove = new List<StyledElement>();
     bool lastChildBlock = true;
     tree.children?.forEach((child) {
-      if (child is EmptyContentElement) {
+      if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
       } else if (child is TextContentElement && (child.text.isEmpty)) {
         toRemove.add(child);

@@ -245,19 +245,19 @@ TableStyleElement parseTableDefinitionElement(dom.Element element,
 }
 
 class DetailsContentElement extends LayoutElement {
-  List<dom.Element> title;
+  List<dom.Element> elementList;
 
   DetailsContentElement({
     String name,
     List<StyledElement> children,
     dom.Element node,
-    this.title,
+    this.elementList,
   }) : super(name: name, node: node, children: children);
 
   @override
   Widget toWidget(RenderContext context) {
     return ExpansionTile(
-        title: title.first.localName == "summary" && children != null ? StyledText(
+        title: children != null && elementList.first.localName == "summary" ? StyledText(
           textSpan: TextSpan(
             style: style.generateTextStyle(),
             children: [children
@@ -271,16 +271,30 @@ class DetailsContentElement extends LayoutElement {
           StyledText(
             textSpan: TextSpan(
               style: style.generateTextStyle(),
-              children: children
-                  .map((tree) => context.parser.parseTree(context, tree))
-                  .toList() ??
-                  [],
+              children: getChildren(children, context)
             ),
             style: style,
           ),
         ]
     );
   }
+
+  List<InlineSpan> getChildren(List<StyledElement> children, RenderContext context) {
+    if (children.map((tree) => context.parser.parseTree(context, tree)).toList() == null) {
+      return [];
+    } else {
+      List<InlineSpan> reducedChildren = children.map((tree) => context.parser.parseTree(context, tree)).toList();
+      reducedChildren.removeAt(0);
+      return reducedChildren;
+    }
+  }
+}
+
+class EmptyLayoutElement extends LayoutElement {
+  EmptyLayoutElement({String name = "empty"}) : super(name: name);
+
+  @override
+  Widget toWidget(_) => null;
 }
 
 LayoutElement parseLayoutElement(
@@ -289,13 +303,14 @@ LayoutElement parseLayoutElement(
 ) {
   switch (element.localName) {
     case "details":
+      if (children == null || children.isEmpty) {
+        return EmptyLayoutElement();
+      }
       return DetailsContentElement(
           node: element,
           name: element.localName,
-          //todo
-          //need to remove the summary tag itself before passing the children to the widget build function somehow
-          children: element.children.first.localName == "summary" ? children : children,
-          title: element.children
+          children: children,
+          elementList: element.children
       );
     case "table":
       return TableLayoutElement(
