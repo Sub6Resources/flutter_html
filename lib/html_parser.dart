@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
@@ -15,7 +16,7 @@ import 'package:html/parser.dart' as htmlparser;
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(String url);
-typedef CustomRender = Widget Function(
+typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
   Map<String, String> attributes,
@@ -243,7 +244,7 @@ class HtmlParser extends StatelessWidget {
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
-      dynamic customRenderForElement = customRender[tree.name].call(
+      final render = customRender[tree.name].call(
         newContext,
         ContainerSpan(
           newContext: newContext,
@@ -257,16 +258,18 @@ class HtmlParser extends StatelessWidget {
         tree.attributes,
         tree.element,
       );
-
-      if (customRenderForElement != null) {
-        return WidgetSpan(
-          child: ContainerSpan(
-            newContext: newContext,
-            style: tree.style,
-            shrinkWrap: context.parser.shrinkWrap,
-            child: customRenderForElement,
-          ),
-        );
+      if (render != null) {
+        assert(render is InlineSpan || render is Widget);
+        return render is InlineSpan
+            ? render
+            : WidgetSpan(
+                child: ContainerSpan(
+                  newContext: newContext,
+                  style: tree.style,
+                  shrinkWrap: context.parser.shrinkWrap,
+                  child: render,
+                ),
+              );
       }
     }
 
@@ -333,8 +336,39 @@ class HtmlParser extends StatelessWidget {
         );
       }
     } else if (tree is InteractableElement) {
-      return WidgetSpan(
-        child: tree.toWidget(context),
+      return TextSpan(
+        children: tree.children
+            .map((tree) => parseTree(newContext, tree))
+            .map((childSpan) {
+          if (childSpan is TextSpan) {
+            return TextSpan(
+              text: childSpan.text,
+              children: childSpan.children,
+              style: (childSpan.style ?? TextStyle())
+                  .merge(newContext.style.generateTextStyle()),
+              semanticsLabel: childSpan.semanticsLabel,
+              recognizer: TapGestureRecognizer()
+                ..onTap = () => onLinkTap?.call(tree.href),
+            );
+          } else {
+            return WidgetSpan(
+              child: RawGestureDetector(
+                gestures: {
+                  MultipleTapGestureRecognizer:
+                  GestureRecognizerFactoryWithHandlers<
+                      MultipleTapGestureRecognizer>(
+                        () => MultipleTapGestureRecognizer(),
+                        (instance) {
+                      instance..onTap = () => onLinkTap?.call(tree.href);
+                    },
+                  ),
+                },
+                child: (childSpan as WidgetSpan).child,
+              ),
+            );
+          }
+        }).toList() ??
+            [],
       );
     } else if (tree is LayoutElement) {
       return WidgetSpan(
