@@ -78,6 +78,11 @@ class HtmlParser extends StatelessWidget {
       textSpan: parsedTree,
       style: cleanedTree.style,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      renderContext: RenderContext(
+        buildContext: context,
+        parser: this,
+        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
+      ),
     );
   }
 
@@ -319,6 +324,7 @@ class HtmlParser extends StatelessWidget {
                     style: newContext.style.generateTextStyle(),
                   ),
                   style: newContext.style,
+                  renderContext: context,
                 ),
               )
             ],
@@ -409,6 +415,7 @@ class HtmlParser extends StatelessWidget {
                   [],
             ),
             style: newContext.style,
+            renderContext: context,
           ),
         ),
       );
@@ -757,6 +764,7 @@ class ContainerSpan extends StatelessWidget {
               children: children,
             ),
             style: newContext.style,
+            renderContext: newContext,
           ),
     );
   }
@@ -766,20 +774,20 @@ class StyledText extends StatelessWidget {
   final InlineSpan textSpan;
   final Style style;
   final double textScaleFactor;
+  final RenderContext renderContext;
 
   const StyledText({
     this.textSpan,
     this.style,
     this.textScaleFactor = 1.0,
+    this.renderContext,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:
-          style.display == Display.BLOCK || style.display == Display.LIST_ITEM
-              ? double.infinity
-              : null,
+      width: (style.display == Display.BLOCK || style.display == Display.LIST_ITEM) && renderContext.parser.shrinkWrap != true
+        ? double.infinity : renderContext.parser.shrinkWrap == true ? MediaQuery.of(renderContext.buildContext).size.width : null,
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),

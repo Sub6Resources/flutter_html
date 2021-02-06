@@ -119,6 +119,7 @@ class TableLayoutElement extends LayoutElement {
                   child: StyledText(
                     textSpan: context.parser.parseTree(context, child),
                     style: child.style,
+                    renderContext: context,
                   ),
                 ),
               ),
