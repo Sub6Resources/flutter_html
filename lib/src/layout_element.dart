@@ -310,7 +310,7 @@ LayoutElement parseLayoutElement(
 ) {
   switch (element.localName) {
     case "details":
-      if (children == null || children.isEmpty) {
+      if (children?.isEmpty ?? false) {
         return EmptyLayoutElement();
       }
       return DetailsContentElement(
