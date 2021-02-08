@@ -19,3 +19,7 @@ dev_dependencies:
 flutter:
 
   uses-material-design: true
+
+  assets:
+    - assets/html5.png
+    - assets/mac.svg

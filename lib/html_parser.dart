@@ -6,6 +6,7 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
@@ -32,6 +33,7 @@ class HtmlParser extends StatelessWidget {
 
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
+  final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> blacklistedElements;
   final NavigationDelegate navigationDelegateForIframe;
 
@@ -43,6 +45,7 @@ class HtmlParser extends StatelessWidget {
     this.shrinkWrap,
     this.style,
     this.customRender,
+    this.imageRenders,
     this.blacklistedElements,
     this.navigationDelegateForIframe,
   });
