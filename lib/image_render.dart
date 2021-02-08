@@ -11,7 +11,7 @@ typedef ImageSourceMatcher = bool Function(
   dom.Element element,
 );
 
-ImageSourceMatcher base64UriMatcher() => (attributes, element) =>
+ImageSourceMatcher base64DataUriMatcher() => (attributes, element) =>
     _src(attributes) != null &&
     _src(attributes).startsWith("data:image") &&
     _src(attributes).contains("base64,");
@@ -159,7 +159,7 @@ ImageRender svgNetworkImageRender() => (context, attributes, element) {
     };
 
 final Map<ImageSourceMatcher, ImageRender> defaultImageRenders = {
-  base64UriMatcher(): base64ImageRender(),
+  base64DataUriMatcher(): base64ImageRender(),
   assetUriMatcher(): assetImageRender(),
   networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
   networkSourceMatcher(): networkImageRender(),
