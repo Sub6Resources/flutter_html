@@ -45,7 +45,7 @@ class Html extends StatelessWidget {
   }) : super(key: key);
 
   final String data;
-  final OnTap onLinkTap;
+  final OnLinkTap onLinkTap;
   final ImageErrorListener onImageError;
   final bool shrinkWrap;
 

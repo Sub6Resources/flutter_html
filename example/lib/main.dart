@@ -185,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
               );
             },
           },
-          onLinkTap: (url) {
+          onLinkTap: (url, event) {
             print("Opening $url...");
           },
           onImageTap: (src) {
