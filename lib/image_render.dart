@@ -109,7 +109,9 @@ ImageRender networkImageRender({
       Image image =
           Image.network(_src(attributes), frameBuilder: (ctx, child, frame, _) {
         if (frame == null) {
-          completer.completeError("error");
+          if (!completer.isCompleted) {
+            completer.completeError("error");
+          }
           return child;
         } else {
           return child;
@@ -121,9 +123,13 @@ ImageRender networkImageRender({
               var myImage = image.image;
               Size size =
                   Size(myImage.width.toDouble(), myImage.height.toDouble());
-              completer.complete(size);
+              if (!completer.isCompleted) {
+                completer.complete(size);
+              }
             }, onError: (object, stacktrace) {
-              completer.completeError(object);
+              if (!completer.isCompleted) {
+                completer.completeError(object);
+              }
             }),
           );
       return FutureBuilder<Size>(
