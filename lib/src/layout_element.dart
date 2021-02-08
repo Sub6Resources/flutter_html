@@ -285,6 +285,7 @@ class DetailsContentElement extends LayoutElement {
             children: [firstChild] ?? [],
           ),
           style: style,
+          renderContext: context,
         ) : Text("Details"),
         children: [
           StyledText(
@@ -293,6 +294,7 @@ class DetailsContentElement extends LayoutElement {
               children: getChildren(childrenList, context, elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? firstChild : null)
             ),
             style: style,
+            renderContext: context,
           ),
         ]
     );

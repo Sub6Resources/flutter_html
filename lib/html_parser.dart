@@ -68,7 +68,6 @@ class HtmlParser extends StatelessWidget {
       RenderContext(
         buildContext: context,
         parser: this,
-        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
       ),
       cleanedTree,
     );
@@ -789,8 +788,7 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: (style.display == Display.BLOCK || style.display == Display.LIST_ITEM) && renderContext.parser.shrinkWrap != true
-        ? double.infinity : renderContext.parser.shrinkWrap == true ? MediaQuery.of(renderContext.buildContext).size.width : null,
+      width: calculateWidth(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -799,5 +797,15 @@ class StyledText extends StatelessWidget {
         textScaleFactor: textScaleFactor,
       ),
     );
+  }
+
+  double calculateWidth(Display display, RenderContext context) {
+    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && renderContext.parser.shrinkWrap != true) {
+      return double.infinity;
+    } else if (renderContext.parser.shrinkWrap == true) {
+      return MediaQuery.of(context.buildContext).size.width;
+    } else {
+      return null;
+    }
   }
 }

@@ -86,6 +86,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   - [SVG](#svg)
   
   - [Table](#table)
+  
+- [Notes](#notes)
 
 - [Migration Guide](#migration-guides)
 
@@ -102,12 +104,13 @@ Add the following to your `pubspec.yaml` file:
 |            |           |       |             |         |         |       |      |        |        |        |
 |------------|-----------|-------|-------------|---------|---------|-------|------|--------|--------|--------|
 |`a`         | `abbr`    | `acronym`| `address`   | `article`| `aside` | `audio`| `b`  | `bdi`  | `bdo`  | `big`  |
-|`blockquote`| `body`    | `br`  | `caption`   | `cite`  | `code`  | `data`| `dd` | `del`  | `dfn`  | `div`  |
-|`dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `h1`  | `h2` | `h3`   | `h4`   | `h5`   |
-|`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   | `main` | `mark` |
-|`nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` | `s`    |`samp`  |
-|`section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `svg`| `table`| `tbody`| `td`   |
-| `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul`   | `var`  | `video`|
+|`blockquote`| `body`    | `br`  | `caption`   | `cite`  | `code`  | `data`| `dd` | `del`  | `details`  | `dfn`  |
+| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `h1`  | `h2` | `h3`   | `h4`   |
+| `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   | `main` | 
+| `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` | `s`  |
+| `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
+| `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
+| `var` | `video` |    |   |      |   |     |   |   |    |   | 
 
 
  
@@ -639,6 +642,24 @@ When rendering SVGs, the package takes the SVG data within the `<svg>` tag and p
 This package renders table elements using the [`flutter_layout_grid`](https://pub.dev/packages/flutter_layout_grid) plugin.
 
 When rendering table elements, the package tries to calculate the best fit for each element and size its cell accordingly. `Rowspan`s and `colspan`s are considered in this process, so cells that span across multiple rows and columns are rendered as expected. Heights are determined intrinsically to maintain an optimal aspect ratio for the cell.
+
+## Notes
+
+1. If you'd like to use this widget inside of a `Row()`, make sure to set `shrinkWrap: true` and place your widget inside expanded:
+
+```dart
+Widget row = Row(
+   children: [
+	Expanded(
+	    child: Html(
+          shrinkWrap: true,
+          //other params
+        )
+	),
+	//whatever other widgets
+   ]
+);
+```
 
 ## Migration Guides
 - For Version 1.0 - [Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide)
