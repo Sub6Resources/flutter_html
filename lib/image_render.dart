@@ -93,6 +93,7 @@ ImageRender networkImageRender({
   double width,
   double height,
   Widget Function(String) altWidget,
+  Widget Function() loadingWidget,
 }) =>
     (context, attributes, element) {
       precacheImage(
@@ -143,7 +144,7 @@ ImageRender networkImageRender({
               height: height ?? _height(attributes),
               frameBuilder: (ctx, child, frame, _) {
                 if (frame == null) {
-                  return altWidget.call(_alt(attributes)) ??
+                  return altWidget?.call(_alt(attributes)) ??
                       Text(_alt(attributes) ?? "",
                           style: context.style.generateTextStyle());
                 }
@@ -154,7 +155,7 @@ ImageRender networkImageRender({
             return Text(_alt(attributes) ?? "",
                 style: context.style.generateTextStyle());
           } else {
-            return new CircularProgressIndicator();
+            return loadingWidget?.call() ?? const CircularProgressIndicator();
           }
         },
       );

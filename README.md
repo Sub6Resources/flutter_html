@@ -534,6 +534,7 @@ Widget html = Html(
     networkSourceMatcher(): networkImageRender(
       headers: {"Custom-Header": "some-value"},
       altWidget: (alt) => Text(alt),
+      loadingWidget: () => Text("Loading..."),
     ),
   },
 );
