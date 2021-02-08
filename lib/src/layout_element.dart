@@ -263,14 +263,24 @@ class DetailsContentElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    List<InlineSpan> childrenList = children?.map((tree) => context.parser.parseTree(context, tree))?.toList();
+    List<InlineSpan> toRemove = [];
+    if (childrenList != null) {
+      for (InlineSpan child in childrenList) {
+        if (child is TextSpan && child.text != null && child.text.trim().isEmpty) {
+          toRemove.add(child);
+        }
+      }
+      for (InlineSpan child in toRemove) {
+        childrenList.remove(child);
+      }
+    }
+    InlineSpan firstChild = childrenList?.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
-        title: children != null && elementList.first.localName == "summary" ? StyledText(
+        title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
           textSpan: TextSpan(
             style: style.generateTextStyle(),
-            children: [children
-                .map((tree) => context.parser.parseTree(context, tree))
-                .toList().first] ??
-                [],
+            children: [firstChild] ?? [],
           ),
           style: style,
         ) : Text("Details"),
@@ -278,7 +288,7 @@ class DetailsContentElement extends LayoutElement {
           StyledText(
             textSpan: TextSpan(
               style: style.generateTextStyle(),
-              children: getChildren(children, context)
+              children: getChildren(childrenList, context, elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? firstChild : null)
             ),
             style: style,
           ),
@@ -286,13 +296,12 @@ class DetailsContentElement extends LayoutElement {
     );
   }
 
-  List<InlineSpan> getChildren(List<StyledElement> children, RenderContext context) {
-    if (children.map((tree) => context.parser.parseTree(context, tree)).toList() == null) {
+  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context, InlineSpan firstChild) {
+    if (children == null) {
       return [];
     } else {
-      List<InlineSpan> reducedChildren = children.map((tree) => context.parser.parseTree(context, tree)).toList();
-      reducedChildren.removeAt(0);
-      return reducedChildren;
+      if (firstChild != null) children.removeAt(0);
+      return children;
     }
   }
 }
