@@ -9,27 +9,27 @@ environment:
 
 dependencies:
   # Plugin for parsing html
-  html: ^0.14.0+3
+  html: ^0.14.0+4
 
   # Plugins for parsing css
   csslib: ^0.16.2
   css_colors: ^1.0.2
 
   # Plugins for rendering the <table> tag.
-  flutter_layout_grid: ^0.10.2
+  flutter_layout_grid: ^0.10.5
 
   # Plugins for rendering the <video> tag.
   video_player: ^1.0.1
-  chewie: ^0.12.0
+  chewie: ^0.12.2
 
   # Plugin for rendering the <iframe> tag.
-  webview_flutter: ^1.0.0
+  webview_flutter: ^1.0.7
 
   # Plugins for rendering the <audio> tag.
-  chewie_audio: ^1.1.1
+  chewie_audio: ^1.1.2
 
   # Plugins for rendering the <svg> tag.
-  flutter_svg: ^0.19.0
+  flutter_svg: ^0.20.0-nullsafety.3
 
   flutter:
     sdk: flutter
