@@ -174,6 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt),
+              loadingWidget: () => Text("Loading..."),
             ),
           },
           onLinkTap: (url) {
