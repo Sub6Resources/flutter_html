@@ -277,6 +277,7 @@ class DetailsContentElement extends LayoutElement {
     }
     InlineSpan firstChild = childrenList?.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
+        expandedAlignment: Alignment.centerLeft,
         title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
           textSpan: TextSpan(
             style: style.generateTextStyle(),
