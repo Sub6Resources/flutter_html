@@ -12,6 +12,7 @@ class InteractableElement extends StyledElement {
     List<StyledElement> children,
     Style style,
     this.href,
+    this.onClick,
     dom.Node node,
   }) : super(name: name, children: children, style: style, node: node);
 }
@@ -36,6 +37,7 @@ InteractableElement parseInteractableElement(
         color: Colors.blue,
         textDecoration: TextDecoration.underline,
       );
+      interactableElement.onClick = element.attributes['onclick'];
       break;
   }
 
