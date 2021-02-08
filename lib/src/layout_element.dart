@@ -252,11 +252,84 @@ TableStyleElement parseTableDefinitionElement(
   }
 }
 
+class DetailsContentElement extends LayoutElement {
+  List<dom.Element> elementList;
+
+  DetailsContentElement({
+    String name,
+    List<StyledElement> children,
+    dom.Element node,
+    this.elementList,
+  }) : super(name: name, node: node, children: children);
+
+  @override
+  Widget toWidget(RenderContext context) {
+    List<InlineSpan> childrenList = children?.map((tree) => context.parser.parseTree(context, tree))?.toList();
+    List<InlineSpan> toRemove = [];
+    if (childrenList != null) {
+      for (InlineSpan child in childrenList) {
+        if (child is TextSpan && child.text != null && child.text.trim().isEmpty) {
+          toRemove.add(child);
+        }
+      }
+      for (InlineSpan child in toRemove) {
+        childrenList.remove(child);
+      }
+    }
+    InlineSpan firstChild = childrenList?.isNotEmpty == true ? childrenList.first : null;
+    return ExpansionTile(
+        expandedAlignment: Alignment.centerLeft,
+        title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
+          textSpan: TextSpan(
+            style: style.generateTextStyle(),
+            children: [firstChild] ?? [],
+          ),
+          style: style,
+        ) : Text("Details"),
+        children: [
+          StyledText(
+            textSpan: TextSpan(
+              style: style.generateTextStyle(),
+              children: getChildren(childrenList, context, elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? firstChild : null)
+            ),
+            style: style,
+          ),
+        ]
+    );
+  }
+
+  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context, InlineSpan firstChild) {
+    if (children == null) {
+      return [];
+    } else {
+      if (firstChild != null) children.removeAt(0);
+      return children;
+    }
+  }
+}
+
+class EmptyLayoutElement extends LayoutElement {
+  EmptyLayoutElement({String name = "empty"}) : super(name: name);
+
+  @override
+  Widget toWidget(_) => null;
+}
+
 LayoutElement parseLayoutElement(
-  dom.Element element,
-  List<StyledElement> children,
+    dom.Element element,
+    List<StyledElement> children,
 ) {
   switch (element.localName) {
+    case "details":
+      if (children?.isEmpty ?? false) {
+        return EmptyLayoutElement();
+      }
+      return DetailsContentElement(
+          node: element,
+          name: element.localName,
+          children: children,
+          elementList: element.children
+      );
     case "table":
       return TableLayoutElement(
         name: element.localName,

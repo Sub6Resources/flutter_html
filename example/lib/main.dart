@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/html_parser.dart';
-import 'package:flutter_html/style.dart';
+import 'package:flutter_html/image_render.dart';
 
 void main() => runApp(new MyApp());
 
@@ -118,11 +117,31 @@ const htmlData = """
         Linking to <a href='https://github.com'>websites</a> has never been easier.
       </p>
       <h3>Image support:</h3>
-      <p>
-        <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /><br />
-        <a href='https://google.com'>A linked image: <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></a>
-        <img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d' />
-      </p>
+      <h3>Network png</h3>
+      <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+      <h3>Network svg</h3>
+      <img src='https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/android.svg' />
+      <h3>Local asset png</h3>
+      <img src='asset:assets/html5.png' width='100' />
+      <h3>Local asset svg</h3>
+      <img src='asset:assets/mac.svg' width='100' />
+      <h3>Base64</h3>
+      <img alt='Red dot' src='data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
+      <h3>Custom image render (flutter.dev)</h3>
+      <img src='https://flutter.dev/images/flutter-mono-81x100.png' />
+      <h3>No image source</h3>
+      <img alt='No source' />
+      <img alt='Empty source' src='' />
+      <h3>Broken network image</h3>
+      <img alt='Broken image' src='https://www.notgoogle.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+      <h3>Used inside a table</h3>
+      <table>
+      <tr>
+      <td><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
+      <td><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
+      <td><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
+      </tr>
+      </table>
       <h3>Video support:</h3>
       <video controls>
         <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
@@ -147,43 +166,15 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Html(
           data: htmlData,
           //Optional parameters:
-          style: {
-            "html": Style(
-              backgroundColor: Colors.black12,
-//              color: Colors.white,
-            ),
-//            "h1": Style(
-//              textAlign: TextAlign.center,
-//            ),
-            "table": Style(
-              backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
-            ),
-            "tr": Style(
-              border: Border(bottom: BorderSide(color: Colors.grey)),
-            ),
-            "th": Style(
-              padding: EdgeInsets.all(6),
-              backgroundColor: Colors.grey,
-            ),
-            "td": Style(
-              padding: EdgeInsets.all(6),
-              alignment: Alignment.topLeft,
-            ),
-            "var": Style(fontFamily: 'serif'),
-          },
-          customRender: {
-            "bird": (RenderContext context, Widget child, attributes, _) {
-              return TextSpan(text: "🐦");
+          customImageRenders: {
+            networkSourceMatcher(domains: ["flutter.dev"]):
+                (context, attributes, element) {
+              return FlutterLogo(size: 36);
             },
-            "flutter": (RenderContext context, Widget child, attributes, _) {
-              return FlutterLogo(
-                style: (attributes['horizontal'] != null)
-                    ? FlutterLogoStyle.horizontal
-                    : FlutterLogoStyle.markOnly,
-                textColor: context.style.color,
-                size: context.style.fontSize.size * 5,
-              );
-            },
+            networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
+              headers: {"Custom-Header": "some-value"},
+              altWidget: (alt) => Text(alt),
+            ),
           },
           onLinkTap: (url) {
             print("Opening $url...");
