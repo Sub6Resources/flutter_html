@@ -49,16 +49,28 @@ void main() {
       extension: 'png',
     );
     test("matches schema, domain and extension", () {
-      expect(_match(matcher, 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png'), isTrue);
+      expect(
+          _match(matcher,
+              'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png'),
+          isTrue);
     });
     test("doesn't match if schema is different", () {
-      expect(_match(matcher, 'http://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png'), isFalse);
+      expect(
+          _match(matcher,
+              'http://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png'),
+          isFalse);
     });
     test("doesn't match if domain is different", () {
-      expect(_match(matcher, 'https://google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png'), isFalse);
+      expect(
+          _match(matcher,
+              'https://google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png'),
+          isFalse);
     });
     test("doesn't match if file extension is different", () {
-      expect(_match(matcher, 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dppng'), isFalse);
+      expect(
+          _match(matcher,
+              'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dppng'),
+          isFalse);
     });
     test("doesn't match null", () {
       expect(_match(matcher, null), isFalse);
@@ -70,16 +82,25 @@ void main() {
   group("base64 image data uri matcher", () {
     ImageSourceMatcher matcher = base64DataUriMatcher();
     test("matches a full png base64 data uri", () {
-      expect(_match(matcher, 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='), isTrue);
+      expect(
+          _match(matcher,
+              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='),
+          isTrue);
     });
     test("matches a full jpeg base64 data uri", () {
-      expect(_match(matcher, 'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDADIiJSwlHzIsKSw4NTI7S31RS0VFS5ltc1p9tZ++u7Kfr6zI4f/zyNT/16yv+v/9////////wfD/////////////2wBDATU4OEtCS5NRUZP/zq/O////////////////////////////////////////////////////////////////////wAARCAAYAEADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAQMAAgQF/8QAJRABAAIBBAEEAgMAAAAAAAAAAQIRAAMSITEEEyJBgTORUWFx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AOgM52xQDrjvAV5Xv0vfKUALlTQfeBm0HThMNHXkL0Lw/swN5qgA8yT4MCS1OEOJV8mBz9Z05yfW8iSx7p4j+jA1aD6Wj7ZMzstsfvAas4UyRHvjrAkC9KhpLMClQntlqFc2X1gUj4viwVObKrddH9YDoHvuujAEuNV+bLwFS8XxdSr+Cq3Vf+4F5RgQl6ZR2p1eAzU/HX80YBYyJLCuexwJCO2O1bwCRidAfWBSctswbI12GAJT3yiwFR7+MBjGK2g/WAJR3FdF84E2rK5VR0YH/9k='), isTrue);
+      expect(
+          _match(matcher,
+              'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQEAYABgAAD/2wBDADIiJSwlHzIsKSw4NTI7S31RS0VFS5ltc1p9tZ++u7Kfr6zI4f/zyNT/16yv+v/9////////wfD/////////////2wBDATU4OEtCS5NRUZP/zq/O////////////////////////////////////////////////////////////////////wAARCAAYAEADAREAAhEBAxEB/8QAGQAAAgMBAAAAAAAAAAAAAAAAAQMAAgQF/8QAJRABAAIBBAEEAgMAAAAAAAAAAQIRAAMSITEEEyJBgTORUWFx/8QAFAEBAAAAAAAAAAAAAAAAAAAAAP/EABQRAQAAAAAAAAAAAAAAAAAAAAD/2gAMAwEAAhEDEQA/AOgM52xQDrjvAV5Xv0vfKUALlTQfeBm0HThMNHXkL0Lw/swN5qgA8yT4MCS1OEOJV8mBz9Z05yfW8iSx7p4j+jA1aD6Wj7ZMzstsfvAas4UyRHvjrAkC9KhpLMClQntlqFc2X1gUj4viwVObKrddH9YDoHvuujAEuNV+bLwFS8XxdSr+Cq3Vf+4F5RgQl6ZR2p1eAzU/HX80YBYyJLCuexwJCO2O1bwCRidAfWBSctswbI12GAJT3yiwFR7+MBjGK2g/WAJR3FdF84E2rK5VR0YH/9k='),
+          isTrue);
     });
     test("matches base64 data uri without data", () {
       expect(_match(matcher, 'data:image/png;base64,'), isTrue);
     });
     test("doesn't match non-base64 image data uri", () {
-      expect(_match(matcher, 'data:image/png;hex,89504e470d0a1a0a0000000d49484452000000050000000508060000008d6f26e50000001c4944415408d763f8ffff3fc37f062005c3201284d031f18258cd04000ef535cbd18e0e1f0000000049454e44ae426082'), isFalse);
+      expect(
+          _match(matcher,
+              'data:image/png;hex,89504e470d0a1a0a0000000d49484452000000050000000508060000008d6f26e50000001c4944415408d763f8ffff3fc37f062005c3201284d031f18258cd04000ef535cbd18e0e1f0000000049454e44ae426082'),
+          isFalse);
     });
     test("doesn't match base64 non-image data uri", () {
       expect(_match(matcher, 'data:text/plain;base64,'), isFalse);
