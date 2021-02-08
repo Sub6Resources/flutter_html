@@ -127,6 +127,8 @@ const htmlData = """
       <img src='asset:assets/mac.svg' width='100' />
       <h3>Base64</h3>
       <img alt='Red dot' src='data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
+      <h3>Custom source matcher (relative paths)</h3>
+      <img src='/wikipedia/commons/thumb/e/ef/Octicons-logo-github.svg/200px-Octicons-logo-github.svg.png' />
       <h3>Custom image render (flutter.dev)</h3>
       <img src='https://flutter.dev/images/flutter-mono-81x100.png' />
       <h3>No image source</h3>
@@ -175,6 +177,8 @@ class _MyHomePageState extends State<MyHomePage> {
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt),
             ),
+            (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
+                networkImageRender(baseUrl: "https://upload.wikimedia.org"),
           },
           onLinkTap: (url) {
             print("Opening $url...");
