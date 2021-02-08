@@ -178,7 +178,8 @@ class _MyHomePageState extends State<MyHomePage> {
               altWidget: (alt) => Text(alt),
             ),
             (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
-                networkImageRender(baseUrl: "https://upload.wikimedia.org"),
+                networkImageRender(
+                    mapUrl: (url) => "https://upload.wikimedia.org" + url),
           },
           onLinkTap: (url) {
             print("Opening $url...");

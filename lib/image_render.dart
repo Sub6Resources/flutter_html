@@ -90,14 +90,13 @@ ImageRender assetImageRender({
 
 ImageRender networkImageRender({
   Map<String, String> headers,
-  String baseUrl,
+  String Function(String) mapUrl,
   double width,
   double height,
   Widget Function(String) altWidget,
 }) =>
     (context, attributes, element) {
-      final src =
-          baseUrl != null ? baseUrl + _src(attributes) : _src(attributes);
+      final src = mapUrl?.call(_src(attributes)) ?? _src(attributes);
       precacheImage(
         NetworkImage(
           src,
