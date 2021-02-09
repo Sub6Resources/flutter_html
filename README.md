@@ -425,6 +425,7 @@ The default image renders are:
 ```dart
 final Map<ImageSourceMatcher, ImageRender> defaultImageRenders = {
   base64UriMatcher(): base64ImageRender(),
+  assetUriMatcher(): assetImageRender(),
   networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
   networkSourceMatcher(): networkImageRender(),
 };
@@ -535,12 +536,16 @@ Widget html = Html(
       headers: {"Custom-Header": "some-value"},
       altWidget: (alt) => Text(alt),
     ),
+            (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
+    networkImageRender(
+            mapUrl: (url) => "https://upload.wikimedia.org" + url),
   },
 );
 ```
 
-Above, there are two `networkSourceMatcher`s. One is overriden to only apply to images on the URL `flutter.dev`, while the other covers the rest of the cases.
-When an image with URL `flutter.dev` is detected, rather than displaying the image, the render will display the flutter logo. If the image is any other image, it keeps the default widget, but just sets the headers and the alt text in case that image happens to be broken. 
+Above, there are three custom `networkSourceMatcher`s, which will be applied - in order - before the default implementations. 
+
+When an image with URL `flutter.dev` is detected, rather than displaying the image, the render will display the flutter logo. If the image is any other image, it keeps the default widget, but just sets the headers and the alt text in case that image happens to be broken. The final render handles relative paths by rewriting them, specifically prefixing them with a base url. Note that the customizations of the previous custom renders do not apply. For example, the headers that the second render would apply are not applied in this third render.  
 
 2. Creating your own renders:
 ```dart

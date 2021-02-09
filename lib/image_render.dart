@@ -153,7 +153,7 @@ ImageRender networkImageRender({
               },
             );
           } else if (snapshot.hasError) {
-            return Text(_alt(attributes) ?? "",
+            return altWidget?.call(_alt(attributes)) ?? Text(_alt(attributes) ?? "",
                 style: context.style.generateTextStyle());
           } else {
             return new CircularProgressIndicator();

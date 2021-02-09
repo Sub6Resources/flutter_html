@@ -136,24 +136,6 @@ const htmlData = """
       <img alt='Empty source' src='' />
       <h3>Broken network image</h3>
       <img alt='Broken image' src='https://www.notgoogle.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
-      <h3>Used inside a table</h3>
-      <table>
-      <tr>
-      <td><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
-      <td><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
-      <td><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
-      </tr>
-      </table>
-      <h3>Video support:</h3>
-      <video controls>
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
-      </video>
-      <h3>Audio support:</h3>
-      <audio controls>
-        <source src="https://www.w3schools.com/html/mov_bbb.mp4" />
-      </audio>
-      <h3>IFrame support:</h3>
-      <iframe src="https://google.com"></iframe>
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -177,9 +159,12 @@ class _MyHomePageState extends State<MyHomePage> {
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt),
             ),
+            // On relative paths starting with /wiki, prefix with a base url
             (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
                 networkImageRender(
                     mapUrl: (url) => "https://upload.wikimedia.org" + url),
+            // Custom placeholder image for broken links
+            networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
           },
           onLinkTap: (url) {
             print("Opening $url...");
