@@ -800,7 +800,7 @@ class StyledText extends StatelessWidget {
   }
 
   double calculateWidth(Display display, RenderContext context) {
-    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && renderContext.parser.shrinkWrap != true) {
+    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
       return double.infinity;
     }
     if (renderContext.parser.shrinkWrap) {
