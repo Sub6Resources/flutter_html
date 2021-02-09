@@ -68,7 +68,6 @@ class HtmlParser extends StatelessWidget {
       RenderContext(
         buildContext: context,
         parser: this,
-        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
       ),
       cleanedTree,
     );
@@ -81,6 +80,11 @@ class HtmlParser extends StatelessWidget {
       textSpan: parsedTree,
       style: cleanedTree.style,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      renderContext: RenderContext(
+        buildContext: context,
+        parser: this,
+        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
+      ),
     );
   }
 
@@ -322,6 +326,7 @@ class HtmlParser extends StatelessWidget {
                     style: newContext.style.generateTextStyle(),
                   ),
                   style: newContext.style,
+                  renderContext: context,
                 ),
               )
             ],
@@ -412,6 +417,7 @@ class HtmlParser extends StatelessWidget {
                   [],
             ),
             style: newContext.style,
+            renderContext: context,
           ),
         ),
       );
@@ -760,6 +766,7 @@ class ContainerSpan extends StatelessWidget {
               children: children,
             ),
             style: newContext.style,
+            renderContext: newContext,
           ),
     );
   }
@@ -769,20 +776,19 @@ class StyledText extends StatelessWidget {
   final InlineSpan textSpan;
   final Style style;
   final double textScaleFactor;
+  final RenderContext renderContext;
 
   const StyledText({
     this.textSpan,
     this.style,
     this.textScaleFactor = 1.0,
+    this.renderContext,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:
-          style.display == Display.BLOCK || style.display == Display.LIST_ITEM
-              ? double.infinity
-              : null,
+      width: calculateWidth(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -791,5 +797,15 @@ class StyledText extends StatelessWidget {
         textScaleFactor: textScaleFactor,
       ),
     );
+  }
+
+  double calculateWidth(Display display, RenderContext context) {
+    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
+      return double.infinity;
+    }
+    if (renderContext.parser.shrinkWrap) {
+      return MediaQuery.of(context.buildContext).size.width;
+    }
+    return null;
   }
 }

@@ -119,6 +119,7 @@ class TableLayoutElement extends LayoutElement {
                   child: StyledText(
                     textSpan: context.parser.parseTree(context, child),
                     style: child.style,
+                    renderContext: context,
                   ),
                 ),
               ),
@@ -284,6 +285,7 @@ class DetailsContentElement extends LayoutElement {
             children: [firstChild] ?? [],
           ),
           style: style,
+          renderContext: context,
         ) : Text("Details"),
         children: [
           StyledText(
@@ -292,6 +294,7 @@ class DetailsContentElement extends LayoutElement {
               children: getChildren(childrenList, context, elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? firstChild : null)
             ),
             style: style,
+            renderContext: context,
           ),
         ]
     );
