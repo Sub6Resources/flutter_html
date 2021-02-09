@@ -802,10 +802,10 @@ class StyledText extends StatelessWidget {
   double calculateWidth(Display display, RenderContext context) {
     if ((display == Display.BLOCK || display == Display.LIST_ITEM) && renderContext.parser.shrinkWrap != true) {
       return double.infinity;
-    } else if (renderContext.parser.shrinkWrap == true) {
-      return MediaQuery.of(context.buildContext).size.width;
-    } else {
-      return null;
     }
+    if (renderContext.parser.shrinkWrap) {
+      return MediaQuery.of(context.buildContext).size.width;
+    }
+    return null;
   }
 }
