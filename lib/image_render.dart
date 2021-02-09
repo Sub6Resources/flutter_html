@@ -90,15 +90,17 @@ ImageRender assetImageRender({
 
 ImageRender networkImageRender({
   Map<String, String> headers,
+  String Function(String) mapUrl,
   double width,
   double height,
   Widget Function(String) altWidget,
   Widget Function() loadingWidget,
 }) =>
     (context, attributes, element) {
+      final src = mapUrl?.call(_src(attributes)) ?? _src(attributes);
       precacheImage(
         NetworkImage(
-          _src(attributes),
+          src,
           headers: headers,
         ),
         context.buildContext,
@@ -108,7 +110,7 @@ ImageRender networkImageRender({
       );
       Completer<Size> completer = Completer();
       Image image =
-          Image.network(_src(attributes), frameBuilder: (ctx, child, frame, _) {
+          Image.network(src, frameBuilder: (ctx, child, frame, _) {
         if (frame == null) {
           if (!completer.isCompleted) {
             completer.completeError("error");
@@ -138,7 +140,7 @@ ImageRender networkImageRender({
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
           if (snapshot.hasData) {
             return Image.network(
-              _src(attributes),
+              src,
               headers: headers,
               width: width ?? _width(attributes) ?? snapshot.data.width,
               height: height ?? _height(attributes),
@@ -152,7 +154,7 @@ ImageRender networkImageRender({
               },
             );
           } else if (snapshot.hasError) {
-            return Text(_alt(attributes) ?? "",
+            return altWidget?.call(_alt(attributes)) ?? Text(_alt(attributes) ?? "",
                 style: context.style.generateTextStyle());
           } else {
             return loadingWidget?.call() ?? const CircularProgressIndicator();
