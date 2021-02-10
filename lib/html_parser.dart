@@ -68,6 +68,7 @@ class HtmlParser extends StatelessWidget {
       RenderContext(
         buildContext: context,
         parser: this,
+        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
       ),
       cleanedTree,
     );
@@ -247,7 +248,7 @@ class HtmlParser extends StatelessWidget {
     RenderContext newContext = RenderContext(
       buildContext: context.buildContext,
       parser: this,
-      style: context.style?.copyOnlyInherited(tree.style) ?? Style.fromTextStyle(Theme.of(context.buildContext).textTheme.bodyText2),
+      style: context.style?.copyOnlyInherited(tree.style),
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
