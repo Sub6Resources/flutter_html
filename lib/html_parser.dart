@@ -299,35 +299,35 @@ class HtmlParser extends StatelessWidget {
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          child: Stack(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            textDirection: tree.style?.direction,
             children: [
-              if (tree.style?.listStylePosition == ListStylePosition.OUTSIDE ||
-                  tree.style?.listStylePosition == null)
-                PositionedDirectional(
-                  width: 30, //TODO derive this from list padding.
-                  start: 0,
-                  child: Text('${newContext.style.markerContent}\t',
-                      textAlign: TextAlign.right,
-                      style: newContext.style.generateTextStyle()),
-                ),
+              tree.style?.listStylePosition == ListStylePosition.OUTSIDE ||
+                  tree.style?.listStylePosition == null ?
               Padding(
-                padding: EdgeInsetsDirectional.only(
-                    start: 30), //TODO derive this from list padding.
-                child: StyledText(
-                  textSpan: TextSpan(
-                    text: (tree.style?.listStylePosition ==
-                            ListStylePosition.INSIDE)
-                        ? '${newContext.style.markerContent}\t'
-                        : null,
-                    children: tree.children
-                            ?.map((tree) => parseTree(newContext, tree))
-                            ?.toList() ??
-                        [],
-                    style: newContext.style.generateTextStyle(),
-                  ),
-                  style: newContext.style,
-                  renderContext: context,
-                ),
+                padding: tree.style?.padding ?? EdgeInsets.only(left: tree.style?.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style?.direction == TextDirection.rtl ? 10.0 : 0.0),
+                child: Text('${newContext.style.markerContent}\t',
+                    textAlign: TextAlign.right,
+                    style: newContext.style.generateTextStyle()),
+              ) : Container(height: 0, width: 0),
+              Expanded(
+                  child: StyledText(
+                    textSpan: TextSpan(
+                      text: (tree.style?.listStylePosition ==
+                          ListStylePosition.INSIDE)
+                          ? '${newContext.style.markerContent}\t'
+                          : null,
+                      children: tree.children
+                          ?.map((tree) => parseTree(newContext, tree))
+                          ?.toList() ??
+                          [],
+                      style: newContext.style.generateTextStyle(),
+                    ),
+                    style: newContext.style,
+                    renderContext: context,
+                  )
               )
             ],
           ),
@@ -518,7 +518,7 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _processListCharactersRecursive(
       StyledElement tree, ListQueue<Context<int>> olStack) {
     if (tree.name == 'ol') {
-      olStack.add(Context(0));
+      olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']) ?? 1 : 1) - 1));
     } else if (tree.style.display == Display.LIST_ITEM) {
       switch (tree.style.listStyleType) {
         case ListStyleType.DISC:
