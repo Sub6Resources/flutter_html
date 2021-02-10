@@ -146,6 +146,12 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('flutter_html Example'),
         centerTitle: true,
       ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Html.scrollToTop();
+        },
+        child: Icon(Icons.expand_less)
+      ),
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,

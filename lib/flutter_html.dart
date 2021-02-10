@@ -1,6 +1,7 @@
 library flutter_html;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/style.dart';
@@ -68,6 +69,33 @@ class Html extends StatelessWidget {
   /// Iframe. It's necessary to use the webview_flutter package inside the app
   /// to use NavigationDelegate.
   final NavigationDelegate navigationDelegateForIframe;
+
+  /// Scrolls the HTML widget to the top.
+  /// You can set the duration and curve to use, by default the duration is 100ms and the curve is [Curves.easeIn]
+  /// This method should not be called until the widget is fully built.
+  static void scrollToTop({Duration duration, Curves curve}) {
+    final context = scrollContext;
+    final renderObject = context.findRenderObject();
+    if (renderObject == null) return;
+
+    final offsetToReveal = RenderAbstractViewport.of(renderObject)
+        ?.getOffsetToReveal(renderObject, 0.0)
+        ?.offset;
+    final position = Scrollable.of(scrollContext)?.position;
+    if (offsetToReveal == null || position == null) return;
+
+    final alignment = (position.pixels > offsetToReveal)
+        ? 0.0
+        : (position.pixels < offsetToReveal ? 1.0 : null);
+    if (alignment == null) return;
+
+    position.ensureVisible(
+      renderObject,
+      alignment: alignment,
+      duration: duration ?? const Duration(milliseconds: 100),
+      curve: curve ?? Curves.easeIn,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {

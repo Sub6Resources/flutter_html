@@ -214,6 +214,26 @@ class Style {
     }
   }
 
+  Style generateFromTextStyle(TextStyle style) {
+    return Style(
+      backgroundColor: style.backgroundColor,
+      color: style.color,
+      fontFamily: style.fontFamily,
+      fontFeatureSettings: style.fontFeatures,
+      fontSize: FontSize(style.fontSize),
+      fontStyle: style.fontStyle,
+      fontWeight: style.fontWeight,
+      height: style.height,
+      lineHeight: LineHeight(style.height),
+      letterSpacing: style.letterSpacing,
+      textDecoration: style.decoration,
+      textDecorationColor: style.decorationColor,
+      textDecorationStyle: style.decorationStyle,
+      textDecorationThickness: style.decorationThickness,
+      textShadow: style.shadows,
+    );
+  }
+
   TextStyle generateTextStyle() {
     return TextStyle(
       backgroundColor: backgroundColor,
