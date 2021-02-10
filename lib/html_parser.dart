@@ -294,6 +294,15 @@ class HtmlParser extends StatelessWidget {
         ),
       );
     } else if (tree.style?.display == Display.LIST_ITEM) {
+      List<InlineSpan> getChildren(StyledElement tree) {
+        InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
+        List<InlineSpan> children = tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [];
+        if (tree.style?.listStylePosition == ListStylePosition.INSIDE) {
+          children.insert(0, tabSpan);
+        }
+        return children;
+      }
+
       return WidgetSpan(
         child: ContainerSpan(
           newContext: newContext,
@@ -308,25 +317,29 @@ class HtmlParser extends StatelessWidget {
                   tree.style?.listStylePosition == null ?
               Padding(
                 padding: tree.style?.padding ?? EdgeInsets.only(left: tree.style?.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style?.direction == TextDirection.rtl ? 10.0 : 0.0),
-                child: Text('${newContext.style.markerContent}\t',
+                child: Text(
+                    newContext.style.markerContent,
                     textAlign: TextAlign.right,
-                    style: newContext.style.generateTextStyle()),
+                    style: newContext.style.generateTextStyle()
+                ),
               ) : Container(height: 0, width: 0),
+              Text("\t", textAlign: TextAlign.right),
               Expanded(
-                  child: StyledText(
-                    textSpan: TextSpan(
-                      text: (tree.style?.listStylePosition ==
-                          ListStylePosition.INSIDE)
-                          ? '${newContext.style.markerContent}\t'
-                          : null,
-                      children: tree.children
-                          ?.map((tree) => parseTree(newContext, tree))
-                          ?.toList() ??
-                          [],
-                      style: newContext.style.generateTextStyle(),
-                    ),
-                    style: newContext.style,
-                    renderContext: context,
+                  child: Padding(
+                      padding: tree.style?.listStylePosition == ListStylePosition.INSIDE ?
+                        EdgeInsets.only(left: tree.style?.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style?.direction == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
+                      child: StyledText(
+                        textSpan: TextSpan(
+                          text: (tree.style?.listStylePosition ==
+                              ListStylePosition.INSIDE)
+                              ? '${newContext.style.markerContent}'
+                              : null,
+                          children: getChildren(tree),
+                          style: newContext.style.generateTextStyle(),
+                        ),
+                        style: newContext.style,
+                        renderContext: context,
+                      )
                   )
               )
             ],
