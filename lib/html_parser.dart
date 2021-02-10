@@ -247,7 +247,7 @@ class HtmlParser extends StatelessWidget {
     RenderContext newContext = RenderContext(
       buildContext: context.buildContext,
       parser: this,
-      style: context.style.copyOnlyInherited(tree.style),
+      style: context.style?.copyOnlyInherited(tree.style) ?? Style.fromTextStyle(Theme.of(context.buildContext).textTheme.bodyText2),
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
