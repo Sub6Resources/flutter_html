@@ -90,6 +90,11 @@ class ImageContentElement extends ReplacedElement {
   }
 }
 
+/// Create a webview controller and old src independent of [IframeContentElement]
+/// to make sure it doesn't reset when the html string is updated
+WebViewController controller;
+String oldUrl;
+
 /// [IframeContentElement is a [ReplacedElement] with web content.
 class IframeContentElement extends ReplacedElement {
   final String src;
@@ -110,11 +115,18 @@ class IframeContentElement extends ReplacedElement {
   @override
   Widget toWidget(RenderContext context) {
     final sandboxMode = attributes["sandbox"];
+    if (oldUrl != null && src != oldUrl && controller != null) {
+      controller.loadUrl(src);
+    }
+    oldUrl = src;
     return Container(
       width: width ?? (height ?? 150) * 2,
       height: height ?? (width ?? 300) / 2,
       child: WebView(
         initialUrl: src,
+        onWebViewCreated: (WebViewController webController) {
+          controller = webController;
+        },
         javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
             ? JavascriptMode.unrestricted
             : JavascriptMode.disabled,
