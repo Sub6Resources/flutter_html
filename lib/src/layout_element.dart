@@ -32,6 +32,8 @@ class TableLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
+      margin: style.margin,
+      padding: style.padding,
       decoration: BoxDecoration(
         color: style.backgroundColor,
         border: style.border,
@@ -263,11 +265,15 @@ class DetailsContentElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    List<InlineSpan> childrenList = children?.map((tree) => context.parser.parseTree(context, tree))?.toList();
+    List<InlineSpan> childrenList = children
+        ?.map((tree) => context.parser.parseTree(context, tree))
+        ?.toList();
     List<InlineSpan> toRemove = [];
     if (childrenList != null) {
       for (InlineSpan child in childrenList) {
-        if (child is TextSpan && child.text != null && child.text.trim().isEmpty) {
+        if (child is TextSpan &&
+            child.text != null &&
+            child.text.trim().isEmpty) {
           toRemove.add(child);
         }
       }
@@ -275,29 +281,38 @@ class DetailsContentElement extends LayoutElement {
         childrenList.remove(child);
       }
     }
-    InlineSpan firstChild = childrenList?.isNotEmpty == true ? childrenList.first : null;
+    InlineSpan firstChild =
+        childrenList?.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
         expandedAlignment: Alignment.centerLeft,
-        title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
-          textSpan: TextSpan(
-            style: style.generateTextStyle(),
-            children: [firstChild] ?? [],
-          ),
-          style: style,
-        ) : Text("Details"),
+        title: elementList?.isNotEmpty == true &&
+                elementList?.first?.localName == "summary"
+            ? StyledText(
+                textSpan: TextSpan(
+                  style: style.generateTextStyle(),
+                  children: [firstChild] ?? [],
+                ),
+                style: style,
+              )
+            : Text("Details"),
         children: [
           StyledText(
             textSpan: TextSpan(
-              style: style.generateTextStyle(),
-              children: getChildren(childrenList, context, elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? firstChild : null)
-            ),
+                style: style.generateTextStyle(),
+                children: getChildren(
+                    childrenList,
+                    context,
+                    elementList?.isNotEmpty == true &&
+                            elementList?.first?.localName == "summary"
+                        ? firstChild
+                        : null)),
             style: style,
           ),
-        ]
-    );
+        ]);
   }
 
-  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context, InlineSpan firstChild) {
+  List<InlineSpan> getChildren(
+      List<InlineSpan> children, RenderContext context, InlineSpan firstChild) {
     if (children == null) {
       return [];
     } else {
@@ -315,8 +330,8 @@ class EmptyLayoutElement extends LayoutElement {
 }
 
 LayoutElement parseLayoutElement(
-    dom.Element element,
-    List<StyledElement> children,
+  dom.Element element,
+  List<StyledElement> children,
 ) {
   switch (element.localName) {
     case "details":
@@ -327,8 +342,7 @@ LayoutElement parseLayoutElement(
           node: element,
           name: element.localName,
           children: children,
-          elementList: element.children
-      );
+          elementList: element.children);
     case "table":
       return TableLayoutElement(
         name: element.localName,
