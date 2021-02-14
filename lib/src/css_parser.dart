@@ -1,8 +1,11 @@
+import 'dart:math';
 import 'dart:ui';
 
 import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 
 Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
@@ -11,6 +14,19 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
     switch (property) {
       case 'background-color':
         style.backgroundColor = ExpressionMapping.expressionToColor(value.first);
+        break;
+      case 'border':
+        List<css.LiteralTerm> borderWidths = value.whereType<css.LiteralTerm>().toList();
+        /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.width], so make sure to remove those before passing it to [ExpressionMapping]
+        borderWidths.removeWhere((element) => element.text != "thin" && element.text != "medium" && element.text != "thick" && !(element is css.LengthTerm));
+        List<css.Expression> borderColors = value.where((element) => ExpressionMapping.expressionToColor(element) != null).toList();
+        List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
+        /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
+        List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
+        /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.style], so make sure to remove those before passing it to [ExpressionMapping]
+        temp.removeWhere((element) => !possibleBorderValues.contains(element.text));
+        List<css.LiteralTerm> borderStyles = temp;
+        style.border = ExpressionMapping.expressionToBorder(borderWidths, borderStyles, borderColors);
         break;
       case 'color':
         style.color = ExpressionMapping.expressionToColor(value.first);
@@ -46,7 +62,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         List<css.LiteralTerm> textDecorationList  = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
         textDecorationList.removeWhere((element) => element.text != "none" && element.text != "overline" && element.text != "underline" && element.text != "line-through");
-        css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
+        css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: () => null);
         List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
         temp.removeWhere((element) => element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
@@ -105,15 +121,120 @@ class DeclarationVisitor extends css.Visitor {
 
 //Mapping functions
 class ExpressionMapping {
+
+  static Border expressionToBorder(List<css.LiteralTerm> borderWidths, List<css.LiteralTerm> borderStyles, List<css.Expression> borderColors) {
+    CustomBorderSide left = CustomBorderSide();
+    CustomBorderSide top = CustomBorderSide();
+    CustomBorderSide right = CustomBorderSide();
+    CustomBorderSide bottom = CustomBorderSide();
+    if (borderWidths != null) {
+      top.width = expressionToBorderWidth(borderWidths.first);
+      if (borderWidths.length == 4) {
+        right.width = expressionToBorderWidth(borderWidths[1]);
+        bottom.width = expressionToBorderWidth(borderWidths[2]);
+        left.width = expressionToBorderWidth(borderWidths.last);
+      }
+      if (borderWidths.length == 3) {
+        left.width = expressionToBorderWidth(borderWidths[1]);
+        right.width = expressionToBorderWidth(borderWidths[1]);
+        bottom.width = expressionToBorderWidth(borderWidths.last);
+      }
+      if (borderWidths.length == 2) {
+        bottom.width = expressionToBorderWidth(borderWidths.first);
+        left.width = expressionToBorderWidth(borderWidths.last);
+        right.width = expressionToBorderWidth(borderWidths.last);
+      }
+      if (borderWidths.length == 1) {
+        bottom.width = expressionToBorderWidth(borderWidths.first);
+        left.width = expressionToBorderWidth(borderWidths.first);
+        right.width = expressionToBorderWidth(borderWidths.first);
+      }
+    }
+    if (borderStyles != null) {
+      top.style = expressionToBorderStyle(borderStyles.first);
+      if (borderStyles.length == 4) {
+        right.style = expressionToBorderStyle(borderStyles[1]);
+        bottom.style = expressionToBorderStyle(borderStyles[2]);
+        left.style = expressionToBorderStyle(borderStyles.last);
+      }
+      if (borderStyles.length == 3) {
+        left.style = expressionToBorderStyle(borderStyles[1]);
+        right.style = expressionToBorderStyle(borderStyles[1]);
+        bottom.style = expressionToBorderStyle(borderStyles.last);
+      }
+      if (borderStyles.length == 2) {
+        bottom.style = expressionToBorderStyle(borderStyles.first);
+        left.style = expressionToBorderStyle(borderStyles.last);
+        right.style = expressionToBorderStyle(borderStyles.last);
+      }
+      if (borderStyles.length == 1) {
+        bottom.style = expressionToBorderStyle(borderStyles.first);
+        left.style = expressionToBorderStyle(borderStyles.first);
+        right.style = expressionToBorderStyle(borderStyles.first);
+      }
+    }
+    if (borderColors != null) {
+      top.color = expressionToColor(borderColors.first);
+      if (borderColors.length == 4) {
+        right.color = expressionToColor(borderColors[1]);
+        bottom.color = expressionToColor(borderColors[2]);
+        left.color = expressionToColor(borderColors.last);
+      }
+      if (borderColors.length == 3) {
+        left.color = expressionToColor(borderColors[1]);
+        right.color = expressionToColor(borderColors[1]);
+        bottom.color = expressionToColor(borderColors.last);
+      }
+      if (borderColors.length == 2) {
+        bottom.color = expressionToColor(borderColors.first);
+        left.color = expressionToColor(borderColors.last);
+        right.color = expressionToColor(borderColors.last);
+      }
+      if (borderColors.length == 1) {
+        bottom.color = expressionToColor(borderColors.first);
+        left.color = expressionToColor(borderColors.first);
+        right.color = expressionToColor(borderColors.first);
+      }
+    }
+    return Border(
+        top: BorderSide(width: top.width, color: top.color, style: top.style),
+        right: BorderSide(width: right.width, color: right.color, style: right.style),
+        bottom: BorderSide(width: bottom.width, color: bottom.color, style: bottom.style),
+        left: BorderSide(width: left.width, color: left.color, style: left.style)
+    );
+  }
+
+  static double expressionToBorderWidth(css.LiteralTerm value) {
+    switch(value.text) {
+      case "thin":
+        return 2.0;
+      case "medium":
+        return 4.0;
+      case "thick":
+        return 6.0;
+      default:
+        return double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+    }
+  }
+
+  static BorderStyle expressionToBorderStyle(css.LiteralTerm value) {
+    if (value.text != "none" && value.text != "hidden") {
+      return BorderStyle.solid;
+    }
+    return BorderStyle.none;
+  }
+
   static Color expressionToColor(css.Expression value) {
     if (value is css.HexColorTerm) {
       return stringToColor(value.text);
     } else if (value is css.FunctionTerm) {
-      if (value.text == 'rgba') {
+      if (value.text == 'rgba' || value.text == 'rgb') {
         return rgbOrRgbaToColor(value.span.text);
-      } else if (value.text == 'rgb') {
-        return rgbOrRgbaToColor(value.span.text);
+      } else if (value.text == 'hsla' || value.text == 'hsl') {
+        return hslToRgbToColor(value.span.text);
       }
+    } else if (value is css.LiteralTerm) {
+      return namedColorToColor(value.text);
     }
     return null;
   }
@@ -350,13 +471,13 @@ class ExpressionMapping {
       css.LiteralTerm exp4 = list.length > 3 ? list[3] : null;
       RegExp nonNumberRegex = RegExp(r'\s+(\d+\.\d+)\s+');
       if (exp is css.LiteralTerm && exp2 is css.LiteralTerm) {
-        if (exp3 != null && (exp3 is css.HexColorTerm || exp3 is css.FunctionTerm)) {
+        if (exp3 != null && ExpressionMapping.expressionToColor(exp3) != null) {
           shadow.add(Shadow(
               color: expressionToColor(exp3), 
               offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, '')))
           ));
         } else if (exp3 != null && exp3 is css.LiteralTerm) {
-          if (exp4 != null && (exp4 is css.HexColorTerm || exp4 is css.FunctionTerm)) {
+          if (exp4 != null && ExpressionMapping.expressionToColor(exp4) != null) {
             shadow.add(Shadow(
                 color: expressionToColor(exp4), 
                 offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))), 
@@ -417,5 +538,30 @@ class ExpressionMapping {
     } catch (e) {
       return null;
     }
+  }
+
+  static Color hslToRgbToColor(String text) {
+    final hslText = text.replaceAll(')', '').replaceAll(' ', '');
+    final hslValues = hslText.split(',').toList();
+    List<double> parsedHsl = [];
+    hslValues.forEach((element) {
+      if (element.contains("%")) {
+        parsedHsl.add(double.tryParse(element.replaceAll("%", "")) * 0.01);
+      } else {
+        parsedHsl.add(double.tryParse(element));
+      }
+    });
+    if (parsedHsl.length == 4) {
+      return HSLColor.fromAHSL(parsedHsl.last, parsedHsl.first, parsedHsl[1], parsedHsl[2]).toColor();
+    }
+    return HSLColor.fromAHSL(1.0, parsedHsl.first, parsedHsl[1], parsedHsl.last).toColor();
+  }
+
+  static Color namedColorToColor(String text) {
+     String namedColor = namedColors.keys.firstWhere((element) => element.toLowerCase() == text.toLowerCase(), orElse: () => null);
+     if (namedColor != null) {
+       return stringToColor(namedColors[namedColor]);
+     }
+     return null;
   }
 }
