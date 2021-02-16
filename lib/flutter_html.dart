@@ -35,7 +35,7 @@ class Html extends StatelessWidget {
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
   Html({
     Key key,
-    @required String data,
+    @required this.data,
     this.onLinkTap,
     this.customRender,
     this.customImageRenders = const {},
@@ -45,27 +45,13 @@ class Html extends StatelessWidget {
     this.blacklistedElements = const [],
     this.style,
     this.navigationDelegateForIframe,
-  }) : htmlParserWidget =  HtmlParser(
-          htmlData: data,
-          userDocument: null,
-          onLinkTap: onLinkTap,
-          onImageTap: onImageTap,
-          onImageError: onImageError,
-          shrinkWrap: shrinkWrap,
-          style: style,
-          customRender: customRender,
-          imageRenders: {}
-            ..addAll(customImageRenders)
-            ..addAll(defaultImageRenders),
-          blacklistedElements: blacklistedElements,
-          navigationDelegateForIframe: navigationDelegateForIframe,
-        ),
+  }) : document = null,
         assert (data != null),
         super(key: key);
 
   Html.fromDom({
     Key key,
-    @required dom.Document document,
+    @required this.document,
     this.onLinkTap,
     this.customRender,
     this.customImageRenders = const {},
@@ -75,24 +61,12 @@ class Html extends StatelessWidget {
     this.blacklistedElements = const [],
     this.style,
     this.navigationDelegateForIframe,
-  }) : htmlParserWidget =  HtmlParser(
-          htmlData: null,
-          userDocument: document,
-          onLinkTap: onLinkTap,
-          onImageTap: onImageTap,
-          onImageError: onImageError,
-          shrinkWrap: shrinkWrap,
-          style: style,
-          customRender: customRender,
-          imageRenders: {}
-            ..addAll(customImageRenders)
-            ..addAll(defaultImageRenders),
-          blacklistedElements: blacklistedElements,
-          navigationDelegateForIframe: navigationDelegateForIframe,
-        ),
+  }) : data = null,
         assert(document != null),
         super(key: key);
 
+  final String data;
+  final dom.Document document;
   final OnTap onLinkTap;
   final Map<ImageSourceMatcher, ImageRender> customImageRenders;
   final ImageErrorListener onImageError;
@@ -115,15 +89,27 @@ class Html extends StatelessWidget {
   /// to use NavigationDelegate.
   final NavigationDelegate navigationDelegateForIframe;
 
-  final Widget htmlParserWidget;
-
   @override
   Widget build(BuildContext context) {
     final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(
       width: width,
-      child: htmlParserWidget,
+      child: HtmlParser(
+        htmlData: data,
+        userDocument: document,
+        onLinkTap: onLinkTap,
+        onImageTap: onImageTap,
+        onImageError: onImageError,
+        shrinkWrap: shrinkWrap,
+        style: style,
+        customRender: customRender,
+        imageRenders: {}
+          ..addAll(customImageRenders)
+          ..addAll(defaultImageRenders),
+        blacklistedElements: blacklistedElements,
+        navigationDelegateForIframe: navigationDelegateForIframe,
+      ),
     );
   }
 }
