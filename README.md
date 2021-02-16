@@ -35,43 +35,27 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
   - [Data](#data)
 
-    - [Example](#example-usage---data)
-
   - [onLinkTap](#onlinktap)
-
-    - [Example](#example-usage---onlinktap)
 
   - [customRender](#customrender)
 
-    - [Example](#example-usages---customrender)
-
   - [onImageError](#onimageerror)
-
-    - [Example](#example-usage---onimageerror)
 
   - [onImageTap](#onimagetap)
 
-    - [Example](#example-usage---onimagetap)
-
   - [blacklistedElements](#blacklistedelements)
-
-    - [Example](#example-usage---blacklistedelements)
 
   - [style](#style)
 
-    - [Example](#example-usage---style)
-
   - [navigationDelegateForIframe](#navigationdelegateforiframe)
 
-    - [Example](#example-usage---navigationdelegateforiframe)
-    
   - [customImageRender](#customimagerender)
   
     - [typedef ImageSourceMatcher (with examples)](#typedef-imagesourcematcher)
     
     - [typedef ImageRender (with examples)](#typedef-imagerender)
     
-    - [Examples](#example-usages---customimagerender)
+    - [Extended examples](#example-usages---customimagerender)
     
 - [Rendering Reference](#rendering-reference)
 
@@ -98,7 +82,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^1.2.0
+      flutter_html: ^1.3.0
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |

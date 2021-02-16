@@ -1,3 +1,15 @@
+## [1.3.0] - February 9, 2021:
+* New image loading API
+* Image loading with request headers, from relative paths and custom loading widget
+* SVG image support from network or local assets
+* Support for `<details>`/`<summary>` tags
+* Allow returning spans from custom tag renders
+* Inline font styling
+* Content-based table column sizing
+* Respect iframe sandbox attribute
+* Fixed text flow and styling when using tags inside `<a>` links
+* Updated dependencies for Flutter 1.26+
+
 ## [1.2.0] - January 14, 2021:
 * Support irregular table sizes
 * Allow for returning `null` from a customRender function to disable the widget
