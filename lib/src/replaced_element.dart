@@ -96,7 +96,7 @@ class IframeContentElement extends ReplacedElement {
   final double width;
   final double height;
   final NavigationDelegate navigationDelegate;
-  final GlobalKey key = GlobalKey();
+  final UniqueKey key = UniqueKey();
 
   IframeContentElement({
     String name,
