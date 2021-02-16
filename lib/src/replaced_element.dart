@@ -96,6 +96,7 @@ class IframeContentElement extends ReplacedElement {
   final double width;
   final double height;
   final NavigationDelegate navigationDelegate;
+  final UniqueKey key = UniqueKey();
 
   IframeContentElement({
     String name,
@@ -115,6 +116,7 @@ class IframeContentElement extends ReplacedElement {
       height: height ?? (width ?? 300) / 2,
       child: WebView(
         initialUrl: src,
+        key: key,
         javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
             ? JavascriptMode.unrestricted
             : JavascriptMode.disabled,
