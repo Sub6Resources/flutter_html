@@ -15,11 +15,11 @@ class StyledElement {
 
   StyledElement({
     this.name = "[[No name]]",
-    this.elementId,
-    this.elementClasses,
-    this.children,
-    this.style,
-    dom.Element node,
+    this.elementId = "[[No ID]]",
+    this.elementClasses = const [],
+    @required this.children,
+    @required this.style,
+    @required dom.Element node,
   }) : this._node = node;
 
   bool matchesSelector(String selector) =>
@@ -27,7 +27,7 @@ class StyledElement {
 
   Map<String, String> get attributes =>
       _node?.attributes?.map((key, value) {
-        return MapEntry(key, value);
+        return MapEntry(key.toString(), value);
       }) ??
       Map<String, String>();
 
@@ -53,6 +53,7 @@ StyledElement parseStyledElement(
     elementClasses: element.classes.toList(),
     children: children,
     node: element,
+    style: Style(),
   );
 
   switch (element.localName) {

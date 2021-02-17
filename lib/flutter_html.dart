@@ -36,13 +36,13 @@ class Html extends StatelessWidget {
     Key key,
     @required this.data,
     this.onLinkTap,
-    this.customRender,
+    this.customRender = const {},
     this.customImageRenders = const {},
     this.onImageError,
     this.shrinkWrap = false,
     this.onImageTap,
     this.blacklistedElements = const [],
-    this.style,
+    this.style = const {},
     this.navigationDelegateForIframe,
   }) : super(key: key);
 

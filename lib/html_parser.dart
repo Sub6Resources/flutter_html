@@ -39,15 +39,15 @@ class HtmlParser extends StatelessWidget {
 
   HtmlParser({
     @required this.htmlData,
-    this.onLinkTap,
-    this.onImageTap,
-    this.onImageError,
-    this.shrinkWrap,
-    this.style,
-    this.customRender,
-    this.imageRenders,
-    this.blacklistedElements,
-    this.navigationDelegateForIframe,
+    @required this.onLinkTap,
+    @required this.onImageTap,
+    @required this.onImageError,
+    @required this.shrinkWrap,
+    @required this.style,
+    @required this.customRender,
+    @required this.imageRenders,
+    @required this.blacklistedElements,
+    @required this.navigationDelegateForIframe,
   });
 
   @override
@@ -108,8 +108,9 @@ class HtmlParser extends StatelessWidget {
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
-      children: new List<StyledElement>(),
+      children: <StyledElement>[],
       node: html.documentElement,
+      style: Style(),
     );
 
     html.nodes.forEach((node) {
@@ -134,7 +135,7 @@ class HtmlParser extends StatelessWidget {
     List<String> blacklistedElements,
     NavigationDelegate navigationDelegateForIframe,
   ) {
-    List<StyledElement> children = List<StyledElement>();
+    List<StyledElement> children = <StyledElement>[];
 
     node.nodes.forEach((childNode) {
       children.add(_recursiveLexer(
@@ -168,7 +169,7 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
-      return TextContentElement(text: node.text);
+      return TextContentElement(text: node.text, style: Style());
     } else {
       return EmptyContentElement();
     }
@@ -667,7 +668,7 @@ class HtmlParser extends StatelessWidget {
   /// or any block-level [TextContentElement] that contains only whitespace and doesn't follow
   /// a block element or a line break.
   static StyledElement _removeEmptyElements(StyledElement tree) {
-    List<StyledElement> toRemove = new List<StyledElement>();
+    List<StyledElement> toRemove = <StyledElement>[];
     bool lastChildBlock = true;
     tree.children?.forEach((child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
@@ -723,9 +724,9 @@ class RenderContext {
   final Style style;
 
   RenderContext({
-    this.buildContext,
-    this.parser,
-    this.style,
+    @required this.buildContext,
+    @required this.parser,
+    @required this.style,
   });
 }
 
@@ -743,8 +744,8 @@ class ContainerSpan extends StatelessWidget {
   ContainerSpan({
     this.child,
     this.children,
-    this.style,
-    this.newContext,
+    @required this.style,
+    @required this.newContext,
     this.shrinkWrap = false,
   });
 
@@ -780,10 +781,10 @@ class StyledText extends StatelessWidget {
   final RenderContext renderContext;
 
   const StyledText({
-    this.textSpan,
-    this.style,
+    @required this.textSpan,
+    @required this.style,
     this.textScaleFactor = 1.0,
-    this.renderContext,
+    @required this.renderContext,
   });
 
   @override

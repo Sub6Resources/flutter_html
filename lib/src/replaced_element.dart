@@ -21,12 +21,12 @@ import 'package:webview_flutter/webview_flutter.dart';
 abstract class ReplacedElement extends StyledElement {
   PlaceholderAlignment alignment;
 
-  ReplacedElement(
-      {String name,
-      Style style,
-      dom.Element node,
-      this.alignment = PlaceholderAlignment.aboveBaseline})
-      : super(name: name, children: null, style: style, node: node);
+  ReplacedElement({
+    @required String name,
+    @required Style style,
+    dom.Element node,
+    this.alignment = PlaceholderAlignment.aboveBaseline
+  }) : super(name: name, children: [], style: style, node: node);
 
   static List<String> parseMediaSources(List<dom.Element> elements) {
     return elements
@@ -44,8 +44,8 @@ class TextContentElement extends ReplacedElement {
   String text;
 
   TextContentElement({
-    Style style,
-    this.text,
+    @required Style style,
+    @required this.text,
   }) : super(name: "[text]", style: style);
 
   @override
@@ -64,17 +64,11 @@ class ImageContentElement extends ReplacedElement {
   final String alt;
 
   ImageContentElement({
-    String name,
-    Style style,
-    this.src,
-    this.alt,
-    dom.Element node,
-  }) : super(
-          name: name,
-          style: style,
-          node: node,
-          alignment: PlaceholderAlignment.middle,
-        );
+    @required String name,
+    @required this.src,
+    @required this.alt,
+    @required dom.Element node,
+  }) : super(name: name, style: Style(), node: node, alignment: PlaceholderAlignment.middle);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -99,14 +93,13 @@ class IframeContentElement extends ReplacedElement {
   final UniqueKey key = UniqueKey();
 
   IframeContentElement({
-    String name,
-    Style style,
-    this.src,
-    this.width,
-    this.height,
-    dom.Element node,
-    this.navigationDelegate,
-  }) : super(name: name, style: style, node: node);
+    @required String name,
+    @required this.src,
+    @required this.width,
+    @required this.height,
+    @required dom.Element node,
+    @required this.navigationDelegate,
+  }) : super(name: name, style: Style(), node: node);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -138,15 +131,14 @@ class AudioContentElement extends ReplacedElement {
   final bool muted;
 
   AudioContentElement({
-    String name,
-    Style style,
-    this.src,
-    this.showControls,
-    this.autoplay,
-    this.loop,
-    this.muted,
-    dom.Element node,
-  }) : super(name: name, style: style, node: node);
+    @required String name,
+    @required this.src,
+    @required this.showControls,
+    @required this.autoplay,
+    @required this.loop,
+    @required this.muted,
+    @required dom.Element node,
+  }) : super(name: name, style: Style(), node: node);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -179,18 +171,17 @@ class VideoContentElement extends ReplacedElement {
   final double height;
 
   VideoContentElement({
-    String name,
-    Style style,
-    this.src,
-    this.poster,
-    this.showControls,
-    this.autoplay,
-    this.loop,
-    this.muted,
-    this.width,
-    this.height,
-    dom.Element node,
-  }) : super(name: name, style: style, node: node);
+    @required String name,
+    @required this.src,
+    @required this.poster,
+    @required this.showControls,
+    @required this.autoplay,
+    @required this.loop,
+    @required this.muted,
+    @required this.width,
+    @required this.height,
+    @required dom.Element node,
+  }) : super(name: name, style: Style(), node: node);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -226,10 +217,12 @@ class SvgContentElement extends ReplacedElement {
   final double height;
 
   SvgContentElement({
-    this.data,
-    this.width,
-    this.height,
-  });
+    @required String name,
+    @required this.data,
+    @required this.width,
+    @required this.height,
+    @required dom.Node node,
+  }) : super(name: name, style: Style(), node: node);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -242,7 +235,7 @@ class SvgContentElement extends ReplacedElement {
 }
 
 class EmptyContentElement extends ReplacedElement {
-  EmptyContentElement({String name = "empty"}) : super(name: name);
+  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style());
 
   @override
   Widget toWidget(_) => null;
@@ -252,12 +245,12 @@ class RubyElement extends ReplacedElement {
   dom.Element element;
 
   RubyElement({@required this.element, String name = "ruby"})
-      : super(name: name, alignment: PlaceholderAlignment.middle);
+      : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
 
   @override
   Widget toWidget(RenderContext context) {
     dom.Node textNode;
-    List<Widget> widgets = List<Widget>();
+    List<Widget> widgets = <Widget>[];
     //TODO calculate based off of parent font size.
     final rubySize = max(9.0, context.style.fontSize.size / 2);
     final rubyYPos = rubySize + rubySize / 2;
@@ -362,9 +355,11 @@ ReplacedElement parseReplacedElement(
       );
     case "svg":
       return SvgContentElement(
+        name: "svg",
         data: element.outerHtml,
         width: double.tryParse(element.attributes['width'] ?? ""),
         height: double.tryParse(element.attributes['height'] ?? ""),
+        node: element,
       );
     case "ruby":
       return RubyElement(

@@ -91,7 +91,7 @@ class DeclarationVisitor extends css.Visitor {
   @override
   void visitDeclaration(css.Declaration node) {
     _currentProperty = node.property;
-    _result[_currentProperty] = new List<css.Expression>();
+    _result[_currentProperty] = <css.Expression>[];
     node.expression.visit(this);
   }
 
