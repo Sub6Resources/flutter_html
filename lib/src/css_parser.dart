@@ -5,7 +5,7 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_html/style.dart';
 
-Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
+Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
   Style style = new Style();
   declarations.forEach((property, value) {
     switch (property) {
@@ -43,15 +43,16 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
         break;
       case 'text-decoration':
-        List<css.LiteralTerm> textDecorationList  = value.whereType<css.LiteralTerm>().toList();
+        List<css.LiteralTerm?>? textDecorationList = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
-        textDecorationList.removeWhere((element) => element.text != "none" && element.text != "overline" && element.text != "underline" && element.text != "line-through");
-        css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
-        List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
+        textDecorationList.removeWhere((element) => element != null && element.text != "none" && element.text != "overline" && element.text != "underline" && element.text != "line-through");
+        css.Expression? textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
+        List<css.LiteralTerm?>? temp = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
-        temp.removeWhere((element) => element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
-        css.LiteralTerm textDecorationStyle = temp.last ?? null;
+        temp.removeWhere((element) => element != null && element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
+        css.LiteralTerm? textDecorationStyle = temp.last;
         style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
+        /// flutter tracing isn't working properly here, [textDecorationColor] could be null, ignore this warning for now
         if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor);
         if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
         break;
@@ -59,10 +60,10 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         style.textDecorationColor = ExpressionMapping.expressionToColor(value.first);
         break;
       case 'text-decoration-line':
-        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(value);
+        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(value as List<css.LiteralTerm>);
         break;
       case 'text-decoration-style':
-        style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(value.first);
+        style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(value.first as css.LiteralTerm);
         break;
       case 'text-shadow':
         style.textShadow = ExpressionMapping.expressionToTextShadow(value);
@@ -72,18 +73,18 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   return style;
 }
 
-Style inlineCSSToStyle(String inlineStyle) {
+Style inlineCSSToStyle(String? inlineStyle) {
   final sheet = cssparser.parse("*{$inlineStyle}");
-  final declarations = DeclarationVisitor().getDeclarations(sheet);
+  final declarations = DeclarationVisitor().getDeclarations(sheet)!;
   return declarationsToStyle(declarations);
 }
 
 class DeclarationVisitor extends css.Visitor {
-  Map<String, List<css.Expression>> _result;
-  String _currentProperty;
+  Map<String?, List<css.Expression>>? _result;
+  String? _currentProperty;
 
-  Map<String, List<css.Expression>> getDeclarations(css.StyleSheet sheet) {
-    _result = new Map<String, List<css.Expression>>();
+  Map<String?, List<css.Expression>>? getDeclarations(css.StyleSheet sheet) {
+    _result = new Map<String?, List<css.Expression>>();
     sheet.visit(this);
     return _result;
   }
@@ -91,28 +92,28 @@ class DeclarationVisitor extends css.Visitor {
   @override
   void visitDeclaration(css.Declaration node) {
     _currentProperty = node.property;
-    _result[_currentProperty] = <css.Expression>[];
-    node.expression.visit(this);
+    _result![_currentProperty] = <css.Expression>[];
+    node.expression!.visit(this);
   }
 
   @override
   void visitExpressions(css.Expressions node) {
     node.expressions.forEach((expression) {
-      _result[_currentProperty].add(expression);
+      _result![_currentProperty]!.add(expression);
     });
   }
 }
 
 //Mapping functions
 class ExpressionMapping {
-  static Color expressionToColor(css.Expression value) {
+  static Color? expressionToColor(css.Expression value) {
     if (value is css.HexColorTerm) {
       return stringToColor(value.text);
     } else if (value is css.FunctionTerm) {
       if (value.text == 'rgba') {
-        return rgbOrRgbaToColor(value.span.text);
+        return rgbOrRgbaToColor(value.span!.text);
       } else if (value.text == 'rgb') {
-        return rgbOrRgbaToColor(value.span.text);
+        return rgbOrRgbaToColor(value.span!.text);
       }
     }
     return null;
@@ -171,15 +172,15 @@ class ExpressionMapping {
     return finalFontFeatures;
   }
 
-  static FontSize expressionToFontSize(css.Expression value) {
+  static FontSize? expressionToFontSize(css.Expression value) {
     if (value is css.NumberTerm) {
       return FontSize(double.tryParse(value.text));
     } else if (value is css.PercentageTerm) {
-      return FontSize.percent(int.tryParse(value.text));
+      return FontSize.percent(int.tryParse(value.text)!);
     } else if (value is css.EmTerm) {
       return FontSize.em(double.tryParse(value.text));
     } else if (value is css.RemTerm) {
-      return FontSize.rem(double.tryParse(value.text));
+      return FontSize.rem(double.tryParse(value.text)!);
     } else if (value is css.LengthTerm) {
       return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')));
     } else if (value is css.LiteralTerm) {
@@ -251,20 +252,20 @@ class ExpressionMapping {
     return FontWeight.normal;
   }
 
-  static String expressionToFontFamily(css.Expression value) {
+  static String? expressionToFontFamily(css.Expression value) {
     if (value is css.LiteralTerm) return value.text;
     return null;
   }
 
   static LineHeight expressionToLineHeight(css.Expression value) {
     if (value is css.NumberTerm) {
-      return LineHeight.number(double.tryParse(value.text));
+      return LineHeight.number(double.tryParse(value.text)!);
     } else if (value is css.PercentageTerm) {
-      return LineHeight.percent(double.tryParse(value.text));
+      return LineHeight.percent(double.tryParse(value.text)!);
     } else if (value is css.EmTerm) {
-      return LineHeight.em(double.tryParse(value.text));
+      return LineHeight.em(double.tryParse(value.text)!);
     } else if (value is css.RemTerm) {
-      return LineHeight.rem(double.tryParse(value.text));
+      return LineHeight.rem(double.tryParse(value.text)!);
     } else if (value is css.LengthTerm) {
       return LineHeight(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), units: "length");
     }
@@ -291,22 +292,24 @@ class ExpressionMapping {
     return TextAlign.start;
   }
 
-  static TextDecoration expressionToTextDecorationLine(List<css.LiteralTerm> value) {
+  static TextDecoration expressionToTextDecorationLine(List<css.LiteralTerm?> value) {
     List<TextDecoration> decorationList = [];
-    for (css.LiteralTerm term in value) {
-      switch(term.text) {
-        case "overline":
-          decorationList.add(TextDecoration.overline);
-          break;
-        case "underline":
-          decorationList.add(TextDecoration.underline);
-          break;
-        case "line-through":
-          decorationList.add(TextDecoration.lineThrough);
-          break;
-        default:
-          decorationList.add(TextDecoration.none);
-          break;
+    for (css.LiteralTerm? term in value) {
+      if (term != null) {
+        switch(term.text) {
+          case "overline":
+            decorationList.add(TextDecoration.overline);
+            break;
+          case "underline":
+            decorationList.add(TextDecoration.underline);
+            break;
+          case "line-through":
+            decorationList.add(TextDecoration.lineThrough);
+            break;
+          default:
+            decorationList.add(TextDecoration.none);
+            break;
+        }
       }
     }
     if (decorationList.contains(TextDecoration.none)) decorationList = [TextDecoration.none];
@@ -346,31 +349,31 @@ class ExpressionMapping {
     for (List<css.Expression> list in valueList) {
       css.Expression exp = list[0];
       css.Expression exp2 = list[1];
-      css.LiteralTerm exp3 = list.length > 2 ? list[2] : null;
-      css.LiteralTerm exp4 = list.length > 3 ? list[3] : null;
+      css.LiteralTerm? exp3 = list.length > 2 ? list[2] as css.LiteralTerm? : null;
+      css.LiteralTerm? exp4 = list.length > 3 ? list[3] as css.LiteralTerm? : null;
       RegExp nonNumberRegex = RegExp(r'\s+(\d+\.\d+)\s+');
       if (exp is css.LiteralTerm && exp2 is css.LiteralTerm) {
         if (exp3 != null && (exp3 is css.HexColorTerm || exp3 is css.FunctionTerm)) {
           shadow.add(Shadow(
-              color: expressionToColor(exp3), 
-              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, '')))
+              color: expressionToColor(exp3)!, 
+              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!)
           ));
         } else if (exp3 != null && exp3 is css.LiteralTerm) {
           if (exp4 != null && (exp4 is css.HexColorTerm || exp4 is css.FunctionTerm)) {
             shadow.add(Shadow(
-                color: expressionToColor(exp4), 
-                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))), 
-                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))
+                color: expressionToColor(exp4)!, 
+                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!), 
+                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))!
             ));
           } else {
             shadow.add(Shadow(
-                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))), 
-                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))
+                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!), 
+                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))!
             ));
           }
         } else {
           shadow.add(Shadow(
-              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, '')), double.tryParse(exp2.text.replaceAll(nonNumberRegex, '')))
+              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!)
           ));
         }
       }
@@ -393,7 +396,7 @@ class ExpressionMapping {
     }
   }
 
-  static Color rgbOrRgbaToColor(String text) {
+  static Color? rgbOrRgbaToColor(String text) {
     final rgbaText = text.replaceAll(')', '').replaceAll(' ', '');
     try {
       final rgbaValues =
