@@ -4,7 +4,7 @@ version: 1.3.0
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
-  sdk: '>=2.11.0 <3.0.0'
+  sdk: '>=2.12.0-259.12.beta <3.0.0'
   flutter: '>=1.17.0'
 
 dependencies:
