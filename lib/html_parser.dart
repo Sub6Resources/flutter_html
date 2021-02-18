@@ -787,6 +787,7 @@ class StyledText extends StatelessWidget {
         textAlign: style.textAlign,
         textDirection: style.direction,
         textScaleFactor: textScaleFactor,
+        maxLines: style.maxLine,
       ),
     );
   }

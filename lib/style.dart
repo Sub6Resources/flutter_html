@@ -175,6 +175,13 @@ class Style {
   Alignment alignment;
   String markerContent;
 
+  /// MaxLine
+  /// 
+  /// 
+  /// 
+  /// 
+  int maxLine;
+
   Style({
     this.backgroundColor = Colors.transparent,
     this.color,
@@ -207,6 +214,7 @@ class Style {
     this.border,
     this.alignment,
     this.markerContent,
+    this.maxLine,
   }) {
     if (this.alignment == null &&
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
@@ -280,6 +288,7 @@ class Style {
       //TODO merge border
       alignment: other.alignment,
       markerContent: other.markerContent,
+      maxLine: other.maxLine,
     );
   }
 
@@ -347,6 +356,7 @@ class Style {
     Border border,
     Alignment alignment,
     String markerContent,
+    int maxLine,
   }) {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -381,6 +391,7 @@ class Style {
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,
+      maxLine: maxLine ?? this.maxLine,
     );
   }
 
