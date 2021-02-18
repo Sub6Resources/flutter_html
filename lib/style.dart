@@ -288,6 +288,7 @@ class Style {
       //TODO merge border
       alignment: other.alignment,
       markerContent: other.markerContent,
+      
       maxLine: other.maxLine,
     );
   }
@@ -321,6 +322,7 @@ class Style {
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
+      maxLine: child.maxLine ?? maxLine,
     );
   }
 
