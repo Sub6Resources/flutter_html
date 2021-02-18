@@ -788,7 +788,7 @@ class StyledText extends StatelessWidget {
         textDirection: style.direction,
         textScaleFactor: textScaleFactor,
         maxLines: style.maxLine,
-        overflow: TextOverflow.ellipsis,
+        overflow: style.textOverflow,
       ),
     );
   }
