@@ -1,4 +1,6 @@
+import 'dart:convert';
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
@@ -334,12 +336,33 @@ ReplacedElement parseReplacedElement(
           navigationDelegate: navigationDelegateForIframe,
           node: element);
     case "img":
-      return ImageContentElement(
-        name: "img",
-        src: element.attributes['src'],
-        alt: element.attributes['alt'],
-        node: element,
-      );
+      final String src = element.attributes['src'];
+      if (src.startsWith('data:image/svg+xml;base64,')) {
+        final int commaLocation = src.indexOf(',') + 1;
+        final Uint8List bytes =
+            base64.decode(src.substring(commaLocation).replaceAll(' ', ''));
+        final svg = String.fromCharCodes(bytes);
+        try {
+          return SvgContentElement(
+            data: svg,
+            width: double.tryParse(
+                RegExp(r"width=\'([0-9.]+)\'").firstMatch(svg).group(1) ?? ""),
+            height: double.tryParse(
+                RegExp(r"height=\'([0-9.]+)\'").firstMatch(svg).group(1) ?? ""),
+          );
+        } catch (e) {
+          return SvgContentElement(
+            data: svg,
+          );
+        }
+      } else {
+        return ImageContentElement(
+          name: "img",
+          src: element.attributes['src'],
+          alt: element.attributes['alt'],
+          node: element,
+        );
+      }
     case "video":
       final sources = <String>[
         if (element.attributes['src'] != null) element.attributes['src'],
