@@ -355,14 +355,13 @@ ReplacedElement parseReplacedElement(
             data: svg,
           );
         }
-      } else {
-        return ImageContentElement(
-          name: "img",
-          src: element.attributes['src'],
-          alt: element.attributes['alt'],
-          node: element,
-        );
       }
+      return ImageContentElement(
+        name: "img",
+        src: element.attributes['src'],
+        alt: element.attributes['alt'],
+        node: element,
+      );
     case "video":
       final sources = <String>[
         if (element.attributes['src'] != null) element.attributes['src'],
