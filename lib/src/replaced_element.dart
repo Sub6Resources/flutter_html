@@ -346,9 +346,9 @@ ReplacedElement parseReplacedElement(
           return SvgContentElement(
             data: svg,
             width: double.tryParse(
-                RegExp(r"width=\'([0-9.]+)\'").firstMatch(svg).group(1) ?? ""),
+                RegExp(r"width=\'([0-9.]+)").firstMatch(svg).group(1) ?? ""),
             height: double.tryParse(
-                RegExp(r"height=\'([0-9.]+)\'").firstMatch(svg).group(1) ?? ""),
+                RegExp(r"height=\'([0-9.]+)").firstMatch(svg).group(1) ?? ""),
           );
         } catch (e) {
           return SvgContentElement(
