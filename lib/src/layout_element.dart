@@ -32,6 +32,8 @@ class TableLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
+      margin: style.margin,
+      padding: style.padding,
       decoration: BoxDecoration(
         color: style.backgroundColor,
         border: style.border,
