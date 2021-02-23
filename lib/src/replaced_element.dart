@@ -7,6 +7,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
@@ -84,6 +85,7 @@ class ImageContentElement extends ReplacedElement {
         final widget = entry.value.call(context, attributes, element);
         if (widget != null) {
           return RawGestureDetector(
+            key: AnchorKey.of(context.parser.key, this),
             child: widget,
             gestures: {
               MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
@@ -122,6 +124,7 @@ class IframeContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     final sandboxMode = attributes["sandbox"];
     return Container(
+      key: AnchorKey.of(context.parser.key, this),
       width: width ?? (height ?? 150) * 2,
       height: height ?? (width ?? 300) / 2,
       child: WebView(
@@ -161,6 +164,7 @@ class AudioContentElement extends ReplacedElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
+      key: AnchorKey.of(context.parser.key, this),
       width: context.style.width ?? 300,
       child: ChewieAudio(
         controller: ChewieAudioController(
@@ -209,6 +213,7 @@ class VideoContentElement extends ReplacedElement {
     return AspectRatio(
       aspectRatio: _width / _height,
       child: Container(
+        key: AnchorKey.of(context.parser.key, this),
         child: Chewie(
           controller: ChewieController(
             videoPlayerController: VideoPlayerController.network(
@@ -245,6 +250,7 @@ class SvgContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     return SvgPicture.string(
       data,
+      key: AnchorKey.of(context.parser.key, this),
       width: width,
       height: height,
     );
@@ -300,6 +306,7 @@ class RubyElement extends ReplacedElement {
       }
     });
     return Row(
+      key: AnchorKey.of(context.parser.key, this),
       crossAxisAlignment: CrossAxisAlignment.end,
       textBaseline: TextBaseline.alphabetic,
       mainAxisSize: MainAxisSize.min,

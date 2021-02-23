@@ -1,6 +1,7 @@
 library flutter_html;
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/style.dart';
@@ -44,7 +45,7 @@ class Html extends StatelessWidget {
     this.blacklistedElements = const [],
     this.style,
     this.navigationDelegateForIframe,
-  }) : super(key: key);
+  }) : super(key: key ?? UniqueKey());
 
   final String data;
   final OnTap onLinkTap;
@@ -72,10 +73,10 @@ class Html extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
-
     return Container(
       width: width,
       child: HtmlParser(
+        key: key,
         htmlData: data,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
@@ -83,9 +84,7 @@ class Html extends StatelessWidget {
         shrinkWrap: shrinkWrap,
         style: style,
         customRender: customRender,
-        imageRenders: {}
-          ..addAll(customImageRenders)
-          ..addAll(defaultImageRenders),
+        imageRenders: {}..addAll(customImageRenders)..addAll(defaultImageRenders),
         blacklistedElements: blacklistedElements,
         navigationDelegateForIframe: navigationDelegateForIframe,
       ),

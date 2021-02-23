@@ -28,6 +28,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 const htmlData = """
+<p id='top'><a href='#bottom'>Scroll to bottom</a></p>
 <h1>Header 1</h1>
 <h2>Header 2</h2>
 <h3>Header 3</h3>
@@ -82,7 +83,7 @@ const htmlData = """
       <h3>Custom Element Support (inline: <bird></bird> and as block):</h3>
       <flutter></flutter>
       <flutter horizontal></flutter>
-      <h3>SVG support:</h3>
+      <h3 id='middle'>SVG support:</h3>
       <svg id='svg1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
             <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
             <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
@@ -136,6 +137,7 @@ const htmlData = """
       <img alt='Empty source' src='' />
       <h3>Broken network image</h3>
       <img alt='Broken image' src='https://www.notgoogle.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+      <p id='bottom'><a href='#top'>Scroll to top</a></p>
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
@@ -151,8 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
           data: htmlData,
           //Optional parameters:
           customImageRenders: {
-            networkSourceMatcher(domains: ["flutter.dev"]):
-                (context, attributes, element) {
+            networkSourceMatcher(domains: ["flutter.dev"]): (context, attributes, element) {
               return FlutterLogo(size: 36);
             },
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
@@ -162,15 +163,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             // On relative paths starting with /wiki, prefix with a base url
             (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
-                networkImageRender(
-                    mapUrl: (url) => "https://upload.wikimedia.org" + url),
+                networkImageRender(mapUrl: (url) => "https://upload.wikimedia.org" + url),
             // Custom placeholder image for broken links
             networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
           },
-          onLinkTap: (url) {
+          onLinkTap: (url, _, __, ___) {
             print("Opening $url...");
           },
-          onImageTap: (src) {
+          onImageTap: (src, _, __, ___) {
             print(src);
           },
           onImageError: (exception, stackTrace) {

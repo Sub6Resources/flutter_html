@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/styled_element.dart';
 import 'package:flutter_html/style.dart';
@@ -32,6 +33,7 @@ class TableLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
+      key: AnchorKey.of(context.parser.key, this),
       decoration: BoxDecoration(
         color: style.backgroundColor,
         border: style.border,
@@ -278,6 +280,7 @@ class DetailsContentElement extends LayoutElement {
     }
     InlineSpan firstChild = childrenList?.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
+        key: AnchorKey.of(context.parser.key, this),
         expandedAlignment: Alignment.centerLeft,
         title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
           textSpan: TextSpan(
