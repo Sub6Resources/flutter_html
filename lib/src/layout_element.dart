@@ -121,6 +121,7 @@ class TableLayoutElement extends LayoutElement {
                   child: StyledText(
                     textSpan: context.parser.parseTree(context, child),
                     style: child.style,
+                    renderContext: context,
                   ),
                 ),
               ),
@@ -285,16 +286,14 @@ class DetailsContentElement extends LayoutElement {
         childrenList?.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
         expandedAlignment: Alignment.centerLeft,
-        title: elementList?.isNotEmpty == true &&
-                elementList?.first?.localName == "summary"
-            ? StyledText(
-                textSpan: TextSpan(
-                  style: style.generateTextStyle(),
-                  children: [firstChild] ?? [],
-                ),
-                style: style,
-              )
-            : Text("Details"),
+        title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
+          textSpan: TextSpan(
+            style: style.generateTextStyle(),
+            children: [firstChild] ?? [],
+          ),
+          style: style,
+          renderContext: context,
+        ) : Text("Details"),
         children: [
           StyledText(
             textSpan: TextSpan(
@@ -307,6 +306,7 @@ class DetailsContentElement extends LayoutElement {
                         ? firstChild
                         : null)),
             style: style,
+            renderContext: context,
           ),
         ]);
   }

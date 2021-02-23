@@ -1,4 +1,4 @@
-## [1.3.0] - February 9, 2021:
+## [1.3.0] - February 16, 2021:
 * New image loading API
 * Image loading with request headers, from relative paths and custom loading widget
 * SVG image support from network or local assets
@@ -8,6 +8,9 @@
 * Content-based table column sizing
 * Respect iframe sandbox attribute
 * Fixed text flow and styling when using tags inside `<a>` links
+* Fixed issue where `shrinkWrap` property would not constrain the widget to take up the space it needs
+  * See the [Notes](https://github.com/Sub6Resources/flutter_html#notes) for an example usage with `shrinkWrap`
+* Fixed issue where iframes would not update when their `src`s changed in the HTML data
 * Updated dependencies for Flutter 1.26+
 
 ## [1.2.0] - January 14, 2021:

@@ -81,6 +81,11 @@ class HtmlParser extends StatelessWidget {
       textSpan: parsedTree,
       style: cleanedTree.style,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
+      renderContext: RenderContext(
+        buildContext: context,
+        parser: this,
+        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2),
+      ),
     );
   }
 
@@ -243,7 +248,7 @@ class HtmlParser extends StatelessWidget {
     RenderContext newContext = RenderContext(
       buildContext: context.buildContext,
       parser: this,
-      style: context.style.copyOnlyInherited(tree.style),
+      style: context.style?.copyOnlyInherited(tree.style),
     );
 
     if (customRender?.containsKey(tree.name) ?? false) {
@@ -290,39 +295,53 @@ class HtmlParser extends StatelessWidget {
         ),
       );
     } else if (tree.style?.display == Display.LIST_ITEM) {
+      List<InlineSpan> getChildren(StyledElement tree) {
+        InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
+        List<InlineSpan> children = tree.children?.map((tree) => parseTree(newContext, tree))?.toList() ?? [];
+        if (tree.style?.listStylePosition == ListStylePosition.INSIDE) {
+          children.insert(0, tabSpan);
+        }
+        return children;
+      }
+
       return WidgetSpan(
         child: ContainerSpan(
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          child: Stack(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            textDirection: tree.style?.direction,
             children: [
-              if (tree.style?.listStylePosition == ListStylePosition.OUTSIDE ||
-                  tree.style?.listStylePosition == null)
-                PositionedDirectional(
-                  width: 30, //TODO derive this from list padding.
-                  start: 0,
-                  child: Text('${newContext.style.markerContent}\t',
-                      textAlign: TextAlign.right,
-                      style: newContext.style.generateTextStyle()),
-                ),
+              tree.style?.listStylePosition == ListStylePosition.OUTSIDE ||
+                  tree.style?.listStylePosition == null ?
               Padding(
-                padding: EdgeInsetsDirectional.only(
-                    start: 30), //TODO derive this from list padding.
-                child: StyledText(
-                  textSpan: TextSpan(
-                    text: (tree.style?.listStylePosition ==
-                            ListStylePosition.INSIDE)
-                        ? '${newContext.style.markerContent}\t'
-                        : null,
-                    children: tree.children
-                            ?.map((tree) => parseTree(newContext, tree))
-                            ?.toList() ??
-                        [],
-                    style: newContext.style.generateTextStyle(),
-                  ),
-                  style: newContext.style,
+                padding: tree.style?.padding ?? EdgeInsets.only(left: tree.style?.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style?.direction == TextDirection.rtl ? 10.0 : 0.0),
+                child: Text(
+                    newContext.style.markerContent,
+                    textAlign: TextAlign.right,
+                    style: newContext.style.generateTextStyle()
                 ),
+              ) : Container(height: 0, width: 0),
+              Text("\t", textAlign: TextAlign.right),
+              Expanded(
+                  child: Padding(
+                      padding: tree.style?.listStylePosition == ListStylePosition.INSIDE ?
+                        EdgeInsets.only(left: tree.style?.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style?.direction == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
+                      child: StyledText(
+                        textSpan: TextSpan(
+                          text: (tree.style?.listStylePosition ==
+                              ListStylePosition.INSIDE)
+                              ? '${newContext.style.markerContent}'
+                              : null,
+                          children: getChildren(tree),
+                          style: newContext.style.generateTextStyle(),
+                        ),
+                        style: newContext.style,
+                        renderContext: context,
+                      )
+                  )
               )
             ],
           ),
@@ -412,6 +431,7 @@ class HtmlParser extends StatelessWidget {
                   [],
             ),
             style: newContext.style,
+            renderContext: context,
           ),
         ),
       );
@@ -512,7 +532,7 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _processListCharactersRecursive(
       StyledElement tree, ListQueue<Context<int>> olStack) {
     if (tree.name == 'ol') {
-      olStack.add(Context(0));
+      olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']) ?? 1 : 1) - 1));
     } else if (tree.style.display == Display.LIST_ITEM) {
       switch (tree.style.listStyleType) {
         case ListStyleType.DISC:
@@ -760,6 +780,7 @@ class ContainerSpan extends StatelessWidget {
               children: children,
             ),
             style: newContext.style,
+            renderContext: newContext,
           ),
     );
   }
@@ -769,20 +790,19 @@ class StyledText extends StatelessWidget {
   final InlineSpan textSpan;
   final Style style;
   final double textScaleFactor;
+  final RenderContext renderContext;
 
   const StyledText({
     this.textSpan,
     this.style,
     this.textScaleFactor = 1.0,
+    this.renderContext,
   });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width:
-          style.display == Display.BLOCK || style.display == Display.LIST_ITEM
-              ? double.infinity
-              : null,
+      width: calculateWidth(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -791,5 +811,15 @@ class StyledText extends StatelessWidget {
         textScaleFactor: textScaleFactor,
       ),
     );
+  }
+
+  double calculateWidth(Display display, RenderContext context) {
+    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
+      return double.infinity;
+    }
+    if (renderContext.parser.shrinkWrap) {
+      return MediaQuery.of(context.buildContext).size.width;
+    }
+    return null;
   }
 }
