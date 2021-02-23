@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
@@ -82,7 +83,16 @@ class ImageContentElement extends ReplacedElement {
       if (entry.key.call(attributes, element)) {
         final widget = entry.value.call(context, attributes, element);
         if (widget != null) {
-          return widget;
+          return RawGestureDetector(
+            child: widget,
+            gestures: {
+              MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
+                    () => MultipleTapGestureRecognizer(), (instance) {
+                  instance..onTap = () => context.parser.onImageTap?.call(src, context, attributes, element);
+                },
+              ),
+            },
+          );
         }
       }
     }
