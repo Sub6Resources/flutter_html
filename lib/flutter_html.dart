@@ -92,12 +92,11 @@ class Html extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final double width = shrinkWrap ? null : MediaQuery.of(context).size.width;
-
+    final dom.Document doc = data != null ? HtmlParser.parseHTML(data) : document;
     return Container(
       width: width,
       child: HtmlParser(
-        htmlData: data,
-        userDocument: document,
+        htmlData: doc,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
         onImageError: onImageError,
