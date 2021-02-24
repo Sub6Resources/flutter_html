@@ -18,14 +18,15 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
       case 'border':
         List<css.LiteralTerm> borderWidths = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.width], so make sure to remove those before passing it to [ExpressionMapping]
-        borderWidths.removeWhere((element) => element.text != "thin" && element.text != "medium" && element.text != "thick" && !(element is css.LengthTerm));
+        borderWidths.removeWhere((element) => element.text != "thin" && element.text != "medium" && element.text != "thick"
+            && !(element is css.LengthTerm) && !(element is css.PercentageTerm) && !(element is css.EmTerm) && !(element is css.RemTerm) && !(element is css.NumberTerm));
         List<css.Expression> borderColors = value.where((element) => ExpressionMapping.expressionToColor(element) != null).toList();
-        List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
+        List<css.LiteralTerm> potentialStyles = value.whereType<css.LiteralTerm>().toList();
         /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
         List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
         /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.style], so make sure to remove those before passing it to [ExpressionMapping]
-        temp.removeWhere((element) => !possibleBorderValues.contains(element.text));
-        List<css.LiteralTerm> borderStyles = temp;
+        potentialStyles.removeWhere((element) => !possibleBorderValues.contains(element.text));
+        List<css.LiteralTerm> borderStyles = potentialStyles;
         style.border = ExpressionMapping.expressionToBorder(borderWidths, borderStyles, borderColors);
         break;
       case 'color':
@@ -66,7 +67,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
         temp.removeWhere((element) => element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
-        css.LiteralTerm textDecorationStyle = temp.last ?? null;
+        css.LiteralTerm textDecorationStyle = temp.isNotEmpty ? temp.last : null;
         style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
         if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor);
         if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
@@ -122,7 +123,7 @@ class DeclarationVisitor extends css.Visitor {
 //Mapping functions
 class ExpressionMapping {
 
-  static Border expressionToBorder(List<css.LiteralTerm> borderWidths, List<css.LiteralTerm> borderStyles, List<css.Expression> borderColors) {
+  static Border expressionToBorder(List<css.Expression> borderWidths, List<css.LiteralTerm> borderStyles, List<css.Expression> borderColors) {
     CustomBorderSide left = CustomBorderSide();
     CustomBorderSide top = CustomBorderSide();
     CustomBorderSide right = CustomBorderSide();
@@ -205,16 +206,27 @@ class ExpressionMapping {
   }
 
   static double expressionToBorderWidth(css.LiteralTerm value) {
-    switch(value.text) {
-      case "thin":
-        return 2.0;
-      case "medium":
-        return 4.0;
-      case "thick":
-        return 6.0;
-      default:
-        return double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+    if (value is css.NumberTerm) {
+      return double.tryParse(value.text);
+    } else if (value is css.PercentageTerm) {
+      return double.tryParse(value.text) / 100;
+    } else if (value is css.EmTerm) {
+      return double.tryParse(value.text);
+    } else if (value is css.RemTerm) {
+      return double.tryParse(value.text);
+    } else if (value is css.LengthTerm) {
+      return double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+    } else if (value is css.LiteralTerm) {
+      switch (value.text) {
+        case "thin":
+          return 2.0;
+        case "medium":
+          return 4.0;
+        case "thick":
+          return 6.0;
+      }
     }
+    return null;
   }
 
   static BorderStyle expressionToBorderStyle(css.LiteralTerm value) {
@@ -541,6 +553,7 @@ class ExpressionMapping {
   }
 
   static Color hslToRgbToColor(String text) {
+    print(text);
     final hslText = text.replaceAll(')', '').replaceAll(' ', '');
     final hslValues = hslText.split(',').toList();
     List<double> parsedHsl = [];
