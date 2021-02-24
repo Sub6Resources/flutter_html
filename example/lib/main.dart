@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: Html(
-          data: "<p>Test</p>",
+          data: htmlData,
           //Optional parameters:
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]):
