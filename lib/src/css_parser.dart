@@ -46,11 +46,11 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         List<css.LiteralTerm> textDecorationList  = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
         textDecorationList.removeWhere((element) => element.text != "none" && element.text != "overline" && element.text != "underline" && element.text != "line-through");
-        css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: null);
-        List<css.LiteralTerm> temp = value.whereType<css.LiteralTerm>().toList();
+        css.Expression textDecorationColor = value.firstWhere((element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: () => null);
+        List<css.LiteralTerm> potentialStyles = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
-        temp.removeWhere((element) => element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
-        css.LiteralTerm textDecorationStyle = temp.last ?? null;
+        potentialStyles.removeWhere((element) => element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
+        css.LiteralTerm textDecorationStyle = potentialStyles.isNotEmpty ? potentialStyles?.last : null;
         style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
         if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor);
         if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
