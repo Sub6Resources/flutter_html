@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: Html(
-          data: htmlData,
+          data: "<p>Test</p>",
           //Optional parameters:
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]):
@@ -167,10 +167,10 @@ class _MyHomePageState extends State<MyHomePage> {
             // Custom placeholder image for broken links
             networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
           },
-          onLinkTap: (url) {
+          onLinkTap: (url, _, __, ___) {
             print("Opening $url...");
           },
-          onImageTap: (src) {
+          onImageTap: (src, _, __, ___) {
             print(src);
           },
           onImageError: (exception, stackTrace) {
