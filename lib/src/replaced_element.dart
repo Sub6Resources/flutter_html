@@ -3,12 +3,14 @@ import 'dart:math';
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
+import 'package:flutter_html/src/widgets/iframe_unsupported.dart'
+  if (dart.library.io) 'package:flutter_html/src/widgets/iframe_mobile.dart'
+  if (dart.library.html) 'package:flutter_html/src/widgets/iframe_web.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
@@ -97,45 +99,6 @@ class ImageContentElement extends ReplacedElement {
       }
     }
     return SizedBox(width: 0, height: 0);
-  }
-}
-
-/// [IframeContentElement is a [ReplacedElement] with web content.
-class IframeContentElement extends ReplacedElement {
-  final String src;
-  final double width;
-  final double height;
-  final NavigationDelegate navigationDelegate;
-  final UniqueKey key = UniqueKey();
-
-  IframeContentElement({
-    String name,
-    Style style,
-    this.src,
-    this.width,
-    this.height,
-    dom.Element node,
-    this.navigationDelegate,
-  }) : super(name: name, style: style, node: node);
-
-  @override
-  Widget toWidget(RenderContext context) {
-    final sandboxMode = attributes["sandbox"];
-    return Container(
-      width: width ?? (height ?? 150) * 2,
-      height: height ?? (width ?? 300) / 2,
-      child: WebView(
-        initialUrl: src,
-        key: key,
-        javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
-            ? JavascriptMode.unrestricted
-            : JavascriptMode.disabled,
-        navigationDelegate: navigationDelegate,
-        gestureRecognizers: {
-          Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())
-        },
-      ),
-    );
   }
 }
 
