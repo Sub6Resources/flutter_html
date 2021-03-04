@@ -1,5 +1,8 @@
 import 'package:flutter/gestures.dart';
 
+import 'dart:math';
+import 'dart:convert';
+
 class Context<T> {
   T data;
 
@@ -42,4 +45,10 @@ class MultipleTapGestureRecognizer extends TapGestureRecognizer {
       _ready = false;
     }
   }
+}
+
+String getRandString(int len) {
+  var random = Random.secure();
+  var values = List<int>.generate(len, (i) =>  random.nextInt(255));
+  return base64UrlEncode(values);
 }
