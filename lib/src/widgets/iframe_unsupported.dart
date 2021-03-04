@@ -7,21 +7,20 @@ import 'package:html/dom.dart' as dom;
 
 /// [IframeContentElement is a [ReplacedElement] with web content.
 class IframeContentElement extends ReplacedElement {
-  final String src;
-  final double width;
-  final double height;
-  final NavigationDelegate navigationDelegate;
+  final String? src;
+  final double? width;
+  final double? height;
+  final NavigationDelegate? navigationDelegate;
   final UniqueKey key = UniqueKey();
 
   IframeContentElement({
-    String name,
-    Style style,
-    this.src,
-    this.width,
-    this.height,
-    dom.Element node,
-    this.navigationDelegate,
-  }) : super(name: name, style: style, node: node);
+    required String name,
+    required this.src,
+    required this.width,
+    required this.height,
+    required dom.Element node,
+    required this.navigationDelegate,
+  }) : super(name: name, style: Style(), node: node);
 
   @override
   Widget toWidget(RenderContext context) {

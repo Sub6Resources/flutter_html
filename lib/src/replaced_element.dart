@@ -2,7 +2,6 @@ import 'dart:math';
 
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
@@ -297,7 +296,8 @@ ReplacedElement parseReplacedElement(
           width: double.tryParse(element.attributes['width'] ?? ""),
           height: double.tryParse(element.attributes['height'] ?? ""),
           navigationDelegate: navigationDelegateForIframe,
-          node: element);
+          node: element,
+      );
     case "img":
       return ImageContentElement(
         name: "img",
