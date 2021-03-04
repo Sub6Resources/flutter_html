@@ -45,15 +45,19 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
       case 'text-decoration':
         List<css.LiteralTerm?>? textDecorationList = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
-        textDecorationList.removeWhere((element) => element != null && element.text != "none" && element.text != "overline" && element.text != "underline" && element.text != "line-through");
-        css.Expression textDecorationColor = value.firstWhere((css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm,
-            orElse: () => css.HexColorTerm(null, style.textDecorationColor!.value.toRadixString(16), null));
+        textDecorationList.removeWhere((element) => element != null && element.text != "none"
+            && element.text != "overline" && element.text != "underline" && element.text != "line-through");
+        List<css.Expression?>? nullableList = value;
+        css.Expression? textDecorationColor = nullableList.firstWhere(
+            (css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: () => null);
         List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
         /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
-        potentialStyles.removeWhere((element) => element != null && element.text != "solid" && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
+        potentialStyles.removeWhere((element) => element != null && element.text != "solid"
+            && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
         css.LiteralTerm? textDecorationStyle = potentialStyles.isNotEmpty ? potentialStyles.last : null;
         style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
-        style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor) ?? style.textDecorationColor;
+        if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor)
+            ?? style.textDecorationColor;
         if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
         break;
       case 'text-decoration-color':
