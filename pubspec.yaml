@@ -16,18 +16,14 @@ dependencies:
   css_colors: ^1.1.0
 
   # Plugins for rendering the <table> tag.
-  flutter_layout_grid: ^1.0.0-nullsafety.5
+  flutter_layout_grid: ^1.0.0-nullsafety.6
 
   # Plugins for rendering the <video> tag.
-  # todo remove github dependency
-  video_player: ^2.0.0-nullsafety.9
-  chewie:
-    git:
-      url: https://github.com/tneotia/chewie.git
-      ref: master
+  video_player: ^2.0.0
+  chewie: ^1.0.0
 
   # Plugin for rendering the <iframe> tag.
-  webview_flutter: ^2.0.0-nullsafety.4
+  webview_flutter: ^2.0.1
 
   # Plugins for rendering the <audio> tag.
   # todo remove github dependency
@@ -37,7 +33,7 @@ dependencies:
       ref: master
 
   # Plugins for rendering the <svg> tag.
-  flutter_svg: ^0.20.0-nullsafety.3
+  flutter_svg: ^0.21.0-nullsafety.0
 
   flutter:
     sdk: flutter
