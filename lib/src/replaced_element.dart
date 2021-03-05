@@ -115,7 +115,8 @@ class AudioContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     return Container(
       width: context.style.width ?? 300,
-      height: 48,
+      height: Theme.of(context.buildContext).platform == TargetPlatform.android
+          ? 48 : 75,
       child: ChewieAudio(
         controller: ChewieAudioController(
           videoPlayerController: VideoPlayerController.network(
