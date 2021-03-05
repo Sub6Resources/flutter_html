@@ -632,7 +632,8 @@ class HtmlRichTextParser extends StatelessWidget {
         else if (parseContext.parentElement is TextSpan ||
             parseContext.parentElement is LinkTextSpan) {
           String lastString = parseContext.parentElement.text ?? '';
-          if (!parseContext.parentElement.children.isEmpty) {
+          if (!parseContext.parentElement.children.isEmpty &&
+              parseContext.parentElement.children.last is TextSpan) {
             lastString = parseContext.parentElement.children.last.text ?? '';
           }
           if (lastString.endsWith(' ') || lastString.endsWith('\n')) {
