@@ -8,70 +8,72 @@ import 'package:flutter_html/style.dart';
 Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
   Style style = new Style();
   declarations.forEach((property, value) {
-    switch (property) {
-      case 'background-color':
-        style.backgroundColor = ExpressionMapping.expressionToColor(value.first) ?? style.backgroundColor;
-        break;
-      case 'color':
-        style.color = ExpressionMapping.expressionToColor(value.first) ?? style.color;
-        break;
-      case 'direction':
-        style.direction = ExpressionMapping.expressionToDirection(value.first);
-        break;
-      case 'display':
-        style.display = ExpressionMapping.expressionToDisplay(value.first);
-        break;
-      case 'line-height':
-        style.lineHeight = ExpressionMapping.expressionToLineHeight(value.first);
-        break;
-      case 'font-family':
-        style.fontFamily = ExpressionMapping.expressionToFontFamily(value.first) ?? style.fontFamily;
-        break;
-      case 'font-feature-settings':
-        style.fontFeatureSettings = ExpressionMapping.expressionToFontFeatureSettings(value);
-        break;
-      case 'font-size':
-        style.fontSize = ExpressionMapping.expressionToFontSize(value.first) ?? style.fontSize;
-        break;
-      case 'font-style':
-        style.fontStyle = ExpressionMapping.expressionToFontStyle(value.first);
-        break;
-      case 'font-weight':
-        style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
-        break;
-      case 'text-align':
-        style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
-        break;
-      case 'text-decoration':
-        List<css.LiteralTerm?>? textDecorationList = value.whereType<css.LiteralTerm>().toList();
-        /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
-        textDecorationList.removeWhere((element) => element != null && element.text != "none"
-            && element.text != "overline" && element.text != "underline" && element.text != "line-through");
-        List<css.Expression?>? nullableList = value;
-        css.Expression? textDecorationColor = nullableList.firstWhere(
-            (css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: () => null);
-        List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
-        /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
-        potentialStyles.removeWhere((element) => element != null && element.text != "solid"
-            && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
-        css.LiteralTerm? textDecorationStyle = potentialStyles.isNotEmpty ? potentialStyles.last : null;
-        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
-        if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor)
-            ?? style.textDecorationColor;
-        if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
-        break;
-      case 'text-decoration-color':
-        style.textDecorationColor = ExpressionMapping.expressionToColor(value.first) ?? style.textDecorationColor;
-        break;
-      case 'text-decoration-line':
-        style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(value as List<css.LiteralTerm>);
-        break;
-      case 'text-decoration-style':
-        style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(value.first as css.LiteralTerm);
-        break;
-      case 'text-shadow':
-        style.textShadow = ExpressionMapping.expressionToTextShadow(value);
-        break;
+    if (value.isNotEmpty) {
+      switch (property) {
+        case 'background-color':
+          style.backgroundColor = ExpressionMapping.expressionToColor(value.first) ?? style.backgroundColor;
+          break;
+        case 'color':
+          style.color = ExpressionMapping.expressionToColor(value.first) ?? style.color;
+          break;
+        case 'direction':
+          style.direction = ExpressionMapping.expressionToDirection(value.first);
+          break;
+        case 'display':
+          style.display = ExpressionMapping.expressionToDisplay(value.first);
+          break;
+        case 'line-height':
+          style.lineHeight = ExpressionMapping.expressionToLineHeight(value.first);
+          break;
+        case 'font-family':
+          style.fontFamily = ExpressionMapping.expressionToFontFamily(value.first) ?? style.fontFamily;
+          break;
+        case 'font-feature-settings':
+          style.fontFeatureSettings = ExpressionMapping.expressionToFontFeatureSettings(value);
+          break;
+        case 'font-size':
+          style.fontSize = ExpressionMapping.expressionToFontSize(value.first) ?? style.fontSize;
+          break;
+        case 'font-style':
+          style.fontStyle = ExpressionMapping.expressionToFontStyle(value.first);
+          break;
+        case 'font-weight':
+          style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
+          break;
+        case 'text-align':
+          style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
+          break;
+        case 'text-decoration':
+          List<css.LiteralTerm?>? textDecorationList = value.whereType<css.LiteralTerm>().toList();
+          /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationList], so make sure to remove those before passing it to [ExpressionMapping]
+          textDecorationList.removeWhere((element) => element != null && element.text != "none"
+              && element.text != "overline" && element.text != "underline" && element.text != "line-through");
+          List<css.Expression?>? nullableList = value;
+          css.Expression? textDecorationColor = nullableList.firstWhere(
+                  (css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: () => null);
+          List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
+          /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
+          potentialStyles.removeWhere((element) => element != null && element.text != "solid"
+              && element.text != "double" && element.text != "dashed" && element.text != "dotted" && element.text != "wavy");
+          css.LiteralTerm? textDecorationStyle = potentialStyles.isNotEmpty ? potentialStyles.last : null;
+          style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
+          if (textDecorationColor != null) style.textDecorationColor = ExpressionMapping.expressionToColor(textDecorationColor)
+              ?? style.textDecorationColor;
+          if (textDecorationStyle != null) style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(textDecorationStyle);
+          break;
+        case 'text-decoration-color':
+          style.textDecorationColor = ExpressionMapping.expressionToColor(value.first) ?? style.textDecorationColor;
+          break;
+        case 'text-decoration-line':
+          style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(value as List<css.LiteralTerm>);
+          break;
+        case 'text-decoration-style':
+          style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(value.first as css.LiteralTerm);
+          break;
+        case 'text-shadow':
+          style.textShadow = ExpressionMapping.expressionToTextShadow(value);
+          break;
+      }
     }
   });
   return style;
