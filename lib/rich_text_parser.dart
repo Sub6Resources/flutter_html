@@ -518,7 +518,7 @@ class HtmlRichTextParser extends StatelessWidget {
     "section",
   ];
 
-  static get _supportedElements => List()
+  static get _supportedElements => <String>[]
     ..addAll(_supportedStyleElements)
     ..addAll(_supportedSpecialtyElements)
     ..addAll(_supportedBlockElements);
@@ -551,7 +551,7 @@ class HtmlRichTextParser extends StatelessWidget {
     dom.Document document = parser.parse(data);
     dom.Node body = document.body;
 
-    List<Widget> widgetList = new List<Widget>();
+    final widgetList = <Widget>[];
     ParseContext parseContext = ParseContext(
       rootWidgetList: widgetList,
       childStyle: DefaultTextStyle.of(context).style,

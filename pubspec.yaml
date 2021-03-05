@@ -13,7 +13,11 @@ dependencies:
     sdk: flutter
   cached_network_image: any
   matrix_link_text: any
-  flutter_math: ^0.2.0+2
+#  flutter_math: ^0.2.0+2
+  flutter_math:
+    git:
+      url: https://github.com/walsha2/flutter_math.git
+      ref: 6c3284faaedfe1dcb08f23d2c519bc95cbf0dbaf
   flutter_highlight: ^0.6.0
   isolate: ^2.0.3
   highlight: ^0.6.0

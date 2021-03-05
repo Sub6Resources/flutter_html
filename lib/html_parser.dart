@@ -119,7 +119,7 @@ class HtmlOldParser extends StatelessWidget {
 
   ///Parses an html string and returns a list of widgets that represent the body of your html document.
   List<Widget> parse(String data) {
-    List<Widget> widgetList = new List<Widget>();
+    final widgetList = <Widget>[];
 
     if (renderNewlines) {
       data = data.replaceAll("\n", "<br />");
@@ -635,7 +635,7 @@ class HtmlOldParser extends StatelessWidget {
             ),
           );
         case "q":
-          List<Widget> children = List<Widget>();
+          final children = <Widget>[];
           children.add(Text("\""));
           children.addAll(_parseNodeList(node.nodes));
           children.add(Text("\""));
