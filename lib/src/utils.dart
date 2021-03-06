@@ -20,6 +20,9 @@ Map<String, String> namedColors = {
   "Purple": "#800080",
 };
 
+import 'dart:math';
+import 'dart:convert';
+
 class Context<T> {
   T data;
 
@@ -77,4 +80,10 @@ class CustomBorderSide {
   Color color;
   double width;
   BorderStyle style;
+}
+
+String getRandString(int len) {
+  var random = Random.secure();
+  var values = List<int>.generate(len, (i) =>  random.nextInt(255));
+  return base64UrlEncode(values);
 }

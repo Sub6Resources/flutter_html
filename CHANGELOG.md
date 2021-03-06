@@ -1,3 +1,31 @@
+## [2.0.0-nullsafety.0] - March 5, 2021:
+* Nullsafety support
+* Official Flutter Web support
+* New features & fixes for lists:
+   * Support start attribute (e.g. `start="5";`)
+   * Support RTL direction
+   * Support setting padding - you can remove the starting padding if you choose
+   * Fixed unknown character box on iOS when font-weight is below w400
+* Upgraded link functions to provide more granular control
+* Fixed errors in text-decoration parsing
+* Fixed `<audio>` on iOS ("_duration called on null" exception)
+* Updated dependencies
+
+## [1.3.0] - February 16, 2021:
+* New image loading API
+* Image loading with request headers, from relative paths and custom loading widget
+* SVG image support from network or local assets
+* Support for `<details>`/`<summary>` tags
+* Allow returning spans from custom tag renders
+* Inline font styling
+* Content-based table column sizing
+* Respect iframe sandbox attribute
+* Fixed text flow and styling when using tags inside `<a>` links
+* Fixed issue where `shrinkWrap` property would not constrain the widget to take up the space it needs
+  * See the [Notes](https://github.com/Sub6Resources/flutter_html#notes) for an example usage with `shrinkWrap`
+* Fixed issue where iframes would not update when their `src`s changed in the HTML data
+* Updated dependencies for Flutter 1.26+
+
 ## [1.2.0] - January 14, 2021:
 * Support irregular table sizes
 * Allow for returning `null` from a customRender function to disable the widget

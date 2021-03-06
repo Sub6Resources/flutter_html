@@ -37,43 +37,27 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
   - [Data](#data)
 
-    - [Example](#example-usage---data)
-
   - [onLinkTap](#onlinktap)
-
-    - [Example](#example-usage---onlinktap)
 
   - [customRender](#customrender)
 
-    - [Example](#example-usages---customrender)
-
   - [onImageError](#onimageerror)
-
-    - [Example](#example-usage---onimageerror)
 
   - [onImageTap](#onimagetap)
 
-    - [Example](#example-usage---onimagetap)
-
   - [blacklistedElements](#blacklistedelements)
-
-    - [Example](#example-usage---blacklistedelements)
 
   - [style](#style)
 
-    - [Example](#example-usage---style)
-
   - [navigationDelegateForIframe](#navigationdelegateforiframe)
 
-    - [Example](#example-usage---navigationdelegateforiframe)
-    
   - [customImageRender](#customimagerender)
   
     - [typedef ImageSourceMatcher (with examples)](#typedef-imagesourcematcher)
     
     - [typedef ImageRender (with examples)](#typedef-imagerender)
     
-    - [Examples](#example-usages---customimagerender)
+    - [Extended examples](#example-usages---customimagerender)
     
 - [Rendering Reference](#rendering-reference)
 
@@ -100,7 +84,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^1.2.0
+      flutter_html: ^1.3.0
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
@@ -196,7 +180,7 @@ Widget html = Html(
   data: """<p>
    Linking to <a href='https://github.com'>websites</a> has never been easier.
   </p>""",
-  onLinkTap: (String url) {
+  onLinkTap: (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) {
     //open URL in webview, or launch URL in browser, or any other logic here
   }
 );
@@ -222,10 +206,10 @@ Widget html = Html(
   <flutter horizontal></flutter>
   """,
   customRender: {
-      "bird": (RenderContext context, Widget child, Map<String, String> attributes, _) {
+      "bird": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
         return TextSpan(text: "🐦");
       },
-      "flutter": (RenderContext context, Widget child, Map<String, String> attributes, _) {
+      "flutter": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
         return FlutterLogo(
           style: (attributes['horizontal'] != null)
               ? FlutterLogoStyle.horizontal
@@ -252,26 +236,25 @@ Widget html = Html(
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
    customRender: {
-      "iframe": (RenderContext context, Widget child, Map<String, String> attributes, _) {
+      "iframe": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
          if (attributes != null) {
            double width = double.tryParse(attributes['width'] ?? "");
            double height = double.tryParse(attributes['height'] ?? "");
-           print(attributes['src']);
            return Container(
              width: width ?? (height ?? 150) * 2,
              height: height ?? (width ?? 300) / 2,
              child: WebView(
-                initialUrl: attributes['src'],
+                initialUrl: attributes['src'] ?? "about:blank",
                 javascriptMode: JavascriptMode.unrestricted,
                 //no need for scrolling gesture recognizers on embedded youtube, so set gestureRecognizers null
                 //on other iframe content scrolling might be necessary, so use VerticalDragGestureRecognizer
-                gestureRecognizers: attributes['src'].contains("youtube.com/embed") ? null : [
+                gestureRecognizers: attributes['src'] != null && attributes['src']!.contains("youtube.com/embed") ? null : [
                   Factory(() => VerticalDragGestureRecognizer())
                 ].toSet(),
                 navigationDelegate: (NavigationRequest request) async {
                 //no need to load any url besides the embedded youtube url when displaying embedded youtube, so prevent url loading
                 //on other iframe content allow all url loading
-                  if (attributes['src'].contains("youtube.com/embed")) {
+                  if (attributes['src'] != null && attributes['src']!.contains("youtube.com/embed")) {
                     if (!request.url.contains("youtube.com/embed")) {
                       return NavigationDecision.prevent;
                     } else {
@@ -318,7 +301,7 @@ A function that defines what the widget should do when an image is tapped.
 ```dart
 Widget html = Html(
   data: """<img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />""",
-  onImageTap: (String url) {
+  onImageTap: (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) {
     //open image in webview, or launch image in browser, or any other logic here
   }
 );
@@ -457,8 +440,9 @@ A typical usage would look something like this:
 
 ```dart
 ImageSourceMatcher base64UriMatcher() => (attributes, element) =>
-    attributes["src"].startsWith("data:image") &&
-    attributes["src"].contains("base64,");
+    attributes["src"] != null &&
+    attributes["src"]!.startsWith("data:image") &&
+    attributes["src"]!.contains("base64,");
 ```
 
 In the above example, the matcher checks whether the image's `src` either starts with "data:image" or contains "base64,", since these indicate an image in base64 format.
@@ -473,10 +457,10 @@ ImageSourceMatcher networkSourceMatcher({
   String extension: "your extension",
 }) =>
     (attributes, element) {
-      final src = Uri.parse(attributes["src"]);
+      final src = Uri.parse(attributes["src"] ?? "about:blank");
       return schemas.contains(src.scheme) &&
-          (domains == null || domains.contains(src.host)) &&
-          (extension == null || src.path.endsWith(".$extension"));
+          domains.contains(src.host) &&
+          src.path.endsWith(".$extension");
     };
 ```
 
@@ -490,7 +474,8 @@ A typical usage might look like this:
 
 ```dart
 ImageRender base64ImageRender() => (context, attributes, element) {
-      final decodedImage = base64.decode(attributes["src"].split("base64,")[1].trim());
+      final decodedImage = base64.decode(attributes["src"] != null ?
+          attributes["src"].split("base64,")[1].trim() : "about:blank");
       return Image.memory(
         decodedImage,
       );
@@ -510,7 +495,7 @@ ImageRender networkImageRender({
 }) =>
     (context, attributes, element) {
       return Image.network(
-        attributes["src"],
+        attributes["src"] ?? "about:blank",
         headers: headers,
         width: width,
         height: height,
@@ -546,10 +531,10 @@ Widget html = Html(
     },
     networkSourceMatcher(): networkImageRender(
       headers: {"Custom-Header": "some-value"},
-      altWidget: (alt) => Text(alt),
+      altWidget: (alt) => Text(alt ?? ""),
       loadingWidget: () => Text("Loading..."),
     ),
-            (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
+            (attr, _) => attr["src"] != null && attr["src"]!.startsWith("/wiki"):
     networkImageRender(
             mapUrl: (url) => "https://upload.wikimedia.org" + url),
   },
@@ -563,16 +548,17 @@ When an image with URL `flutter.dev` is detected, rather than displaying the ima
 2. Creating your own renders:
 ```dart
 ImageSourceMatcher classAndIdMatcher({String classToMatch, String idToMatch}) => (attributes, element) =>
-    attributes["class"].contains(classToMatch) ||
-    attributes["id"].contains(idToMatch);
+    attributes["class"] != null && attributes["id"] != null &&
+    (attributes["class"]!.contains(classToMatch) ||
+    attributes["id"]!.contains(idToMatch));
 
 ImageRender classAndIdRender({String classToMatch, String idToMatch}) => (context, attributes, element) {
-  if (attributes["class"].contains(classToMatch)) {
-    return Image.asset(attributes["src"]);
+  if (attributes["class"] != null && attributes["class"]!.contains(classToMatch)) {
+    return Image.asset(attributes["src"] ?? "about:blank");
   } else {
     return Image.network(
-      attributes["src"],
-      semanticLabel: attributes["longdesc"],
+      attributes["src"] ?? "about:blank",
+      semanticLabel: attributes["longdesc"] ?? "",
       width: attributes["width"],
       height: attributes["height"],
       color: context.style.color,
@@ -634,9 +620,7 @@ You can set the `navigationDelegate` of the webview with the `navigationDelegate
 
 ### Audio
 
-This package renders audio elements using the [`chewie_audio`](https://pub.dev/packages/chewie_audio) plugin. 
-
-Note: Audio elements currently do not work on iOS due to a bug with `chewie_audio`. Once [#509](https://github.com/Sub6Resources/flutter_html/pull/509) is merged, it will work again.
+This package renders audio elements using the [`chewie_audio`](https://pub.dev/packages/chewie_audio) plugin.
 
 The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `width`, and `muted` when rendering the audio widget.
 
