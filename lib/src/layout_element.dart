@@ -12,22 +12,20 @@ import 'package:html/dom.dart' as dom;
 /// an html document with a more complex layout. LayoutElements handle
 abstract class LayoutElement extends StyledElement {
   LayoutElement({
-    String name,
-    List<StyledElement> children,
-    Style style,
-    dom.Element node,
-  }) : super(name: name, children: children, style: style, node: node);
+    String name = "[[No Name]]",
+    required List<StyledElement> children,
+    dom.Element? node,
+  }) : super(name: name, children: children, style: Style(), node: node);
 
-  Widget toWidget(RenderContext context);
+  Widget? toWidget(RenderContext context);
 }
 
 class TableLayoutElement extends LayoutElement {
   TableLayoutElement({
-    String name,
-    Style style,
-    @required List<StyledElement> children,
-    dom.Element node,
-  }) : super(name: name, style: style, children: children, node: node);
+    required String name,
+    required List<StyledElement> children,
+    required dom.Element node,
+  }) : super(name: name, children: children, node: node);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -51,8 +49,7 @@ class TableLayoutElement extends LayoutElement {
         columnSizes = child.children
             .where((c) => c.name == "col")
             .map((c) {
-              final span =
-                  int.parse(c.attributes["span"] ?? "1", onError: (_) => 1);
+              final span = int.tryParse(c.attributes["span"] ?? "1") ?? 1;
               final colWidth = c.attributes["width"];
               return List.generate(span, (index) {
                 if (colWidth != null && colWidth.endsWith("%")) {
@@ -137,16 +134,15 @@ class TableLayoutElement extends LayoutElement {
     }
 
     // Create column tracks (insofar there were no colgroups that already defined them)
-    List<TrackSize> finalColumnSizes =
-        (columnSizes ?? <TrackSize>[]).take(columnMax).toList();
+    List<TrackSize> finalColumnSizes = columnSizes.take(columnMax).toList();
     finalColumnSizes += List.generate(
         max(0, columnMax - finalColumnSizes.length),
         (_) => IntrinsicContentTrackSize());
 
     return LayoutGrid(
       gridFit: GridFit.loose,
-      templateColumnSizes: finalColumnSizes,
-      templateRowSizes: rowSizes,
+      columnSizes: finalColumnSizes,
+      rowSizes: rowSizes,
       children: cells,
     );
   }
@@ -154,8 +150,8 @@ class TableLayoutElement extends LayoutElement {
 
 class TableSectionLayoutElement extends LayoutElement {
   TableSectionLayoutElement({
-    String name,
-    @required List<StyledElement> children,
+    required String name,
+    required List<StyledElement> children,
   }) : super(name: name, children: children);
 
   @override
@@ -167,9 +163,9 @@ class TableSectionLayoutElement extends LayoutElement {
 
 class TableRowLayoutElement extends LayoutElement {
   TableRowLayoutElement({
-    String name,
-    @required List<StyledElement> children,
-    dom.Element node,
+    required String name,
+    required List<StyledElement> children,
+    required dom.Element node,
   }) : super(name: name, children: children, node: node);
 
   @override
@@ -184,19 +180,13 @@ class TableCellElement extends StyledElement {
   int rowspan = 1;
 
   TableCellElement({
-    String name,
-    String elementId,
-    List<String> elementClasses,
-    @required List<StyledElement> children,
-    Style style,
-    dom.Element node,
-  }) : super(
-            name: name,
-            elementId: elementId,
-            elementClasses: elementClasses,
-            children: children,
-            style: style,
-            node: node) {
+    required String name,
+    required String elementId,
+    required List<String> elementClasses,
+    required List<StyledElement> children,
+    required Style style,
+    required dom.Element node,
+  }) : super(name: name, elementId: elementId, elementClasses: elementClasses, children: children, style: style, node: node) {
     colspan = _parseSpan(this, "colspan");
     rowspan = _parseSpan(this, "rowspan");
   }
@@ -212,11 +202,12 @@ TableCellElement parseTableCellElement(
   List<StyledElement> children,
 ) {
   final cell = TableCellElement(
-    name: element.localName,
+    name: element.localName!,
     elementId: element.id,
     elementClasses: element.classes.toList(),
     children: children,
     node: element,
+    style: Style(),
   );
   if (element.localName == "th") {
     cell.style = Style(
@@ -228,10 +219,10 @@ TableCellElement parseTableCellElement(
 
 class TableStyleElement extends StyledElement {
   TableStyleElement({
-    String name,
-    List<StyledElement> children,
-    Style style,
-    dom.Element node,
+    required String name,
+    required List<StyledElement> children,
+    required Style style,
+    required dom.Element node,
   }) : super(name: name, children: children, style: style, node: node);
 }
 
@@ -243,12 +234,18 @@ TableStyleElement parseTableDefinitionElement(
     case "colgroup":
     case "col":
       return TableStyleElement(
-        name: element.localName,
+        name: element.localName!,
         children: children,
         node: element,
+        style: Style(),
       );
     default:
-      return TableStyleElement();
+      return TableStyleElement(
+        name: "[[No Name]]",
+        children: children,
+        node: element,
+        style: Style(),
+      );
   }
 }
 
@@ -256,33 +253,31 @@ class DetailsContentElement extends LayoutElement {
   List<dom.Element> elementList;
 
   DetailsContentElement({
-    String name,
-    List<StyledElement> children,
-    dom.Element node,
-    this.elementList,
+    required String name,
+    required List<StyledElement> children,
+    required dom.Element node,
+    required this.elementList,
   }) : super(name: name, node: node, children: children);
 
   @override
   Widget toWidget(RenderContext context) {
-    List<InlineSpan> childrenList = children?.map((tree) => context.parser.parseTree(context, tree))?.toList();
+    List<InlineSpan>? childrenList = children.map((tree) => context.parser.parseTree(context, tree)).toList();
     List<InlineSpan> toRemove = [];
-    if (childrenList != null) {
-      for (InlineSpan child in childrenList) {
-        if (child is TextSpan && child.text != null && child.text.trim().isEmpty) {
-          toRemove.add(child);
-        }
-      }
-      for (InlineSpan child in toRemove) {
-        childrenList.remove(child);
+    for (InlineSpan child in childrenList) {
+      if (child is TextSpan && child.text != null && child.text!.trim().isEmpty) {
+        toRemove.add(child);
       }
     }
-    InlineSpan firstChild = childrenList?.isNotEmpty == true ? childrenList.first : null;
+    for (InlineSpan child in toRemove) {
+      childrenList.remove(child);
+    }
+    InlineSpan? firstChild = childrenList.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
         expandedAlignment: Alignment.centerLeft,
-        title: elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? StyledText(
+        title: elementList.isNotEmpty == true && elementList.first.localName == "summary" ? StyledText(
           textSpan: TextSpan(
             style: style.generateTextStyle(),
-            children: [firstChild] ?? [],
+            children: firstChild == null ? [] : [firstChild],
           ),
           style: style,
           renderContext: context,
@@ -291,7 +286,7 @@ class DetailsContentElement extends LayoutElement {
           StyledText(
             textSpan: TextSpan(
               style: style.generateTextStyle(),
-              children: getChildren(childrenList, context, elementList?.isNotEmpty == true && elementList?.first?.localName == "summary" ? firstChild : null)
+              children: getChildren(childrenList, context, elementList.isNotEmpty == true && elementList.first.localName == "summary" ? firstChild : null)
             ),
             style: style,
             renderContext: context,
@@ -300,21 +295,17 @@ class DetailsContentElement extends LayoutElement {
     );
   }
 
-  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context, InlineSpan firstChild) {
-    if (children == null) {
-      return [];
-    } else {
-      if (firstChild != null) children.removeAt(0);
-      return children;
-    }
+  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context, InlineSpan? firstChild) {
+    if (firstChild != null) children.removeAt(0);
+    return children;
   }
 }
 
 class EmptyLayoutElement extends LayoutElement {
-  EmptyLayoutElement({String name = "empty"}) : super(name: name);
+  EmptyLayoutElement({required String name}) : super(name: name, children: []);
 
   @override
-  Widget toWidget(_) => null;
+  Widget? toWidget(_) => null;
 }
 
 LayoutElement parseLayoutElement(
@@ -323,38 +314,39 @@ LayoutElement parseLayoutElement(
 ) {
   switch (element.localName) {
     case "details":
-      if (children?.isEmpty ?? false) {
-        return EmptyLayoutElement();
+      if (children.isEmpty) {
+        return EmptyLayoutElement(name: "empty");
       }
       return DetailsContentElement(
           node: element,
-          name: element.localName,
+          name: element.localName!,
           children: children,
           elementList: element.children
       );
     case "table":
       return TableLayoutElement(
-        name: element.localName,
+        name: element.localName!,
         children: children,
         node: element,
       );
-      break;
     case "thead":
     case "tbody":
     case "tfoot":
       return TableSectionLayoutElement(
-        name: element.localName,
+        name: element.localName!,
         children: children,
       );
-      break;
     case "tr":
       return TableRowLayoutElement(
-        name: element.localName,
+        name: element.localName!,
         children: children,
         node: element,
       );
-      break;
     default:
-      return TableLayoutElement(children: children);
+      return TableLayoutElement(
+          children: children,
+          name: "[[No Name]]",
+          node: element
+      );
   }
 }
