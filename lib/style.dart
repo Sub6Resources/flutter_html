@@ -292,6 +292,8 @@ class Style {
         LineHeight(child.lineHeight!.size! / (finalFontSize == null ? 14 : finalFontSize.size!) * 1.2) : child.lineHeight
       : lineHeight;
     return child.copyWith(
+      backgroundColor: child.backgroundColor != Colors.transparent ?
+        child.backgroundColor : backgroundColor,
       color: child.color ?? color,
       direction: child.direction ?? direction,
       display: display == Display.NONE ? display : child.display,
