@@ -50,38 +50,52 @@ class Html extends StatelessWidget {
         super(key: key);
 
   Html.fromDom({
-    Key key,
+    Key? key,
     @required this.document,
     this.onLinkTap,
-    this.customRender,
+    this.customRender = const {},
     this.customImageRenders = const {},
     this.onImageError,
     this.shrinkWrap = false,
     this.onImageTap,
     this.blacklistedElements = const [],
-    this.style,
+    this.style = const {},
     this.navigationDelegateForIframe,
   }) : data = null,
         assert(document != null),
         super(key: key);
 
-  final String data;
-  final dom.Document document;
+  /// The HTML data passed to the widget as a String
+  final String? data;
+
+  /// The HTML data passed to the widget as a pre-processed [dom.Document]
+  final dom.Document? document;
+
+  /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
+
+  /// An API that allows you to customize the entire process of image rendering.
+  /// See the README for more details.
   final Map<ImageSourceMatcher, ImageRender> customImageRenders;
+
+  /// A function that defines what to do when an image errors
   final ImageErrorListener? onImageError;
+
+  /// A parameter that should be set when the HTML widget is expected to be
+  /// flexible
   final bool shrinkWrap;
 
-  /// Properties for the Image widget that gets rendered by the rich text parser
+  /// A function that defines what to do when an image is tapped
   final OnTap? onImageTap;
 
+  /// A list of HTML tags that defines what elements are not rendered
   final List<String> blacklistedElements;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
   final Map<String, CustomRender> customRender;
 
-  /// Fancy New Parser parameters
+  /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
 
   /// Decides how to handle a specific navigation request in the WebView of an
@@ -91,7 +105,7 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dom.Document doc = data != null ? HtmlParser.parseHTML(data) : document;
+    final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
     final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(
