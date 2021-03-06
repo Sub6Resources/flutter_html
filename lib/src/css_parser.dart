@@ -1,4 +1,3 @@
-import 'dart:math';
 import 'dart:ui';
 
 import 'package:csslib/visitor.dart' as css;
@@ -17,17 +16,21 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
           style.backgroundColor = ExpressionMapping.expressionToColor(value.first) ?? style.backgroundColor;
           break;
         case 'border':
-          List<css.LiteralTerm> borderWidths = value.whereType<css.LiteralTerm>().toList();
+          List<css.LiteralTerm?>? borderWidths = value.whereType<css.LiteralTerm>().toList();
           /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.width], so make sure to remove those before passing it to [ExpressionMapping]
-          borderWidths.removeWhere((element) => element.text != "thin" && element.text != "medium" && element.text != "thick"
-              && !(element is css.LengthTerm) && !(element is css.PercentageTerm) && !(element is css.EmTerm) && !(element is css.RemTerm) && !(element is css.NumberTerm));
-          List<css.Expression> borderColors = value.where((element) => ExpressionMapping.expressionToColor(element) != null).toList();
-          List<css.LiteralTerm> potentialStyles = value.whereType<css.LiteralTerm>().toList();
+          borderWidths.removeWhere((element) => element != null && element.text != "thin" 
+              && element.text != "medium" && element.text != "thick"
+              && !(element is css.LengthTerm) && !(element is css.PercentageTerm) 
+              && !(element is css.EmTerm) && !(element is css.RemTerm) 
+              && !(element is css.NumberTerm)
+          );
+          List<css.Expression?>? borderColors = value.where((element) => ExpressionMapping.expressionToColor(element) != null).toList();
+          List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
           /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.style], so make sure to remove those before passing it to [ExpressionMapping]
-          potentialStyles.removeWhere((element) => !possibleBorderValues.contains(element.text));
-          List<css.LiteralTerm> borderStyles = potentialStyles;
+          potentialStyles.removeWhere((element) => element != null && !possibleBorderValues.contains(element.text));
+          List<css.LiteralTerm?>? borderStyles = potentialStyles;
           style.border = ExpressionMapping.expressionToBorder(borderWidths, borderStyles, borderColors);
           break;
         case 'color':
@@ -66,8 +69,15 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
           textDecorationList.removeWhere((element) => element != null && element.text != "none"
               && element.text != "overline" && element.text != "underline" && element.text != "line-through");
           List<css.Expression?>? nullableList = value;
-          css.Expression? textDecorationColor = nullableList.firstWhere(
-                  (css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm, orElse: () => null);
+          css.Expression? textDecorationColor;
+          /// orElse: will not allow me to return null (even if the compiler says its okay, it errors on runtime).
+          /// try/catch is a workaround for this.
+          try {
+            textDecorationColor = nullableList.firstWhere(
+                    (css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm);
+          } catch (e) {
+            textDecorationColor = null;
+          }
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
           potentialStyles.removeWhere((element) => element != null && element.text != "solid"
@@ -130,12 +140,12 @@ class DeclarationVisitor extends css.Visitor {
 //Mapping functions
 class ExpressionMapping {
 
-  static Border expressionToBorder(List<css.Expression> borderWidths, List<css.LiteralTerm> borderStyles, List<css.Expression> borderColors) {
+  static Border expressionToBorder(List<css.Expression?>? borderWidths, List<css.LiteralTerm?>? borderStyles, List<css.Expression?>? borderColors) {
     CustomBorderSide left = CustomBorderSide();
     CustomBorderSide top = CustomBorderSide();
     CustomBorderSide right = CustomBorderSide();
     CustomBorderSide bottom = CustomBorderSide();
-    if (borderWidths != null) {
+    if (borderWidths != null && borderWidths.isNotEmpty) {
       top.width = expressionToBorderWidth(borderWidths.first);
       if (borderWidths.length == 4) {
         right.width = expressionToBorderWidth(borderWidths[1]);
@@ -158,7 +168,7 @@ class ExpressionMapping {
         right.width = expressionToBorderWidth(borderWidths.first);
       }
     }
-    if (borderStyles != null) {
+    if (borderStyles != null && borderStyles.isNotEmpty) {
       top.style = expressionToBorderStyle(borderStyles.first);
       if (borderStyles.length == 4) {
         right.style = expressionToBorderStyle(borderStyles[1]);
@@ -181,7 +191,7 @@ class ExpressionMapping {
         right.style = expressionToBorderStyle(borderStyles.first);
       }
     }
-    if (borderColors != null) {
+    if (borderColors != null && borderColors.isNotEmpty) {
       top.color = expressionToColor(borderColors.first);
       if (borderColors.length == 4) {
         right.color = expressionToColor(borderColors[1]);
@@ -205,24 +215,24 @@ class ExpressionMapping {
       }
     }
     return Border(
-        top: BorderSide(width: top.width, color: top.color, style: top.style),
-        right: BorderSide(width: right.width, color: right.color, style: right.style),
-        bottom: BorderSide(width: bottom.width, color: bottom.color, style: bottom.style),
-        left: BorderSide(width: left.width, color: left.color, style: left.style)
+        top: BorderSide(width: top.width, color: top.color ?? Colors.black, style: top.style),
+        right: BorderSide(width: right.width, color: right.color ?? Colors.black, style: right.style),
+        bottom: BorderSide(width: bottom.width, color: bottom.color ?? Colors.black, style: bottom.style),
+        left: BorderSide(width: left.width, color: left.color ?? Colors.black, style: left.style)
     );
   }
 
-  static double expressionToBorderWidth(css.LiteralTerm value) {
+  static double expressionToBorderWidth(css.Expression? value) {
     if (value is css.NumberTerm) {
-      return double.tryParse(value.text);
+      return double.tryParse(value.text) ?? 1.0;
     } else if (value is css.PercentageTerm) {
-      return double.tryParse(value.text) / 100;
+      return (double.tryParse(value.text) ?? 400) / 100;
     } else if (value is css.EmTerm) {
-      return double.tryParse(value.text);
+      return double.tryParse(value.text) ?? 1.0;
     } else if (value is css.RemTerm) {
-      return double.tryParse(value.text);
+      return double.tryParse(value.text) ?? 1.0;
     } else if (value is css.LengthTerm) {
-      return double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+      return double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')) ?? 1.0;
     } else if (value is css.LiteralTerm) {
       switch (value.text) {
         case "thin":
@@ -233,27 +243,29 @@ class ExpressionMapping {
           return 6.0;
       }
     }
-    return null;
+    return 4.0;
   }
 
-  static BorderStyle expressionToBorderStyle(css.LiteralTerm value) {
-    if (value.text != "none" && value.text != "hidden") {
+  static BorderStyle expressionToBorderStyle(css.LiteralTerm? value) {
+    if (value != null && value.text != "none" && value.text != "hidden") {
       return BorderStyle.solid;
     }
     return BorderStyle.none;
   }
 
-  static Color? expressionToColor(css.Expression value) {
-    if (value is css.HexColorTerm) {
-      return stringToColor(value.text);
-    } else if (value is css.FunctionTerm) {
-      if (value.text == 'rgba' || value.text == 'rgb') {
-        return rgbOrRgbaToColor(value.span!.text);
-      } else if (value.text == 'hsla' || value.text == 'hsl') {
-        return hslToRgbToColor(value.span!.text);
+  static Color? expressionToColor(css.Expression? value) {
+    if (value != null) {
+      if (value is css.HexColorTerm) {
+        return stringToColor(value.text);
+      } else if (value is css.FunctionTerm) {
+        if (value.text == 'rgba' || value.text == 'rgb') {
+          return rgbOrRgbaToColor(value.span!.text);
+        } else if (value.text == 'hsla' || value.text == 'hsl') {
+          return hslToRgbToColor(value.span!.text);
+        }
+      } else if (value is css.LiteralTerm) {
+        return namedColorToColor(value.text);
       }
-    } else if (value is css.LiteralTerm) {
-      return namedColorToColor(value.text);
     }
     return null;
   }
@@ -562,28 +574,31 @@ class ExpressionMapping {
   }
 
   static Color hslToRgbToColor(String text) {
-    print(text);
     final hslText = text.replaceAll(')', '').replaceAll(' ', '');
     final hslValues = hslText.split(',').toList();
-    List<double> parsedHsl = [];
+    List<double?> parsedHsl = [];
     hslValues.forEach((element) {
-      if (element.contains("%")) {
-        parsedHsl.add(double.tryParse(element.replaceAll("%", "")) * 0.01);
+      if (element.contains("%") && double.tryParse(element.replaceAll("%", "")) != null) {
+        parsedHsl.add(double.tryParse(element.replaceAll("%", ""))! * 0.01);
       } else {
-        parsedHsl.add(double.tryParse(element));
+        if (element != hslValues.first && (double.tryParse(element) == null || double.tryParse(element)! > 1)) {
+          parsedHsl.add(null);
+        } else {
+          parsedHsl.add(double.tryParse(element));
+        }
       }
     });
-    if (parsedHsl.length == 4) {
-      return HSLColor.fromAHSL(parsedHsl.last, parsedHsl.first, parsedHsl[1], parsedHsl[2]).toColor();
-    }
-    return HSLColor.fromAHSL(1.0, parsedHsl.first, parsedHsl[1], parsedHsl.last).toColor();
+    if (parsedHsl.length == 4 && !parsedHsl.contains(null)) {
+      return HSLColor.fromAHSL(parsedHsl.last!, parsedHsl.first!, parsedHsl[1]!, parsedHsl[2]!).toColor();
+    } else if (parsedHsl.length == 3 && !parsedHsl.contains(null)) {
+      return HSLColor.fromAHSL(1.0, parsedHsl.first!, parsedHsl[1]!, parsedHsl.last!).toColor();
+    } else return Colors.black;
   }
 
-  static Color namedColorToColor(String text) {
-     String namedColor = namedColors.keys.firstWhere((element) => element.toLowerCase() == text.toLowerCase(), orElse: () => null);
-     if (namedColor != null) {
-       return stringToColor(namedColors[namedColor]);
-     }
-     return null;
+  static Color? namedColorToColor(String text) {
+     String namedColor = namedColors.keys.firstWhere((element) => element.toLowerCase() == text.toLowerCase(), orElse: () => "");
+     if (namedColor != "") {
+       return stringToColor(namedColors[namedColor]!);
+     } else return null;
   }
 }

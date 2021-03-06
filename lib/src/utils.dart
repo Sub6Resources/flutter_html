@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:math';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -19,9 +22,6 @@ Map<String, String> namedColors = {
   "Fuchsia": "#FF00FF",
   "Purple": "#800080",
 };
-
-import 'dart:math';
-import 'dart:convert';
 
 class Context<T> {
   T data;
@@ -70,14 +70,11 @@ class MultipleTapGestureRecognizer extends TapGestureRecognizer {
 class CustomBorderSide {
   CustomBorderSide({
     this.color = const Color(0xFF000000),
-    this.width = 4.0,
+    this.width = 1.0,
     this.style = BorderStyle.none,
-  }) : assert(color != null),
-        assert(width != null),
-        assert(width >= 0.0),
-        assert(style != null);
+  }) : assert(width >= 0.0);
 
-  Color color;
+  Color? color;
   double width;
   BorderStyle style;
 }
