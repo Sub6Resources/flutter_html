@@ -27,6 +27,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
 - [Currently Supported CSS Attributes](#currently-supported-css-attributes)
 
+- [Currently Supported Inline CSS Attributes](#currently-supported-inline-css-attributes)
+
 - [Why flutter_html?](#why-this-package)
 
 - [API Reference](#api-reference)
@@ -105,6 +107,13 @@ Add the following to your `pubspec.yaml` file:
 |`font-style`      | `font-weight`| `height`   | `letter-spacing`| `line-height`| `list-style-type`      | `list-style-position`|
 |`padding`         | `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-decoration-thickness`|
 |`text-shadow`     | `vertical-align`| `white-space`| `width`  | `word-spacing`|                        |            |
+
+## Currently Supported Inline CSS Attributes:
+|                  |        |            |          |              |                        |            |
+|------------------|--------|------------|----------|--------------|------------------------|------------|
+|`background-color`| `border` | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
+| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`     |
+| `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
 
 Don't see a tag or attribute you need? File a feature request or contribute to the project!
 
