@@ -5,6 +5,7 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/css_parser.dart';
@@ -344,7 +345,12 @@ class HtmlParser extends StatelessWidget {
           return TextSpan(
             text: childSpan.text,
             children: childSpan.children
-                ?.map((e) => addTaps(e, childStyle.merge(childSpan.style)))
+                ?.map((e) => MouseRegionSpan(
+                  mouseCursor: SystemMouseCursors.click,
+                  inlineSpan: addTaps(e, childStyle.merge(childSpan.style)),
+                  childStyle: childStyle.merge(childSpan.style),
+                  context: newContext
+                ))
                 .toList(),
             style: newContext.style.generateTextStyle().merge(
                 childSpan.style == null
@@ -377,8 +383,13 @@ class HtmlParser extends StatelessWidget {
         children: tree.children
                 .map((tree) => parseTree(newContext, tree))
                 .map((childSpan) {
-              return addTaps(childSpan,
-                  newContext.style.generateTextStyle().merge(childSpan.style));
+              return MouseRegionSpan(
+                mouseCursor: SystemMouseCursors.click,
+                inlineSpan: addTaps(childSpan,
+                    newContext.style.generateTextStyle().merge(childSpan.style)),
+                childStyle: newContext.style.generateTextStyle().merge(childSpan.style),
+                context: newContext
+              );
             }).toList(),
       );
     } else if (tree is LayoutElement) {

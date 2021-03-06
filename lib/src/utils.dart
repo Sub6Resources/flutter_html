@@ -1,7 +1,11 @@
 import 'package:flutter/gestures.dart';
+import 'package:flutter/material.dart';
 
 import 'dart:math';
 import 'dart:convert';
+
+import 'package:flutter/rendering.dart';
+import 'package:flutter_html/html_parser.dart';
 
 class Context<T> {
   T data;
@@ -47,6 +51,31 @@ class MultipleTapGestureRecognizer extends TapGestureRecognizer {
   }
 }
 
+/// This class allows the cursor to change when a link is hovered on web
+/// by extending [WidgetSpan] and returning the actual [InlineSpan] of the link
+/// within [Text.rich].
+class MouseRegionSpan extends WidgetSpan {
+  MouseRegionSpan({
+    required MouseCursor mouseCursor,
+    required InlineSpan inlineSpan,
+    required TextStyle childStyle,
+    required RenderContext context,
+  }) : super(
+    child: MouseRegion(
+      cursor: mouseCursor,
+      child: Text.rich(
+        inlineSpan,
+        style: context.style.generateTextStyle().merge(
+            inlineSpan.style == null
+                ? childStyle
+                : childStyle.merge(inlineSpan.style))
+      ),
+    ),
+  );
+}
+
+/// Gets a string of random length, for use when creating an [IFrameElement] for
+/// Flutter Web
 String getRandString(int len) {
   var random = Random.secure();
   var values = List<int>.generate(len, (i) =>  random.nextInt(255));
