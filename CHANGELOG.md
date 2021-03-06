@@ -1,3 +1,16 @@
+## [2.0.0-nullsafety.0] - March 5, 2021:
+* Nullsafety support
+* Official Flutter Web support
+* New features & fixes for lists:
+   * Support start attribute (e.g. `start="5";`)
+   * Support RTL direction
+   * Support setting padding - you can remove the starting padding if you choose
+   * Fixed unknown character box on iOS when font-weight is below w400
+* Upgraded link functions to provide more granular control
+* Fixed errors in text-decoration parsing
+* Fixed `<audio>` on iOS ("_duration called on null" exception)
+* Updated dependencies
+
 ## [1.3.0] - February 16, 2021:
 * New image loading API
 * Image loading with request headers, from relative paths and custom loading widget

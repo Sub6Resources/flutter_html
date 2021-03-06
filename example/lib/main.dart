@@ -157,7 +157,7 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
               headers: {"Custom-Header": "some-value"},
-              altWidget: (alt) => Text(alt!),
+              altWidget: (alt) => Text(alt ?? ""),
               loadingWidget: () => Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url

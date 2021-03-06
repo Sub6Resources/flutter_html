@@ -36,7 +36,7 @@ ImageSourceMatcher networkSourceMatcher({
 ImageSourceMatcher assetUriMatcher() => (attributes, element) =>
     _src(attributes) != null && _src(attributes)!.startsWith("asset:");
 
-typedef ImageRender = Widget Function(
+typedef ImageRender = Widget? Function(
   RenderContext context,
   Map<String, String> attributes,
   dom.Element? element,

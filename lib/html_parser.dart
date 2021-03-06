@@ -18,8 +18,8 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(
     String? url,
-    RenderContext? context,
-    Map<String, String?>? attributes,
+    RenderContext context,
+    Map<String, String> attributes,
     dom.Element? element,
 );
 typedef CustomRender = dynamic Function(
