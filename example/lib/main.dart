@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key key, this.title}) : super(key: key);
+  MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -157,13 +157,13 @@ class _MyHomePageState extends State<MyHomePage> {
             },
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
               headers: {"Custom-Header": "some-value"},
-              altWidget: (alt) => Text(alt),
+              altWidget: (alt) => Text(alt ?? ""),
               loadingWidget: () => Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url
-            (attr, _) => attr["src"] != null && attr["src"].startsWith("/wiki"):
+            (attr, _) => attr["src"] != null && attr["src"]!.startsWith("/wiki"):
                 networkImageRender(
-                    mapUrl: (url) => "https://upload.wikimedia.org" + url),
+                    mapUrl: (url) => "https://upload.wikimedia.org" + url!),
             // Custom placeholder image for broken links
             networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
           },
