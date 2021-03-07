@@ -189,7 +189,7 @@ class Style {
     this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
-    this.listStylePosition,
+    this.listStylePosition = ListStylePosition.OUTSIDE,
     this.padding,
     this.margin,
     this.textAlign,
