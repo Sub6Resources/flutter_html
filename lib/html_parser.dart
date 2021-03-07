@@ -173,7 +173,7 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
-      return TextContentElement(text: node.text, style: Style());
+      return TextContentElement(text: node.text, style: Style(), element: node.parent, node: node);
     } else {
       return EmptyContentElement();
     }
@@ -465,14 +465,18 @@ class HtmlParser extends StatelessWidget {
     }
 
     if (tree is TextContentElement) {
-      if (wpc.data && tree.text!.startsWith(' ')) {
+      int index = -1;
+      if ((tree.element?.nodes.length ?? 0) > 1) {
+        index = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
+      }
+      if (index < 1 && tree.text!.startsWith(' ')
+          && tree.element?.localName != "br") {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
-
-      if (tree.text!.endsWith(' ') || tree.text!.endsWith('\n')) {
-        wpc.data = true;
-      } else {
-        wpc.data = false;
+      if (index == (tree.element?.nodes.length ?? 1) - 1
+          && (tree.text!.endsWith(' ') || tree.text!.endsWith('\n'))
+          && tree.element?.localName != "br") {
+        tree.text = tree.text!.trimRight();
       }
     }
 
