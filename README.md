@@ -101,7 +101,7 @@ Add the following to your `pubspec.yaml` file:
 | `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
 | `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
 | `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder`   | `mfrac`  | 
-| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |   |   |   |    |   | 
+| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  | `tex` (custom tag for this package)  |   |   |    |   | 
 
  
 ## Currently Supported CSS Attributes:
@@ -670,6 +670,14 @@ Because this package is parsing MathML to Tex, it may not support some functiona
 If the parsing errors, you can use the [onMathError](#onmatherror) API to catch the error and potentially fix it on your end - you can analyze the error and the parsed string, and finally return a new instance of `Math.tex()` with the corrected Tex string.
 
 If you'd like to see more MathML features, feel free to create a PR or file a feature request!
+
+### Tex
+
+If you have a Tex string you'd like to render inside your HTML you can do that!
+
+Use the custom `<tex>` tag inside your HTML, and place your **raw** Tex string inside. The package uses the same logic as MathML rendering above, but doesn't need to parse the string, of course.
+ 
+ The rendering error will also be called if your Tex string fails to render.
 
 ### Table
 

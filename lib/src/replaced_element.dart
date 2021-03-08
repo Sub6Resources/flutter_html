@@ -272,12 +272,14 @@ class MathElement extends ReplacedElement {
   MathElement({
     required this.element,
     required this.texStr,
-    String name = "math",
+    String name = "[[MathElement]]",
   }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(display: Display.INLINE));
 
   @override
   Widget toWidget(RenderContext context) {
-    texStr = parseMathRecursive(element, r'');
+    if (element.localName == "math") {
+      texStr = parseMathRecursive(element, r'');
+    }
     return Container(
       width: MediaQuery.of(context.buildContext).size.width,
       child: Math.tex(
@@ -423,6 +425,11 @@ ReplacedElement parseReplacedElement(
       return MathElement(
         element: element,
         texStr: r'',
+      );
+    case "tex":
+      return MathElement(
+        element: element,
+        texStr: element.text,
       );
     default:
       return EmptyContentElement(name: element.localName == null ? "[[No Name]]" : element.localName!);

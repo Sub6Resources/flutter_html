@@ -27,7 +27,7 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-const htmlData = """
+const htmlData = r"""
       <h1>Header 1</h1>
       <h2>Header 2</h2>
       <h3>Header 3</h3>
@@ -228,6 +228,8 @@ const htmlData = """
         <mo>=</mo>
         <mn>1</mn>
       </math>
+      <h3>Tex Support with the custom tex tag:</h3>
+      <tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>
 """;
 
 class _MyHomePageState extends State<MyHomePage> {
