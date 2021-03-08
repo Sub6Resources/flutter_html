@@ -11,6 +11,7 @@ import 'package:flutter_html/src/widgets/iframe_unsupported.dart'
   if (dart.library.io) 'package:flutter_html/src/widgets/iframe_mobile.dart'
   if (dart.library.html) 'package:flutter_html/src/widgets/iframe_web.dart';
 import 'package:flutter_html/style.dart';
+import 'package:flutter_math/flutter_math.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:video_player/video_player.dart';
@@ -264,6 +265,85 @@ class RubyElement extends ReplacedElement {
   }
 }
 
+class MathElement extends ReplacedElement {
+  dom.Element element;
+  String texStr;
+
+  MathElement({
+    required this.element,
+    required this.texStr,
+    String name = "math",
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(display: Display.INLINE));
+
+  @override
+  Widget toWidget(RenderContext context) {
+    texStr = parseMathRecursive(element, r'');
+    return Container(
+      width: MediaQuery.of(context.buildContext).size.width,
+      child: Math.tex(
+        texStr,
+        onErrorFallback: (FlutterMathException e) {
+          if (context.parser.onMathError != null) {
+            return context.parser.onMathError!.call(texStr, e.message, e.messageWithType);
+          } else {
+            return Text(e.message);
+          }
+        },
+      )
+    );
+  }
+
+  String parseMathRecursive(dom.Node node, String parsed) {
+    if (node is dom.Element) {
+      List<dom.Element> nodeList = node.nodes.whereType<dom.Element>().toList();
+      if (node.localName == "math" || node.localName == "mrow") {
+        nodeList.forEach((element) {
+          parsed = parseMathRecursive(element, parsed);
+        });
+      }
+      // note: munder, mover, and munderover do not support placing braces and other
+      // markings above/below elements, instead they are treated as super/subscripts for now.
+      if ((node.localName == "msup" || node.localName == "msub"
+          || node.localName == "munder" || node.localName == "mover") && nodeList.length == 2) {
+        parsed = parseMathRecursive(nodeList[0], parsed);
+        parsed = parseMathRecursive(nodeList[1],
+            parsed + "${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{") + "}";
+      }
+      if ((node.localName == "msubsup" || node.localName == "munderover") && nodeList.length == 3) {
+        parsed = parseMathRecursive(nodeList[0], parsed);
+        parsed = parseMathRecursive(nodeList[1], parsed + "_{") + "}";
+        parsed = parseMathRecursive(nodeList[2], parsed + "^{") + "}";
+      }
+      if (node.localName == "mfrac" && nodeList.length == 2) {
+        parsed = parseMathRecursive(nodeList[0], parsed + r"\frac{") + "}";
+        parsed = parseMathRecursive(nodeList[1], parsed + "{") + "}";
+      }
+      // note: doesn't support answer & intermediate steps
+      if (node.localName == "mlongdiv" && nodeList.length == 4) {
+        parsed = parseMathRecursive(nodeList[0], parsed);
+        parsed = parseMathRecursive(nodeList[2], parsed + r"\overline{)") + "}";
+      }
+      if (node.localName == "msqrt" && nodeList.length == 1) {
+        parsed = parseMathRecursive(nodeList[0], parsed + r"\sqrt{") + "}";
+      }
+      if (node.localName == "mroot" && nodeList.length == 2) {
+        parsed = parseMathRecursive(nodeList[1], parsed + r"\sqrt[") + "]";
+        parsed = parseMathRecursive(nodeList[0], parsed + "{") + "}";
+      }
+      if (node.localName == "mi" || node.localName == "mn" || node.localName == "mo") {
+        if (mathML2Tex.keys.contains(node.text.trim())) {
+          parsed = parsed + mathML2Tex[mathML2Tex.keys.firstWhere((e) => e == node.text.trim())]!;
+        } else if (node.text.startsWith("&") && node.text.endsWith(";")) {
+          parsed = parsed + node.text.trim().replaceFirst("&", r"\").substring(0, node.text.trim().length - 1);
+        } else {
+          parsed = parsed + node.text.trim();
+        }
+      }
+    }
+    return parsed;
+  }
+}
+
 ReplacedElement parseReplacedElement(
   dom.Element element,
   NavigationDelegate? navigationDelegateForIframe,
@@ -338,6 +418,11 @@ ReplacedElement parseReplacedElement(
     case "ruby":
       return RubyElement(
         element: element,
+      );
+    case "math":
+      return MathElement(
+        element: element,
+        texStr: r'',
       );
     default:
       return EmptyContentElement(name: element.localName == null ? "[[No Name]]" : element.localName!);

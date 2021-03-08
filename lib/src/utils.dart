@@ -23,6 +23,23 @@ Map<String, String> namedColors = {
   "Purple": "#800080",
 };
 
+Map<String, String> mathML2Tex = {
+  "sin": r"\sin",
+  "sinh": r"\sinh",
+  "csc": r"\csc",
+  "csch": r"csch",
+  "cos": r"\cos",
+  "cosh": r"\cosh",
+  "sec": r"\sec",
+  "sech": r"\sech",
+  "tan": r"\tan",
+  "tanh": r"\tanh",
+  "cot": r"\cot",
+  "coth": r"\coth",
+  "log": r"\log",
+  "ln": r"\ln",
+};
+
 class Context<T> {
   T data;
 

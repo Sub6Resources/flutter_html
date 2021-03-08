@@ -86,6 +86,7 @@ const REPLACED_ELEMENTS = [
   "rp",
   "rt",
   "ruby",
+  "math",
 ];
 
 const LAYOUT_ELEMENTS = [
