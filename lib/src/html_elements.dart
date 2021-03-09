@@ -66,6 +66,7 @@ const STYLED_ELEMENTS = [
   "p",
   "pre",
   "section",
+  "summary",
   "ul",
 ];
 
@@ -88,6 +89,7 @@ const REPLACED_ELEMENTS = [
 ];
 
 const LAYOUT_ELEMENTS = [
+  "details",
   "table",
   "tr",
   "tbody",

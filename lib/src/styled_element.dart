@@ -11,33 +11,33 @@ class StyledElement {
   final List<String> elementClasses;
   List<StyledElement> children;
   Style style;
-  final dom.Node _node;
+  final dom.Node? _node;
 
   StyledElement({
     this.name = "[[No name]]",
-    this.elementId,
-    this.elementClasses,
-    this.children,
-    this.style,
-    dom.Element node,
+    this.elementId = "[[No ID]]",
+    this.elementClasses = const [],
+    required this.children,
+    required this.style,
+    required dom.Element? node,
   }) : this._node = node;
 
   bool matchesSelector(String selector) =>
-      _node != null && matches(_node, selector);
+      _node != null && matches(_node as dom.Element, selector);
 
   Map<String, String> get attributes =>
-      _node?.attributes?.map((key, value) {
-        return MapEntry(key, value);
+      _node?.attributes.map((key, value) {
+        return MapEntry(key.toString(), value);
       }) ??
       Map<String, String>();
 
-  dom.Element get element => _node;
+  dom.Element? get element => _node as dom.Element?;
 
   @override
   String toString() {
     String selfData =
-        "[$name] ${children?.length ?? 0} ${elementClasses?.isNotEmpty == true ? 'C:${elementClasses.toString()}' : ''}${elementId?.isNotEmpty == true ? 'ID: $elementId' : ''}";
-    children?.forEach((child) {
+        "[$name] ${children.length} ${elementClasses.isNotEmpty == true ? 'C:${elementClasses.toString()}' : ''}${elementId.isNotEmpty == true ? 'ID: $elementId' : ''}";
+    children.forEach((child) {
       selfData += ("\n${child.toString()}")
           .replaceAll(RegExp("^", multiLine: true), "-");
     });
@@ -48,11 +48,12 @@ class StyledElement {
 StyledElement parseStyledElement(
     dom.Element element, List<StyledElement> children) {
   StyledElement styledElement = StyledElement(
-    name: element.localName,
+    name: element.localName!,
     elementId: element.id,
     elementClasses: element.classes.toList(),
     children: children,
     node: element,
+    style: Style(),
   );
 
   switch (element.localName) {
@@ -97,7 +98,7 @@ StyledElement parseStyledElement(
       break;
     case "blockquote":
       //TODO(Sub6Resources) this is a workaround for collapsing margins. Remove.
-      if (element.parent.localName == "blockquote") {
+      if (element.parent!.localName == "blockquote") {
         styledElement.style = Style(
           margin: const EdgeInsets.only(left: 40.0, right: 40.0, bottom: 14.0),
           display: Display.BLOCK,
@@ -283,7 +284,7 @@ StyledElement parseStyledElement(
     case "ol":
     case "ul":
       //TODO(Sub6Resources): This is a workaround for collapsed margins. Remove.
-      if (element.parent.localName == "li") {
+      if (element.parent!.localName == "li") {
         styledElement.style = Style(
 //          margin: EdgeInsets.only(left: 30.0),
           display: Display.BLOCK,
