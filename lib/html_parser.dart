@@ -95,7 +95,7 @@ class HtmlParser extends StatelessWidget {
 
   /// [parseHTML] converts a string of HTML to a DOM document using the dart `html` library.
   static dom.Document parseHTML(String data) {
-    return htmlparser.parse(data);
+    return htmlparser.parse(data)!;
   }
 
   /// [parseCSS] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
