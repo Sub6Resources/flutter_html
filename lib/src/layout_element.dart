@@ -95,7 +95,7 @@ class TableLayoutElement extends LayoutElement {
     for (var row in rows) {
       int columni = 0;
       for (var child in row.children) {
-        if (columnRowOffset[columni] > 0) {
+        while (columnRowOffset[columni] > 0) {
           columnRowOffset[columni] = columnRowOffset[columni] - 1;
           columni++;
         }
