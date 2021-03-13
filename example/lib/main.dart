@@ -242,7 +242,242 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
       body: SingleChildScrollView(
         child: Html(
-          data: htmlData,
+          data: """
+            <style type="text/css">table { border:1px solid #B96F00; margin-top:10px; margin-bottom:10px; background-color:white; }
+        td { border:1px solid #B96F00; font-size: 12pt; padding:1 3 1 5; }
+</style>
+<div class="Lorem Ipsum" style="text-align: center;">Lorem Ipsum<br />
+Lorem Ipsum<br />
+Lorem Ipsum<br />
+&nbsp;<br />
+Lorem Ipsum</div>
+
+<div style="text-align: center;"></div>
+&nbsp;&nbsp;
+
+<div style="text-align: justify;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum,<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum;<br />
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; Lorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem IpsumLorem Ipsum.<br />
+<br />
+Lorem Ipsum</div>
+
+<table>
+	<tbody>
+		<tr>
+			<td rowspan="3" style="text-align: justify;">Lorem Ipsum<br />
+			NO</td>
+			<td colspan="6" nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td colspan="2" nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" rowspan="2" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" rowspan="2" style="text-align: justify;">Lorem Ipsum</td>
+			<td rowspan="2" style="text-align: justify;">Lorem Ipsum <br />
+			</td>
+			<td rowspan="2" style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">14.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">260</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">3</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">200,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">4</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">648,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">5</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">09.09.2020</td>
+			<td nowrap="nowrap" style="text-align: justify;">300,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">6</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem IpsumLorem Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">-</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">15.11.2019</td>
+			<td nowrap="nowrap" style="text-align: justify;">16.262,33</td>
+			<td style="text-align: justify;">Lorem IpsumLorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">7</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">100,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">8</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">760,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">9</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">380,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">10</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">320,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">11</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum.</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">17.02.2020</td>
+			<td nowrap="nowrap" style="text-align: justify;">10.029.107,40</td>
+			<td style="text-align: justify;">Lorem IpsumLorem Ipsum.</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">112</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">11.01.2021</td>
+			<td nowrap="nowrap" style="text-align: justify;">220,00</td>
+			<td style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+	</tbody>
+</table>
+
+<div style="text-align: justify;">&nbsp;<br />
+Lorem Ipsum</div>
+
+<table>
+	<tbody>
+		<tr>
+			<td nowrap="nowrap" rowspan="3" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td colspan="6" nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum / Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td colspan="2" nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" rowspan="2" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" rowspan="2" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" rowspan="2" style="text-align: justify;">Lorem Ipsum Lorem Ipsum<br />
+			(TL)</td>
+			<td rowspan="2" style="text-align: justify;">Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum/Lorem Ipsum - Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum/Lorem Ipsum/<br />
+			Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">1</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum<br />
+			Lorem Ipsum Lorem Ipsum. Lorem Ipsum. Lorem Ipsum. Lorem Ipsum.</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">02.10.2020</td>
+			<td nowrap="nowrap" style="text-align: justify;">318</td>
+			<td style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">2</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">_</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum<br />
+			Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">17.09.2020 25.09.2020</td>
+			<td nowrap="nowrap" style="text-align: justify;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 520</td>
+			<td style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">3</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">_</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">17.01.2019</td>
+			<td nowrap="nowrap" style="text-align: justify;">136.402,64</td>
+			<td style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">4</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">_</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">17.01.2019</td>
+			<td nowrap="nowrap" style="text-align: justify;">55.745,56</td>
+			<td style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+		</tr>
+		<tr>
+			<td nowrap="nowrap" style="text-align: justify;">5</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum Lorem Ipsum Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">Lorem Ipsum</td>
+			<td nowrap="nowrap" style="text-align: justify;">09.01.2020</td>
+			<td nowrap="nowrap" style="text-align: justify;">584.589,34</td>
+			<td style="text-align: justify;">Lorem Ipsum/Lorem Ipsum Lorem Ipsum</td>
+		</tr>
+	</tbody>
+</table>
+
+<div style="text-align: justify;">&nbsp;<br />
+&nbsp;<br />
+&nbsp;
+<style type="text/css">.Lorem Ipsum {
+  text-align:center;
+  font-size:16pt !important;
+  column-span:all;
+  font-weight:bold;
+  }
+</style>
+</div>
+          """,
           //Optional parameters:
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]):

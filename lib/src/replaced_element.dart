@@ -11,7 +11,7 @@ import 'package:flutter_html/src/widgets/iframe_unsupported.dart'
   if (dart.library.io) 'package:flutter_html/src/widgets/iframe_mobile.dart'
   if (dart.library.html) 'package:flutter_html/src/widgets/iframe_web.dart';
 import 'package:flutter_html/style.dart';
-import 'package:flutter_math/flutter_math.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:video_player/video_player.dart';
@@ -267,13 +267,13 @@ class RubyElement extends ReplacedElement {
 
 class MathElement extends ReplacedElement {
   dom.Element element;
-  String texStr;
+  String? texStr;
 
   MathElement({
     required this.element,
-    required this.texStr,
+    this.texStr,
     String name = "[[MathElement]]",
-  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(display: Display.INLINE));
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
 
   @override
   Widget toWidget(RenderContext context) {
@@ -283,13 +283,15 @@ class MathElement extends ReplacedElement {
     return Padding(
       padding: const EdgeInsets.only(bottom: 3.5),
       child: Container(
-        width: element.localName == "math" ?
+        width: element.localName == "math" || element.parent!.localName == "body" ?
           MediaQuery.of(context.buildContext).size.width : null,
         child: Math.tex(
-          texStr,
+          texStr ?? '',
+          mathStyle: element.parent!.localName != "body" ? MathStyle.text : MathStyle.display,
+          textStyle: context.style.generateTextStyle(),
           onErrorFallback: (FlutterMathException e) {
             if (context.parser.onMathError != null) {
-              return context.parser.onMathError!.call(texStr, e.message, e.messageWithType);
+              return context.parser.onMathError!.call(texStr ?? '', e.message, e.messageWithType);
             } else {
               return Text(e.message);
             }
@@ -428,7 +430,6 @@ ReplacedElement parseReplacedElement(
     case "math":
       return MathElement(
         element: element,
-        texStr: r'',
       );
     case "tex":
       return MathElement(
