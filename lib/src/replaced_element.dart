@@ -280,24 +280,21 @@ class MathElement extends ReplacedElement {
     if (element.localName == "math") {
       texStr = parseMathRecursive(element, r'');
     }
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 3.5),
-      child: Container(
-        width: element.localName == "math" || element.parent!.localName == "body" ?
-          MediaQuery.of(context.buildContext).size.width : null,
-        child: Math.tex(
-          texStr ?? '',
-          mathStyle: element.parent!.localName != "body" ? MathStyle.text : MathStyle.display,
-          textStyle: context.style.generateTextStyle(),
-          onErrorFallback: (FlutterMathException e) {
-            if (context.parser.onMathError != null) {
-              return context.parser.onMathError!.call(texStr ?? '', e.message, e.messageWithType);
-            } else {
-              return Text(e.message);
-            }
-          },
-        )
-      ),
+    return Container(
+      width: element.localName == "math" || element.parent!.localName == "body" ?
+        MediaQuery.of(context.buildContext).size.width : null,
+      child: Math.tex(
+        texStr ?? '',
+        mathStyle: element.parent!.localName != "body" ? MathStyle.text : MathStyle.display,
+        textStyle: context.style.generateTextStyle(),
+        onErrorFallback: (FlutterMathException e) {
+          if (context.parser.onMathError != null) {
+            return context.parser.onMathError!.call(texStr ?? '', e.message, e.messageWithType);
+          } else {
+            return Text(e.message);
+          }
+        },
+      )
     );
   }
 

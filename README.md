@@ -75,6 +75,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   
   - [MathML](#mathml)
   
+  - [Tex](#tex)
+  
   - [Table](#table)
   
 - [Notes](#notes)
@@ -677,7 +679,7 @@ If you have a Tex string you'd like to render inside your HTML you can do that!
 
 Use the custom `<tex>` tag inside your HTML, and place your **raw** Tex string inside. The package uses the same logic as MathML rendering above, but doesn't need to parse the string, of course.
  
- The rendering error will also be called if your Tex string fails to render.
+The rendering error will also be called if your Tex string fails to render.
 
 ### Table
 
