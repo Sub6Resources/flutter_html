@@ -154,13 +154,13 @@ void main() {
   });
 }
 
-dom.Element _fakeElement(String src) {
+dom.Element _fakeElement(String? src) {
   return dom.Element.html("""
       <img src="$src" />
     """);
 }
 
-bool _match(ImageSourceMatcher matcher, String src) {
+bool _match(ImageSourceMatcher matcher, String? src) {
   final element = _fakeElement(src);
   return matcher.call(
       element.attributes.map((key, value) => MapEntry(key.toString(), value)),
