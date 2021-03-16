@@ -125,8 +125,10 @@ const htmlData = """
       <img src='asset:assets/html5.png' width='100' />
       <h3>Local asset svg</h3>
       <img src='asset:assets/mac.svg' width='100' />
-      <h3>Base64</h3>
-      <img alt='Red dot' src='data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
+      <h3>Data uri (with base64 support)</h3>
+      <img alt='Red dot (png)' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
+      <img alt='Green dot (base64 svg)' src='data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMzAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjE1IiBjeT0iMTAiIHI9IjEwIiBmaWxsPSJncmVlbiIvPgo8L3N2Zz4=' />
+      <img alt='Green dot (plain svg)' src='data:image/svg+xml,%3C?xml version="1.0" encoding="UTF-8"?%3E%3Csvg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="10" r="10" fill="yellow"/%3E%3C/svg%3E' />
       <h3>Custom source matcher (relative paths)</h3>
       <img src='/wikipedia/commons/thumb/e/ef/Octicons-logo-github.svg/200px-Octicons-logo-github.svg.png' />
       <h3>Custom image render (flutter.dev)</h3>
@@ -151,8 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
           data: htmlData,
           //Optional parameters:
           customImageRenders: {
-            networkSourceMatcher(domains: ["flutter.dev"]):
-                (context, attributes, element) {
+            networkSourceMatcher(domains: ["flutter.dev"]): (context, attributes, element) {
               return FlutterLogo(size: 36);
             },
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
