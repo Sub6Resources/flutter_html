@@ -13,9 +13,9 @@ typedef ImageSourceMatcher = bool Function(
 
 final _dataUriFormat = RegExp("^(?<scheme>data):(?<mime>image\/[\\w\+\-\.]+)(?<encoding>;base64)?\,(?<data>.*)");
 
-ImageSourceMatcher dataUriMatcher({String encoding = 'base64', String mime}) => (attributes, element) {
+ImageSourceMatcher dataUriMatcher({String? encoding = 'base64', String? mime}) => (attributes, element) {
       if (_src(attributes) == null) return false;
-      final dataUri = _dataUriFormat.firstMatch(_src(attributes));
+      final dataUri = _dataUriFormat.firstMatch(_src(attributes)!);
       return dataUri != null &&
           (mime == null || dataUri.namedGroup('mime') == mime) &&
           (encoding == null || dataUri.namedGroup('encoding') == ';$encoding');
@@ -164,9 +164,10 @@ ImageRender networkImageRender({
     };
 
 ImageRender svgDataImageRender() => (context, attributes, element) {
-      final dataUri = _dataUriFormat.firstMatch(_src(attributes));
-      final data = dataUri.namedGroup('data');
-      if (dataUri.namedGroup('encoding') == ';base64') {
+      final dataUri = _dataUriFormat.firstMatch(_src(attributes)!);
+      final data = dataUri?.namedGroup('data');
+      if (data == null) return null;
+      if (dataUri?.namedGroup('encoding') == ';base64') {
         final decodedImage = base64.decode(data.trim());
         return SvgPicture.memory(
           decodedImage,
