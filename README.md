@@ -33,9 +33,13 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
 - [API Reference](#api-reference)
 
+  - [Constructors](#constructors)
+
   - [Parameters Table](#parameters)
 
   - [Data](#data)
+    
+  - [Document](#document)
 
   - [onLinkTap](#onlinktap)
 
@@ -137,11 +141,20 @@ For a full example, see [here](https://github.com/Sub6Resources/flutter_html/tre
 
 Below, you will find brief descriptions of the parameters the`Html` widget accepts and some code snippets to help you use this package.
 
+## Constructors:
+
+The package currently has two different constructors - `Html()` and `Html.fromDom()`. 
+
+The `Html()` constructor is for those who would like to directly pass HTML from the source to the package to be rendered. 
+
+If you would like to modify or sanitize the HTML before rendering it, then `Html.fromDom()` is for you - you can convert the HTML string to a `Document` and use its methods to modify the HTML as you wish. Then, you can directly pass the modified `Document` to the package. This eliminates the need to parse the modified `Document` back to a string, pass to `Html()`, and convert back to a `Document`, thus cutting down on load times.
+
 ### Parameters: 
 
 |  Parameters  |   Description   |
 |--------------|-----------------|
-| `data` | The HTML data passed to the `Html` widget. This is required and cannot be null. |
+| `data` | The HTML data passed to the `Html` widget. This is required and cannot be null when using `Html()`. |
+| `document` | The DOM document passed to the `Html` widget. This is required and cannot be null when using `Html.fromDom()`. |
 | `onLinkTap` | A function that defines what the widget should do when a link is tapped. The function exposes the `src` of the link as a `String` to use in your implementation. |
 | `customRender` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
 | `onImageError` | A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation. |
@@ -155,7 +168,7 @@ Below, you will find brief descriptions of the parameters the`Html` widget accep
 
 ### Data:
 
-The HTML data passed to the `Html` widget as a `String`. This is required and cannot be null.
+The HTML data passed to the `Html` widget as a `String`. This is required and cannot be null when using `Html`.
 Any HTML tags in the `String` that are not supported by the package will not be rendered.
 
 #### Example Usage - Data: 
@@ -173,6 +186,36 @@ Widget html = Html(
         </ul>
         <!--You can pretty much put any html in here!-->
       </div>""",
+);
+```
+
+### Document:
+
+The DOM document passed to the `Html` widget as a `Document`. This is required and cannot be null when using `Html.fromDom()`.
+Any HTML tags in the document that are not supported by the package will not be rendered.
+Using the `Html.fromDom()` constructor can be useful when you would like to sanitize the HTML string yourself before passing it to the package.
+
+#### Example Usage - Document: 
+
+```dart 
+import 'package:html/parser.dart' as htmlparser;
+import 'package:html/dom.dart' as dom;
+...
+String htmlData = """<div>
+  <h1>Demo Page</h1>
+  <p>This is a fantastic product that you should buy!</p>
+  <h3>Features</h3>
+  <ul>
+    <li>It actually works</li>
+    <li>It exists</li>
+    <li>It doesn't cost much!</li>
+  </ul>
+  <!--You can pretty much put any html in here!-->
+</div>""";
+dom.Document document = htmlparser.parse(htmlData);
+/// sanitize or query document here
+Widget html = Html(
+  document: document,
 );
 ```
 

@@ -45,11 +45,14 @@ abstract class ReplacedElement extends StyledElement {
 /// [TextContentElement] is a [ContentElement] with plaintext as its content.
 class TextContentElement extends ReplacedElement {
   String? text;
+  dom.Node? node;
 
   TextContentElement({
     required Style style,
     required this.text,
-  }) : super(name: "[text]", style: style);
+    this.node,
+    dom.Element? element,
+  }) : super(name: "[text]", style: style, node: element);
 
   @override
   String toString() {
@@ -375,6 +378,8 @@ ReplacedElement parseReplacedElement(
       return TextContentElement(
         text: "\n",
         style: Style(whiteSpace: WhiteSpace.PRE),
+        element: element,
+        node: element
       );
     case "iframe":
       return IframeContentElement(

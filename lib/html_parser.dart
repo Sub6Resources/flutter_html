@@ -35,7 +35,7 @@ typedef CustomRender = dynamic Function(
 );
 
 class HtmlParser extends StatelessWidget {
-  final String htmlData;
+  final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
   final ImageErrorListener? onImageError;
@@ -64,9 +64,8 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    dom.Document document = parseHTML(htmlData);
     StyledElement lexedTree = lexDomTree(
-      document,
+      htmlData,
       customRender.keys.toList(),
       blacklistedElements,
       navigationDelegateForIframe,
@@ -180,7 +179,7 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
-      return TextContentElement(text: node.text, style: Style());
+      return TextContentElement(text: node.text, style: Style(), element: node.parent, node: node);
     } else {
       return EmptyContentElement();
     }
@@ -472,14 +471,18 @@ class HtmlParser extends StatelessWidget {
     }
 
     if (tree is TextContentElement) {
-      if (wpc.data && tree.text!.startsWith(' ')) {
+      int index = -1;
+      if ((tree.element?.nodes.length ?? 0) > 1) {
+        index = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
+      }
+      if (index < 1 && tree.text!.startsWith(' ')
+          && tree.element?.localName != "br") {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
-
-      if (tree.text!.endsWith(' ') || tree.text!.endsWith('\n')) {
-        wpc.data = true;
-      } else {
-        wpc.data = false;
+      if (index == (tree.element?.nodes.length ?? 1) - 1
+          && (tree.text!.endsWith(' ') || tree.text!.endsWith('\n'))
+          && tree.element?.localName != "br") {
+        tree.text = tree.text!.trimRight();
       }
     }
 
