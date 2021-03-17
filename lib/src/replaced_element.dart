@@ -281,7 +281,7 @@ class MathElement extends ReplacedElement {
       texStr = parseMathRecursive(element, r'');
     }
     return Container(
-      width: element.localName == "math" || element.parent!.localName == "body" ?
+      width: element.localName == "math" ?
         MediaQuery.of(context.buildContext).size.width : null,
       child: Math.tex(
         texStr ?? '',
