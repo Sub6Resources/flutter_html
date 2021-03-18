@@ -57,6 +57,7 @@ class Html extends StatelessWidget {
     this.customRender = const {},
     this.customImageRenders = const {},
     this.onImageError,
+    this.onMathError,
     this.shrinkWrap = false,
     this.onImageTap,
     this.blacklistedElements = const [],
