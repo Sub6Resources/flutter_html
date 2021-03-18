@@ -275,20 +275,17 @@ class MathElement extends ReplacedElement {
   MathElement({
     required this.element,
     this.texStr,
-    String name = "[[MathElement]]",
+    String name = "math",
   }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
 
   @override
   Widget toWidget(RenderContext context) {
-    if (element.localName == "math") {
-      texStr = parseMathRecursive(element, r'');
-    }
+    texStr = parseMathRecursive(element, r'');
     return Container(
-      width: element.localName == "math" ?
-        MediaQuery.of(context.buildContext).size.width : null,
+      width: MediaQuery.of(context.buildContext).size.width,
       child: Math.tex(
         texStr ?? '',
-        mathStyle: element.parent!.localName != "body" ? MathStyle.text : MathStyle.display,
+        mathStyle: MathStyle.display,
         textStyle: context.style.generateTextStyle(),
         onErrorFallback: (FlutterMathException e) {
           if (context.parser.onMathError != null) {
@@ -432,11 +429,6 @@ ReplacedElement parseReplacedElement(
     case "math":
       return MathElement(
         element: element,
-      );
-    case "tex":
-      return MathElement(
-        element: element,
-        texStr: element.text,
       );
     default:
       return EmptyContentElement(name: element.localName == null ? "[[No Name]]" : element.localName!);

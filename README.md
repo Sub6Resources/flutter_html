@@ -107,7 +107,7 @@ Add the following to your `pubspec.yaml` file:
 | `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
 | `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
 | `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder`   | `mfrac`  | 
-| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  | `tex` (custom tag for this package)  |   |   |    |   | 
+| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    |   | 
 
  
 ## Currently Supported CSS Attributes:
@@ -718,11 +718,26 @@ If you'd like to see more MathML features, feel free to create a PR or file a fe
 
 ### Tex
 
-If you have a Tex string you'd like to render inside your HTML you can do that!
+If you have a Tex string you'd like to render inside your HTML you can do that using the same [`flutter_math`](https://pub.dev/packages/flutter_math) plugin.
 
-Use the custom `<tex>` tag inside your HTML, and place your **raw** Tex string inside. The package uses the same logic as MathML rendering above, but doesn't need to parse the string, of course.
+Use a custom tag inside your HTML (an example could be `<tex>`), and place your **raw** Tex string inside.
  
-The rendering error will also be called if your Tex string fails to render.
+Then, use the `customRender` parameter to add the widget to render Tex. It could look like this:
+
+```dart
+Widget htmlWidget = Html(
+  data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
+  customRender: {
+    "tex": (_, __, ___, element) => Math.tex(
+      element.text,
+      onErrorFallback: (FlutterMathException e) {
+        //return your error widget here e.g.
+        return Text(e.message);
+      },
+    ),
+  }
+);
+```
 
 ### Table
 
