@@ -40,6 +40,7 @@ class Html extends StatelessWidget {
     this.customRender = const {},
     this.customImageRenders = const {},
     this.onImageError,
+    this.onMathError,
     this.shrinkWrap = false,
     this.onImageTap,
     this.blacklistedElements = const [],
@@ -56,6 +57,7 @@ class Html extends StatelessWidget {
     this.customRender = const {},
     this.customImageRenders = const {},
     this.onImageError,
+    this.onMathError,
     this.shrinkWrap = false,
     this.onImageTap,
     this.blacklistedElements = const [],
@@ -80,6 +82,11 @@ class Html extends StatelessWidget {
 
   /// A function that defines what to do when an image errors
   final ImageErrorListener? onImageError;
+
+  /// A function that defines what to do when either <math> or <tex> fails to render
+  /// You can return a widget here to override the default error widget.
+  final OnMathError? onMathError;
+
 
   /// A parameter that should be set when the HTML widget is expected to be
   /// flexible
@@ -115,6 +122,7 @@ class Html extends StatelessWidget {
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
         onImageError: onImageError,
+        onMathError: onMathError,
         shrinkWrap: shrinkWrap,
         style: style,
         customRender: customRender,
