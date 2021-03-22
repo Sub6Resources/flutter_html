@@ -92,7 +92,8 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
           style.textDecorationColor = ExpressionMapping.expressionToColor(value.first) ?? style.textDecorationColor;
           break;
         case 'text-decoration-line':
-          style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(value as List<css.LiteralTerm>);
+          List<css.LiteralTerm?>? textDecorationList = value.whereType<css.LiteralTerm>().toList();
+          style.textDecoration = ExpressionMapping.expressionToTextDecorationLine(textDecorationList);
           break;
         case 'text-decoration-style':
           style.textDecorationStyle = ExpressionMapping.expressionToTextDecorationStyle(value.first as css.LiteralTerm);
