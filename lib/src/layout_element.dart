@@ -38,11 +38,11 @@ class TableLayoutElement extends LayoutElement {
       ),
       width: style.width,
       height: style.height,
-      child: _layoutCells(context),
+      child: LayoutBuilder(builder: (_, constraints) => _layoutCells(context, constraints)),
     );
   }
 
-  Widget _layoutCells(RenderContext context) {
+  Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
     final rows = <TableRowLayoutElement>[];
     List<TrackSize> columnSizes = <TrackSize>[];
     for (var child in children) {
@@ -55,6 +55,10 @@ class TableLayoutElement extends LayoutElement {
               final colWidth = c.attributes["width"];
               return List.generate(span, (index) {
                 if (colWidth != null && colWidth.endsWith("%")) {
+                  if (!constraints.hasBoundedWidth) {
+                    // In a horizontally unbounded container; always wrap content instead of applying flex
+                    return IntrinsicContentTrackSize();
+                  }
                   final percentageSize = double.tryParse(
                       colWidth.substring(0, colWidth.length - 1));
                   return percentageSize != null && !percentageSize.isNaN

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
+import 'package:flutter_html/src/layout_element.dart';
+import 'package:flutter_html/style.dart';
 
 void main() => runApp(new MyApp());
 
@@ -245,7 +247,30 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
-          //Optional parameters:
+          style: {
+            "table": Style(
+              backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
+            ),
+            "tr": Style(
+              border: Border(bottom: BorderSide(color: Colors.grey)),
+            ),
+            "th": Style(
+              padding: EdgeInsets.all(6),
+              backgroundColor: Colors.grey,
+            ),
+            "td": Style(
+              padding: EdgeInsets.all(6),
+              alignment: Alignment.topLeft,
+            ),
+          },
+          customRender: {
+            "table": (context, child) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: (context.tree as TableLayoutElement).toWidget(context),
+              );
+            }
+          },
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]): (context, attributes, element) {
               return FlutterLogo(size: 36);
