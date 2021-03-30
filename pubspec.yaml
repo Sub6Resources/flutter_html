@@ -16,10 +16,10 @@ dependencies:
   css_colors: ^1.1.0
 
   # Plugins for rendering the <table> tag.
-  flutter_layout_grid: ^1.0.0-nullsafety.6
+  flutter_layout_grid: ^1.0.1
 
   # Plugins for rendering the <video> tag.
-  video_player: ^2.0.0
+  video_player: ^2.1.0
   chewie: ^1.0.0
 
   # Plugin for rendering the <iframe> tag.
