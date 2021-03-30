@@ -149,3 +149,5 @@ modules.xml
 **/.flutter-plugins-dependencies
 
 **/flutter_export_environment.sh
+
+/example/ios/Flutter/Flutter.podspec

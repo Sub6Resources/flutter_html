@@ -6,14 +6,12 @@ import 'package:html/dom.dart' as dom;
 /// An [InteractableElement] is a [StyledElement] that takes user gestures (e.g. tap).
 class InteractableElement extends StyledElement {
   String? href;
-  String? onClick;
 
   InteractableElement({
     required String name,
     required List<StyledElement> children,
     required Style style,
     required this.href,
-    this.onClick,
     required dom.Node node,
   }) : super(name: name, children: children, style: style, node: node as dom.Element?);
 }
@@ -36,7 +34,6 @@ InteractableElement parseInteractableElement(
           textDecoration: TextDecoration.underline,
         ),
         node: element,
-        onClick: element.attributes['onclick'],
       );
     /// will never be called, just to suppress missing return warning
     default:
