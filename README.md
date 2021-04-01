@@ -27,19 +27,27 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
 - [Currently Supported CSS Attributes](#currently-supported-css-attributes)
 
+- [Currently Supported Inline CSS Attributes](#currently-supported-inline-css-attributes)
+
 - [Why flutter_html?](#why-this-package)
 
 - [API Reference](#api-reference)
 
+  - [Constructors](#constructors)
+
   - [Parameters Table](#parameters)
 
   - [Data](#data)
+    
+  - [Document](#document)
 
   - [onLinkTap](#onlinktap)
 
   - [customRender](#customrender)
 
   - [onImageError](#onimageerror)
+  
+  - [onMathError](#onmatherror)
 
   - [onImageTap](#onimagetap)
 
@@ -69,6 +77,10 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   
   - [SVG](#svg)
   
+  - [MathML](#mathml)
+  
+  - [Tex](#tex)
+  
   - [Table](#table)
   
 - [Notes](#notes)
@@ -94,8 +106,8 @@ Add the following to your `pubspec.yaml` file:
 | `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` | `s`  |
 | `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
 | `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
-| `var` | `video` |    |   |      |   |     |   |   |    |   | 
-
+| `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder`   | `mfrac`  | 
+| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    |   | 
 
  
 ## Currently Supported CSS Attributes:
@@ -105,6 +117,13 @@ Add the following to your `pubspec.yaml` file:
 |`font-style`      | `font-weight`| `height`   | `letter-spacing`| `line-height`| `list-style-type`      | `list-style-position`|
 |`padding`         | `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-decoration-thickness`|
 |`text-shadow`     | `vertical-align`| `white-space`| `width`  | `word-spacing`|                        |            |
+
+## Currently Supported Inline CSS Attributes:
+|                  |        |            |          |              |                        |            |
+|------------------|--------|------------|----------|--------------|------------------------|------------|
+|`background-color`| `border` | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
+| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`     |
+| `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
 
 Don't see a tag or attribute you need? File a feature request or contribute to the project!
 
@@ -122,14 +141,24 @@ For a full example, see [here](https://github.com/Sub6Resources/flutter_html/tre
 
 Below, you will find brief descriptions of the parameters the`Html` widget accepts and some code snippets to help you use this package.
 
+## Constructors:
+
+The package currently has two different constructors - `Html()` and `Html.fromDom()`. 
+
+The `Html()` constructor is for those who would like to directly pass HTML from the source to the package to be rendered. 
+
+If you would like to modify or sanitize the HTML before rendering it, then `Html.fromDom()` is for you - you can convert the HTML string to a `Document` and use its methods to modify the HTML as you wish. Then, you can directly pass the modified `Document` to the package. This eliminates the need to parse the modified `Document` back to a string, pass to `Html()`, and convert back to a `Document`, thus cutting down on load times.
+
 ### Parameters: 
 
 |  Parameters  |   Description   |
 |--------------|-----------------|
-| `data` | The HTML data passed to the `Html` widget. This is required and cannot be null. |
+| `data` | The HTML data passed to the `Html` widget. This is required and cannot be null when using `Html()`. |
+| `document` | The DOM document passed to the `Html` widget. This is required and cannot be null when using `Html.fromDom()`. |
 | `onLinkTap` | A function that defines what the widget should do when a link is tapped. The function exposes the `src` of the link as a `String` to use in your implementation. |
 | `customRender` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
 | `onImageError` | A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation. |
+| `omMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
 | `shrinkWrap` | A `bool` used while rendering different widgets to specify whether they should be shrink-wrapped or not, like `ContainerSpan` |
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
 | `blacklistedElements` | A list of elements the `Html` widget should not render. The list should contain the tags of the HTML elements you wish to blacklist.  |
@@ -139,7 +168,7 @@ Below, you will find brief descriptions of the parameters the`Html` widget accep
 
 ### Data:
 
-The HTML data passed to the `Html` widget as a `String`. This is required and cannot be null.
+The HTML data passed to the `Html` widget as a `String`. This is required and cannot be null when using `Html`.
 Any HTML tags in the `String` that are not supported by the package will not be rendered.
 
 #### Example Usage - Data: 
@@ -157,6 +186,36 @@ Widget html = Html(
         </ul>
         <!--You can pretty much put any html in here!-->
       </div>""",
+);
+```
+
+### Document:
+
+The DOM document passed to the `Html` widget as a `Document`. This is required and cannot be null when using `Html.fromDom()`.
+Any HTML tags in the document that are not supported by the package will not be rendered.
+Using the `Html.fromDom()` constructor can be useful when you would like to sanitize the HTML string yourself before passing it to the package.
+
+#### Example Usage - Document: 
+
+```dart 
+import 'package:html/parser.dart' as htmlparser;
+import 'package:html/dom.dart' as dom;
+...
+String htmlData = """<div>
+  <h1>Demo Page</h1>
+  <p>This is a fantastic product that you should buy!</p>
+  <h3>Features</h3>
+  <ul>
+    <li>It actually works</li>
+    <li>It exists</li>
+    <li>It doesn't cost much!</li>
+  </ul>
+  <!--You can pretty much put any html in here!-->
+</div>""";
+dom.Document document = htmlparser.parse(htmlData);
+/// sanitize or query document here
+Widget html = Html(
+  document: document,
 );
 ```
 
@@ -279,6 +338,24 @@ Widget html = Html(
   data: """<img alt='Alt Text of an intentionally broken image' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30d'/>""",
   onImageError: (Exception exception, StackTrace stackTrace) {
     FirebaseCrashlytics.instance.recordError(exception, stackTrace);
+  },
+);
+```
+
+### onMathError:
+
+A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`.
+
+#### Example Usage - onMathError:
+
+```dart
+Widget html = Html(
+  data: """<!-- Some MathML string that fails to parse -->""",
+  onMathError: (String parsedTex, String error, String errorWithType) {
+    //your logic here. A Widget must be returned from this function:
+    return Text(error);
+    //you can also try and fix the parsing yourself:
+    return Math.tex(correctedParsedTex);
   },
 );
 ```
@@ -626,6 +703,41 @@ The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `pos
 This package renders svg elements using the [`flutter_svg`](https://pub.dev/packages/flutter_svg) plugin.
 
 When rendering SVGs, the package takes the SVG data within the `<svg>` tag and passes it to `flutter_svg`. The `width` and `height` attributes are considered while rendering, if given.
+
+### MathML
+
+This package renders MathML elements using the [`flutter_math`](https://pub.dev/packages/flutter_math) plugin.
+
+When rendering MathML, the package takes the MathML data within the `<math>` tag and tries to parse it to Tex. Then, it will pass the parsed string to `flutter_math`.
+
+Because this package is parsing MathML to Tex, it may not support some functionalities. The current list of supported tags can be found [above](#currently-supported-html-tags), but some of these only have partial support at the moment.
+
+If the parsing errors, you can use the [onMathError](#onmatherror) API to catch the error and potentially fix it on your end - you can analyze the error and the parsed string, and finally return a new instance of `Math.tex()` with the corrected Tex string.
+
+If you'd like to see more MathML features, feel free to create a PR or file a feature request!
+
+### Tex
+
+If you have a Tex string you'd like to render inside your HTML you can do that using the same [`flutter_math`](https://pub.dev/packages/flutter_math) plugin.
+
+Use a custom tag inside your HTML (an example could be `<tex>`), and place your **raw** Tex string inside.
+ 
+Then, use the `customRender` parameter to add the widget to render Tex. It could look like this:
+
+```dart
+Widget htmlWidget = Html(
+  data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
+  customRender: {
+    "tex": (_, __, ___, element) => Math.tex(
+      element.text,
+      onErrorFallback: (FlutterMathException e) {
+        //return your error widget here e.g.
+        return Text(e.message);
+      },
+    ),
+  }
+);
+```
 
 ### Table
 

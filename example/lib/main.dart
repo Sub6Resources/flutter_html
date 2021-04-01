@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
+import 'package:flutter_html/src/layout_element.dart';
+import 'package:flutter_html/style.dart';
 
 void main() => runApp(new MyApp());
 
@@ -27,15 +29,15 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => new _MyHomePageState();
 }
 
-const htmlData = """
+const htmlData = r"""
 <p id='top'><a href='#bottom'>Scroll to bottom</a></p>
-<h1>Header 1</h1>
-<h2>Header 2</h2>
-<h3>Header 3</h3>
-<h4>Header 4</h4>
-<h5>Header 5</h5>
-<h6>Header 6</h6>
-<h3>Ruby Support:</h3>
+      <h1>Header 1</h1>
+      <h2>Header 2</h2>
+      <h3>Header 3</h3>
+      <h4>Header 4</h4>
+      <h5>Header 5</h5>
+      <h6>Header 6</h6>
+      <h3>Ruby Support:</h3>
       <p>
         <ruby>
           漢<rt>かん</rt>
@@ -126,8 +128,10 @@ const htmlData = """
       <img src='asset:assets/html5.png' width='100' />
       <h3>Local asset svg</h3>
       <img src='asset:assets/mac.svg' width='100' />
-      <h3>Base64</h3>
-      <img alt='Red dot' src='data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
+      <h3>Data uri (with base64 support)</h3>
+      <img alt='Red dot (png)' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
+      <img alt='Green dot (base64 svg)' src='data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMzAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjE1IiBjeT0iMTAiIHI9IjEwIiBmaWxsPSJncmVlbiIvPgo8L3N2Zz4=' />
+      <img alt='Green dot (plain svg)' src='data:image/svg+xml,%3C?xml version="1.0" encoding="UTF-8"?%3E%3Csvg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="10" r="10" fill="yellow"/%3E%3C/svg%3E' />
       <h3>Custom source matcher (relative paths)</h3>
       <img src='/wikipedia/commons/thumb/e/ef/Octicons-logo-github.svg/200px-Octicons-logo-github.svg.png' />
       <h3>Custom image render (flutter.dev)</h3>
@@ -137,6 +141,100 @@ const htmlData = """
       <img alt='Empty source' src='' />
       <h3>Broken network image</h3>
       <img alt='Broken image' src='https://www.notgoogle.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+      <h3>MathML Support:</h3>
+      <math>
+      <mrow>
+        <mi>x</mi>
+        <mo>=</mo>
+        <mfrac>
+          <mrow>
+            <mrow>
+              <mo>-</mo>
+              <mi>b</mi>
+            </mrow>
+            <mo>&PlusMinus;</mo>
+            <msqrt>
+              <mrow>
+                <msup>
+                  <mi>b</mi>
+                  <mn>2</mn>
+                </msup>
+                <mo>-</mo>
+                <mrow>
+                  <mn>4</mn>
+                  <mo>&InvisibleTimes;</mo>
+                  <mi>a</mi>
+                  <mo>&InvisibleTimes;</mo>
+                  <mi>c</mi>
+                </mrow>
+              </mrow>
+            </msqrt>
+          </mrow>
+          <mrow>
+            <mn>2</mn>
+            <mo>&InvisibleTimes;</mo>
+            <mi>a</mi>
+          </mrow>
+        </mfrac>
+      </mrow>
+      </math>
+      <math>
+        <munderover >
+          <mo> &int; </mo>
+          <mn> 0 </mn>
+          <mi> 5 </mi>
+        </munderover>
+        <msup>
+          <mi>x</mi>
+          <mn>2</mn>
+       </msup>
+        <mo>&sdot;</mo>
+        <mi>&dd;</mi><mi>x</mi>
+        <mo>=</mo>
+        <mo>[</mo>
+        <mfrac>
+          <mn>1</mn>
+          <mi>3</mi>
+       </mfrac>
+       <msup>
+          <mi>x</mi>
+          <mn>3</mn>
+       </msup>
+       <msubsup>
+          <mo>]</mo>
+          <mn>0</mn>
+          <mn>5</mn>
+       </msubsup>
+       <mo>=</mo>
+       <mfrac>
+          <mn>125</mn>
+          <mi>3</mi>
+       </mfrac>
+       <mo>-</mo>
+       <mn>0</mn>
+       <mo>=</mo>
+       <mfrac>
+          <mn>125</mn>
+          <mi>3</mi>
+       </mfrac>
+      </math>
+      <math>
+        <msup>
+          <mo>sin</mo>
+          <mn>2</mn>
+        </msup>
+        <mo>&theta;</mo>
+        <mo>+</mo>
+        <msup>
+          <mo>cos</mo>
+          <mn>2</mn>
+        </msup>
+        <mo>&theta;</mo>
+        <mo>=</mo>
+        <mn>1</mn>
+      </math>
+      <h3>Tex Support with the custom tex tag:</h3>
+      <tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>
       <p id='bottom'><a href='#top'>Scroll to top</a></p>
 """;
 
@@ -151,7 +249,30 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
-          //Optional parameters:
+          style: {
+            "table": Style(
+              backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
+            ),
+            "tr": Style(
+              border: Border(bottom: BorderSide(color: Colors.grey)),
+            ),
+            "th": Style(
+              padding: EdgeInsets.all(6),
+              backgroundColor: Colors.grey,
+            ),
+            "td": Style(
+              padding: EdgeInsets.all(6),
+              alignment: Alignment.topLeft,
+            ),
+          },
+          customRender: {
+            "table": (context, child) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: (context.tree as TableLayoutElement).toWidget(context),
+              );
+            }
+          },
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]): (context, attributes, element) {
               return FlutterLogo(size: 36);
