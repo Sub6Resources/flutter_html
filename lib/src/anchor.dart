@@ -8,12 +8,12 @@ class AnchorKey extends GlobalKey {
 
   const AnchorKey._(this.parentKey, this.id) : super.constructor();
 
-  static AnchorKey of(Key parentKey, StyledElement id) {
-    return forId(parentKey, id.elementId);
+  static AnchorKey? of(Key? parentKey, StyledElement? id) {
+    return forId(parentKey, id?.elementId);
   }
 
-  static AnchorKey forId(Key parentKey, String id) {
-    if (id == null || id.isEmpty) {
+  static AnchorKey? forId(Key? parentKey, String? id) {
+    if (parentKey == null || id == null || id.isEmpty) {
       return null;
     }
     return AnchorKey._(parentKey, id);
