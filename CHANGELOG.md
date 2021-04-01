@@ -1,3 +1,9 @@
+## [2.0.0] - April 1, 2021:
+* Support basic MathML
+* Supply full context tree to custom render
+* Fixed lists not rendering correctly
+* Fixes for colspans in tables
+
 ## [2.0.0-nullsafety.0] - March 5, 2021:
 * Nullsafety support
 * Official Flutter Web support
