@@ -13,7 +13,7 @@ class AnchorKey extends GlobalKey {
   }
 
   static AnchorKey? forId(Key? parentKey, String? id) {
-    if (parentKey == null || id == null || id.isEmpty) {
+    if (parentKey == null || id == null || id.isEmpty || id == "[[No ID]]") {
       return null;
     }
     return AnchorKey._(parentKey, id);
