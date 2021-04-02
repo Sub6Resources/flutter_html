@@ -238,15 +238,14 @@ Widget html = Html(
 
 ### customRender:
 
-A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
+A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can change the default behaviour or add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
-`customRender` accepts a `Map<String, CustomRender>`. The `CustomRender` type is a function that requires a `Widget` to be returned. It exposes `RenderContext`, the `Widget` that would have been rendered by `Html` without a `customRender` defined, the `attributes` of the HTML element as a `Map<String, String>`, and the HTML element itself as `Element`.
+`customRender` accepts a `Map<String, CustomRender>`. The `CustomRender` type is a function that requires a `Widget` or `InlineSpan` to be returned. It exposes `RenderContext` and the `Widget` that would have been rendered by `Html` without a `customRender` defined. The `RenderContext` contains the build context, styling and the HTML element, with attrributes and its subtree,.
 
-To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget`.
+To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget` or `InlineSpan`.
 
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
-<details><summary>View code</summary>
 
 ```dart
 Widget html = Html(
@@ -256,22 +255,21 @@ Widget html = Html(
   <flutter horizontal></flutter>
   """,
   customRender: {
-      "bird": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
+      "bird": (RenderContext context, Widget child) {
         return TextSpan(text: "🐦");
       },
-      "flutter": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
+      "flutter": (RenderContext context, Widget child) {
         return FlutterLogo(
-          style: (attributes['horizontal'] != null)
+          style: (context.tree.element!.attributes['horizontal'] != null)
               ? FlutterLogoStyle.horizontal
               : FlutterLogoStyle.markOnly,
           textColor: context.style.color,
-          size: context.style.fontSize.size * 5,
+          size: context.style.fontSize!.size! * 5,
         );
       },
     },
 );
 ```
-</details>
 
 2. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content
 
@@ -286,25 +284,26 @@ Widget html = Html(
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
    customRender: {
-      "iframe": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
-         if (attributes != null) {
-           double width = double.tryParse(attributes['width'] ?? "");
-           double height = double.tryParse(attributes['height'] ?? "");
+      "iframe": (RenderContext context, Widget child) {
+         final attrs = context.tree.element?.attributes;
+         if (attrs != null) {
+           double? width = double.tryParse(attrs['width'] ?? "");
+           double? height = double.tryParse(attrs['height'] ?? "");
            return Container(
              width: width ?? (height ?? 150) * 2,
              height: height ?? (width ?? 300) / 2,
              child: WebView(
-                initialUrl: attributes['src'] ?? "about:blank",
+                initialUrl: attrs['src'] ?? "about:blank",
                 javascriptMode: JavascriptMode.unrestricted,
                 //no need for scrolling gesture recognizers on embedded youtube, so set gestureRecognizers null
                 //on other iframe content scrolling might be necessary, so use VerticalDragGestureRecognizer
-                gestureRecognizers: attributes['src'] != null && attributes['src']!.contains("youtube.com/embed") ? null : [
+                gestureRecognizers: attrs['src'] != null && attrs['src']!.contains("youtube.com/embed") ? null : [
                   Factory(() => VerticalDragGestureRecognizer())
                 ].toSet(),
                 navigationDelegate: (NavigationRequest request) async {
                 //no need to load any url besides the embedded youtube url when displaying embedded youtube, so prevent url loading
                 //on other iframe content allow all url loading
-                  if (attributes['src'] != null && attributes['src']!.contains("youtube.com/embed")) {
+                  if (attrs['src'] != null && attrs['src']!.contains("youtube.com/embed")) {
                     if (!request.url.contains("youtube.com/embed")) {
                       return NavigationDecision.prevent;
                     } else {
