@@ -62,7 +62,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.blacklistedElements,
     required this.navigationDelegateForIframe,
-  }): this._onAnchorTap = key != null && onLinkTap != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
+  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -442,7 +442,7 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static OnTap _handleAnchorTap(Key key, OnTap onLinkTap) =>
+  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
           (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) {
         if (url?.startsWith("#") == true) {
           final anchorContext = AnchorKey.forId(key, url!.substring(1))?.currentContext;
@@ -451,7 +451,7 @@ class HtmlParser extends StatelessWidget {
           }
           return;
         }
-        onLinkTap.call(url, context, attributes, element);
+        onLinkTap?.call(url, context, attributes, element);
       };
 
   /// [processWhitespace] removes unnecessary whitespace from the StyledElement tree.
