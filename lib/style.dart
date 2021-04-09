@@ -307,6 +307,9 @@ class Style {
       listStyleType: child.listStyleType ?? listStyleType,
       listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
+      textDecoration: TextDecoration.combine(
+          [child.textDecoration ?? TextDecoration.none,
+            textDecoration ?? TextDecoration.none]),
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
