@@ -271,7 +271,32 @@ Widget html = Html(
 );
 ```
 
-2. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content
+2. Complex example - wrapping the default widget with your own, in this case placing a horizontal scroll around a (potentially too wide) table.
+
+<details><summary>View code</summary>
+
+```dart
+Widget html = Html(
+  data: """
+  <table style="width:100%">
+    <caption>Monthly savings</caption>
+    <tr> <th>January</th> <th>February</th> <th>March</th> <th>April</th> <th>May</th> <th>June</th> <th>July</th> <th>August</th> <th>September</th> <th>October</th> <th>November</th> <th>December</th> </tr>
+    <tr> <td>\$100</td> <td>\$50</td> <td>\$80</td> <td>\$60</td> <td>\$90</td> <td>\$140</td> <td>\$110</td> <td>\$80</td> <td>\$90</td> <td>\$60</td> <td>\$40</td> <td>\$70</td> </tr>
+    <tr> <td>\90</td> <td>\$60</td> <td>\$80</td> <td>\$80</td> <td>\$100</td> <td>\$160</td> <td>\$150</td> <td>\$110</td> <td>\$100</td> <td>\$60</td> <td>\$30</td> <td>\$80</td> </tr>
+  </table>
+  """,
+  customRender: {
+    "table": (context, child) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: (context.tree as TableLayoutElement).toWidget(context),
+      );
+    }
+  },
+);
+```
+
+3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
 <details><summary>View code</summary>
 
