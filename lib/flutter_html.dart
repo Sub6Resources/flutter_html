@@ -49,7 +49,8 @@ class Html extends StatelessWidget {
     this.navigationDelegateForIframe,
   }) : document = null,
         assert (data != null),
-        super(key: key ?? UniqueKey());
+        anchorKey = GlobalKey(),
+        super(key: key);
 
   Html.fromDom({
     Key? key,
@@ -66,7 +67,11 @@ class Html extends StatelessWidget {
     this.navigationDelegateForIframe,
   }) : data = null,
         assert(document != null),
-        super(key: key ?? UniqueKey());
+  anchorKey = GlobalKey(),
+        super(key: key);
+
+  /// A unique key for this Html widget to ensure uniqueness of anchors
+  final Key anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -119,7 +124,7 @@ class Html extends StatelessWidget {
     return Container(
       width: width,
       child: HtmlParser(
-        key: key,
+        key: anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
