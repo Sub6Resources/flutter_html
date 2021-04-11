@@ -1,3 +1,8 @@
+## [0.3.0] - 11th Apr 2021
+- Update matrix: URI schemes
+- Fix small rendering bug with flutter 2
+- Update dependencies
+
 ## [0.2.0] - 10th Jan 2021
 - Add support for matrix: URI scheme
 - Add support for `animated` URL parameter of mxc URLs

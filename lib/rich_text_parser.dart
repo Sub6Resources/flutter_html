@@ -632,9 +632,12 @@ class HtmlRichTextParser extends StatelessWidget {
         else if (parseContext.parentElement is TextSpan ||
             parseContext.parentElement is LinkTextSpan) {
           String lastString = parseContext.parentElement.text ?? '';
-          if (!parseContext.parentElement.children.isEmpty &&
-              parseContext.parentElement.children.last is TextSpan) {
-            lastString = parseContext.parentElement.children.last.text ?? '';
+          if (!parseContext.parentElement.children.isEmpty) {
+            if (parseContext.parentElement.children.last is TextSpan) {
+              lastString = parseContext.parentElement.children.last.text ?? '';
+            } else {
+              lastString = '';
+            }
           }
           if (lastString.endsWith(' ') || lastString.endsWith('\n')) {
             finalText = finalText.trimLeft();
@@ -892,15 +895,14 @@ class HtmlRichTextParser extends StatelessWidget {
                         null;
               } else {
                 final match =
-                    RegExp(r"^matrix:(room|group|roomid|user)\/([^\/]+)$")
+                    RegExp(r"^matrix:(r|roomid|u)\/([^\/]+)$")
                         .firstMatch(urlLower.split('?').first.split('#').first);
                 isPill = match != null;
                 if (isPill) {
                   identifier = {
-                        'room': '#',
-                        'group': '+',
+                        'r': '#',
                         'roomid': '!',
-                        'user': '@',
+                        'u': '@',
                       }[match.group(1)] +
                       match.group(2);
                 }
