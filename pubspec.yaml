@@ -13,7 +13,7 @@ dependencies:
     sdk: flutter
   cached_network_image: ^3.0.0
   matrix_link_text: any
-  flutter_math: ^0.3.0-nullsafety.1
+  flutter_math_fork: ^0.3.0+2
   flutter_highlight: ^0.7.0
   isolate: ^2.0.3
   highlight: ^0.7.0
