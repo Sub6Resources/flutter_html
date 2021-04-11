@@ -6,7 +6,7 @@ import 'package:flutter/foundation.dart';
 import 'package:matrix_link_text/link_text.dart';
 import 'code_block.dart';
 import 'package:flutter_highlight/themes/monokai.dart';
-import 'package:flutter_math/flutter_math.dart';
+import 'package:flutter_math_fork/flutter_math.dart';
 
 import 'image_properties.dart';
 import 'spoiler.dart';
