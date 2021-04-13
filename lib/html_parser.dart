@@ -45,6 +45,7 @@ class HtmlParser extends StatelessWidget {
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> blacklistedElements;
   final NavigationDelegate? navigationDelegateForIframe;
+  final Html root;
 
   HtmlParser({
     required this.htmlData,
@@ -58,6 +59,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.blacklistedElements,
     required this.navigationDelegateForIframe,
+    required this.root,
   });
 
   @override

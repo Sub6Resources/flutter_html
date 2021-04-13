@@ -117,20 +117,24 @@ class AudioContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    final VideoPlayerController audioController = VideoPlayerController.network(
+      src.first ?? "",
+    );
+    final ChewieAudioController chewieAudioController = ChewieAudioController(
+      videoPlayerController: audioController,
+      autoPlay: autoplay,
+      looping: loop,
+      showControls: showControls,
+      autoInitialize: true,
+    );
+    context.parser.root.controllers.videoPlayerControllers.add(audioController);
+    context.parser.root.controllers.chewieAudioControllers.add(chewieAudioController);
     return Container(
       width: context.style.width ?? 300,
       height: Theme.of(context.buildContext).platform == TargetPlatform.android
           ? 48 : 75,
       child: ChewieAudio(
-        controller: ChewieAudioController(
-          videoPlayerController: VideoPlayerController.network(
-            src.first ?? "",
-          ),
-          autoPlay: autoplay,
-          looping: loop,
-          showControls: showControls,
-          autoInitialize: true,
-        ),
+        controller: chewieAudioController,
       ),
     );
   }
@@ -164,23 +168,27 @@ class VideoContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     final double _width = width ?? (height ?? 150) * 2;
     final double _height = height ?? (width ?? 300) / 2;
+    final VideoPlayerController videoController = VideoPlayerController.network(
+      src.first ?? "",
+    );
+    final ChewieController chewieController = ChewieController(
+      videoPlayerController: videoController,
+      placeholder: poster != null
+          ? Image.network(poster!)
+          : Container(color: Colors.black),
+      autoPlay: autoplay,
+      looping: loop,
+      showControls: showControls,
+      autoInitialize: true,
+      aspectRatio: _width / _height,
+    );
+    context.parser.root.controllers.videoPlayerControllers.add(videoController);
+    context.parser.root.controllers.chewieControllers.add(chewieController);
     return AspectRatio(
       aspectRatio: _width / _height,
       child: Container(
         child: Chewie(
-          controller: ChewieController(
-            videoPlayerController: VideoPlayerController.network(
-              src.first ?? "",
-            ),
-            placeholder: poster != null
-                ? Image.network(poster!)
-                : Container(color: Colors.black),
-            autoPlay: autoplay,
-            looping: loop,
-            showControls: showControls,
-            autoInitialize: true,
-            aspectRatio: _width / _height,
-          ),
+          controller: chewieController,
         ),
       ),
     );

@@ -31,11 +31,15 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
 - [Why flutter_html?](#why-this-package)
 
+- [Recommended Usage](#recommended-usage)
+
 - [API Reference](#api-reference)
 
   - [Constructors](#constructors)
 
   - [Parameters Table](#parameters)
+  
+  - [Methods](#methods)
 
   - [Data](#data)
     
@@ -133,6 +137,36 @@ This package is designed with simplicity in mind. Originally created to allow ba
 this project has expanded to include support for basic styling as well! 
 If you need something more robust and customizable, the package also provides a number of optional custom APIs for extremely granular control over widget rendering!
 
+## Recommended Usage
+
+```dart
+  late final Html htmlWidget;
+  final String htmlData = '<p>html data</p>';
+
+  //dispose is especially important when using <video> or <audio> in your HTML code
+  @override
+  void dispose() {
+    htmlWidget.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return new Scaffold(
+      appBar: AppBar(
+        title: Text('flutter_html Usage'),
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: htmlWidget = Html(
+          data: htmlData, //required
+          //other parameters here
+        ),
+      ),
+    );
+  }
+```
+
 ## API Reference:
 
 For the full API reference, see [here](https://pub.dev/documentation/flutter_html/latest/).
@@ -165,6 +199,12 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
+
+### Methods:
+
+|  Methods  |   Description   |
+|--------------|-----------------|
+| `dispose()` | Disposes all `ChewieController`s, `ChewieAudioController`s, and `VideoPlayerController`s. |
 
 ### Data:
 

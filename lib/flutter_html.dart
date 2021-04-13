@@ -15,6 +15,7 @@ export 'package:flutter_html/src/interactable_element.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 import 'package:html/dom.dart' as dom;
@@ -122,6 +123,20 @@ class Html extends StatelessWidget {
   /// to use NavigationDelegate.
   final NavigationDelegate? navigationDelegateForIframe;
 
+  final InternalControllers controllers = InternalControllers();
+
+  void dispose() {
+    controllers.chewieAudioControllers.forEach((element) {
+      element.dispose();
+    });
+    controllers.chewieControllers.forEach((element) {
+      element.dispose();
+    });
+    controllers.videoPlayerControllers.forEach((element) {
+      element.dispose();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
@@ -143,6 +158,7 @@ class Html extends StatelessWidget {
           ..addAll(defaultImageRenders),
         blacklistedElements: blacklistedElements,
         navigationDelegateForIframe: navigationDelegateForIframe,
+        root: this,
       ),
     );
   }
