@@ -163,14 +163,14 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `omMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
 | `shrinkWrap` | A `bool` used while rendering different widgets to specify whether they should be shrink-wrapped or not, like `ContainerSpan` |
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
-| `tagsList` | A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to whitelist.  |
+| `tagsList` | A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to include.  |
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
 
 ### Getters:
 
-Currently the only getter is `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---blacklisting) below.
+Currently the only getter is `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
 
 ### Data:
 
@@ -385,7 +385,7 @@ Widget html = Html(
 
 A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to whitelist.
 
-#### Example Usage - tagsList - Blacklisting:
+#### Example Usage - tagsList - Excluding Tags:
 You may have instances where you can choose between two different types of HTML tags to display the same content. In the example below, the `<video>` and `<iframe>` elements are going to display the same content.
 
 The `blacklistedElements` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `blacklistedElements` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
@@ -403,7 +403,7 @@ Widget html = Html(
 
 `Html.tags` provides easy access to a list of all the tags the package can render, and you can remove specific tags from this list to blacklist them.
 
-#### Example Usage - tagsList - Whitelisting:
+#### Example Usage - tagsList - Allowing Tags:
 You may also have instances where you would only like the package to render a handful of html tags. You can do that like so:
 ```dart
 Widget html = Html(
