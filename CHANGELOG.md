@@ -1,6 +1,7 @@
 ## [2.0.0] - April 1, 2021:
 * Support basic MathML
 * Supply full context tree to custom render
+* Include or exclude specific tags via `tagsList` parameter
 * Fixed lists not rendering correctly
 * Fixes for colspans in tables
 
