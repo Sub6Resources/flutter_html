@@ -343,14 +343,10 @@ class HtmlParser extends StatelessWidget {
       InlineSpan addTaps(InlineSpan childSpan, TextStyle childStyle) {
         if (childSpan is TextSpan) {
           return TextSpan(
+            mouseCursor: SystemMouseCursors.click,
             text: childSpan.text,
             children: childSpan.children
-                ?.map((e) => MouseRegionSpan(
-                  mouseCursor: SystemMouseCursors.click,
-                  inlineSpan: addTaps(e, childStyle.merge(childSpan.style)),
-                  childStyle: childStyle.merge(childSpan.style),
-                  context: newContext
-                ))
+                ?.map((e) => addTaps(e, childStyle.merge(childSpan.style)))
                 .toList(),
             style: newContext.style.generateTextStyle().merge(
                 childSpan.style == null
@@ -362,35 +358,34 @@ class HtmlParser extends StatelessWidget {
           );
         } else {
           return WidgetSpan(
-            child: RawGestureDetector(
-              gestures: {
-                MultipleTapGestureRecognizer:
-                    GestureRecognizerFactoryWithHandlers<
-                        MultipleTapGestureRecognizer>(
-                  () => MultipleTapGestureRecognizer(),
-                  (instance) {
-                    instance..onTap = () => onLinkTap?.call(tree.href, context, tree.attributes, tree.element);
-                  },
-                ),
-              },
-              child: (childSpan as WidgetSpan).child,
+            child: MouseRegion(
+              cursor: SystemMouseCursors.click,
+              child: RawGestureDetector(
+                gestures: {
+                  MultipleTapGestureRecognizer:
+                      GestureRecognizerFactoryWithHandlers<
+                          MultipleTapGestureRecognizer>(
+                    () => MultipleTapGestureRecognizer(),
+                    (instance) {
+                      instance..onTap = () => onLinkTap?.call(tree.href, context, tree.attributes, tree.element);
+                    },
+                  ),
+                },
+                child: (childSpan as WidgetSpan).child,
+              ),
             ),
           );
         }
       }
 
       return TextSpan(
+        mouseCursor: SystemMouseCursors.click,
         children: tree.children
                 .map((tree) => parseTree(newContext, tree))
                 .map((childSpan) {
-              return MouseRegionSpan(
-                mouseCursor: SystemMouseCursors.click,
-                inlineSpan: addTaps(childSpan,
-                    newContext.style.generateTextStyle().merge(childSpan.style)),
-                childStyle: newContext.style.generateTextStyle().merge(childSpan.style),
-                context: newContext
-              );
-            }).toList(),
+          return addTaps(childSpan,
+            newContext.style.generateTextStyle().merge(childSpan.style));
+          }).toList(),
       );
     } else if (tree is LayoutElement) {
       return WidgetSpan(
