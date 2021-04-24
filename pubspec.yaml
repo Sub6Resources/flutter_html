@@ -32,7 +32,7 @@ dependencies:
   flutter_svg: ^0.21.0+1
 
   # Plugin for rendering MathML
-  flutter_math_fork: ^0.3.0+2
+  flutter_math_fork: ^0.3.0+3
 
   flutter:
     sdk: flutter
@@ -42,4 +42,3 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-
