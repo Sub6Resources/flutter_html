@@ -45,7 +45,7 @@ class HtmlParser extends StatelessWidget {
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
-  final List<String> blacklistedElements;
+  final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? _onAnchorTap;
 
@@ -60,7 +60,7 @@ class HtmlParser extends StatelessWidget {
     required this.style,
     required this.customRender,
     required this.imageRenders,
-    required this.blacklistedElements,
+    required this.tagsList,
     required this.navigationDelegateForIframe,
   }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
@@ -69,7 +69,7 @@ class HtmlParser extends StatelessWidget {
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRender.keys.toList(),
-      blacklistedElements,
+      tagsList,
       navigationDelegateForIframe,
     );
     StyledElement inlineStyledTree = applyInlineStyles(lexedTree);
@@ -117,7 +117,7 @@ class HtmlParser extends StatelessWidget {
   static StyledElement lexDomTree(
     dom.Document html,
     List<String> customRenderTags,
-    List<String> blacklistedElements,
+    List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
   ) {
     StyledElement tree = StyledElement(
@@ -131,7 +131,7 @@ class HtmlParser extends StatelessWidget {
       tree.children.add(_recursiveLexer(
         node,
         customRenderTags,
-        blacklistedElements,
+        tagsList,
         navigationDelegateForIframe,
       ));
     });
@@ -146,7 +146,7 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _recursiveLexer(
     dom.Node node,
     List<String> customRenderTags,
-    List<String> blacklistedElements,
+    List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
   ) {
     List<StyledElement> children = <StyledElement>[];
@@ -155,14 +155,14 @@ class HtmlParser extends StatelessWidget {
       children.add(_recursiveLexer(
         childNode,
         customRenderTags,
-        blacklistedElements,
+        tagsList,
         navigationDelegateForIframe,
       ));
     });
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
     if (node is dom.Element) {
-      if (blacklistedElements.contains(node.localName)) {
+      if (!tagsList.contains(node.localName)) {
         return EmptyContentElement();
       }
       if (STYLED_ELEMENTS.contains(node.localName)) {
