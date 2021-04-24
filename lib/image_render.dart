@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/parser.dart';
 import 'package:html/dom.dart' as dom;
 
 typedef ImageSourceMatcher = bool Function(
@@ -140,18 +141,21 @@ ImageRender networkImageRender({
         future: completer.future,
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
           if (snapshot.hasData) {
-            return Image.network(
-              src,
-              headers: headers,
-              width: width ?? _width(attributes) ?? snapshot.data!.width,
-              height: height ?? _height(attributes),
-              frameBuilder: (ctx, child, frame, _) {
-                if (frame == null) {
-                  return altWidget?.call(_alt(attributes)) ??
-                      Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
-                }
-                return child;
-              },
+            return AspectRatio(
+              aspectRatio: _aspectRatio(attributes, snapshot),
+              child: Image.network(
+                src,
+                headers: headers,
+                width: width ?? _width(attributes) ?? snapshot.data!.width,
+                height: height ?? _height(attributes),
+                frameBuilder: (ctx, child, frame, _) {
+                  if (frame == null) {
+                    return altWidget?.call(_alt(attributes)) ??
+                        Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
+                  }
+                  return child;
+                },
+              ),
             );
           } else if (snapshot.hasError) {
             return altWidget?.call(_alt(attributes)) ??
@@ -210,4 +214,15 @@ double? _height(Map<String, String> attributes) {
 double? _width(Map<String, String> attributes) {
   final widthString = attributes["width"];
   return widthString == null ? widthString as double? : double.tryParse(widthString);
+}
+
+double _aspectRatio(Map<String, String> attributes, AsyncSnapshot<Size> calculated) {
+  final heightString = attributes["height"];
+  final widthString = attributes["width"];
+  if (heightString != null && widthString != null) {
+    final height = double.tryParse(heightString);
+    final width = double.tryParse(widthString);
+    return height == null || width == null ? calculated.data!.aspectRatio : width / height;
+  }
+  return calculated.data!.aspectRatio;
 }
