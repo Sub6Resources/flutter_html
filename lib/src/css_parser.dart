@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 
-Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
+Style declarationsToStyle(Map<String?, List<css.Expression?>> declarations) {
   Style style = new Style();
   declarations.forEach((property, value) {
     if (value.isNotEmpty) {
@@ -61,45 +61,60 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
               borderWidths, borderStyles, borderColors);
           break;
         case 'color':
-          style.color =
-              ExpressionMapping.expressionToColor(value.first) ?? style.color;
+          style.color = value.first != null
+              ? ExpressionMapping.expressionToColor(value.first) ?? style.color
+              : style.color;
           break;
         case 'direction':
-          style.direction =
-              ExpressionMapping.expressionToDirection(value.first);
+          if (value.first != null) {
+            style.direction =
+                ExpressionMapping.expressionToDirection(value.first!);
+          }
           break;
         case 'display':
-          style.display = ExpressionMapping.expressionToDisplay(value.first);
+          if (value.first != null) {
+            style.display = ExpressionMapping.expressionToDisplay(value.first!);
+          }
           break;
         case 'line-height':
-          style.lineHeight =
-              ExpressionMapping.expressionToLineHeight(value.first);
+          if (value.first != null) {
+            style.lineHeight =
+                ExpressionMapping.expressionToLineHeight(value.first!);
+          }
           break;
         case 'font-family':
-          style.fontFamily =
-              ExpressionMapping.expressionToFontFamily(value.first) ??
-                  style.fontFamily;
+          style.fontFamily = value.first != null
+              ? ExpressionMapping.expressionToFontFamily(value.first!) ??
+                  style.fontFamily
+              : style.fontFamily;
           break;
         case 'font-feature-settings':
           style.fontFeatureSettings =
               ExpressionMapping.expressionToFontFeatureSettings(value);
           break;
         case 'font-size':
-          style.fontSize =
-              ExpressionMapping.expressionToFontSize(value.first) ??
-                  style.fontSize;
+          style.fontSize = value.first != null
+              ? ExpressionMapping.expressionToFontSize(value.first!) ??
+                  style.fontSize
+              : style.fontSize;
           break;
         case 'font-style':
-          style.fontStyle =
-              ExpressionMapping.expressionToFontStyle(value.first);
+          if (value.first != null) {
+            style.fontStyle =
+                ExpressionMapping.expressionToFontStyle(value.first!);
+          }
           break;
         case 'font-weight':
-          style.fontWeight =
-              ExpressionMapping.expressionToFontWeight(value.first);
+          if (value.first != null) {
+            style.fontWeight =
+                ExpressionMapping.expressionToFontWeight(value.first!);
+          }
           break;
         case 'text-align':
-          style.textAlign =
-              ExpressionMapping.expressionToTextAlign(value.first);
+          if (value.first != null) {
+            style.textAlign =
+                ExpressionMapping.expressionToTextAlign(value.first!);
+          }
           break;
         case 'text-decoration':
           List<css.LiteralTerm?>? textDecorationList =
@@ -113,17 +128,10 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
               element.text != "underline" &&
               element.text != "line-through");
           List<css.Expression?>? nullableList = value;
-          css.Expression? textDecorationColor;
-
-          /// orElse: will not allow me to return null (even if the compiler says its okay, it errors on runtime).
-          /// try/catch is a workaround for this.
-          try {
-            textDecorationColor = nullableList.firstWhere(
-                (css.Expression? element) =>
-                    element is css.HexColorTerm || element is css.FunctionTerm);
-          } catch (e) {
-            textDecorationColor = null;
-          }
+          css.Expression? textDecorationColor = nullableList.firstWhere(
+              (css.Expression? element) =>
+                  element is css.HexColorTerm || element is css.FunctionTerm,
+              orElse: () => null);
           List<css.LiteralTerm?>? potentialStyles =
               value.whereType<css.LiteralTerm>().toList();
 
@@ -385,17 +393,17 @@ class ExpressionMapping {
   }
 
   static List<FontFeature> expressionToFontFeatureSettings(
-      List<css.Expression> value) {
+      List<css.Expression?> value) {
     List<FontFeature> fontFeatures = [];
     for (int i = 0; i < value.length; i++) {
-      css.Expression exp = value[i];
+      css.Expression? exp = value[i];
       if (exp is css.LiteralTerm) {
         if (exp.text != "on" &&
             exp.text != "off" &&
             exp.text != "1" &&
             exp.text != "0") {
           if (i < value.length - 1) {
-            css.Expression nextExp = value[i + 1];
+            css.Expression? nextExp = value[i + 1];
             if (nextExp is css.LiteralTerm &&
                 (nextExp.text == "on" ||
                     nextExp.text == "off" ||
@@ -582,11 +590,11 @@ class ExpressionMapping {
     }
   }
 
-  static List<Shadow> expressionToTextShadow(List<css.Expression> value) {
+  static List<Shadow> expressionToTextShadow(List<css.Expression?> value) {
     List<Shadow> shadow = [];
     List<int> indices = [];
-    List<List<css.Expression>> valueList = [];
-    for (css.Expression e in value) {
+    List<List<css.Expression?>> valueList = [];
+    for (css.Expression? e in value) {
       if (e is css.OperatorComma) {
         indices.add(value.indexOf(e));
       }
@@ -597,9 +605,9 @@ class ExpressionMapping {
       valueList.add(value.sublist(previousIndex, i));
       previousIndex = i + 1;
     }
-    for (List<css.Expression> list in valueList) {
-      css.Expression exp = list[0];
-      css.Expression exp2 = list[1];
+    for (List<css.Expression?> list in valueList) {
+      css.Expression? exp = list[0];
+      css.Expression? exp2 = list[1];
       css.LiteralTerm? exp3 =
           list.length > 2 ? list[2] as css.LiteralTerm? : null;
       css.LiteralTerm? exp4 =
