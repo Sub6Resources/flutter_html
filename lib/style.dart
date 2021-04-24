@@ -189,7 +189,7 @@ class Style {
     this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
-    this.listStylePosition,
+    this.listStylePosition = ListStylePosition.OUTSIDE,
     this.padding,
     this.margin,
     this.textAlign,
@@ -292,6 +292,8 @@ class Style {
         LineHeight(child.lineHeight!.size! / (finalFontSize == null ? 14 : finalFontSize.size!) * 1.2) : child.lineHeight
       : lineHeight;
     return child.copyWith(
+      backgroundColor: child.backgroundColor != Colors.transparent ?
+        child.backgroundColor : backgroundColor,
       color: child.color ?? color,
       direction: child.direction ?? direction,
       display: display == Display.NONE ? display : child.display,
@@ -305,6 +307,9 @@ class Style {
       listStyleType: child.listStyleType ?? listStyleType,
       listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
+      textDecoration: TextDecoration.combine(
+          [child.textDecoration ?? TextDecoration.none,
+            textDecoration ?? TextDecoration.none]),
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,

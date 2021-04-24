@@ -23,24 +23,28 @@ typedef OnTap = void Function(
     Map<String, String> attributes,
     dom.Element? element,
 );
+typedef OnMathError = Widget Function(
+    String parsedTex,
+    String exception,
+    String exceptionWithType,
+);
 typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
-  Map<String, String> attributes,
-  dom.Element? element,
 );
 
 class HtmlParser extends StatelessWidget {
-  final String htmlData;
+  final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
   final ImageErrorListener? onImageError;
+  final OnMathError? onMathError;
   final bool shrinkWrap;
 
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
-  final List<String> blacklistedElements;
+  final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
 
   HtmlParser({
@@ -48,21 +52,21 @@ class HtmlParser extends StatelessWidget {
     required this.onLinkTap,
     required this.onImageTap,
     required this.onImageError,
+    required this.onMathError,
     required this.shrinkWrap,
     required this.style,
     required this.customRender,
     required this.imageRenders,
-    required this.blacklistedElements,
+    required this.tagsList,
     required this.navigationDelegateForIframe,
   });
 
   @override
   Widget build(BuildContext context) {
-    dom.Document document = parseHTML(htmlData);
     StyledElement lexedTree = lexDomTree(
-      document,
+      htmlData,
       customRender.keys.toList(),
-      blacklistedElements,
+      tagsList,
       navigationDelegateForIframe,
     );
     StyledElement inlineStyledTree = applyInlineStyles(lexedTree);
@@ -73,6 +77,7 @@ class HtmlParser extends StatelessWidget {
       RenderContext(
         buildContext: context,
         parser: this,
+        tree: cleanedTree,
         style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
       ),
       cleanedTree,
@@ -89,6 +94,7 @@ class HtmlParser extends StatelessWidget {
       renderContext: RenderContext(
         buildContext: context,
         parser: this,
+        tree: cleanedTree,
         style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
       ),
     );
@@ -108,7 +114,7 @@ class HtmlParser extends StatelessWidget {
   static StyledElement lexDomTree(
     dom.Document html,
     List<String> customRenderTags,
-    List<String> blacklistedElements,
+    List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
   ) {
     StyledElement tree = StyledElement(
@@ -122,7 +128,7 @@ class HtmlParser extends StatelessWidget {
       tree.children.add(_recursiveLexer(
         node,
         customRenderTags,
-        blacklistedElements,
+        tagsList,
         navigationDelegateForIframe,
       ));
     });
@@ -137,7 +143,7 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _recursiveLexer(
     dom.Node node,
     List<String> customRenderTags,
-    List<String> blacklistedElements,
+    List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
   ) {
     List<StyledElement> children = <StyledElement>[];
@@ -146,14 +152,14 @@ class HtmlParser extends StatelessWidget {
       children.add(_recursiveLexer(
         childNode,
         customRenderTags,
-        blacklistedElements,
+        tagsList,
         navigationDelegateForIframe,
       ));
     });
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
     if (node is dom.Element) {
-      if (blacklistedElements.contains(node.localName)) {
+      if (!tagsList.contains(node.localName)) {
         return EmptyContentElement();
       }
       if (STYLED_ELEMENTS.contains(node.localName)) {
@@ -174,7 +180,7 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
-      return TextContentElement(text: node.text, style: Style());
+      return TextContentElement(text: node.text, style: Style(), element: node.parent, node: node);
     } else {
       return EmptyContentElement();
     }
@@ -237,6 +243,7 @@ class HtmlParser extends StatelessWidget {
     RenderContext newContext = RenderContext(
       buildContext: context.buildContext,
       parser: this,
+      tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
     );
 
@@ -249,8 +256,6 @@ class HtmlParser extends StatelessWidget {
           shrinkWrap: context.parser.shrinkWrap,
           children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
         ),
-        tree.attributes,
-        tree.element,
       );
       if (render != null) {
         assert(render is InlineSpan || render is Widget);
@@ -471,14 +476,18 @@ class HtmlParser extends StatelessWidget {
     }
 
     if (tree is TextContentElement) {
-      if (wpc.data && tree.text!.startsWith(' ')) {
+      int index = -1;
+      if ((tree.element?.nodes.length ?? 0) > 1) {
+        index = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
+      }
+      if (index < 1 && tree.text!.startsWith(' ')
+          && tree.element?.localName != "br") {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
-
-      if (tree.text!.endsWith(' ') || tree.text!.endsWith('\n')) {
-        wpc.data = true;
-      } else {
-        wpc.data = false;
+      if (index == (tree.element?.nodes.length ?? 1) - 1
+          && (tree.text!.endsWith(' ') || tree.text!.endsWith('\n'))
+          && tree.element?.localName != "br") {
+        tree.text = tree.text!.trimRight();
       }
     }
 
@@ -719,11 +728,13 @@ class HtmlParser extends StatelessWidget {
 class RenderContext {
   final BuildContext buildContext;
   final HtmlParser parser;
+  final StyledElement tree;
   final Style style;
 
   RenderContext({
     required this.buildContext,
     required this.parser,
+    required this.tree,
     required this.style,
   });
 }
