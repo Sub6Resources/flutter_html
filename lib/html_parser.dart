@@ -419,6 +419,7 @@ class HtmlParser extends StatelessWidget {
       //Requires special layout features not available in the TextStyle API.
       return WidgetSpan(
         child: Transform.translate(
+          key: AnchorKey.of(key, tree),
           offset: Offset(0, verticalOffset),
           child: StyledText(
             textSpan: TextSpan(
@@ -434,10 +435,15 @@ class HtmlParser extends StatelessWidget {
       );
     } else {
       ///[tree] is an inline element.
-      return TextSpan(
-        style: newContext.style.generateTextStyle(),
-        children:
-            tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+      return WidgetSpan(
+          child: StyledText(
+            key: AnchorKey.of(key, tree),
+            textSpan: TextSpan(
+              style: newContext.style.generateTextStyle(),
+              children:
+              tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+            ), renderContext: context, style: newContext.style,
+          )
       );
     }
   }
@@ -809,13 +815,15 @@ class StyledText extends StatelessWidget {
   final Style style;
   final double textScaleFactor;
   final RenderContext renderContext;
+  final AnchorKey? key;
 
   const StyledText({
     required this.textSpan,
     required this.style,
     this.textScaleFactor = 1.0,
     required this.renderContext,
-  });
+    this.key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

@@ -15,8 +15,9 @@ abstract class LayoutElement extends StyledElement {
   LayoutElement({
     String name = "[[No Name]]",
     required List<StyledElement> children,
+    String? elementId,
     dom.Element? node,
-  }) : super(name: name, children: children, style: Style(), node: node);
+  }) : super(name: name, children: children, style: Style(), node: node, elementId: elementId ?? "[[No ID]]");
 
   Widget? toWidget(RenderContext context);
 }
@@ -26,7 +27,7 @@ class TableLayoutElement extends LayoutElement {
     required String name,
     required List<StyledElement> children,
     required dom.Element node,
-  }) : super(name: name, children: children, node: node);
+  }) : super(name: name, children: children, node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -265,7 +266,7 @@ class DetailsContentElement extends LayoutElement {
     required List<StyledElement> children,
     required dom.Element node,
     required this.elementList,
-  }) : super(name: name, node: node, children: children);
+  }) : super(name: name, node: node, children: children, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {

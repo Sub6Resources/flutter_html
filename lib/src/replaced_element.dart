@@ -28,9 +28,10 @@ abstract class ReplacedElement extends StyledElement {
   ReplacedElement({
     required String name,
     required Style style,
+    required String elementId,
     dom.Element? node,
-    this.alignment = PlaceholderAlignment.aboveBaseline
-  }) : super(name: name, children: [], style: style, node: node);
+    this.alignment = PlaceholderAlignment.aboveBaseline,
+  }) : super(name: name, children: [], style: style, node: node, elementId: elementId);
 
   static List<String?> parseMediaSources(List<dom.Element> elements) {
     return elements
@@ -53,7 +54,7 @@ class TextContentElement extends ReplacedElement {
     required this.text,
     this.node,
     dom.Element? element,
-  }) : super(name: "[text]", style: style, node: element);
+  }) : super(name: "[text]", style: style, node: element, elementId: "[[No ID]]");
 
   @override
   String toString() {
@@ -75,7 +76,7 @@ class ImageContentElement extends ReplacedElement {
     required this.src,
     required this.alt,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node, alignment: PlaceholderAlignment.middle);
+  }) : super(name: name, style: Style(), node: node, alignment: PlaceholderAlignment.middle, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -115,7 +116,7 @@ class AudioContentElement extends ReplacedElement {
     required this.loop,
     required this.muted,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node);
+  }) : super(name: name, style: Style(), node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -161,7 +162,7 @@ class VideoContentElement extends ReplacedElement {
     required this.width,
     required this.height,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node);
+  }) : super(name: name, style: Style(), node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -202,8 +203,8 @@ class SvgContentElement extends ReplacedElement {
     required this.data,
     required this.width,
     required this.height,
-    required dom.Node node,
-  }) : super(name: name, style: Style(), node: node as dom.Element?);
+    required dom.Element node,
+  }) : super(name: name, style: Style(), node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -217,7 +218,7 @@ class SvgContentElement extends ReplacedElement {
 }
 
 class EmptyContentElement extends ReplacedElement {
-  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style());
+  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style(), elementId: "[[No ID]]");
 
   @override
   Widget? toWidget(_) => null;
@@ -227,7 +228,7 @@ class RubyElement extends ReplacedElement {
   dom.Element element;
 
   RubyElement({required this.element, String name = "ruby"})
-      : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
+      : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -282,7 +283,7 @@ class MathElement extends ReplacedElement {
     required this.element,
     this.texStr,
     String name = "math",
-  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {
