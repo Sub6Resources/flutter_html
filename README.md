@@ -123,9 +123,9 @@ Add the following to your `pubspec.yaml` file:
 ## Currently Supported Inline CSS Attributes:
 |                  |        |            |          |              |                        |            |
 |------------------|--------|------------|----------|--------------|------------------------|------------|
-|`background-color`| `border` | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
-| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`     |
-| `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
+|`background-color`| `border` (including specific directions) | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
+| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`  (including specific directions)   |
+| `margin` (including specific directions) | `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
 
 Don't see a tag or attribute you need? File a feature request or contribute to the project!
 
