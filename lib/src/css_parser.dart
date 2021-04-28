@@ -71,8 +71,6 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
               && element.text != "overline" && element.text != "underline" && element.text != "line-through");
           List<css.Expression?>? nullableList = value;
           css.Expression? textDecorationColor;
-          /// orElse: will not allow me to return null (even if the compiler says its okay, it errors on runtime).
-          /// try/catch is a workaround for this.
           textDecorationColor = nullableList.firstWhereOrNull(
                   (element) => element is css.HexColorTerm || element is css.FunctionTerm);
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
