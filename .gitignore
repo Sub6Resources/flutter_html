@@ -12,7 +12,7 @@
 .pub-cache/
 .pub/
 build/
-
+pubspec.lock
 # Android related
 **/android/**/gradle-wrapper.jar
 **/android/.gradle
@@ -39,6 +39,7 @@ build/
 **/ios/**/profile
 **/ios/**/xcuserdata
 **/ios/.generated/
+**/ios/Flutter/.last_build_id
 **/ios/Flutter/App.framework
 **/ios/Flutter/Flutter.framework
 **/ios/Flutter/Generated.xcconfig
@@ -148,3 +149,5 @@ modules.xml
 **/.flutter-plugins-dependencies
 
 **/flutter_export_environment.sh
+
+/example/ios/Flutter/Flutter.podspec
