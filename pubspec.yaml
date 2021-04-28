@@ -16,23 +16,23 @@ dependencies:
   css_colors: ^1.1.0
 
   # Plugins for rendering the <table> tag.
-  flutter_layout_grid: ^1.0.0-nullsafety.6
+  flutter_layout_grid: ^1.0.1
 
   # Plugins for rendering the <video> tag.
-  video_player: ^2.0.0
+  video_player: ^2.1.1
   chewie: ^1.0.0
 
   # Plugin for rendering the <iframe> tag.
-  webview_flutter: ^2.0.1
+  webview_flutter: ^2.0.4
 
   # Plugins for rendering the <audio> tag.
   chewie_audio: ^1.2.0
 
   # Plugins for rendering the <svg> tag.
-  flutter_svg: ^0.21.0-nullsafety.0
+  flutter_svg: ^0.22.0
 
   # Plugin for rendering MathML
-  flutter_math_fork: ^0.3.0+1
+  flutter_math_fork: ^0.3.2+1
 
   # plugin for firstWhereOrNull extension on lists
   collection: ^1.15.0
