@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/cupertino.dart';
@@ -70,14 +71,8 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
               && element.text != "overline" && element.text != "underline" && element.text != "line-through");
           List<css.Expression?>? nullableList = value;
           css.Expression? textDecorationColor;
-          /// orElse: will not allow me to return null (even if the compiler says its okay, it errors on runtime).
-          /// try/catch is a workaround for this.
-          try {
-            textDecorationColor = nullableList.firstWhere(
-                    (css.Expression? element) => element is css.HexColorTerm || element is css.FunctionTerm);
-          } catch (e) {
-            textDecorationColor = null;
-          }
+          textDecorationColor = nullableList.firstWhereOrNull(
+                  (element) => element is css.HexColorTerm || element is css.FunctionTerm);
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// List<css.LiteralTerm> might include other values than the ones we want for [textDecorationStyle], so make sure to remove those before passing it to [ExpressionMapping]
           potentialStyles.removeWhere((element) => element != null && element.text != "solid"
