@@ -5,6 +5,7 @@ import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/src/widgets/iframe_unsupported.dart'
@@ -27,9 +28,10 @@ abstract class ReplacedElement extends StyledElement {
   ReplacedElement({
     required String name,
     required Style style,
+    required String elementId,
     dom.Element? node,
-    this.alignment = PlaceholderAlignment.aboveBaseline
-  }) : super(name: name, children: [], style: style, node: node);
+    this.alignment = PlaceholderAlignment.aboveBaseline,
+  }) : super(name: name, children: [], style: style, node: node, elementId: elementId);
 
   static List<String?> parseMediaSources(List<dom.Element> elements) {
     return elements
@@ -52,7 +54,7 @@ class TextContentElement extends ReplacedElement {
     required this.text,
     this.node,
     dom.Element? element,
-  }) : super(name: "[text]", style: style, node: element);
+  }) : super(name: "[text]", style: style, node: element, elementId: "[[No ID]]");
 
   @override
   String toString() {
@@ -74,7 +76,7 @@ class ImageContentElement extends ReplacedElement {
     required this.src,
     required this.alt,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node, alignment: PlaceholderAlignment.middle);
+  }) : super(name: name, style: Style(), node: node, alignment: PlaceholderAlignment.middle, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -82,6 +84,7 @@ class ImageContentElement extends ReplacedElement {
       if (entry.key.call(attributes, element)) {
         final widget = entry.value.call(context, attributes, element);
         return RawGestureDetector(
+            key: AnchorKey.of(context.parser.key, this),
           child: widget,
           gestures: {
             MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
@@ -113,7 +116,7 @@ class AudioContentElement extends ReplacedElement {
     required this.loop,
     required this.muted,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node);
+  }) : super(name: name, style: Style(), node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -130,6 +133,7 @@ class AudioContentElement extends ReplacedElement {
     context.parser.root.controllers.videoPlayerControllers.add(audioController);
     context.parser.root.controllers.chewieAudioControllers.add(chewieAudioController);
     return Container(
+      key: AnchorKey.of(context.parser.key, this),
       width: context.style.width ?? 300,
       height: Theme.of(context.buildContext).platform == TargetPlatform.android
           ? 48 : 75,
@@ -162,7 +166,7 @@ class VideoContentElement extends ReplacedElement {
     required this.width,
     required this.height,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node);
+  }) : super(name: name, style: Style(), node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -187,6 +191,7 @@ class VideoContentElement extends ReplacedElement {
     return AspectRatio(
       aspectRatio: _width / _height,
       child: Container(
+        key: AnchorKey.of(context.parser.key, this),
         child: Chewie(
           controller: chewieController,
         ),
@@ -206,13 +211,14 @@ class SvgContentElement extends ReplacedElement {
     required this.data,
     required this.width,
     required this.height,
-    required dom.Node node,
-  }) : super(name: name, style: Style(), node: node as dom.Element?);
+    required dom.Element node,
+  }) : super(name: name, style: Style(), node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
     return SvgPicture.string(
       data,
+      key: AnchorKey.of(context.parser.key, this),
       width: width,
       height: height,
     );
@@ -220,7 +226,7 @@ class SvgContentElement extends ReplacedElement {
 }
 
 class EmptyContentElement extends ReplacedElement {
-  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style());
+  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style(), elementId: "[[No ID]]");
 
   @override
   Widget? toWidget(_) => null;
@@ -230,7 +236,7 @@ class RubyElement extends ReplacedElement {
   dom.Element element;
 
   RubyElement({required this.element, String name = "ruby"})
-      : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
+      : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -268,6 +274,7 @@ class RubyElement extends ReplacedElement {
       }
     });
     return Row(
+      key: AnchorKey.of(context.parser.key, this),
       crossAxisAlignment: CrossAxisAlignment.end,
       textBaseline: TextBaseline.alphabetic,
       mainAxisSize: MainAxisSize.min,
@@ -284,7 +291,7 @@ class MathElement extends ReplacedElement {
     required this.element,
     this.texStr,
     String name = "math",
-  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style());
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {

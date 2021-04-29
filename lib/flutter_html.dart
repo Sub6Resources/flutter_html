@@ -13,8 +13,10 @@ export 'package:flutter_html/src/styled_element.dart';
 export 'package:flutter_html/src/interactable_element.dart';
 
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
+import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:webview_flutter/webview_flutter.dart';
@@ -42,7 +44,7 @@ class Html extends StatelessWidget {
   ///
   /// **onImageTap** This is called whenever an image is tapped.
   ///
-  /// **blacklistedElements** Tag names in this array are ignored during parsing and rendering.
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -56,11 +58,12 @@ class Html extends StatelessWidget {
     this.onMathError,
     this.shrinkWrap = false,
     this.onImageTap,
-    this.blacklistedElements = const [],
+    this.tagsList = const [],
     this.style = const {},
     this.navigationDelegateForIframe,
   }) : document = null,
         assert (data != null),
+        anchorKey = GlobalKey(),
         super(key: key);
 
   Html.fromDom({
@@ -73,12 +76,16 @@ class Html extends StatelessWidget {
     this.onMathError,
     this.shrinkWrap = false,
     this.onImageTap,
-    this.blacklistedElements = const [],
+    this.tagsList = const [],
     this.style = const {},
     this.navigationDelegateForIframe,
   }) : data = null,
         assert(document != null),
+  anchorKey = GlobalKey(),
         super(key: key);
+
+  /// A unique key for this Html widget to ensure uniqueness of anchors
+  final Key anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -109,7 +116,7 @@ class Html extends StatelessWidget {
   final OnTap? onImageTap;
 
   /// A list of HTML tags that defines what elements are not rendered
-  final List<String> blacklistedElements;
+  final List<String> tagsList;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -122,6 +129,13 @@ class Html extends StatelessWidget {
   /// Iframe. It's necessary to use the webview_flutter package inside the app
   /// to use NavigationDelegate.
   final NavigationDelegate? navigationDelegateForIframe;
+
+  static List<String> get tags => new List<String>.from(STYLED_ELEMENTS)
+    ..addAll(INTERACTABLE_ELEMENTS)
+    ..addAll(REPLACED_ELEMENTS)
+    ..addAll(LAYOUT_ELEMENTS)
+    ..addAll(TABLE_CELL_ELEMENTS)
+    ..addAll(TABLE_DEFINITION_ELEMENTS);
 
   final InternalControllers controllers = InternalControllers();
 
@@ -145,6 +159,7 @@ class Html extends StatelessWidget {
     return Container(
       width: width,
       child: HtmlParser(
+        key: anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
@@ -156,7 +171,7 @@ class Html extends StatelessWidget {
         imageRenders: {}
           ..addAll(customImageRenders)
           ..addAll(defaultImageRenders),
-        blacklistedElements: blacklistedElements,
+        tagsList: tagsList.isEmpty ? Html.tags : tagsList,
         navigationDelegateForIframe: navigationDelegateForIframe,
         root: this,
       ),
