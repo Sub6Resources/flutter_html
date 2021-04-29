@@ -60,6 +60,7 @@ CustomRender blockElementRender({
     CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
         WidgetSpan(
           child: ContainerSpan(
+            key: context.key,
             newContext: context,
             style: style ?? context.tree.style,
             shrinkWrap: context.parser.shrinkWrap,
@@ -75,6 +76,7 @@ CustomRender listElementRender({
     CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
         WidgetSpan(
           child: ContainerSpan(
+            key: context.key,
             newContext: context,
             style: style ?? context.tree.style,
             shrinkWrap: context.parser.shrinkWrap,
@@ -151,6 +153,7 @@ CustomRender verticalAlignRender({
   List<InlineSpan>? children}) =>
     CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
   child: Transform.translate(
+    key: context.key,
     offset: Offset(0, verticalOffset ?? _getVerticalOffset(context.tree)),
     child: StyledText(
       textSpan: TextSpan(
@@ -202,17 +205,24 @@ InlineSpan _getInteractableChildren(RenderContext context, InteractableElement t
               : childStyle.merge(childSpan.style)),
       semanticsLabel: childSpan.semanticsLabel,
       recognizer: TapGestureRecognizer()
-        ..onTap = () => context.parser.onLinkTap?.call(tree.href, context, tree.attributes, tree.element),
+        ..onTap =
+          context.parser.onAnchorTap != null ?
+              () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+              : null,
     );
   } else {
     return WidgetSpan(
       child: RawGestureDetector(
+        key: context.key,
         gestures: {
           MultipleTapGestureRecognizer:
           GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
                 () => MultipleTapGestureRecognizer(),
                 (instance) {
-              instance..onTap = () => context.parser.onLinkTap?.call(tree.href, context, tree.attributes, tree.element);
+                  instance
+                    ..onTap = context.parser.onAnchorTap != null
+                        ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                        : null;
             },
           ),
         },

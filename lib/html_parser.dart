@@ -42,7 +42,7 @@ class HtmlParser extends StatelessWidget {
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
-  final OnTap? _onAnchorTap;
+  final OnTap? onAnchorTap;
 
   HtmlParser({
     required this.key,
@@ -57,7 +57,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
+  }): this.onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -264,6 +264,7 @@ class HtmlParser extends StatelessWidget {
       parser: this,
       tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
+      key: AnchorKey.of(key, tree),
     );
 
     for (final entry in customRenders.keys) {
@@ -593,12 +594,14 @@ class RenderContext {
   final HtmlParser parser;
   final StyledElement tree;
   final Style style;
+  final AnchorKey? key;
 
   RenderContext({
     required this.buildContext,
     required this.parser,
     required this.tree,
     required this.style,
+    this.key,
   });
 }
 
