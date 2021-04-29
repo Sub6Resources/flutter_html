@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/image_render.dart';
-import 'package:flutter_html/src/layout_element.dart';
-import 'package:flutter_html/style.dart';
 
 void main() => runApp(new MyApp());
 
@@ -308,18 +305,21 @@ class _MyHomePageState extends State<MyHomePage> {
                 print(exception);
               },
             ),
+            Text('h3 tag with maxLines = 1'),
             Html(
               data: htmlDataLines,
               style: {
-                'html': Style(maxLine: 1, textOverflow: TextOverflow.ellipsis),
+                'h3': Style(maxLines: 1, textOverflow: TextOverflow.ellipsis),
               },
             ),
+            Text('h3 tag with maxLines = 2'),
             Html(
               data: htmlDataLines,
               style: {
-                'html': Style(maxLine: 2, textOverflow: TextOverflow.ellipsis),
+                'h3': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
               },
             ),
+            Text('h3 tag with unlimit lines'),
             Html(
               data: htmlDataLines,
             )

@@ -180,7 +180,7 @@ class Style {
   ///
   ///
   ///
-  int? maxLine;
+  int? maxLines;
 
   /// TextOverflow
   ///
@@ -221,7 +221,7 @@ class Style {
     this.border,
     this.alignment,
     this.markerContent,
-    this.maxLine,
+    this.maxLines,
     this.textOverflow,
   }) {
     if (this.alignment == null &&
@@ -295,7 +295,7 @@ class Style {
       alignment: other.alignment,
       markerContent: other.markerContent,
 
-      maxLine: other.maxLine,
+      maxLines: other.maxLines,
       textOverflow: other.textOverflow,
     );
   }
@@ -326,10 +326,13 @@ class Style {
       listStyleType: child.listStyleType ?? listStyleType,
       listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
+      textDecoration: TextDecoration.combine(
+          [child.textDecoration ?? TextDecoration.none,
+            textDecoration ?? TextDecoration.none]),
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
-      maxLine: child.maxLine ?? maxLine,
+      maxLines: child.maxLines ?? maxLines,
       textOverflow: child.textOverflow ?? textOverflow,
     );
   }
@@ -366,7 +369,7 @@ class Style {
     Border? border,
     Alignment? alignment,
     String? markerContent,
-    int? maxLine,
+    int? maxLines,
     TextOverflow? textOverflow,
   }) {
     return Style(
@@ -402,7 +405,7 @@ class Style {
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,
-      maxLine: maxLine ?? this.maxLine,
+      maxLines: maxLines ?? this.maxLines,
       textOverflow: textOverflow ?? this.textOverflow,
     );
   }
