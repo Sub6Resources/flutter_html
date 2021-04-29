@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
+import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
@@ -34,6 +35,7 @@ typedef CustomRender = dynamic Function(
 );
 
 class HtmlParser extends StatelessWidget {
+  final Key? key;
   final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
@@ -46,8 +48,10 @@ class HtmlParser extends StatelessWidget {
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
+  final OnTap? _onAnchorTap;
 
   HtmlParser({
+    required this.key,
     required this.htmlData,
     required this.onLinkTap,
     required this.onImageTap,
@@ -59,7 +63,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  });
+  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -251,6 +255,7 @@ class HtmlParser extends StatelessWidget {
       final render = customRender[tree.name]!.call(
         newContext,
         ContainerSpan(
+          key: AnchorKey.of(key, tree),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -263,6 +268,7 @@ class HtmlParser extends StatelessWidget {
             ? render
             : WidgetSpan(
                 child: ContainerSpan(
+                  key: AnchorKey.of(key, tree),
                   newContext: newContext,
                   style: tree.style,
                   shrinkWrap: context.parser.shrinkWrap,
@@ -276,6 +282,7 @@ class HtmlParser extends StatelessWidget {
     if (tree.style.display == Display.BLOCK) {
       return WidgetSpan(
         child: ContainerSpan(
+          key: AnchorKey.of(key, tree),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -294,6 +301,7 @@ class HtmlParser extends StatelessWidget {
 
       return WidgetSpan(
         child: ContainerSpan(
+          key: AnchorKey.of(key, tree),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -359,11 +367,13 @@ class HtmlParser extends StatelessWidget {
                     : childStyle.merge(childSpan.style)),
             semanticsLabel: childSpan.semanticsLabel,
             recognizer: TapGestureRecognizer()
-              ..onTap = () => onLinkTap?.call(tree.href, context, tree.attributes, tree.element),
+              ..onTap =
+                  _onAnchorTap != null ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element) : null,
           );
         } else {
           return WidgetSpan(
             child: MouseRegion(
+              key: AnchorKey.of(key, tree),
               cursor: SystemMouseCursors.click,
               child: RawGestureDetector(
                 gestures: {
@@ -372,7 +382,10 @@ class HtmlParser extends StatelessWidget {
                           MultipleTapGestureRecognizer>(
                     () => MultipleTapGestureRecognizer(),
                     (instance) {
-                      instance..onTap = () => onLinkTap?.call(tree.href, context, tree.attributes, tree.element);
+                      instance
+                        ..onTap = _onAnchorTap != null
+                          ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                          : null;
                     },
                   ),
                 },
@@ -412,6 +425,7 @@ class HtmlParser extends StatelessWidget {
       //Requires special layout features not available in the TextStyle API.
       return WidgetSpan(
         child: Transform.translate(
+          key: AnchorKey.of(key, tree),
           offset: Offset(0, verticalOffset),
           child: StyledText(
             textSpan: TextSpan(
@@ -430,10 +444,22 @@ class HtmlParser extends StatelessWidget {
       return TextSpan(
         style: newContext.style.generateTextStyle(),
         children:
-            tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
       );
     }
   }
+
+  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
+          (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) {
+        if (url?.startsWith("#") == true) {
+          final anchorContext = AnchorKey.forId(key, url!.substring(1))?.currentContext;
+          if (anchorContext != null) {
+            Scrollable.ensureVisible(anchorContext);
+          }
+          return;
+        }
+        onLinkTap?.call(url, context, attributes, element);
+      };
 
   /// [processWhitespace] removes unnecessary whitespace from the StyledElement tree.
   ///
@@ -744,6 +770,7 @@ class RenderContext {
 /// A [ContainerSpan] can have a border, background color, height, width, padding, and margin
 /// and can represent either an INLINE or BLOCK-level element.
 class ContainerSpan extends StatelessWidget {
+  final AnchorKey? key;
   final Widget? child;
   final List<InlineSpan>? children;
   final Style style;
@@ -751,12 +778,13 @@ class ContainerSpan extends StatelessWidget {
   final bool shrinkWrap;
 
   ContainerSpan({
+    this.key,
     this.child,
     this.children,
     required this.style,
     required this.newContext,
     this.shrinkWrap = false,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext _) {
@@ -788,13 +816,15 @@ class StyledText extends StatelessWidget {
   final Style style;
   final double textScaleFactor;
   final RenderContext renderContext;
+  final AnchorKey? key;
 
   const StyledText({
     required this.textSpan,
     required this.style,
     this.textScaleFactor = 1.0,
     required this.renderContext,
-  });
+    this.key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
