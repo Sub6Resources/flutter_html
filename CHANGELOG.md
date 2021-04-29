@@ -4,6 +4,12 @@
 * Include or exclude specific tags via `tagsList` parameter
 * Fixed lists not rendering correctly
 * Fixes for colspans in tables
+* Fixed various exceptions when using inline styles
+* Fixed text decoration not cascading between parent and child
+* [BREAKING] support whitelisting tags
+   * See the README for details on how to migrate `blacklistedElements` (deprecated) to `tagsList`
+*  Fixed `failed assertion` error when tap-scrolling on any link
+* Updated dependencies
 
 ## [2.0.0-nullsafety.0] - March 5, 2021:
 * Nullsafety support
