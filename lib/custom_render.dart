@@ -41,8 +41,8 @@ CustomRenderMatcher fallbackMatcher() => (context) {
 };
 
 class CustomRender {
-  final InlineSpan Function(RenderContext, Function())? inlineSpan;
-  final Widget Function(RenderContext, Function())? widget;
+  final InlineSpan Function(RenderContext, List<InlineSpan> Function())? inlineSpan;
+  final Widget Function(RenderContext, List<InlineSpan> Function())? widget;
 
   CustomRender.fromInlineSpan({
     required this.inlineSpan,
@@ -53,69 +53,86 @@ class CustomRender {
   }) : inlineSpan = null;
 }
 
-final CustomRender blockElementRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
-  child: ContainerSpan(
-    newContext: context,
-    style: context.tree.style,
-    shrinkWrap: context.parser.shrinkWrap,
-    children: buildChildren.call(),
-  ),
-));
-
-final CustomRender listElementRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
-  child: ContainerSpan(
-    newContext: context,
-    style: context.tree.style,
-    shrinkWrap: context.parser.shrinkWrap,
-    child: Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      textDirection: context.tree.style.direction,
-      children: [
-        context.tree.style.listStylePosition == ListStylePosition.OUTSIDE ?
-        Padding(
-          padding: context.tree.style.padding ?? EdgeInsets.only(left: context.tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: context.tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
-          child: Text(
-              "${context.style.markerContent}",
-              textAlign: TextAlign.right,
-              style: context.style.generateTextStyle()
+CustomRender blockElementRender({
+  Style? style,
+  Widget? child,
+  List<InlineSpan>? children}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
+        WidgetSpan(
+          child: ContainerSpan(
+            newContext: context,
+            style: style ?? context.tree.style,
+            shrinkWrap: context.parser.shrinkWrap,
+            child: child,
+            children: children ?? buildChildren.call(),
           ),
-        ) : Container(height: 0, width: 0),
-        Text("\t", textAlign: TextAlign.right),
-        Expanded(
-            child: Padding(
-                padding: context.tree.style.listStylePosition == ListStylePosition.INSIDE ?
-                EdgeInsets.only(left: context.tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: context.tree.style.direction == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
-                child: StyledText(
-                  textSpan: TextSpan(
-                    text: (context.tree.style.listStylePosition ==
-                        ListStylePosition.INSIDE)
-                        ? '${context.style.markerContent}'
-                        : null,
-                    children: _getListElementChildren(context.tree.style.listStylePosition, buildChildren),
-                    style: context.style.generateTextStyle(),
+));
+
+CustomRender listElementRender({
+  Style? style,
+  Widget? child,
+  List<InlineSpan>? children}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
+        WidgetSpan(
+          child: ContainerSpan(
+            newContext: context,
+            style: style ?? context.tree.style,
+            shrinkWrap: context.parser.shrinkWrap,
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisSize: MainAxisSize.min,
+              textDirection: style?.direction ?? context.tree.style.direction,
+              children: [
+                (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.OUTSIDE ?
+                Padding(
+                  padding: style?.padding ?? context.tree.style.padding
+                      ?? EdgeInsets.only(left: (style?.direction ?? context.tree.style.direction) != TextDirection.rtl ? 10.0 : 0.0,
+                          right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0),
+                  child: Text(
+                      "${style?.markerContent ?? context.style.markerContent}",
+                      textAlign: TextAlign.right,
+                      style: style?.generateTextStyle() ?? context.style.generateTextStyle()
                   ),
-                  style: context.style,
-                  renderContext: context,
+                ) : Container(height: 0, width: 0),
+                Text("\t", textAlign: TextAlign.right),
+                Expanded(
+                    child: Padding(
+                        padding: (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.INSIDE ?
+                          EdgeInsets.only(left: (style?.direction ?? context.tree.style.direction) != TextDirection.rtl ? 10.0 : 0.0,
+                            right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
+                        child: StyledText(
+                          textSpan: TextSpan(
+                            text: ((style?.listStylePosition ?? context.tree.style.listStylePosition) ==
+                                ListStylePosition.INSIDE)
+                                ? "${style?.markerContent ?? context.style.markerContent}"
+                                : null,
+                            children: _getListElementChildren(style?.listStylePosition ?? context.tree.style.listStylePosition, buildChildren),
+                            style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
+                          ),
+                          style: style ?? context.style,
+                          renderContext: context,
+                        )
+                    )
                 )
-            )
-        )
-      ],
-    ),
-  ),
+              ],
+            ),
+          ),
 ));
 
-final CustomRender replacedElementRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
-  alignment: (context.tree as ReplacedElement).alignment,
-  baseline: TextBaseline.alphabetic,
-  child: (context.tree as ReplacedElement).toWidget(context)!,
+CustomRender replacedElementRender({PlaceholderAlignment? alignment, TextBaseline? baseline, Widget? child}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+  alignment: alignment ?? (context.tree as ReplacedElement).alignment,
+  baseline: baseline ?? TextBaseline.alphabetic,
+  child: child ?? (context.tree as ReplacedElement).toWidget(context)!,
 ));
 
-final CustomRender textContentElementRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
-    TextSpan(text: (context.tree as TextContentElement).text));
+CustomRender textContentElementRender({String? text}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
+      TextSpan(text: text ?? (context.tree as TextContentElement).text));
 
-final CustomRender interactableElementRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
-  children: (context.tree as InteractableElement).children
+CustomRender interactableElementRender({List<InlineSpan>? children}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
+  children: children ?? (context.tree as InteractableElement).children
       .map((tree) => context.parser.parseTree(context, tree))
       .map((childSpan) {
     return _getInteractableChildren(context, context.tree as InteractableElement, childSpan,
@@ -123,17 +140,22 @@ final CustomRender interactableElementRender = CustomRender.fromInlineSpan(inlin
   }).toList(),
 ));
 
-final CustomRender layoutElementRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
-  child: (context.tree as LayoutElement).toWidget(context)!,
+CustomRender layoutElementRender({Widget? child}) =>
+  CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+    child: child ?? (context.tree as LayoutElement).toWidget(context)!,
 ));
 
-final CustomRender verticalAlignRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+CustomRender verticalAlignRender({
+  double? verticalOffset,
+  Style? style,
+  List<InlineSpan>? children}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
   child: Transform.translate(
-    offset: Offset(0, _getVerticalOffset(context.tree)),
+    offset: Offset(0, verticalOffset ?? _getVerticalOffset(context.tree)),
     child: StyledText(
       textSpan: TextSpan(
-        style: context.style.generateTextStyle(),
-        children: buildChildren.call(),
+        style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
+        children: children ?? buildChildren.call(),
       ),
       style: context.style,
       renderContext: context,
@@ -141,20 +163,21 @@ final CustomRender verticalAlignRender = CustomRender.fromInlineSpan(inlineSpan:
   ),
 ));
 
-final CustomRender fallbackRender = CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
-  style: context.style.generateTextStyle(),
-  children: buildChildren.call(),
+CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
+  style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
+  children: children ?? buildChildren.call(),
 ));
 
 final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
-  blockElementMatcher(): blockElementRender,
-  listElementMatcher(): listElementRender,
-  textContentElementMatcher(): textContentElementRender,
-  replacedElementMatcher(): replacedElementRender,
-  interactableElementMatcher(): interactableElementRender,
-  layoutElementMatcher(): layoutElementRender,
-  verticalAlignMatcher(): verticalAlignRender,
-  fallbackMatcher(): fallbackRender,
+  blockElementMatcher(): blockElementRender(),
+  listElementMatcher(): listElementRender(),
+  textContentElementMatcher(): textContentElementRender(),
+  replacedElementMatcher(): replacedElementRender(),
+  interactableElementMatcher(): interactableElementRender(),
+  layoutElementMatcher(): layoutElementRender(),
+  verticalAlignMatcher(): verticalAlignRender(),
+  fallbackMatcher(): fallbackRender(),
 };
 
 List<InlineSpan> _getListElementChildren(ListStylePosition? position, Function() buildChildren) {
