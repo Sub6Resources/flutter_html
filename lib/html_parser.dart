@@ -278,7 +278,7 @@ class HtmlParser extends StatelessWidget {
     }
 
     //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK) {
+    if (tree.style.display == Display.BLOCK && tree.children.isNotEmpty) {
       return WidgetSpan(
         child: ContainerSpan(
           key: AnchorKey.of(key, tree),
