@@ -435,15 +435,10 @@ class HtmlParser extends StatelessWidget {
       );
     } else {
       ///[tree] is an inline element.
-      return WidgetSpan(
-          child: StyledText(
-            key: AnchorKey.of(key, tree),
-            textSpan: TextSpan(
-              style: newContext.style.generateTextStyle(),
-              children:
-              tree.children.map((tree) => parseTree(newContext, tree)).toList(),
-            ), renderContext: context, style: newContext.style,
-          )
+      return TextSpan(
+        style: newContext.style.generateTextStyle(),
+        children:
+        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
       );
     }
   }
