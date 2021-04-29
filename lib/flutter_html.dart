@@ -15,6 +15,7 @@ export 'package:flutter_html/src/interactable_element.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/custom_render.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
@@ -63,6 +64,7 @@ class Html extends StatelessWidget {
     this.navigationDelegateForIframe,
   }) : document = null,
         assert (data != null),
+        anchorKey = GlobalKey(),
         super(key: key);
 
   Html.fromDom({
@@ -80,7 +82,11 @@ class Html extends StatelessWidget {
     this.navigationDelegateForIframe,
   }) : data = null,
         assert(document != null),
+  anchorKey = GlobalKey(),
         super(key: key);
+
+  /// A unique key for this Html widget to ensure uniqueness of anchors
+  final Key anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -140,6 +146,7 @@ class Html extends StatelessWidget {
     return Container(
       width: width,
       child: HtmlParser(
+        key: anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,

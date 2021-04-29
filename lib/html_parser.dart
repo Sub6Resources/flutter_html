@@ -6,6 +6,7 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
+import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
@@ -28,6 +29,7 @@ typedef OnMathError = Widget Function(
 );
 
 class HtmlParser extends StatelessWidget {
+  final Key? key;
   final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
@@ -40,8 +42,10 @@ class HtmlParser extends StatelessWidget {
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
+  final OnTap? _onAnchorTap;
 
   HtmlParser({
+    required this.key,
     required this.htmlData,
     required this.onLinkTap,
     required this.onImageTap,
@@ -53,7 +57,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  });
+  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -281,6 +285,18 @@ class HtmlParser extends StatelessWidget {
     }
     return WidgetSpan(child: Container(height: 0, width: 0));
   }
+
+  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
+          (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) {
+        if (url?.startsWith("#") == true) {
+          final anchorContext = AnchorKey.forId(key, url!.substring(1))?.currentContext;
+          if (anchorContext != null) {
+            Scrollable.ensureVisible(anchorContext);
+          }
+          return;
+        }
+        onLinkTap?.call(url, context, attributes, element);
+      };
 
   /// [processWhitespace] removes unnecessary whitespace from the StyledElement tree.
   ///
@@ -591,6 +607,7 @@ class RenderContext {
 /// A [ContainerSpan] can have a border, background color, height, width, padding, and margin
 /// and can represent either an INLINE or BLOCK-level element.
 class ContainerSpan extends StatelessWidget {
+  final AnchorKey? key;
   final Widget? child;
   final List<InlineSpan>? children;
   final Style style;
@@ -598,12 +615,13 @@ class ContainerSpan extends StatelessWidget {
   final bool shrinkWrap;
 
   ContainerSpan({
+    this.key,
     this.child,
     this.children,
     required this.style,
     required this.newContext,
     this.shrinkWrap = false,
-  });
+  }): super(key: key);
 
   @override
   Widget build(BuildContext _) {
@@ -635,13 +653,15 @@ class StyledText extends StatelessWidget {
   final Style style;
   final double textScaleFactor;
   final RenderContext renderContext;
+  final AnchorKey? key;
 
   const StyledText({
     required this.textSpan,
     required this.style,
     this.textScaleFactor = 1.0,
     required this.renderContext,
-  });
+    this.key,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {

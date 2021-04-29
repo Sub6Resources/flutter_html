@@ -13,7 +13,8 @@ class InteractableElement extends StyledElement {
     required Style style,
     required this.href,
     required dom.Node node,
-  }) : super(name: name, children: children, style: style, node: node as dom.Element?);
+    required String elementId,
+  }) : super(name: name, children: children, style: style, node: node as dom.Element?, elementId: elementId);
 }
 
 /// A [Gesture] indicates the type of interaction by a user.
@@ -34,6 +35,7 @@ InteractableElement parseInteractableElement(
           textDecoration: TextDecoration.underline,
         ),
         node: element,
+        elementId: element.id
       );
     /// will never be called, just to suppress missing return warning
     default:
@@ -43,6 +45,7 @@ InteractableElement parseInteractableElement(
         node: element,
         href: '',
         style: Style(),
+        elementId: "[[No ID]]"
       );
   }
 }
