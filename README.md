@@ -246,9 +246,13 @@ Widget html = Html(
 
 A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
-`customRender` accepts a `Map<String, CustomRender>`. The `CustomRender` type is a function that requires a `Widget` to be returned. It exposes `RenderContext`, the `Widget` that would have been rendered by `Html` without a `customRender` defined, the `attributes` of the HTML element as a `Map<String, String>`, and the HTML element itself as `Element`.
+`customRender` accepts a `Map<CustomRenderMatcher, CustomRender>`. 
 
-To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget`.
+`CustomRenderMatcher` is a function that requires a `bool` to be returned. It exposes the `RenderContext` which provides `BuildContext` and access to the HTML tree.
+
+The `CustomRender` class has two constructors: `CustomRender.fromWidget()` and `CustomRender.fromInlineSpan()`. Both require a `<Widget/InlineSpan> Function(RenderContext, Function())`. The `Function()` argument is a function that will provide you with the element's children when needed.
+
+To use this API, create a matching function and an instance of `CustomRender`. 
 
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
@@ -262,20 +266,20 @@ Widget html = Html(
   <flutter horizontal></flutter>
   """,
   customRender: {
-      "bird": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
-        return TextSpan(text: "🐦");
-      },
-      "flutter": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
-        return FlutterLogo(
-          style: (attributes['horizontal'] != null)
-              ? FlutterLogoStyle.horizontal
-              : FlutterLogoStyle.markOnly,
-          textColor: context.style.color,
-          size: context.style.fontSize.size * 5,
-        );
-      },
+      birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
+      flutterMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => FlutterLogo(
+        style: (context.tree.element!.attributes['horizontal'] != null)
+            ? FlutterLogoStyle.horizontal
+            : FlutterLogoStyle.markOnly,
+        textColor: context.style.color!,
+        size: context.style.fontSize!.size! * 5,
+      )),
     },
 );
+
+CustomRenderMatcher birdMatcher() => (context) => context.tree.element?.localName == 'bird';
+
+CustomRenderMatcher flutterMatcher() => (context) => context.tree.element?.localName == 'flutter';
 ```
 </details>
 
@@ -292,42 +296,52 @@ Widget html = Html(
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
    customRender: {
-      "iframe": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
-         if (attributes != null) {
-           double width = double.tryParse(attributes['width'] ?? "");
-           double height = double.tryParse(attributes['height'] ?? "");
-           return Container(
-             width: width ?? (height ?? 150) * 2,
-             height: height ?? (width ?? 300) / 2,
-             child: WebView(
-                initialUrl: attributes['src'] ?? "about:blank",
-                javascriptMode: JavascriptMode.unrestricted,
-                //no need for scrolling gesture recognizers on embedded youtube, so set gestureRecognizers null
-                //on other iframe content scrolling might be necessary, so use VerticalDragGestureRecognizer
-                gestureRecognizers: attributes['src'] != null && attributes['src']!.contains("youtube.com/embed") ? null : [
-                  Factory(() => VerticalDragGestureRecognizer())
-                ].toSet(),
-                navigationDelegate: (NavigationRequest request) async {
-                //no need to load any url besides the embedded youtube url when displaying embedded youtube, so prevent url loading
-                //on other iframe content allow all url loading
-                  if (attributes['src'] != null && attributes['src']!.contains("youtube.com/embed")) {
-                    if (!request.url.contains("youtube.com/embed")) {
-                      return NavigationDecision.prevent;
-                    } else {
-                      return NavigationDecision.navigate;
-                    }
-                  } else {
-                    return NavigationDecision.navigate;
-                  }
-                },
-              ),
-            );
-         } else {
-           return Container(height: 0);
-         }
-       }
-     }
+      iframeYT(): CustomRender.fromWidget(widget: (context, buildChildren) {
+        double? width = double.tryParse(context.tree.attributes['width'] ?? "");
+        double? height = double.tryParse(context.tree.attributes['height'] ?? "");
+        return Container(
+          width: width ?? (height ?? 150) * 2,
+          height: height ?? (width ?? 300) / 2,
+          child: WebView(
+            initialUrl: context.tree.attributes['src']!,
+            javascriptMode: JavascriptMode.unrestricted,
+            navigationDelegate: (NavigationRequest request) async {
+              //no need to load any url besides the embedded youtube url when displaying embedded youtube, so prevent url loading
+              if (!request.url.contains("youtube.com/embed")) {
+                return NavigationDecision.prevent;
+              } else {
+                return NavigationDecision.navigate;
+              }
+            },
+          ),
+        );
+      }),
+      iframeOther(): CustomRender.fromWidget(widget: (context, buildChildren) {
+        double? width = double.tryParse(context.tree.attributes['width'] ?? "");
+        double? height = double.tryParse(context.tree.attributes['height'] ?? "");
+        return Container(
+          width: width ?? (height ?? 150) * 2,
+          height: height ?? (width ?? 300) / 2,
+          child: WebView(
+            initialUrl: context.tree.attributes['src'],
+            javascriptMode: JavascriptMode.unrestricted,
+            //on other iframe content scrolling might be necessary, so use VerticalDragGestureRecognizer
+            gestureRecognizers: [
+              Factory(() => VerticalDragGestureRecognizer())
+            ].toSet(),
+          ),
+        );
+      }),
+      iframeNull(): CustomRender.fromWidget(widget: (context, buildChildren) => Container(height: 0, width: 0)),
+   }
  );
+
+CustomRenderMatcher iframeYT() => (context) => context.tree.element?.attributes['src']?.contains("youtube.com/embed") ?? false;
+
+CustomRenderMatcher iframeOther() => (context) => !(context.tree.element?.attributes['src']?.contains("youtube.com/embed") 
+  ?? context.tree.element?.attributes['src'] == null);
+
+CustomRenderMatcher iframeNull() => (context) => context.tree.element?.attributes['src'] == null;
 ```
 </details>
 
@@ -752,15 +766,22 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRender: {
-    "tex": (_, __, ___, element) => Math.tex(
-      element.text,
+    texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
+      context.tree.element?.innerHtml ?? '',
+      mathStyle: MathStyle.display,
+      textStyle: context.style.generateTextStyle(),
       onErrorFallback: (FlutterMathException e) {
-        //return your error widget here e.g.
-        return Text(e.message);
+        if (context.parser.onMathError != null) {
+          return context.parser.onMathError!.call(context.tree.element?.innerHtml ?? '', e.message, e.messageWithType);
+        } else {
+          return Text(e.message);
+        }
       },
-    ),
+    )),
   }
 );
+
+CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
 ```
 
 ### Table
