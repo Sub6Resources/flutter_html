@@ -1,4 +1,4 @@
-## [2.0.0] - April 1, 2021:
+## [2.0.0-nullsafety.1] - April 29, 2021:
 * Support basic MathML
 * Support inner links
 * Supply full context tree to custom render
