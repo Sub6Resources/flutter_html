@@ -1,3 +1,6 @@
+## [2.0.0] - April 29, 2021:
+* Stable release with all 2.0.0-nullsafety.X changes
+
 ## [2.0.0-nullsafety.1] - April 29, 2021:
 * Support basic MathML
 * Support inner links
