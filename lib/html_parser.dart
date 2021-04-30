@@ -475,8 +475,7 @@ class HtmlParser extends StatelessWidget {
   /// between and among inline elements. It does so by creating a boolean [Context]
   /// and passing it to the [_processInlineWhitespaceRecursive] function.
   static StyledElement _processInlineWhitespace(StyledElement tree) {
-    final whitespaceParsingContext = Context(false);
-    tree = _processInlineWhitespaceRecursive(tree, whitespaceParsingContext);
+    tree = _processInlineWhitespaceRecursive(tree, Context(false));
     return tree;
   }
 
@@ -485,33 +484,66 @@ class HtmlParser extends StatelessWidget {
   /// to the w3's HTML whitespace processing specification linked to above.
   static StyledElement _processInlineWhitespaceRecursive(
     StyledElement tree,
-    Context<bool> wpc,
+    Context<bool> keepLeadingSpace,
   ) {
-    if (tree.style.display == Display.BLOCK) {
-      wpc.data = false;
-    }
-
-    if (tree is ImageContentElement || tree is SvgContentElement) {
-      wpc.data = false;
-    }
-
     if (tree is TextContentElement) {
-      int index = -1;
-      if ((tree.element?.nodes.length ?? 0) > 1) {
-        index = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
+      /// initialize indices to negative numbers to make conditionals a little easier
+      int textIndex = -1;
+      int elementIndex = -1;
+      /// initialize parent after to a whitespace to account for elements that are
+      /// the last child in the list of elements
+      String parentAfterText = " ";
+      /// find the index of the text in the current tree
+      if ((tree.element?.nodes.length ?? 0) >= 1) {
+        textIndex = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
       }
-      if (index < 1 && tree.text!.startsWith(' ')
-          && tree.element?.localName != "br") {
+      /// get the parent nodes
+      dom.NodeList? parentNodes = tree.element?.parent?.nodes;
+      /// find the index of the tree itself in the parent nodes
+      if ((parentNodes?.length ?? 0) >= 1) {
+        elementIndex = parentNodes?.indexWhere((element) => element == tree.element) ?? -1;
+      }
+      /// if the tree is any node except the last node in the node list and the
+      /// next node in the node list is a text node, then get its text. Otherwise
+      /// the next node will be a [dom.Element], so keep unwrapping that until
+      /// we get the underlying text node, and finally get its text.
+      if (elementIndex < (parentNodes?.length ?? 1) - 1 && parentNodes?[elementIndex + 1] is dom.Text) {
+        parentAfterText = parentNodes?[elementIndex + 1].text ?? " ";
+      } else if (elementIndex < (parentNodes?.length ?? 1) - 1) {
+        var parentAfter = parentNodes?[elementIndex + 1];
+        while (parentAfter is dom.Element) {
+          if (parentAfter.nodes.isNotEmpty) {
+            parentAfter = parentAfter.nodes.first;
+          } else {
+            break;
+          }
+        }
+        parentAfterText = parentAfter?.text ?? " ";
+      }
+      /// If the text is the first element in the current tree node list, it
+      /// starts with a whitespace, it isn't a line break, and we don't need to
+      /// keep the whitespace, delete it.
+      if (textIndex < 1
+          && tree.text!.startsWith(' ')
+          && tree.element?.localName != "br"
+          && !keepLeadingSpace.data
+      ) {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
-      if (index == (tree.element?.nodes.length ?? 1) - 1
-          && (tree.text!.endsWith(' ') || tree.text!.endsWith('\n'))
-          && tree.element?.localName != "br") {
-        tree.text = tree.text!.trimRight();
+      /// If the text is the last element in the current tree node list, it isn't
+      /// a line break, and the next text node starts with a whitespace,
+      /// update the [Context] to signify to that next text node whether it should
+      /// keep its whitespace. This is based on whether the current text ends with a
+      /// whitespace.
+      if (textIndex == (tree.element?.nodes.length ?? 1) - 1
+          && tree.element?.localName != "br"
+          && parentAfterText.startsWith(' ')
+      ) {
+        keepLeadingSpace.data = !tree.text!.endsWith(' ');
       }
     }
 
-    tree.children.forEach((e) => _processInlineWhitespaceRecursive(e, wpc));
+    tree.children.forEach((e) => _processInlineWhitespaceRecursive(e, keepLeadingSpace));
 
     return tree;
   }
