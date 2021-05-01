@@ -553,6 +553,9 @@ class HtmlParser extends StatelessWidget {
           tree.style.markerContent = '•';
           break;
         case ListStyleType.DECIMAL:
+          if (olStack.isEmpty) {
+            olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
           olStack.last.data += 1;
           tree.style.markerContent = '${olStack.last.data}.';
           break;
