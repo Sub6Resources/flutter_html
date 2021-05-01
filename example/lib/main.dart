@@ -100,9 +100,11 @@ const htmlData = r"""
             <li>a</li>
             <li>nested</li>
             <li>unordered
-            <ol>
+            <ol style="list-style-type: lower-alpha;" start="5">
             <li>With a nested</li>
-            <li>ordered list.</li>
+            <li>ordered list</li>
+            <li>with a lower alpha list style</li>
+            <li>starting at letter e</li>
             </ol>
             </li>
             <li>list</li>

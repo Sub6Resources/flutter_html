@@ -15,6 +15,7 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
+import 'package:numerus/numerus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(
@@ -536,7 +537,7 @@ class HtmlParser extends StatelessWidget {
   ///
   /// The function uses the [_processListCharactersRecursive] function to do most of its work.
   static StyledElement _processListCharacters(StyledElement tree) {
-    final olStack = ListQueue<Context<int>>();
+    final olStack = ListQueue<Context>();
     tree = _processListCharactersRecursive(tree, olStack);
     return tree;
   }
@@ -544,20 +545,98 @@ class HtmlParser extends StatelessWidget {
   /// [_processListCharactersRecursive] uses a Stack of integers to properly number and
   /// bullet all list items according to the [ListStyleType] they have been given.
   static StyledElement _processListCharactersRecursive(
-      StyledElement tree, ListQueue<Context<int>> olStack) {
-    if (tree.name == 'ol') {
-      olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+      StyledElement tree, ListQueue<Context> olStack) {
+    if (tree.name == 'ol' && tree.style.listStyleType != null) {
+      switch (tree.style.listStyleType!) {
+        case ListStyleType.LOWER_LATIN:
+        case ListStyleType.LOWER_ALPHA:
+        case ListStyleType.UPPER_LATIN:
+        case ListStyleType.UPPER_ALPHA:
+          olStack.add(Context<String>('a'));
+          if ((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']!) : null) != null) {
+            var start = int.tryParse(tree.attributes['start']!) ?? 1;
+            var x = 1;
+            while (x < start) {
+              olStack.last.data = olStack.last.data.toString().nextLetter();
+              x++;
+            }
+          }
+          break;
+        default:
+          olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          break;
+      }
     } else if (tree.style.display == Display.LIST_ITEM && tree.style.listStyleType != null) {
       switch (tree.style.listStyleType!) {
+        case ListStyleType.CIRCLE:
+          tree.style.markerContent = '○';
+          break;
+        case ListStyleType.SQUARE:
+          tree.style.markerContent = '■';
+          break;
         case ListStyleType.DISC:
           tree.style.markerContent = '•';
           break;
         case ListStyleType.DECIMAL:
           if (olStack.isEmpty) {
-            olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+            olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
           }
           olStack.last.data += 1;
           tree.style.markerContent = '${olStack.last.data}.';
+          break;
+        case ListStyleType.LOWER_LATIN:
+        case ListStyleType.LOWER_ALPHA:
+          if (olStack.isEmpty) {
+            olStack.add(Context<String>('a'));
+            if ((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']!) : null) != null) {
+              var start = int.tryParse(tree.attributes['start']!) ?? 1;
+              var x = 1;
+              while (x < start) {
+                olStack.last.data = olStack.last.data.toString().nextLetter();
+                x++;
+              }
+            }
+          }
+          tree.style.markerContent = olStack.last.data.toString() + ".";
+          olStack.last.data = olStack.last.data.toString().nextLetter();
+          break;
+        case ListStyleType.UPPER_LATIN:
+        case ListStyleType.UPPER_ALPHA:
+          if (olStack.isEmpty) {
+            olStack.add(Context<String>('a'));
+            if ((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']!) : null) != null) {
+              var start = int.tryParse(tree.attributes['start']!) ?? 1;
+              var x = 1;
+              while (x < start) {
+                olStack.last.data = olStack.last.data.toString().nextLetter();
+                x++;
+              }
+            }
+          }
+          tree.style.markerContent = olStack.last.data.toString().toUpperCase() + ".";
+          olStack.last.data = olStack.last.data.toString().nextLetter();
+          break;
+        case ListStyleType.LOWER_ROMAN:
+          if (olStack.isEmpty) {
+            olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
+          olStack.last.data += 1;
+          if (olStack.last.data <= 0) {
+            tree.style.markerContent = '${olStack.last.data}.';
+          } else {
+            tree.style.markerContent = (olStack.last.data as int).toRomanNumeralString()!.toLowerCase() + ".";
+          }
+          break;
+        case ListStyleType.UPPER_ROMAN:
+          if (olStack.isEmpty) {
+            olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
+          olStack.last.data += 1;
+          if (olStack.last.data <= 0) {
+            tree.style.markerContent = '${olStack.last.data}.';
+          } else {
+            tree.style.markerContent = (olStack.last.data as int).toRomanNumeralString()! + ".";
+          }
           break;
       }
     }
@@ -845,5 +924,26 @@ class StyledText extends StatelessWidget {
       return MediaQuery.of(context.buildContext).size.width;
     }
     return null;
+  }
+}
+
+extension IterateLetters on String {
+  String nextLetter() {
+    String s = this.toLowerCase();
+    if (s == "z") {
+      return String.fromCharCode(s.codeUnitAt(0) - 25) + String.fromCharCode(s.codeUnitAt(0) - 25); // AA or aa
+    } else {
+      var lastChar = s.substring(s.length - 1);
+      var sub = s.substring(0, s.length - 1);
+      if (lastChar == "z") {
+        // If a string of length > 1 ends in Z/z,
+        // increment the string (excluding the last Z/z) recursively,
+        // and append A/a (depending on casing) to it
+        return sub.nextLetter() + 'a';
+      } else {
+        // (take till last char) append with (increment last char)
+        return sub + String.fromCharCode(lastChar.codeUnitAt(0) + 1);
+      }
+    }
   }
 }

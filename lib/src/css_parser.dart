@@ -61,6 +61,11 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
           break;
+        case 'list-style-type':
+          if (value.first is css.LiteralTerm) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.LiteralTerm) ?? style.listStyleType;
+          }
+          break;
         case 'text-align':
           style.textAlign = ExpressionMapping.expressionToTextAlign(value.first);
           break;
@@ -417,6 +422,32 @@ class ExpressionMapping {
       return LineHeight(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')), units: "length");
     }
     return LineHeight.normal;
+  }
+
+  static ListStyleType? expressionToListStyleType(css.LiteralTerm value) {
+    switch (value.text) {
+      case 'disc':
+        return ListStyleType.DISC;
+      case 'circle':
+        return ListStyleType.CIRCLE;
+      case 'decimal':
+        return ListStyleType.DECIMAL;
+      case 'lower-alpha':
+        return ListStyleType.LOWER_ALPHA;
+      case 'lower-latin':
+        return ListStyleType.LOWER_LATIN;
+      case 'lower-roman':
+        return ListStyleType.LOWER_ROMAN;
+      case 'square':
+        return ListStyleType.SQUARE;
+      case 'upper-alpha':
+        return ListStyleType.UPPER_ALPHA;
+      case 'upper-latin':
+        return ListStyleType.UPPER_LATIN;
+      case 'upper-roman':
+        return ListStyleType.UPPER_ROMAN;
+    }
+    return null;
   }
 
   static TextAlign expressionToTextAlign(css.Expression value) {
