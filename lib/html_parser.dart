@@ -520,13 +520,19 @@ class HtmlParser extends StatelessWidget {
         }
         parentAfterText = parentAfter?.text ?? " ";
       }
+      if (tree.text?.contains("Linking") ?? false) {
+        print(keepLeadingSpace.data);
+        print(tree.text);
+        print(BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""));
+      }
       /// If the text is the first element in the current tree node list, it
-      /// starts with a whitespace, it isn't a line break, and we don't need to
-      /// keep the whitespace, delete it.
+      /// starts with a whitespace, it isn't a line break, and either the
+      /// whitespace is unnecessary or it is a block element, delete it.
       if (textIndex < 1
           && tree.text!.startsWith(' ')
           && tree.element?.localName != "br"
-          && !keepLeadingSpace.data
+          && (!keepLeadingSpace.data
+              || BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""))
       ) {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
