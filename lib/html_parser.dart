@@ -520,11 +520,6 @@ class HtmlParser extends StatelessWidget {
         }
         parentAfterText = parentAfter?.text ?? " ";
       }
-      if (tree.text?.contains("Linking") ?? false) {
-        print(keepLeadingSpace.data);
-        print(tree.text);
-        print(BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""));
-      }
       /// If the text is the first element in the current tree node list, it
       /// starts with a whitespace, it isn't a line break, and either the
       /// whitespace is unnecessary or it is a block element, delete it.
