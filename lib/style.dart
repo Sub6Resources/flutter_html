@@ -348,6 +348,7 @@ class Style {
     Border? border,
     Alignment? alignment,
     String? markerContent,
+    bool? beforeAfterNull,
   }) {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -377,8 +378,8 @@ class Style {
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
       wordSpacing: wordSpacing ?? this.wordSpacing,
-      before: before ?? this.before,
-      after: after ?? this.after,
+      before: beforeAfterNull == true ? null : before ?? this.before,
+      after: beforeAfterNull == true ? null : after ?? this.after,
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,

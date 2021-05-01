@@ -572,16 +572,17 @@ class HtmlParser extends StatelessWidget {
   /// the list of the trees children according to the `before` and `after` Style
   /// properties.
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
-    if (tree.style.before != null) {
+    if (tree.style.before != null && tree.children.isNotEmpty) {
       tree.children.insert(
-          0, TextContentElement(text: tree.style.before, style: tree.style));
+          0, new TextContentElement(text: tree.style.before, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
     }
     if (tree.style.after != null) {
       tree.children
-          .add(TextContentElement(text: tree.style.after, style: tree.style));
-    } else {
-      tree.children.forEach(_processBeforesAndAfters);
+          .add(TextContentElement(text: tree.style.after, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
     }
+
+    tree.children.forEach(_processBeforesAndAfters);
+
     return tree;
   }
 
