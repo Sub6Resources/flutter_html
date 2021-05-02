@@ -150,9 +150,7 @@ class DeclarationVisitor extends css.Visitor {
 
   @override
   void visitExpressions(css.Expressions node) {
-    node.expressions.forEach((expression) {
-      _properties[_currentProperty]!.add(expression);
-    });
+    _properties[_currentProperty]!.addAll(node.expressions);
   }
 }
 
