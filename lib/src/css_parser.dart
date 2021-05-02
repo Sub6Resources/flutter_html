@@ -8,7 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 
-Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
+Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   Style style = new Style();
   declarations.forEach((property, value) {
     if (value.isNotEmpty) {
@@ -104,31 +104,54 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
 
 Style inlineCSSToStyle(String? inlineStyle) {
   final sheet = cssparser.parse("*{$inlineStyle}");
-  final declarations = DeclarationVisitor().getDeclarations(sheet)!;
-  return declarationsToStyle(declarations);
+  final declarations = DeclarationVisitor().getDeclarations(sheet);
+  return declarationsToStyle(declarations["*"]!);
+}
+
+Map<String, Map<String, List<css.Expression>>> parseExternalCSS(String css) {
+  final sheet = cssparser.parse(css);
+  return DeclarationVisitor().getDeclarations(sheet);
 }
 
 class DeclarationVisitor extends css.Visitor {
-  Map<String?, List<css.Expression>>? _result;
-  String? _currentProperty;
+  Map<String, Map<String, List<css.Expression>>> _result = {};
+  Map<String, List<css.Expression>> _properties = {};
+  late String _selector;
+  late String _currentProperty;
 
-  Map<String?, List<css.Expression>>? getDeclarations(css.StyleSheet sheet) {
-    _result = new Map<String?, List<css.Expression>>();
-    sheet.visit(this);
+  Map<String, Map<String, List<css.Expression>>> getDeclarations(css.StyleSheet sheet) {
+    sheet.topLevels.forEach((element) {
+      if (element.span != null) {
+        _selector = element.span!.text;
+        element.visit(this);
+        if (_result[_selector] != null) {
+          _properties.forEach((key, value) {
+            if (_result[_selector]![key] != null) {
+              _result[_selector]![key]!.addAll(new List<css.Expression>.from(value));
+            } else {
+              _result[_selector]![key] = new List<css.Expression>.from(value);
+            }
+          });
+        } else {
+          _result[_selector] = new Map<String, List<css.Expression>>.from(_properties);
+        }
+        _properties.clear();
+      }
+    });
     return _result;
   }
 
   @override
   void visitDeclaration(css.Declaration node) {
     _currentProperty = node.property;
-    _result![_currentProperty] = <css.Expression>[];
+    _properties[_currentProperty] = <css.Expression>[];
     node.expression!.visit(this);
   }
 
   @override
   void visitExpressions(css.Expressions node) {
     node.expressions.forEach((expression) {
-      _result![_currentProperty]!.add(expression);
+      _properties[_currentProperty]!.add(expression);
     });
   }
 }

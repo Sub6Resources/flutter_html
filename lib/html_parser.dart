@@ -66,15 +66,20 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCSSDeclarations(htmlData.getElementsByTagName("style"));
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRender.keys.toList(),
       tagsList,
       navigationDelegateForIframe,
     );
-    StyledElement inlineStyledTree = applyInlineStyles(lexedTree);
-    StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
-    StyledElement cascadedStyledTree = _cascadeStyles(customStyledTree);
+    StyledElement? externalCSSStyledTree;
+    if (declarations.isNotEmpty) {
+      externalCSSStyledTree = _applyExternalCSS(declarations, lexedTree);
+    }
+    StyledElement inlineStyledTree = _applyInlineStyles(externalCSSStyledTree ?? lexedTree);
+    StyledElement customStyledTree = _applyCustomStyles(style, inlineStyledTree);
+    StyledElement cascadedStyledTree = _cascadeStyles(style, customStyledTree);
     StyledElement cleanedTree = cleanTree(cascadedStyledTree);
     InlineSpan parsedTree = parseTree(
       RenderContext(
@@ -189,34 +194,59 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static StyledElement applyInlineStyles(StyledElement tree) {
+  static Map<String, Map<String, List<css.Expression>>> _getExternalCSSDeclarations(List<dom.Element> styles) {
+    String fullCSS = "";
+    for (final e in styles) {
+      fullCSS = fullCSS + e.innerHtml;
+    }
+    if (fullCSS.isNotEmpty) {
+      final declarations = parseExternalCSS(fullCSS);
+      return declarations;
+    } else {
+      return {};
+    }
+  }
+
+  static StyledElement _applyExternalCSS(Map<String, Map<String, List<css.Expression>>> declarations, StyledElement tree) {
+    declarations.forEach((key, style) {
+      if (tree.matchesSelector(key)) {
+        tree.style = tree.style.merge(declarationsToStyle(style));
+      }
+    });
+
+    tree.children.forEach((e) => _applyExternalCSS(declarations, e));
+
+    return tree;
+  }
+
+  static StyledElement _applyInlineStyles(StyledElement tree) {
     if (tree.attributes.containsKey("style")) {
       tree.style = tree.style.merge(inlineCSSToStyle(tree.attributes['style']));
     }
 
-    tree.children.forEach(applyInlineStyles);
+    tree.children.forEach(_applyInlineStyles);
     return tree;
   }
 
   /// [applyCustomStyles] applies the [Style] objects passed into the [Html]
   /// widget onto the [StyledElement] tree, no cascading of styles is done at this point.
-  StyledElement _applyCustomStyles(StyledElement tree) {
+  static StyledElement _applyCustomStyles(Map<String, Style> style, StyledElement tree) {
     style.forEach((key, style) {
       if (tree.matchesSelector(key)) {
         tree.style = tree.style.merge(style);
       }
     });
-    tree.children.forEach(_applyCustomStyles);
+    tree.children.forEach((e) => _applyCustomStyles(style, e));
 
     return tree;
   }
 
   /// [_cascadeStyles] cascades all of the inherited styles down the tree, applying them to each
   /// child that doesn't specify a different style.
-  StyledElement _cascadeStyles(StyledElement tree) {
+  static StyledElement _cascadeStyles(Map<String, Style> style, StyledElement tree) {
     tree.children.forEach((child) {
       child.style = tree.style.copyOnlyInherited(child.style);
-      _cascadeStyles(child);
+      _cascadeStyles(style, child);
     });
 
     return tree;
