@@ -27,6 +27,7 @@ class MyHomePage extends StatefulWidget {
 }
 
 const htmlData = r"""
+<p id='top'><a href='#bottom'>Scroll to bottom</a></p>
       <h1>Header 1</h1>
       <h2>Header 2</h2>
       <h3>Header 3</h3>
@@ -83,7 +84,7 @@ const htmlData = r"""
       <h3>Custom Element Support (inline: <bird></bird> and as block):</h3>
       <flutter></flutter>
       <flutter horizontal></flutter>
-      <h3>SVG support:</h3>
+      <h3 id='middle'>SVG support:</h3>
       <svg id='svg1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>
             <circle r="32" cx="35" cy="65" fill="#F00" opacity="0.5"/>
             <circle r="32" cx="65" cy="65" fill="#0F0" opacity="0.5"/>
@@ -233,6 +234,7 @@ const htmlData = r"""
       </math>
       <h3>Tex Support with the custom tex tag:</h3>
       <tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>
+      <p id='bottom'><a href='#top'>Scroll to top</a></p>
 """;
 
 const htmlDataLines ="""
