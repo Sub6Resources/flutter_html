@@ -214,7 +214,7 @@ class Style {
     }
   }
 
-  static Map<String, Style> getFromThemeData(ThemeData theme) => {
+  static Map<String, Style> fromThemeData(ThemeData theme) => {
     'h1': Style.fromTextStyle(theme.textTheme.headline1!),
     'h2': Style.fromTextStyle(theme.textTheme.headline2!),
     'h3': Style.fromTextStyle(theme.textTheme.headline3!),
