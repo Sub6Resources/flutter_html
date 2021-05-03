@@ -175,6 +175,20 @@ class Style {
   Alignment? alignment;
   String? markerContent;
 
+  /// MaxLine
+  ///
+  ///
+  ///
+  ///
+  int? maxLines;
+
+  /// TextOverflow
+  ///
+  ///
+  ///
+  ///
+  TextOverflow? textOverflow;
+
   Style({
     this.backgroundColor = Colors.transparent,
     this.color,
@@ -207,6 +221,8 @@ class Style {
     this.border,
     this.alignment,
     this.markerContent,
+    this.maxLines,
+    this.textOverflow,
   }) {
     if (this.alignment == null &&
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
@@ -288,6 +304,9 @@ class Style {
       //TODO merge border
       alignment: other.alignment,
       markerContent: other.markerContent,
+
+      maxLines: other.maxLines,
+      textOverflow: other.textOverflow,
     );
   }
 
@@ -323,6 +342,8 @@ class Style {
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
+      maxLines: child.maxLines ?? maxLines,
+      textOverflow: child.textOverflow ?? textOverflow,
     );
   }
 
@@ -358,6 +379,8 @@ class Style {
     Border? border,
     Alignment? alignment,
     String? markerContent,
+    int? maxLines,
+    TextOverflow? textOverflow,
     bool? beforeAfterNull,
   }) {
     return Style(
@@ -393,6 +416,8 @@ class Style {
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,
+      maxLines: maxLines ?? this.maxLines,
+      textOverflow: textOverflow ?? this.textOverflow,
     );
   }
 
