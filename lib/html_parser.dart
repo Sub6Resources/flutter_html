@@ -742,7 +742,7 @@ class HtmlParser extends StatelessWidget {
     tree.children.forEach((child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
-      } else if (child is TextContentElement && (child.text!.isEmpty)) {
+      } else if (child is TextContentElement && (child.text!.trim().isEmpty)) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
