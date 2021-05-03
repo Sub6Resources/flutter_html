@@ -28,6 +28,10 @@ typedef OnMathError = Widget Function(
     String exception,
     String exceptionWithType,
 );
+typedef OnCSSParseError = String? Function(
+  String css,
+  List<cssparser.Message> errors,
+);
 typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
@@ -38,6 +42,7 @@ class HtmlParser extends StatelessWidget {
   final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
+  final OnCSSParseError? onCSSParseError;
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
   final bool shrinkWrap;
@@ -54,6 +59,7 @@ class HtmlParser extends StatelessWidget {
     required this.htmlData,
     required this.onLinkTap,
     required this.onImageTap,
+    required this.onCSSParseError,
     required this.onImageError,
     required this.onMathError,
     required this.shrinkWrap,
@@ -66,7 +72,7 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCSSDeclarations(htmlData.getElementsByTagName("style"));
+    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCSSDeclarations(htmlData.getElementsByTagName("style"), onCSSParseError);
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRender.keys.toList(),
@@ -77,7 +83,7 @@ class HtmlParser extends StatelessWidget {
     if (declarations.isNotEmpty) {
       externalCSSStyledTree = _applyExternalCSS(declarations, lexedTree);
     }
-    StyledElement inlineStyledTree = _applyInlineStyles(externalCSSStyledTree ?? lexedTree);
+    StyledElement inlineStyledTree = _applyInlineStyles(externalCSSStyledTree ?? lexedTree, onCSSParseError);
     StyledElement customStyledTree = _applyCustomStyles(style, inlineStyledTree);
     StyledElement cascadedStyledTree = _cascadeStyles(style, customStyledTree);
     StyledElement cleanedTree = cleanTree(cascadedStyledTree);
@@ -194,13 +200,13 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static Map<String, Map<String, List<css.Expression>>> _getExternalCSSDeclarations(List<dom.Element> styles) {
+  static Map<String, Map<String, List<css.Expression>>> _getExternalCSSDeclarations(List<dom.Element> styles, OnCSSParseError? errorHandler) {
     String fullCSS = "";
     for (final e in styles) {
       fullCSS = fullCSS + e.innerHtml;
     }
     if (fullCSS.isNotEmpty) {
-      final declarations = parseExternalCSS(fullCSS);
+      final declarations = parseExternalCSS(fullCSS, errorHandler);
       return declarations;
     } else {
       return {};
@@ -219,12 +225,15 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  static StyledElement _applyInlineStyles(StyledElement tree) {
+  static StyledElement _applyInlineStyles(StyledElement tree, OnCSSParseError? errorHandler) {
     if (tree.attributes.containsKey("style")) {
-      tree.style = tree.style.merge(inlineCSSToStyle(tree.attributes['style']));
+      final newStyle = inlineCSSToStyle(tree.attributes['style'], errorHandler);
+      if (newStyle != null) {
+        tree.style = tree.style.merge(newStyle);
+      }
     }
 
-    tree.children.forEach(_applyInlineStyles);
+    tree.children.forEach((e) => _applyInlineStyles(e, errorHandler));
     return tree;
   }
 

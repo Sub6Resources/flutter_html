@@ -5,6 +5,7 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 
@@ -102,15 +103,33 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   return style;
 }
 
-Style inlineCSSToStyle(String? inlineStyle) {
-  final sheet = cssparser.parse("*{$inlineStyle}");
-  final declarations = DeclarationVisitor().getDeclarations(sheet);
-  return declarationsToStyle(declarations["*"]!);
+Style? inlineCSSToStyle(String? inlineStyle, OnCSSParseError? errorHandler) {
+  var errors = <cssparser.Message>[];
+  final sheet = cssparser.parse("*{$inlineStyle}", errors: errors);
+  if (errors.isEmpty) {
+    final declarations = DeclarationVisitor().getDeclarations(sheet);
+    return declarationsToStyle(declarations["*"]!);
+  } else if (errorHandler != null) {
+    String? newCSS = errorHandler.call(inlineStyle ?? "", errors);
+    if (newCSS != null) {
+      return inlineCSSToStyle(newCSS, errorHandler);
+    }
+  }
+  return null;
 }
 
-Map<String, Map<String, List<css.Expression>>> parseExternalCSS(String css) {
-  final sheet = cssparser.parse(css);
-  return DeclarationVisitor().getDeclarations(sheet);
+Map<String, Map<String, List<css.Expression>>> parseExternalCSS(String css, OnCSSParseError? errorHandler) {
+  var errors = <cssparser.Message>[];
+  final sheet = cssparser.parse(css, errors: errors);
+  if (errors.isEmpty) {
+    return DeclarationVisitor().getDeclarations(sheet);
+  } else if (errorHandler != null) {
+    String? newCSS = errorHandler.call(css, errors);
+    if (newCSS != null) {
+      return parseExternalCSS(newCSS, errorHandler);
+    }
+  }
+  return {};
 }
 
 class DeclarationVisitor extends css.Visitor {

@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 
 ///This class represents all the available CSS attributes
@@ -215,8 +216,8 @@ class Style {
     }
   }
 
-  static Map<String, Style> fromCSS(String css) {
-    final declarations = parseExternalCSS(css);
+  static Map<String, Style> fromCSS(String css, OnCSSParseError? onCSSParseError) {
+    final declarations = parseExternalCSS(css, onCSSParseError);
     Map<String, Style> styleMap = {};
     declarations.forEach((key, value) {
       styleMap[key] = declarationsToStyle(value);
