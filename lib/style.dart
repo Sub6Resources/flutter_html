@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/src/css_parser.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package.
@@ -212,6 +213,15 @@ class Style {
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
       this.alignment = Alignment.centerLeft;
     }
+  }
+
+  static Map<String, Style> fromCSS(String css) {
+    final declarations = parseExternalCSS(css);
+    Map<String, Style> styleMap = {};
+    declarations.forEach((key, value) {
+      styleMap[key] = declarationsToStyle(value);
+    });
+    return styleMap;
   }
 
   TextStyle generateTextStyle() {
