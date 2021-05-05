@@ -37,14 +37,14 @@ class IframeContentElement extends ReplacedElement {
     //not actually an error
     ui.platformViewRegistry.registerViewFactory(createdViewId, (int viewId) => iframe);
     return Container(
-      width: width ?? (height ?? 150) * 2,
-      height: height ?? (width ?? 300) / 2,
-      child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: HtmlElementView(
-            viewType: createdViewId,
-          )
-      )
+        width: width ?? (height ?? 150) * 2,
+        height: height ?? (width ?? 300) / 2,
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: HtmlElementView(
+              viewType: createdViewId,
+            )
+        )
     );
   }
 }
