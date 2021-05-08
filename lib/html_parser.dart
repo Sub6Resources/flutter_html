@@ -397,6 +397,9 @@ class HtmlParser extends StatelessWidget {
           tree.style.markerContent = '•';
           break;
         case ListStyleType.DECIMAL:
+          if (olStack.isEmpty) {
+            olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
           olStack.last.data += 1;
           tree.style.markerContent = '${olStack.last.data}.';
           break;
@@ -418,14 +421,15 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style.before != null) {
       tree.children.insert(
-          0, TextContentElement(text: tree.style.before, style: tree.style));
+          0, TextContentElement(text: tree.style.before, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
     }
     if (tree.style.after != null) {
       tree.children
-          .add(TextContentElement(text: tree.style.after, style: tree.style));
-    } else {
-      tree.children.forEach(_processBeforesAndAfters);
+          .add(TextContentElement(text: tree.style.after, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
     }
+
+    tree.children.forEach(_processBeforesAndAfters);
+
     return tree;
   }
 
@@ -676,6 +680,8 @@ class StyledText extends StatelessWidget {
         textAlign: style.textAlign,
         textDirection: style.direction,
         textScaleFactor: textScaleFactor,
+        maxLines: style.maxLines,
+        overflow: style.textOverflow,
       ),
     );
   }
