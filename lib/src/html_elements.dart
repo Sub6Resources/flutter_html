@@ -77,7 +77,6 @@ const INTERACTABLE_ELEMENTS = [
 const REPLACED_ELEMENTS = [
   "br",
   "head",
-  "img",
   "template",
   "rp",
   "rt",
@@ -96,7 +95,7 @@ const TABLE_CELL_ELEMENTS = ["th", "td"];
 
 const TABLE_DEFINITION_ELEMENTS = ["col", "colgroup"];
 
-const EXTERNAL_ELEMENTS = ["audio", "iframe", "math", "svg", "table", "video"];
+const EXTERNAL_ELEMENTS = ["audio", "iframe", "img", "math", "svg", "table", "video"];
 
 /**
   Here is a list of elements with planned support:

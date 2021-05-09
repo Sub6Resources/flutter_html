@@ -1,7 +1,6 @@
 library flutter_html;
 
-//export image render api
-export 'package:flutter_html/image_render.dart';
+//export custom render api
 export 'package:flutter_html/custom_render.dart';
 //export style api
 export 'package:flutter_html/style.dart';
@@ -19,7 +18,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/custom_render.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
-import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
@@ -55,7 +53,6 @@ class Html extends StatelessWidget {
     required this.data,
     this.onLinkTap,
     this.customRenders = const {},
-    this.customImageRenders = const {},
     this.onImageError,
     this.onMathError,
     this.shrinkWrap = false,
@@ -72,7 +69,6 @@ class Html extends StatelessWidget {
     @required this.document,
     this.onLinkTap,
     this.customRenders = const {},
-    this.customImageRenders = const {},
     this.onImageError,
     this.onMathError,
     this.shrinkWrap = false,
@@ -95,10 +91,6 @@ class Html extends StatelessWidget {
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
-
-  /// An API that allows you to customize the entire process of image rendering.
-  /// See the README for more details.
-  final Map<ImageSourceMatcher, ImageRender> customImageRenders;
 
   /// A function that defines what to do when an image errors
   final ImageErrorListener? onImageError;
@@ -152,9 +144,6 @@ class Html extends StatelessWidget {
         customRenders: {}
           ..addAll(customRenders)
           ..addAll(defaultRenders),
-        imageRenders: {}
-          ..addAll(customImageRenders)
-          ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
       ),
     );

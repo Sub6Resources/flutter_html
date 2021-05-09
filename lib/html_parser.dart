@@ -5,7 +5,6 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
@@ -38,7 +37,6 @@ class HtmlParser extends StatelessWidget {
 
   final Map<String, Style> style;
   final Map<CustomRenderMatcher, CustomRender> customRenders;
-  final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
   final OnTap? onAnchorTap;
 
@@ -52,7 +50,6 @@ class HtmlParser extends StatelessWidget {
     required this.shrinkWrap,
     required this.style,
     required this.customRenders,
-    required this.imageRenders,
     required this.tagsList,
   }): this.onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
@@ -324,10 +321,6 @@ class HtmlParser extends StatelessWidget {
     Context<bool> wpc,
   ) {
     if (tree.style.display == Display.BLOCK) {
-      wpc.data = false;
-    }
-
-    if (tree is ImageContentElement) {
       wpc.data = false;
     }
 

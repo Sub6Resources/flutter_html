@@ -5,7 +5,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
-import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -54,41 +53,6 @@ class TextContentElement extends ReplacedElement {
 
   @override
   Widget? toWidget(_) => null;
-}
-
-/// [ImageContentElement] is a [ReplacedElement] with an image as its content.
-/// https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img
-class ImageContentElement extends ReplacedElement {
-  final String? src;
-  final String? alt;
-
-  ImageContentElement({
-    required String name,
-    required this.src,
-    required this.alt,
-    required dom.Element node,
-  }) : super(name: name, style: Style(), node: node, alignment: PlaceholderAlignment.middle, elementId: node.id);
-
-  @override
-  Widget toWidget(RenderContext context) {
-    for (final entry in context.parser.imageRenders.entries) {
-      if (entry.key.call(attributes, element)) {
-        final widget = entry.value.call(context, attributes, element);
-        return RawGestureDetector(
-            key: AnchorKey.of(context.parser.key, this),
-          child: widget,
-          gestures: {
-            MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-                  () => MultipleTapGestureRecognizer(), (instance) {
-                instance..onTap = () => context.parser.onImageTap?.call(src, context, attributes, element);
-              },
-            ),
-          },
-        );
-      }
-    }
-    return SizedBox(width: 0, height: 0);
-  }
 }
 
 class EmptyContentElement extends ReplacedElement {
@@ -159,13 +123,6 @@ ReplacedElement parseReplacedElement(
         style: Style(whiteSpace: WhiteSpace.PRE),
         element: element,
         node: element
-      );
-    case "img":
-      return ImageContentElement(
-        name: "img",
-        src: element.attributes['src'],
-        alt: element.attributes['alt'],
-        node: element,
       );
     case "ruby":
       return RubyElement(

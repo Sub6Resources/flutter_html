@@ -58,14 +58,6 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   - [style](#style)
 
   - [navigationDelegateForIframe](#navigationdelegateforiframe)
-
-  - [customImageRender](#customimagerender)
-  
-    - [typedef ImageSourceMatcher (with examples)](#typedef-imagesourcematcher)
-    
-    - [typedef ImageRender (with examples)](#typedef-imagerender)
-    
-    - [Extended examples](#example-usages---customimagerender)
     
 - [Rendering Reference](#rendering-reference)
 
@@ -515,6 +507,7 @@ Widget html = Html(
 );
 ```
 
+<!---
 ### customImageRender:
 
 A powerful API that allows you to customize what the `Html` widget does when rendering an image, down to the most minute detail.
@@ -691,7 +684,7 @@ Widget html = Html(
 
 The above example has a matcher that checks for either a class or an id, and then returns two different widgets based on whether a class was matched or an id was matched. 
 
-The sky is the limit when using the custom image renders. You can make it as granular as you want, or as all-encompassing as you want, and you have full control of everything. Plus you get the package's style parsing to use in your custom widgets, so your code looks neat and readable!
+The sky is the limit when using the custom image renders. You can make it as granular as you want, or as all-encompassing as you want, and you have full control of everything. Plus you get the package's style parsing to use in your custom widgets, so your code looks neat and readable!--->
 
 ## Rendering Reference
 
