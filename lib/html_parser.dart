@@ -20,11 +20,6 @@ typedef OnTap = void Function(
     Map<String, String> attributes,
     dom.Element? element,
 );
-typedef OnMathError = Widget Function(
-    String parsedTex,
-    String exception,
-    String exceptionWithType,
-);
 
 class HtmlParser extends StatelessWidget {
   final Key? key;
@@ -32,7 +27,6 @@ class HtmlParser extends StatelessWidget {
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
   final ImageErrorListener? onImageError;
-  final OnMathError? onMathError;
   final bool shrinkWrap;
 
   final Map<String, Style> style;
@@ -46,7 +40,6 @@ class HtmlParser extends StatelessWidget {
     required this.onLinkTap,
     required this.onImageTap,
     required this.onImageError,
-    required this.onMathError,
     required this.shrinkWrap,
     required this.style,
     required this.customRenders,

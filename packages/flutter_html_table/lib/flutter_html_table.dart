@@ -6,7 +6,7 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
-CustomRender tableRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender tableRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   return Container(
     key: context.key,
     margin: context.style.margin,

@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-CustomRender svgTagRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgTagRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   return SvgPicture.string(
     context.tree.element?.outerHtml ?? "",
     key: context.key,
@@ -15,7 +15,7 @@ CustomRender svgTagRender = CustomRender.fromWidget(widget: (context, buildChild
   );
 });
 
-CustomRender svgDataImageRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgDataImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   final dataUri = _dataUriFormat.firstMatch(_src(context.tree.element?.attributes.cast() ?? <String, String>{})!);
   final data = dataUri?.namedGroup('data');
   if (data == null) return Container(height: 0, width: 0);
@@ -30,7 +30,7 @@ CustomRender svgDataImageRender = CustomRender.fromWidget(widget: (context, buil
   return SvgPicture.string(Uri.decodeFull(data));
 });
 
-CustomRender svgNetworkImageRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgNetworkImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   if (context.tree.element?.attributes["src"] == null) {
     return Container(height: 0, width: 0);
   }
@@ -41,7 +41,7 @@ CustomRender svgNetworkImageRender = CustomRender.fromWidget(widget: (context, b
   );
 });
 
-CustomRender svgAssetImageRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgAssetImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   if ( _src(context.tree.element?.attributes.cast() ?? <String, String>{}) == null) {
     return Container(height: 0, width: 0);
   }

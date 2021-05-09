@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:video_player/video_player.dart';
 
-CustomRender videoRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender videoRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   final sources = <String?>[
     if (context.tree.element?.attributes['src'] != null) context.tree.element!.attributes['src'],
     ...ReplacedElement.parseMediaSources(context.tree.element!.children),

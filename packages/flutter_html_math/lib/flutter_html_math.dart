@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
-CustomRender mathRender = CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender mathRender({OnMathError? onMathError}) => CustomRender.fromWidget(widget: (context, buildChildren) {
   String texStr = context.tree.element == null ? '' : parseMathRecursive(context.tree.element!, r'');
   return Container(
       width: MediaQuery.of(context.buildContext).size.width,
@@ -14,8 +14,8 @@ CustomRender mathRender = CustomRender.fromWidget(widget: (context, buildChildre
         mathStyle: MathStyle.display,
         textStyle: context.style.generateTextStyle(),
         onErrorFallback: (FlutterMathException e) {
-          if (context.parser.onMathError != null) {
-            return context.parser.onMathError!.call(texStr, e.message, e.messageWithType);
+          if (onMathError != null) {
+            return onMathError.call(texStr, e.message, e.messageWithType);
           } else {
             return Text(e.message);
           }
@@ -94,3 +94,10 @@ Map<String, String> mathML2Tex = {
   "log": r"\log",
   "ln": r"\ln",
 };
+
+typedef OnMathError = Widget Function(
+    String parsedTex,
+    String exception,
+    String exceptionWithType,
+    );
+

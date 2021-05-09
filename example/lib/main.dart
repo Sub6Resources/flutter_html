@@ -274,11 +274,7 @@ class _MyHomePageState extends State<MyHomePage> {
               mathStyle: MathStyle.display,
               textStyle: context.style.generateTextStyle(),
               onErrorFallback: (FlutterMathException e) {
-                if (context.parser.onMathError != null) {
-                  return context.parser.onMathError!.call(context.tree.element?.innerHtml ?? '', e.message, e.messageWithType);
-                } else {
-                  return Text(e.message);
-                }
+                return Text(e.message);
               },
             )),
             birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
@@ -291,15 +287,18 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
             tableMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: tableRender.widget!.call(context, buildChildren),
+              child: tableRender.call().widget!.call(context, buildChildren),
             )),
-            audioMatcher(): audioRender,
+            audioMatcher(): audioRender(),
             iframeMatcher(): iframeRender(),
-            mathMatcher(): mathRender,
-            svgTagMatcher(): svgTagRender,
-            svgDataUriMatcher(): svgDataImageRender,
-            svgAssetUriMatcher(): svgAssetImageRender,
-            svgNetworkSourceMatcher(): svgNetworkImageRender,
+            mathMatcher(): mathRender(onMathError: (error, exception, exceptionWithType) {
+              print(exception);
+              return Text(exception);
+            }),
+            svgTagMatcher(): svgTagRender(),
+            svgDataUriMatcher(): svgDataImageRender(),
+            svgAssetUriMatcher(): svgAssetImageRender(),
+            svgNetworkSourceMatcher(): svgNetworkImageRender(),
             networkSourceMatcher(domains: ["flutter.dev"]): CustomRender.fromWidget(
                 widget: (context, buildChildren) {
               return FlutterLogo(size: 36);
@@ -315,8 +314,7 @@ class _MyHomePageState extends State<MyHomePage> {
             networkImageRender(mapUrl: (url) => "https://upload.wikimedia.org" + url!),
             // Custom placeholder image for broken links
             networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
-            tableMatcher(): tableRender,
-            videoMatcher(): videoRender,
+            videoMatcher(): videoRender(),
           },
           onLinkTap: (url, _, __, ___) {
             print("Opening $url...");
