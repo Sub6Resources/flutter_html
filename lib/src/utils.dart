@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:math';
-
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
@@ -21,23 +18,6 @@ Map<String, String> namedColors = {
   "Navy": "#000080",
   "Fuchsia": "#FF00FF",
   "Purple": "#800080",
-};
-
-Map<String, String> mathML2Tex = {
-  "sin": r"\sin",
-  "sinh": r"\sinh",
-  "csc": r"\csc",
-  "csch": r"csch",
-  "cos": r"\cos",
-  "cosh": r"\cosh",
-  "sec": r"\sec",
-  "sech": r"\sech",
-  "tan": r"\tan",
-  "tanh": r"\tanh",
-  "cot": r"\cot",
-  "coth": r"\coth",
-  "log": r"\log",
-  "ln": r"\ln",
 };
 
 class Context<T> {
@@ -65,10 +45,4 @@ class CustomBorderSide {
   Color? color;
   double width;
   BorderStyle style;
-}
-
-String getRandString(int len) {
-  var random = Random.secure();
-  var values = List<int>.generate(len, (i) =>  random.nextInt(255));
-  return base64UrlEncode(values);
 }

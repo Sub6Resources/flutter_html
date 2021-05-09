@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_all/flutter_html_all.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
 void main() => runApp(new MyApp());
@@ -290,8 +291,17 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
             tableMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: (context.tree as TableLayoutElement).toWidget(context),
+              child: tableRender.widget!.call(context, buildChildren),
             )),
+            audioMatcher(): audioRender,
+            iframeMatcher(): iframeRender(),
+            mathMatcher(): mathRender,
+            svgTagMatcher(): svgTagRender,
+            svgDataUriMatcher(): svgDataImageRender,
+            svgAssetUriMatcher(): svgAssetImageRender,
+            svgNetworkSourceMatcher(): svgNetworkImageRender,
+            tableMatcher(): tableRender,
+            videoMatcher(): videoRender,
           },
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]):
@@ -327,8 +337,6 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-CustomRenderMatcher tableMatcher() => (context) => context.tree.element?.localName == 'table';
 
 CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
 

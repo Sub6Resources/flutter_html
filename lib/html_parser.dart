@@ -14,7 +14,6 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
-import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(
     String? url,
@@ -41,7 +40,6 @@ class HtmlParser extends StatelessWidget {
   final Map<CustomRenderMatcher, CustomRender> customRenders;
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
-  final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? onAnchorTap;
 
   HtmlParser({
@@ -56,7 +54,6 @@ class HtmlParser extends StatelessWidget {
     required this.customRenders,
     required this.imageRenders,
     required this.tagsList,
-    required this.navigationDelegateForIframe,
   }): this.onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
 
   @override
@@ -65,7 +62,6 @@ class HtmlParser extends StatelessWidget {
       htmlData,
       customRenders.keys.toList(),
       tagsList,
-      navigationDelegateForIframe,
       context,
       this,
     );
@@ -115,7 +111,6 @@ class HtmlParser extends StatelessWidget {
     dom.Document html,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
-    NavigationDelegate? navigationDelegateForIframe,
     BuildContext context,
     HtmlParser parser,
   ) {
@@ -131,7 +126,6 @@ class HtmlParser extends StatelessWidget {
         node,
         customRenderMatchers,
         tagsList,
-        navigationDelegateForIframe,
         context,
         parser,
       ));
@@ -148,7 +142,6 @@ class HtmlParser extends StatelessWidget {
     dom.Node node,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
-    NavigationDelegate? navigationDelegateForIframe,
     BuildContext context,
     HtmlParser parser,
   ) {
@@ -159,7 +152,6 @@ class HtmlParser extends StatelessWidget {
         childNode,
         customRenderMatchers,
         tagsList,
-        navigationDelegateForIframe,
         context,
         parser,
       ));
@@ -175,7 +167,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, navigationDelegateForIframe);
+        return parseReplacedElement(node);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
@@ -335,7 +327,7 @@ class HtmlParser extends StatelessWidget {
       wpc.data = false;
     }
 
-    if (tree is ImageContentElement || tree is SvgContentElement) {
+    if (tree is ImageContentElement) {
       wpc.data = false;
     }
 

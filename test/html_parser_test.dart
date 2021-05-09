@@ -69,7 +69,7 @@ void testNewParser() {
     print(tree.toString());
   });*/
 
-  test("Video Content Source Parser works correctly", () {
+  /*test("Video Content Source Parser works correctly", () {
     ReplacedElement videoContentElement = parseReplacedElement(
       HtmlParser.parseHTML("""
       <video width="320" height="240" controls>
@@ -108,7 +108,7 @@ void testNewParser() {
       expect(audioContentElement.src, hasLength(2),
           reason: "Not enough sources...");
     }
-  });
+  });*/
 
   test("Test style merging", () {
     Style style1 = Style(

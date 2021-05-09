@@ -12,6 +12,8 @@ export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
 export 'package:flutter_html/src/interactable_element.dart';
+//export anchor for use in flutter_html_<tag> packages
+export 'package:flutter_html/src/anchor.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/custom_render.dart';
@@ -20,7 +22,6 @@ import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:html/dom.dart' as dom;
 
 class Html extends StatelessWidget {
@@ -61,7 +62,6 @@ class Html extends StatelessWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-    this.navigationDelegateForIframe,
   }) : document = null,
         assert (data != null),
         anchorKey = GlobalKey(),
@@ -79,10 +79,9 @@ class Html extends StatelessWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-    this.navigationDelegateForIframe,
   }) : data = null,
         assert(document != null),
-  anchorKey = GlobalKey(),
+        anchorKey = GlobalKey(),
         super(key: key);
 
   /// A unique key for this Html widget to ensure uniqueness of anchors
@@ -126,17 +125,13 @@ class Html extends StatelessWidget {
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
 
-  /// Decides how to handle a specific navigation request in the WebView of an
-  /// Iframe. It's necessary to use the webview_flutter package inside the app
-  /// to use NavigationDelegate.
-  final NavigationDelegate? navigationDelegateForIframe;
-
   static List<String> get tags => new List<String>.from(STYLED_ELEMENTS)
     ..addAll(INTERACTABLE_ELEMENTS)
     ..addAll(REPLACED_ELEMENTS)
     ..addAll(LAYOUT_ELEMENTS)
     ..addAll(TABLE_CELL_ELEMENTS)
-    ..addAll(TABLE_DEFINITION_ELEMENTS);
+    ..addAll(TABLE_DEFINITION_ELEMENTS)
+    ..addAll(EXTERNAL_ELEMENTS);
 
   @override
   Widget build(BuildContext context) {
@@ -161,7 +156,6 @@ class Html extends StatelessWidget {
           ..addAll(customImageRenders)
           ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
-        navigationDelegateForIframe: navigationDelegateForIframe,
       ),
     );
   }

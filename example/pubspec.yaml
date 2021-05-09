@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter_html:
     path: ..
+  flutter_html_all:
+    path: ../packages/flutter_html_all
   flutter:
     sdk: flutter
 
