@@ -2,13 +2,21 @@
 
 SVG widget for flutter_html
 
-## Getting Started
+This package renders svg elements using the [`flutter_svg`](https://pub.dev/packages/flutter_svg) plugin.
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+When rendering SVGs, the package takes the SVG data within the `<svg>` tag and passes it to `flutter_svg`. The `width` and `height` attributes are considered while rendering, if given.
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+The package also exposes a few ways to render SVGs within an `<img>` tag, specifically base64 SVGs, asset SVGs, and network SVGs.
+
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    svgTagMatcher(): svgTagRender(),
+    svgDataUriMatcher(): svgDataImageRender(),
+    svgAssetUriMatcher(): svgAssetImageRender(),
+    svgNetworkSourceMatcher(): svgNetworkImageRender(),
+  }
+);
+```

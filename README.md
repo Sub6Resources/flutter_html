@@ -48,34 +48,32 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   - [customRender](#customrender)
 
   - [onImageError](#onimageerror)
-  
-  - [onMathError](#onmatherror)
 
   - [onImageTap](#onimagetap)
 
   - [tagsList](#tagslist)
 
   - [style](#style)
-
-  - [navigationDelegateForIframe](#navigationdelegateforiframe)
     
 - [Rendering Reference](#rendering-reference)
 
   - [Image](#image)
   
-  - [Iframe](#iframe)
+- [External Packages](#external-packages)
   
-  - [Audio](#audio)
+  - [`flutter_html_all`](#flutter_html_all)
   
-  - [Video](#video)
+  - [`flutter_html_audio`](#flutter_html_audio)
   
-  - [SVG](#svg)
+  - [`flutter_html_iframe`](#flutter_html_iframe)
   
-  - [MathML](#mathml)
+  - [`flutter_html_math`](#flutter_html_math)
   
-  - [Tex](#tex)
+  - [`flutter_html_svg`](#flutter_html_svg)
   
-  - [Table](#table)
+  - [`flutter_html_table`](#flutter_html_table)
+  
+  - [`flutter_html_video`](#flutter_html_video)
   
 - [Notes](#notes)
 
@@ -152,13 +150,10 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `onLinkTap` | A function that defines what the widget should do when a link is tapped. The function exposes the `src` of the link as a `String` to use in your implementation. |
 | `customRender` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
 | `onImageError` | A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation. |
-| `omMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
 | `shrinkWrap` | A `bool` used while rendering different widgets to specify whether they should be shrink-wrapped or not, like `ContainerSpan` |
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
 | `tagsList` | A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to include.  |
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
-| `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
-| `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
 
 ### Getters:
 
@@ -354,24 +349,6 @@ Widget html = Html(
 );
 ```
 
-### onMathError:
-
-A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`.
-
-#### Example Usage - onMathError:
-
-```dart
-Widget html = Html(
-  data: """<!-- Some MathML string that fails to parse -->""",
-  onMathError: (String parsedTex, String error, String errorWithType) {
-    //your logic here. A Widget must be returned from this function:
-    return Text(error);
-    //you can also try and fix the parsing yourself:
-    return Math.tex(correctedParsedTex);
-  },
-);
-```
-
 ### onImageTap:
 
 A function that defines what the widget should do when an image is tapped.
@@ -482,30 +459,6 @@ Widget html = Html(
 ```
 
 More examples and in-depth details available [here](https://github.com/Sub6Resources/flutter_html/wiki/Style).
-
-### navigationDelegateForIframe:
-
-Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. You can block or allow the loading of certain URLs with the `NavigationDelegate`.
-
-#### Example Usage - navigationDelegateForIframe:
-
-```dart
-Widget html = Html(
-  data: """
-   <h3>YouTube iframe:</h3>
-   <iframe src="https://google.com"></iframe>
-   <h3>Google iframe:</h3>
-   <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
-   """,
-  navigationDelegateForIframe: (NavigationRequest request) {
-    if (request.url.contains("google.com/images")) {
-      return NavigationDecision.prevent;
-    } else {
-      return NavigationDecision.navigate;
-    }
-  },
-);
-```
 
 <!---
 ### customImageRender:
@@ -692,22 +645,43 @@ This section will describe how certain HTML elements are rendered by this packag
 
 ### Image
 
-This package currently has support for base64 images, asset images, network SVGs inside an `<img>`, and network images.
+This package currently has support for base64 images, asset images, and network images.
 
 The package uses the `src` of the image to determine which of the above types to render. The order is as follows:
 1. If the `src` is null, render the alt text of the image, if any.
 2. If the `src` starts with "data:image" and contains "base64," (this indicates the image data is indeed base64), render an `Image.memory` from the base64 data.
 3. If the `src` starts with "asset:", render an `Image.asset` from the path in the `src`.
-4. If the `src` ends with ".svg", render a `SvgPicture.network` (from the [`flutter_svg`](https://pub.dev/packages/flutter_svg) package)
-5. Otherwise, just render an `Image.network`.
+4. Otherwise, just render an `Image.network`.
 
 If the rendering of any of the above fails, the package will fall back to rendering the alt text of the image, if any.
 
 Currently the package only considers the width, height, src, and alt text while rendering an image.
 
-Note that there currently is no support for SVGs either in base64 format or asset format.
+If you would like to support SVGs in an `<img>`, you should use the [`flutter_html_svg`](#flutter_html_svg) package which provides support for base64, asset, and network SVGs.
 
-### Iframe
+## External Packages
+
+### `flutter_html_all`
+
+This package is simply a convenience package that exports all the other external packages below. You should use this if you plan to activate all the renders that require external dependencies.
+
+### `flutter_html_audio`
+
+This package renders audio elements using the [`chewie_audio`](https://pub.dev/packages/chewie_audio) and the [`video_player`](https://pub.dev/packages/video_player) plugin.
+
+The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `width`, and `muted` when rendering the audio widget.
+
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    audioMatcher(): audioRender(),
+  }
+);
+```
+
+### `flutter_html_iframe`
 
 This package renders iframes using the [`webview_flutter`](https://pub.dev/packages/webview_flutter) plugin. 
 
@@ -715,41 +689,77 @@ When rendering iframes, the package considers the width, height, and sandbox att
 
 Sandbox controls the JavaScript mode of the webview - a value of `null` or `allow-scripts` will set `javascriptMode: JavascriptMode.unrestricted`, otherwise it will set `javascriptMode: JavascriptMode.disabled`.
 
-You can set the `navigationDelegate` of the webview with the `navigationDelegateForIframe` property - see [here](#navigationdelegateforiframe) for more details. 
+#### Registering the `CustomRender`:
 
-### Audio
+```dart
+Widget html = Html(
+  customRender: {
+    iframeMatcher(): iframeRender(),
+  }
+);
+```
 
-This package renders audio elements using the [`chewie_audio`](https://pub.dev/packages/chewie_audio) plugin.
+You can set the `navigationDelegate` of the webview with the `navigationDelegate` property on `iframeRender`. This allows you to block or allow the loading of certain URLs.
 
-The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `width`, and `muted` when rendering the audio widget.
+#### `NavigationDelegate` example:
 
-### Video
+```dart
+Widget html = Html(
+  customRender: {
+    iframeMatcher(): iframeRender(navigationDelegate: (NavigationRequest request) {
+      if (request.url.contains("google.com/images")) {
+        return NavigationDecision.prevent;
+      } else {
+        return NavigationDecision.navigate;
+      }
+    }),
+  }
+);
+```
 
-This package renders video elements using the [`chewie`](https://pub.dev/packages/chewie) plugin. 
+### `flutter_html_math`
 
-The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `poster`, `width`, `height`, and `muted` when rendering the video widget.
+This package renders MathML elements using the [`flutter_math_fork`](https://pub.dev/packages/flutter_math_fork) plugin.
 
-### SVG
-
-This package renders svg elements using the [`flutter_svg`](https://pub.dev/packages/flutter_svg) plugin.
-
-When rendering SVGs, the package takes the SVG data within the `<svg>` tag and passes it to `flutter_svg`. The `width` and `height` attributes are considered while rendering, if given.
-
-### MathML
-
-This package renders MathML elements using the [`flutter_math`](https://pub.dev/packages/flutter_math) plugin.
-
-When rendering MathML, the package takes the MathML data within the `<math>` tag and tries to parse it to Tex. Then, it will pass the parsed string to `flutter_math`.
+When rendering MathML, the package takes the MathML data within the `<math>` tag and tries to parse it to Tex. Then, it will pass the parsed string to `flutter_math_fork`.
 
 Because this package is parsing MathML to Tex, it may not support some functionalities. The current list of supported tags can be found [above](#currently-supported-html-tags), but some of these only have partial support at the moment.
 
-If the parsing errors, you can use the [onMathError](#onmatherror) API to catch the error and potentially fix it on your end - you can analyze the error and the parsed string, and finally return a new instance of `Math.tex()` with the corrected Tex string.
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    mathMatcher(): mathRender(),
+  }
+);
+```
+
+If the parsing errors, you can use the `onMathError` property of `mathRender` to catch the error and potentially fix it on your end.
+
+The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math_fork` as a `String`.
+
+You can analyze the error and the parsed string, and finally return a new instance of `Math.tex()` with the corrected Tex string.
+
+#### `onMathError` example:
+
+```dart
+Widget html = Html(
+  customRender: {
+    mathMatcher(): mathRender(onMathError: (tex, exception, exceptionWithType) {
+      print(exception);
+      //optionally try and correct the Tex string here
+      return Text(exception);
+    }),
+  }
+);
+```
 
 If you'd like to see more MathML features, feel free to create a PR or file a feature request!
 
-### Tex
+#### Tex
 
-If you have a Tex string you'd like to render inside your HTML you can do that using the same [`flutter_math`](https://pub.dev/packages/flutter_math) plugin.
+If you have a Tex string you'd like to render inside your HTML you can do that using the same [`flutter_math_fork`](https://pub.dev/packages/flutter_math_fork) plugin.
 
 Use a custom tag inside your HTML (an example could be `<tex>`), and place your **raw** Tex string inside.
  
@@ -764,11 +774,8 @@ Widget htmlWidget = Html(
       mathStyle: MathStyle.display,
       textStyle: context.style.generateTextStyle(),
       onErrorFallback: (FlutterMathException e) {
-        if (context.parser.onMathError != null) {
-          return context.parser.onMathError!.call(context.tree.element?.innerHtml ?? '', e.message, e.messageWithType);
-        } else {
-          return Text(e.message);
-        }
+        //optionally try and correct the Tex string here
+        return Text(e.message);
       },
     )),
   }
@@ -777,11 +784,58 @@ Widget htmlWidget = Html(
 CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
 ```
 
-### Table
+### `flutter_html_svg`
+
+This package renders svg elements using the [`flutter_svg`](https://pub.dev/packages/flutter_svg) plugin.
+
+When rendering SVGs, the package takes the SVG data within the `<svg>` tag and passes it to `flutter_svg`. The `width` and `height` attributes are considered while rendering, if given.
+
+The package also exposes a few ways to render SVGs within an `<img>` tag, specifically base64 SVGs, asset SVGs, and network SVGs.
+
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    svgTagMatcher(): svgTagRender(),
+    svgDataUriMatcher(): svgDataImageRender(),
+    svgAssetUriMatcher(): svgAssetImageRender(),
+    svgNetworkSourceMatcher(): svgNetworkImageRender(),
+  }
+);
+```
+
+### `flutter_html_table`
 
 This package renders table elements using the [`flutter_layout_grid`](https://pub.dev/packages/flutter_layout_grid) plugin.
 
 When rendering table elements, the package tries to calculate the best fit for each element and size its cell accordingly. `Rowspan`s and `colspan`s are considered in this process, so cells that span across multiple rows and columns are rendered as expected. Heights are determined intrinsically to maintain an optimal aspect ratio for the cell.
+
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    tableMatcher(): tableRender(),
+  }
+);
+```
+
+### `flutter_html_video`
+
+This package renders video elements using the [`chewie`](https://pub.dev/packages/chewie) and the [`video_player`](https://pub.dev/packages/video_player) plugin. 
+
+The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `poster`, `width`, `height`, and `muted` when rendering the video widget.
+
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    videoMatcher(): videoRender(),
+  }
+);
+```
 
 ## Notes
 
@@ -790,13 +844,13 @@ When rendering table elements, the package tries to calculate the best fit for e
 ```dart
 Widget row = Row(
    children: [
-	Expanded(
-	    child: Html(
-          shrinkWrap: true,
-          //other params
-        )
-	),
-	//whatever other widgets
+        Expanded(
+            child: Html(
+              shrinkWrap: true,
+              //other params
+            )
+        ),
+	    //whatever other widgets
    ]
 );
 ```

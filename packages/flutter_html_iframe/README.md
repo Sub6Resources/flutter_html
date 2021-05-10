@@ -2,13 +2,35 @@
 
 Iframe widget for flutter_html.
 
-## Getting Started
+This package renders iframes using the [`webview_flutter`](https://pub.dev/packages/webview_flutter) plugin. 
 
-This project is a starting point for a Dart
-[package](https://flutter.dev/developing-packages/),
-a library module containing code that can be shared easily across
-multiple Flutter or Dart projects.
+When rendering iframes, the package considers the width, height, and sandbox attributes. 
 
-For help getting started with Flutter, view our 
-[online documentation](https://flutter.dev/docs), which offers tutorials, 
-samples, guidance on mobile development, and a full API reference.
+Sandbox controls the JavaScript mode of the webview - a value of `null` or `allow-scripts` will set `javascriptMode: JavascriptMode.unrestricted`, otherwise it will set `javascriptMode: JavascriptMode.disabled`.
+
+#### Registering the `CustomRender`:
+
+```dart
+Widget html = Html(
+  customRender: {
+    iframeMatcher(): iframeRender(),
+  }
+);
+```
+You can set the `navigationDelegate` of the webview with the `navigationDelegate` property on `iframeRender`. This allows you to block or allow the loading of certain URLs.
+
+#### `NavigationDelegate` example:
+
+```dart
+Widget html = Html(
+  customRender: {
+    iframeMatcher(): iframeRender(navigationDelegate: (NavigationRequest request) {
+      if (request.url.contains("google.com/images")) {
+        return NavigationDecision.prevent;
+      } else {
+        return NavigationDecision.navigate;
+      }
+    }),
+  }
+);
+```
