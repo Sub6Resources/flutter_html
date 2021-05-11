@@ -272,7 +272,19 @@ class _MyHomePageState extends State<MyHomePage> {
                 child:
                     (context.tree as TableLayoutElement).toWidget(context),
               );
-            }
+            },
+            "bird": (RenderContext context, Widget child) {
+              return TextSpan(text: "🐦");
+            },
+            "flutter": (RenderContext context, Widget child) {
+              return FlutterLogo(
+                style: (context.tree.element!.attributes['horizontal'] != null)
+                    ? FlutterLogoStyle.horizontal
+                    : FlutterLogoStyle.markOnly,
+                textColor: context.style.color!,
+                size: context.style.fontSize!.size! * 5,
+              );
+            },
           },
           customImageRenders: {
             networkSourceMatcher(domains: ["flutter.dev"]):
