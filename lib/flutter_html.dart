@@ -11,6 +11,7 @@ export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
 export 'package:flutter_html/src/interactable_element.dart';
+export 'package:flutter_html/src/anchor.dart';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -49,6 +50,7 @@ class Html extends StatelessWidget {
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
   Html({
     Key? key,
+    Key? keyAnchor,
     required this.data,
     this.onLinkTap,
     this.customRender = const {},
@@ -62,11 +64,12 @@ class Html extends StatelessWidget {
     this.navigationDelegateForIframe,
   }) : document = null,
         assert (data != null),
-        anchorKey = GlobalKey(),
+        anchorKey = keyAnchor ?? GlobalKey(),
         super(key: key);
 
   Html.fromDom({
     Key? key,
+    Key? keyAnchor,
     @required this.document,
     this.onLinkTap,
     this.customRender = const {},
@@ -80,7 +83,7 @@ class Html extends StatelessWidget {
     this.navigationDelegateForIframe,
   }) : data = null,
         assert(document != null),
-  anchorKey = GlobalKey(),
+  anchorKey = keyAnchor ?? GlobalKey(),
         super(key: key);
 
   /// A unique key for this Html widget to ensure uniqueness of anchors
