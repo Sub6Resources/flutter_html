@@ -303,7 +303,7 @@ class _MyHomePageState extends State<MyHomePage> {
           onImageError: (exception, stackTrace) {
             print(exception);
           },
-          onCSSParseError: (css, messages) {
+          onCssParseError: (css, messages) {
             print("css that errored: $css");
             print("error messages:");
             messages.forEach((element) {

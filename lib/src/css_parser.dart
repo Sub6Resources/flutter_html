@@ -103,30 +103,30 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   return style;
 }
 
-Style? inlineCSSToStyle(String? inlineStyle, OnCSSParseError? errorHandler) {
+Style? inlineCssToStyle(String? inlineStyle, OnCssParseError? errorHandler) {
   var errors = <cssparser.Message>[];
   final sheet = cssparser.parse("*{$inlineStyle}", errors: errors);
   if (errors.isEmpty) {
     final declarations = DeclarationVisitor().getDeclarations(sheet);
     return declarationsToStyle(declarations["*"]!);
   } else if (errorHandler != null) {
-    String? newCSS = errorHandler.call(inlineStyle ?? "", errors);
-    if (newCSS != null) {
-      return inlineCSSToStyle(newCSS, errorHandler);
+    String? newCss = errorHandler.call(inlineStyle ?? "", errors);
+    if (newCss != null) {
+      return inlineCssToStyle(newCss, errorHandler);
     }
   }
   return null;
 }
 
-Map<String, Map<String, List<css.Expression>>> parseExternalCSS(String css, OnCSSParseError? errorHandler) {
+Map<String, Map<String, List<css.Expression>>> parseExternalCss(String css, OnCssParseError? errorHandler) {
   var errors = <cssparser.Message>[];
   final sheet = cssparser.parse(css, errors: errors);
   if (errors.isEmpty) {
     return DeclarationVisitor().getDeclarations(sheet);
   } else if (errorHandler != null) {
-    String? newCSS = errorHandler.call(css, errors);
-    if (newCSS != null) {
-      return parseExternalCSS(newCSS, errorHandler);
+    String? newCss = errorHandler.call(css, errors);
+    if (newCss != null) {
+      return parseExternalCss(newCss, errorHandler);
     }
   }
   return {};

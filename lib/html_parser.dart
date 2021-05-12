@@ -28,7 +28,7 @@ typedef OnMathError = Widget Function(
     String exception,
     String exceptionWithType,
 );
-typedef OnCSSParseError = String? Function(
+typedef OnCssParseError = String? Function(
   String css,
   List<cssparser.Message> errors,
 );
@@ -42,7 +42,7 @@ class HtmlParser extends StatelessWidget {
   final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
-  final OnCSSParseError? onCSSParseError;
+  final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
   final bool shrinkWrap;
@@ -59,7 +59,7 @@ class HtmlParser extends StatelessWidget {
     required this.htmlData,
     required this.onLinkTap,
     required this.onImageTap,
-    required this.onCSSParseError,
+    required this.onCssParseError,
     required this.onImageError,
     required this.onMathError,
     required this.shrinkWrap,
@@ -72,18 +72,18 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCSSDeclarations(htmlData.getElementsByTagName("style"), onCSSParseError);
+    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCssDeclarations(htmlData.getElementsByTagName("style"), onCssParseError);
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRender.keys.toList(),
       tagsList,
       navigationDelegateForIframe,
     );
-    StyledElement? externalCSSStyledTree;
+    StyledElement? externalCssStyledTree;
     if (declarations.isNotEmpty) {
-      externalCSSStyledTree = _applyExternalCSS(declarations, lexedTree);
+      externalCssStyledTree = _applyExternalCss(declarations, lexedTree);
     }
-    StyledElement inlineStyledTree = _applyInlineStyles(externalCSSStyledTree ?? lexedTree, onCSSParseError);
+    StyledElement inlineStyledTree = _applyInlineStyles(externalCssStyledTree ?? lexedTree, onCssParseError);
     StyledElement customStyledTree = _applyCustomStyles(style, inlineStyledTree);
     StyledElement cascadedStyledTree = _cascadeStyles(style, customStyledTree);
     StyledElement cleanedTree = cleanTree(cascadedStyledTree);
@@ -119,8 +119,8 @@ class HtmlParser extends StatelessWidget {
     return htmlparser.parse(data);
   }
 
-  /// [parseCSS] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
-  static css.StyleSheet parseCSS(String data) {
+  /// [parseCss] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
+  static css.StyleSheet parseCss(String data) {
     return cssparser.parse(data);
   }
 
@@ -200,34 +200,34 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static Map<String, Map<String, List<css.Expression>>> _getExternalCSSDeclarations(List<dom.Element> styles, OnCSSParseError? errorHandler) {
-    String fullCSS = "";
+  static Map<String, Map<String, List<css.Expression>>> _getExternalCssDeclarations(List<dom.Element> styles, OnCssParseError? errorHandler) {
+    String fullCss = "";
     for (final e in styles) {
-      fullCSS = fullCSS + e.innerHtml;
+      fullCss = fullCss + e.innerHtml;
     }
-    if (fullCSS.isNotEmpty) {
-      final declarations = parseExternalCSS(fullCSS, errorHandler);
+    if (fullCss.isNotEmpty) {
+      final declarations = parseExternalCss(fullCss, errorHandler);
       return declarations;
     } else {
       return {};
     }
   }
 
-  static StyledElement _applyExternalCSS(Map<String, Map<String, List<css.Expression>>> declarations, StyledElement tree) {
+  static StyledElement _applyExternalCss(Map<String, Map<String, List<css.Expression>>> declarations, StyledElement tree) {
     declarations.forEach((key, style) {
       if (tree.matchesSelector(key)) {
         tree.style = tree.style.merge(declarationsToStyle(style));
       }
     });
 
-    tree.children.forEach((e) => _applyExternalCSS(declarations, e));
+    tree.children.forEach((e) => _applyExternalCss(declarations, e));
 
     return tree;
   }
 
-  static StyledElement _applyInlineStyles(StyledElement tree, OnCSSParseError? errorHandler) {
+  static StyledElement _applyInlineStyles(StyledElement tree, OnCssParseError? errorHandler) {
     if (tree.attributes.containsKey("style")) {
-      final newStyle = inlineCSSToStyle(tree.attributes['style'], errorHandler);
+      final newStyle = inlineCssToStyle(tree.attributes['style'], errorHandler);
       if (newStyle != null) {
         tree.style = tree.style.merge(newStyle);
       }

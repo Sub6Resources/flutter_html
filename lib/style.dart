@@ -242,8 +242,8 @@ class Style {
     'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
   };
 
-  static Map<String, Style> fromCSS(String css, OnCSSParseError? onCSSParseError) {
-    final declarations = parseExternalCSS(css, onCSSParseError);
+  static Map<String, Style> fromCss(String css, OnCssParseError? onCssParseError) {
+    final declarations = parseExternalCss(css, onCssParseError);
     Map<String, Style> styleMap = {};
     declarations.forEach((key, value) {
       styleMap[key] = declarationsToStyle(value);
