@@ -21,3 +21,7 @@ NOTE: Before posting, please make sure you have
 
 **Additional context**
 <!--- Any other info relevant to the feature request, otherwise please delete --->
+
+**A picture of a cute animal (not mandatory but encouraged)**
+<!--- A picture of a cute animal that would nicely complement this feature request. 
+If you don't have one, please delete, just know we will be a little disappointed ;) --->

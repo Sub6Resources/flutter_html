@@ -40,3 +40,7 @@ NOTE: Before posting, please make sure you have
 
 **Additional info:**
 <!--- Any other info relevant to the bug, otherwise please delete --->
+
+**A picture of a cute animal (not mandatory but encouraged)**
+<!--- A picture of a cute animal that would nicely complement this bug report. 
+If you don't have one, please delete, just know we will be a little disappointed ;) --->

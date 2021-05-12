@@ -14,3 +14,7 @@ NOTE: Before posting, please make sure you have
  --->
 
 Type question here.
+
+**A picture of a cute animal (not mandatory but encouraged)**
+<!--- A picture of a cute animal that would nicely complement this question. 
+If you don't have one, please delete, just know we will be a little disappointed ;) --->
