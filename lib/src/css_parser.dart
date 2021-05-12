@@ -194,6 +194,26 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
           break;
+        case 'list-style':
+          css.LiteralTerm? position = value.firstWhereOrNull((e) => e is css.LiteralTerm && (e.text == "outside" || e.text == "inside")) as css.LiteralTerm?;
+          css.UriTerm? image = value.firstWhereOrNull((e) => e is css.UriTerm) as css.UriTerm?;
+          css.LiteralTerm? type = value.firstWhereOrNull((e) => e is css.LiteralTerm && e.text != "outside" && e.text != "inside") as css.LiteralTerm?;
+          if (position != null) {
+            switch (position.text) {
+              case 'outside':
+                style.listStylePosition = ListStylePosition.OUTSIDE;
+                break;
+              case 'inside':
+                style.listStylePosition = ListStylePosition.INSIDE;
+                break;
+            }
+          }
+          if (image != null) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(image) ?? style.listStyleType;
+          } else if (type != null) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(type) ?? style.listStyleType;
+          }
+          break;
         case 'list-style-image':
           if (value.first is css.UriTerm) {
             style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.UriTerm) ?? style.listStyleType;
