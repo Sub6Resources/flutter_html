@@ -194,6 +194,23 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
           break;
+        case 'list-style-image':
+          if (value.first is css.UriTerm) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.UriTerm) ?? style.listStyleType;
+          }
+          break;
+        case 'list-style-position':
+          if (value.first is css.LiteralTerm) {
+            switch ((value.first as css.LiteralTerm).text) {
+              case 'outside':
+                style.listStylePosition = ListStylePosition.OUTSIDE;
+                break;
+              case 'inside':
+                style.listStylePosition = ListStylePosition.INSIDE;
+                break;
+            }
+          }
+          break;
         case 'list-style-type':
           if (value.first is css.LiteralTerm) {
             style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.LiteralTerm) ?? style.listStyleType;
@@ -661,6 +678,9 @@ class ExpressionMapping {
   }
 
   static ListStyleType? expressionToListStyleType(css.LiteralTerm value) {
+    if (value is css.UriTerm) {
+      return ListStyleType.fromImage(value.text);
+    }
     switch (value.text) {
       case 'disc':
         return ListStyleType.DISC;

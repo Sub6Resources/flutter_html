@@ -175,7 +175,7 @@ class Style {
   String? after;
   Border? border;
   Alignment? alignment;
-  String? markerContent;
+  Widget? markerContent;
 
   /// MaxLine
   ///
@@ -205,7 +205,7 @@ class Style {
     this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
-    this.listStylePosition = ListStylePosition.OUTSIDE,
+    this.listStylePosition,
     this.padding,
     this.margin,
     this.textAlign,
@@ -388,7 +388,7 @@ class Style {
     String? after,
     Border? border,
     Alignment? alignment,
-    String? markerContent,
+    Widget? markerContent,
     int? maxLines,
     TextOverflow? textOverflow,
     bool? beforeAfterNull,
@@ -519,17 +519,27 @@ class LineHeight {
   static const normal = LineHeight(1.2);
 }
 
-enum ListStyleType {
-  LOWER_ALPHA,
-  UPPER_ALPHA,
-  LOWER_LATIN,
-  UPPER_LATIN,
-  CIRCLE,
-  DISC,
-  DECIMAL,
-  LOWER_ROMAN,
-  UPPER_ROMAN,
-  SQUARE,
+class ListStyleType {
+  final String text;
+  final String type;
+  final Widget? widget;
+
+  const ListStyleType(this.text, {this.type = "marker", this.widget});
+
+  factory ListStyleType.fromImage(String url) => ListStyleType(url, type: "image");
+
+  factory ListStyleType.fromWidget(Widget widget) => ListStyleType("", widget: widget, type: "widget");
+
+  static const LOWER_ALPHA = ListStyleType("LOWER_ALPHA");
+  static const UPPER_ALPHA = ListStyleType("UPPER_ALPHA");
+  static const LOWER_LATIN = ListStyleType("LOWER_LATIN");
+  static const UPPER_LATIN = ListStyleType("UPPER_LATIN");
+  static const CIRCLE = ListStyleType("CIRCLE");
+  static const DISC = ListStyleType("DISC");
+  static const DECIMAL = ListStyleType("DECIMAL");
+  static const LOWER_ROMAN = ListStyleType("LOWER_ROMAN");
+  static const UPPER_ROMAN = ListStyleType("UPPER_ROMAN");
+  static const SQUARE = ListStyleType("SQUARE");
 }
 
 enum ListStylePosition {
