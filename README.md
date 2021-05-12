@@ -86,7 +86,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^1.3.0
+      flutter_html: ^2.0.0
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
@@ -113,9 +113,9 @@ Add the following to your `pubspec.yaml` file:
 ## Currently Supported Inline CSS Attributes:
 |                  |        |            |          |              |                        |            |
 |------------------|--------|------------|----------|--------------|------------------------|------------|
-|`background-color`| `border` | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
-| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`     |
-| `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
+|`background-color`| `border` (including specific directions) | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
+| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`  (including specific directions)   |
+| `margin` (including specific directions) | `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
 
 Don't see a tag or attribute you need? File a feature request or contribute to the project!
 
@@ -229,9 +229,11 @@ Widget html = Html(
 );
 ```
 
+Inner links (such as `<a href="#top">Back to the top</a>` will work out of the box by scrolling the viewport, as long as your `Html` widget is wrapped in a scroll container such as a `SingleChildScrollView`.
+
 ### customRender:
 
-A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
+A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can change the default behaviour or add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
 `customRender` accepts a `Map<CustomRenderMatcher, CustomRender>`. 
 
@@ -243,7 +245,6 @@ To use this API, create a matching function and an instance of `CustomRender`.
 
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
-<details><summary>View code</summary>
 
 ```dart
 Widget html = Html(
@@ -268,9 +269,33 @@ CustomRenderMatcher birdMatcher() => (context) => context.tree.element?.localNam
 
 CustomRenderMatcher flutterMatcher() => (context) => context.tree.element?.localName == 'flutter';
 ```
-</details>
 
-2. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content
+2. Complex example - wrapping the default widget with your own, in this case placing a horizontal scroll around a (potentially too wide) table.
+//todo
+<details><summary>View code</summary>
+
+```dart
+Widget html = Html(
+  data: """
+  <table style="width:100%">
+    <caption>Monthly savings</caption>
+    <tr> <th>January</th> <th>February</th> <th>March</th> <th>April</th> <th>May</th> <th>June</th> <th>July</th> <th>August</th> <th>September</th> <th>October</th> <th>November</th> <th>December</th> </tr>
+    <tr> <td>\$100</td> <td>\$50</td> <td>\$80</td> <td>\$60</td> <td>\$90</td> <td>\$140</td> <td>\$110</td> <td>\$80</td> <td>\$90</td> <td>\$60</td> <td>\$40</td> <td>\$70</td> </tr>
+    <tr> <td>\90</td> <td>\$60</td> <td>\$80</td> <td>\$80</td> <td>\$100</td> <td>\$160</td> <td>\$150</td> <td>\$110</td> <td>\$100</td> <td>\$60</td> <td>\$30</td> <td>\$80</td> </tr>
+  </table>
+  """,
+  customRender: {
+    "table": (context, child) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: (context.tree as TableLayoutElement).toWidget(context),
+      );
+    }
+  },
+);
+```
+
+3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
 <details><summary>View code</summary>
 

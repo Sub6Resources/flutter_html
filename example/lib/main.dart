@@ -267,6 +267,30 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
           },
+          customRender: {
+            "table": (context, child) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child:
+                    (context.tree as TableLayoutElement).toWidget(context),
+              );
+            },
+            "bird": (RenderContext context, Widget child) {
+              return TextSpan(text: "🐦");
+            },
+            "flutter": (RenderContext context, Widget child) {
+              return FlutterLogo(
+                style: (context.tree.element!.attributes['horizontal'] != null)
+                    ? FlutterLogoStyle.horizontal
+                    : FlutterLogoStyle.markOnly,
+                textColor: context.style.color!,
+                size: context.style.fontSize!.size! * 5,
+              );
+            },
+          },
+          customImageRenders: {
+            networkSourceMatcher(domains: ["flutter.dev"]):
+                (context, attributes, element) {
           tagsList: Html.tags..addAll(["tex", "bird", "flutter"]),
           customRenders: {
             texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
