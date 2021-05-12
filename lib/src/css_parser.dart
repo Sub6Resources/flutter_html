@@ -5,10 +5,11 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 
-Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
+Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   Style style = new Style();
   declarations.forEach((property, value) {
     if (value.isNotEmpty) {
@@ -298,34 +299,73 @@ Style declarationsToStyle(Map<String?, List<css.Expression>> declarations) {
   return style;
 }
 
-Style inlineCSSToStyle(String? inlineStyle) {
-  final sheet = cssparser.parse("*{$inlineStyle}");
-  final declarations = DeclarationVisitor().getDeclarations(sheet)!;
-  return declarationsToStyle(declarations);
+Style? inlineCssToStyle(String? inlineStyle, OnCssParseError? errorHandler) {
+  var errors = <cssparser.Message>[];
+  final sheet = cssparser.parse("*{$inlineStyle}", errors: errors);
+  if (errors.isEmpty) {
+    final declarations = DeclarationVisitor().getDeclarations(sheet);
+    return declarationsToStyle(declarations["*"]!);
+  } else if (errorHandler != null) {
+    String? newCss = errorHandler.call(inlineStyle ?? "", errors);
+    if (newCss != null) {
+      return inlineCssToStyle(newCss, errorHandler);
+    }
+  }
+  return null;
+}
+
+Map<String, Map<String, List<css.Expression>>> parseExternalCss(String css, OnCssParseError? errorHandler) {
+  var errors = <cssparser.Message>[];
+  final sheet = cssparser.parse(css, errors: errors);
+  if (errors.isEmpty) {
+    return DeclarationVisitor().getDeclarations(sheet);
+  } else if (errorHandler != null) {
+    String? newCss = errorHandler.call(css, errors);
+    if (newCss != null) {
+      return parseExternalCss(newCss, errorHandler);
+    }
+  }
+  return {};
 }
 
 class DeclarationVisitor extends css.Visitor {
-  Map<String?, List<css.Expression>>? _result;
-  String? _currentProperty;
+  Map<String, Map<String, List<css.Expression>>> _result = {};
+  Map<String, List<css.Expression>> _properties = {};
+  late String _selector;
+  late String _currentProperty;
 
-  Map<String?, List<css.Expression>>? getDeclarations(css.StyleSheet sheet) {
-    _result = new Map<String?, List<css.Expression>>();
-    sheet.visit(this);
+  Map<String, Map<String, List<css.Expression>>> getDeclarations(css.StyleSheet sheet) {
+    sheet.topLevels.forEach((element) {
+      if (element.span != null) {
+        _selector = element.span!.text;
+        element.visit(this);
+        if (_result[_selector] != null) {
+          _properties.forEach((key, value) {
+            if (_result[_selector]![key] != null) {
+              _result[_selector]![key]!.addAll(new List<css.Expression>.from(value));
+            } else {
+              _result[_selector]![key] = new List<css.Expression>.from(value);
+            }
+          });
+        } else {
+          _result[_selector] = new Map<String, List<css.Expression>>.from(_properties);
+        }
+        _properties.clear();
+      }
+    });
     return _result;
   }
 
   @override
   void visitDeclaration(css.Declaration node) {
     _currentProperty = node.property;
-    _result![_currentProperty] = <css.Expression>[];
+    _properties[_currentProperty] = <css.Expression>[];
     node.expression!.visit(this);
   }
 
   @override
   void visitExpressions(css.Expressions node) {
-    node.expressions.forEach((expression) {
-      _result![_currentProperty]!.add(expression);
-    });
+    _properties[_currentProperty]!.addAll(node.expressions);
   }
 }
 
