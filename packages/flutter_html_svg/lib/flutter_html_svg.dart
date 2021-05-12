@@ -45,7 +45,8 @@ CustomRender svgAssetImageRender() => CustomRender.fromWidget(widget: (context, 
   if ( _src(context.tree.element?.attributes.cast() ?? <String, String>{}) == null) {
     return Container(height: 0, width: 0);
   }
-  return SvgPicture.asset( _src(context.tree.element!.attributes.cast())!);
+  final assetPath = _src(context.tree.element!.attributes.cast())!.replaceFirst('asset:', '');
+  return SvgPicture.asset(assetPath);
 });
 
 CustomRenderMatcher svgTagMatcher() => (context) {

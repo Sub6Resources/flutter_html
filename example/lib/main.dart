@@ -267,31 +267,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
           },
-          customRender: {
-            "table": (context, child) {
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child:
-                    (context.tree as TableLayoutElement).toWidget(context),
-              );
-            },
-            "bird": (RenderContext context, Widget child) {
-              return TextSpan(text: "🐦");
-            },
-            "flutter": (RenderContext context, Widget child) {
-              return FlutterLogo(
-                style: (context.tree.element!.attributes['horizontal'] != null)
-                    ? FlutterLogoStyle.horizontal
-                    : FlutterLogoStyle.markOnly,
-                textColor: context.style.color!,
-                size: context.style.fontSize!.size! * 5,
-              );
-            },
-          },
-          customImageRenders: {
-            networkSourceMatcher(domains: ["flutter.dev"]):
-                (context, attributes, element) {
-          tagsList: Html.tags..addAll(["tex", "bird", "flutter"]),
+          tagsList: Html.tags..addAll(['tex', 'bird', 'flutter']),
           customRenders: {
             texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
               context.tree.element?.innerHtml ?? '',
@@ -325,15 +301,15 @@ class _MyHomePageState extends State<MyHomePage> {
             svgNetworkSourceMatcher(): svgNetworkImageRender(),
             networkSourceMatcher(domains: ["flutter.dev"]): CustomRender.fromWidget(
                 widget: (context, buildChildren) {
-              return FlutterLogo(size: 36);
-            }),
+                  return FlutterLogo(size: 36);
+                }),
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt ?? ""),
               loadingWidget: () => Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url
-            (context) => context.tree.element?.attributes["src"] != null
+                (context) => context.tree.element?.attributes["src"] != null
                 && context.tree.element!.attributes["src"]!.startsWith("/wiki"):
             networkImageRender(mapUrl: (url) => "https://upload.wikimedia.org" + url!),
             // Custom placeholder image for broken links

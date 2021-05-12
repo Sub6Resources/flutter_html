@@ -148,7 +148,7 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `data` | The HTML data passed to the `Html` widget. This is required and cannot be null when using `Html()`. |
 | `document` | The DOM document passed to the `Html` widget. This is required and cannot be null when using `Html.fromDom()`. |
 | `onLinkTap` | A function that defines what the widget should do when a link is tapped. The function exposes the `src` of the link as a `String` to use in your implementation. |
-| `customRender` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
+| `customRenders` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
 | `onImageError` | A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation. |
 | `shrinkWrap` | A `bool` used while rendering different widgets to specify whether they should be shrink-wrapped or not, like `ContainerSpan` |
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
@@ -231,7 +231,7 @@ Widget html = Html(
 
 Inner links (such as `<a href="#top">Back to the top</a>` will work out of the box by scrolling the viewport, as long as your `Html` widget is wrapped in a scroll container such as a `SingleChildScrollView`.
 
-### customRender:
+### customRenders:
 
 A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can change the default behaviour or add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
@@ -243,7 +243,7 @@ The `CustomRender` class has two constructors: `CustomRender.fromWidget()` and `
 
 To use this API, create a matching function and an instance of `CustomRender`. 
 
-#### Example Usages - customRender:
+#### Example Usages - customRenders:
 1. Simple example - rendering custom HTML tags
 
 ```dart
@@ -253,7 +253,7 @@ Widget html = Html(
   <flutter></flutter>
   <flutter horizontal></flutter>
   """,
-  customRender: {
+  customRenders: {
       birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
       flutterMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => FlutterLogo(
         style: (context.tree.element!.attributes['horizontal'] != null)
@@ -271,7 +271,9 @@ CustomRenderMatcher flutterMatcher() => (context) => context.tree.element?.local
 ```
 
 2. Complex example - wrapping the default widget with your own, in this case placing a horizontal scroll around a (potentially too wide) table.
-//todo
+
+Note: Requires the [`flutter_html_table`](#flutter_html_table) package.
+
 <details><summary>View code</summary>
 
 ```dart
@@ -284,15 +286,17 @@ Widget html = Html(
     <tr> <td>\90</td> <td>\$60</td> <td>\$80</td> <td>\$80</td> <td>\$100</td> <td>\$160</td> <td>\$150</td> <td>\$110</td> <td>\$100</td> <td>\$60</td> <td>\$30</td> <td>\$80</td> </tr>
   </table>
   """,
-  customRender: {
-    "table": (context, child) {
+  customRenders: {
+    tableMatcher(): CustomRender.fromWidget(widget: (context, child) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: (context.tree as TableLayoutElement).toWidget(context),
       );
-    }
+    }),
   },
 );
+
+CustomRenderMatcher tableMatcher() => (context) => context.tree.element?.localName == "table";
 ```
 
 3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
@@ -307,7 +311,7 @@ Widget html = Html(
    <h3>YouTube iframe:</h3>
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
-   customRender: {
+   customRenders: {
       iframeYT(): CustomRender.fromWidget(widget: (context, buildChildren) {
         double? width = double.tryParse(context.tree.attributes['width'] ?? "");
         double? height = double.tryParse(context.tree.attributes['height'] ?? "");
@@ -700,7 +704,7 @@ The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `wid
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     audioMatcher(): audioRender(),
   }
 );
@@ -718,7 +722,7 @@ Sandbox controls the JavaScript mode of the webview - a value of `null` or `allo
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     iframeMatcher(): iframeRender(),
   }
 );
@@ -730,7 +734,7 @@ You can set the `navigationDelegate` of the webview with the `navigationDelegate
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     iframeMatcher(): iframeRender(navigationDelegate: (NavigationRequest request) {
       if (request.url.contains("google.com/images")) {
         return NavigationDecision.prevent;
@@ -754,7 +758,7 @@ Because this package is parsing MathML to Tex, it may not support some functiona
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     mathMatcher(): mathRender(),
   }
 );
@@ -770,7 +774,7 @@ You can analyze the error and the parsed string, and finally return a new instan
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     mathMatcher(): mathRender(onMathError: (tex, exception, exceptionWithType) {
       print(exception);
       //optionally try and correct the Tex string here
@@ -793,7 +797,7 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 ```dart
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
-  customRender: {
+  customRenders: {
     texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
       context.tree.element?.innerHtml ?? '',
       mathStyle: MathStyle.display,
@@ -821,7 +825,7 @@ The package also exposes a few ways to render SVGs within an `<img>` tag, specif
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     svgTagMatcher(): svgTagRender(),
     svgDataUriMatcher(): svgDataImageRender(),
     svgAssetUriMatcher(): svgAssetImageRender(),
@@ -840,7 +844,7 @@ When rendering table elements, the package tries to calculate the best fit for e
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     tableMatcher(): tableRender(),
   }
 );
@@ -856,7 +860,7 @@ The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `pos
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     videoMatcher(): videoRender(),
   }
 );
