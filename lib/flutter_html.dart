@@ -55,6 +55,7 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.customRenders = const {},
     this.customImageRenders = const {},
+    this.onCssParseError,
     this.onImageError,
     this.onMathError,
     this.shrinkWrap = false,
@@ -73,6 +74,7 @@ class Html extends StatelessWidget {
     this.onLinkTap,
     this.customRenders = const {},
     this.customImageRenders = const {},
+    this.onCssParseError,
     this.onImageError,
     this.onMathError,
     this.shrinkWrap = false,
@@ -100,6 +102,9 @@ class Html extends StatelessWidget {
   /// An API that allows you to customize the entire process of image rendering.
   /// See the README for more details.
   final Map<ImageSourceMatcher, ImageRender> customImageRenders;
+
+  /// A function that defines what to do when CSS fails to parse
+  final OnCssParseError? onCssParseError;
 
   /// A function that defines what to do when an image errors
   final ImageErrorListener? onImageError;
@@ -150,6 +155,7 @@ class Html extends StatelessWidget {
         htmlData: doc,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
+        onCssParseError: onCssParseError,
         onImageError: onImageError,
         onMathError: onMathError,
         shrinkWrap: shrinkWrap,

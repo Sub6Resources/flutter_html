@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/css_parser.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package.
@@ -240,6 +242,15 @@ class Style {
     'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
   };
 
+  static Map<String, Style> fromCss(String css, OnCssParseError? onCssParseError) {
+    final declarations = parseExternalCss(css, onCssParseError);
+    Map<String, Style> styleMap = {};
+    declarations.forEach((key, value) {
+      styleMap[key] = declarationsToStyle(value);
+    });
+    return styleMap;
+  }
+
   TextStyle generateTextStyle() {
     return TextStyle(
       backgroundColor: backgroundColor,
@@ -304,7 +315,6 @@ class Style {
       //TODO merge border
       alignment: other.alignment,
       markerContent: other.markerContent,
-
       maxLines: other.maxLines,
       textOverflow: other.textOverflow,
     );
