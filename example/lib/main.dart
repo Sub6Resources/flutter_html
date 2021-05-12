@@ -42,6 +42,8 @@ const htmlData = r"""
         </ruby>
         &nbsp;is Japanese Kanji.
       </p>
+      <h3>Support for maxLines:</h3>
+      <h5>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec vestibulum sapien feugiat lorem tempor, id porta orci elementum. Fusce sed justo id arcu egestas congue. Fusce tincidunt lacus ipsum, in imperdiet felis ultricies eu. In ullamcorper risus felis, ac maximus dui bibendum vel. Integer ligula tortor, facilisis eu mauris ut, ultrices hendrerit ex. Donec scelerisque massa consequat, eleifend mauris eu, mollis dui. Donec placerat augue tortor, et tincidunt quam tempus non. Quisque sagittis enim nisi, eu condimentum lacus egestas ac. Nam facilisis luctus ipsum, at aliquam urna fermentum a. Quisque tortor dui, faucibus in ante eget, pellentesque mattis nibh. In augue dolor, euismod vitae eleifend nec, tempus vel urna. Donec vitae augue accumsan ligula fringilla ultrices et vel ex.</h5>
       <h3>Support for <code>sub</code>/<code>sup</code></h3>
       Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
       <p>One of the most <span>common</span> equations in all of physics is <br /><var>E</var>=<var>m</var><var>c</var><sup>2</sup>.</p>
@@ -263,30 +265,48 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.all(6),
               alignment: Alignment.topLeft,
             ),
+            'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
           },
           customRender: {
             "table": (context, child) {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                child: (context.tree as TableLayoutElement).toWidget(context),
+                child:
+                    (context.tree as TableLayoutElement).toWidget(context),
               );
-            }
+            },
+            "bird": (RenderContext context, Widget child) {
+              return TextSpan(text: "🐦");
+            },
+            "flutter": (RenderContext context, Widget child) {
+              return FlutterLogo(
+                style: (context.tree.element!.attributes['horizontal'] != null)
+                    ? FlutterLogoStyle.horizontal
+                    : FlutterLogoStyle.markOnly,
+                textColor: context.style.color!,
+                size: context.style.fontSize!.size! * 5,
+              );
+            },
           },
           customImageRenders: {
-            networkSourceMatcher(domains: ["flutter.dev"]): (context, attributes, element) {
+            networkSourceMatcher(domains: ["flutter.dev"]):
+                (context, attributes, element) {
               return FlutterLogo(size: 36);
             },
-            networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
+            networkSourceMatcher(domains: ["mydomain.com"]):
+                networkImageRender(
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt ?? ""),
               loadingWidget: () => Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url
-            (attr, _) => attr["src"] != null && attr["src"]!.startsWith("/wiki"):
+            (attr, _) =>
+                    attr["src"] != null && attr["src"]!.startsWith("/wiki"):
                 networkImageRender(
                     mapUrl: (url) => "https://upload.wikimedia.org" + url!),
             // Custom placeholder image for broken links
-            networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
+            networkSourceMatcher():
+                networkImageRender(altWidget: (_) => FlutterLogo()),
           },
           onLinkTap: (url, _, __, ___) {
             print("Opening $url...");
@@ -296,6 +316,13 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           onImageError: (exception, stackTrace) {
             print(exception);
+          },
+          onCssParseError: (css, messages) {
+            print("css that errored: $css");
+            print("error messages:");
+            messages.forEach((element) {
+              print(element);
+            });
           },
         ),
       ),

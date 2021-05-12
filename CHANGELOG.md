@@ -1,3 +1,20 @@
+## [2.0.0] - April 29, 2021:
+* Stable release with all 2.0.0-nullsafety.X changes
+
+## [2.0.0-nullsafety.1] - April 29, 2021:
+* Support basic MathML
+* Support inner links
+* Supply full context tree to custom render
+* Include or exclude specific tags via `tagsList` parameter
+* Fixed lists not rendering correctly
+* Fixes for colspans in tables
+* Fixed various exceptions when using inline styles
+* Fixed text decoration not cascading between parent and child
+* [BREAKING] support whitelisting tags
+   * See the README for details on how to migrate `blacklistedElements` (deprecated) to `tagsList`
+*  Fixed `failed assertion` error when tap-scrolling on any link
+* Updated dependencies
+
 ## [2.0.0-nullsafety.0] - March 5, 2021:
 * Nullsafety support
 * Official Flutter Web support
