@@ -286,7 +286,7 @@ CustomRenderMatcher flutterMatcher() => (context) => context.tree.element?.local
 2. Complex example - wrapping the default widget with your own, in this case placing a horizontal scroll around a (potentially too wide) table.
 
 <details><summary>View code</summary>
-//todo
+
 ```dart
 Widget html = Html(
   data: """
@@ -298,15 +298,19 @@ Widget html = Html(
   </table>
   """,
   customRender: {
-    "table": (context, child) {
+    tableMatcher(): CustomRender.fromWidget(widget: (context, child) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: (context.tree as TableLayoutElement).toWidget(context),
       );
-    }
+    }),
   },
 );
+
+CustomRenderMatcher tableMatcher() => (context) => context.tree.element?.localName == "table" ?? false;
 ```
+
+</details>
 
 3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
