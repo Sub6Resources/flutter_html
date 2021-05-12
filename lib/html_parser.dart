@@ -28,6 +28,10 @@ typedef OnMathError = Widget Function(
     String exception,
     String exceptionWithType,
 );
+typedef OnCssParseError = String? Function(
+  String css,
+  List<cssparser.Message> errors,
+);
 typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
@@ -38,6 +42,7 @@ class HtmlParser extends StatelessWidget {
   final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
+  final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
   final bool shrinkWrap;
@@ -54,6 +59,7 @@ class HtmlParser extends StatelessWidget {
     required this.htmlData,
     required this.onLinkTap,
     required this.onImageTap,
+    required this.onCssParseError,
     required this.onImageError,
     required this.onMathError,
     required this.shrinkWrap,
@@ -66,15 +72,20 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCssDeclarations(htmlData.getElementsByTagName("style"), onCssParseError);
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRender.keys.toList(),
       tagsList,
       navigationDelegateForIframe,
     );
-    StyledElement inlineStyledTree = applyInlineStyles(lexedTree);
-    StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
-    StyledElement cascadedStyledTree = _cascadeStyles(customStyledTree);
+    StyledElement? externalCssStyledTree;
+    if (declarations.isNotEmpty) {
+      externalCssStyledTree = _applyExternalCss(declarations, lexedTree);
+    }
+    StyledElement inlineStyledTree = _applyInlineStyles(externalCssStyledTree ?? lexedTree, onCssParseError);
+    StyledElement customStyledTree = _applyCustomStyles(style, inlineStyledTree);
+    StyledElement cascadedStyledTree = _cascadeStyles(style, customStyledTree);
     StyledElement cleanedTree = cleanTree(cascadedStyledTree);
     InlineSpan parsedTree = parseTree(
       RenderContext(
@@ -108,8 +119,8 @@ class HtmlParser extends StatelessWidget {
     return htmlparser.parse(data);
   }
 
-  /// [parseCSS] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
-  static css.StyleSheet parseCSS(String data) {
+  /// [parseCss] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
+  static css.StyleSheet parseCss(String data) {
     return cssparser.parse(data);
   }
 
@@ -189,34 +200,62 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static StyledElement applyInlineStyles(StyledElement tree) {
+  static Map<String, Map<String, List<css.Expression>>> _getExternalCssDeclarations(List<dom.Element> styles, OnCssParseError? errorHandler) {
+    String fullCss = "";
+    for (final e in styles) {
+      fullCss = fullCss + e.innerHtml;
+    }
+    if (fullCss.isNotEmpty) {
+      final declarations = parseExternalCss(fullCss, errorHandler);
+      return declarations;
+    } else {
+      return {};
+    }
+  }
+
+  static StyledElement _applyExternalCss(Map<String, Map<String, List<css.Expression>>> declarations, StyledElement tree) {
+    declarations.forEach((key, style) {
+      if (tree.matchesSelector(key)) {
+        tree.style = tree.style.merge(declarationsToStyle(style));
+      }
+    });
+
+    tree.children.forEach((e) => _applyExternalCss(declarations, e));
+
+    return tree;
+  }
+
+  static StyledElement _applyInlineStyles(StyledElement tree, OnCssParseError? errorHandler) {
     if (tree.attributes.containsKey("style")) {
-      tree.style = tree.style.merge(inlineCSSToStyle(tree.attributes['style']));
+      final newStyle = inlineCssToStyle(tree.attributes['style'], errorHandler);
+      if (newStyle != null) {
+        tree.style = tree.style.merge(newStyle);
+      }
     }
 
-    tree.children.forEach(applyInlineStyles);
+    tree.children.forEach((e) => _applyInlineStyles(e, errorHandler));
     return tree;
   }
 
   /// [applyCustomStyles] applies the [Style] objects passed into the [Html]
   /// widget onto the [StyledElement] tree, no cascading of styles is done at this point.
-  StyledElement _applyCustomStyles(StyledElement tree) {
+  static StyledElement _applyCustomStyles(Map<String, Style> style, StyledElement tree) {
     style.forEach((key, style) {
       if (tree.matchesSelector(key)) {
         tree.style = tree.style.merge(style);
       }
     });
-    tree.children.forEach(_applyCustomStyles);
+    tree.children.forEach((e) => _applyCustomStyles(style, e));
 
     return tree;
   }
 
   /// [_cascadeStyles] cascades all of the inherited styles down the tree, applying them to each
   /// child that doesn't specify a different style.
-  StyledElement _cascadeStyles(StyledElement tree) {
+  static StyledElement _cascadeStyles(Map<String, Style> style, StyledElement tree) {
     tree.children.forEach((child) {
       child.style = tree.style.copyOnlyInherited(child.style);
-      _cascadeStyles(child);
+      _cascadeStyles(style, child);
     });
 
     return tree;
@@ -704,7 +743,7 @@ class HtmlParser extends StatelessWidget {
     tree.children.forEach((child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
-      } else if (child is TextContentElement && (child.text!.isEmpty)) {
+      } else if (child is TextContentElement && (child.text!.trim().isEmpty)) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
