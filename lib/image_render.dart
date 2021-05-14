@@ -75,7 +75,10 @@ ImageRender assetImageRender({
     (context, attributes, element) {
       final assetPath = _src(attributes)!.replaceFirst('asset:', '');
       if (_src(attributes)!.endsWith(".svg")) {
-        return SvgPicture.asset(assetPath);
+        return SvgPicture.asset(
+          assetPath,
+          width: width ?? _width(attributes),
+          height: height ?? _height(attributes));
       } else {
         return Image.asset(
           assetPath,
