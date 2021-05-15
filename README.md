@@ -304,6 +304,8 @@ Widget html = Html(
 );
 ```
 
+</details>
+
 3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
 <details><summary>View code</summary>
