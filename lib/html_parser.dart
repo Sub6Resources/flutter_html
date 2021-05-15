@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
@@ -288,7 +289,28 @@ class HtmlParser extends StatelessWidget {
       tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
     );
-
+    List<int> indices = [];
+    tree.children.forEachIndexed((index, element) {
+      //we want the element to be a block element, but we don't want to add
+      //new-lines before/after the html and body
+      if (element.style.display == Display.BLOCK
+          && element.element?.localName != "html"
+          && element.element?.localName != "body"
+      ) {
+        //if the parent element is body and the element is first, we don't want
+        //to add a new-line before
+        if (index == 0 && element.element?.parent?.localName == "body") {
+          indices.add(index + 1);
+        } else {
+          indices.addAll([index, index + 1]);
+        }
+      }
+    });
+    //we don't need a new-line at the end
+    if (indices.isNotEmpty && indices.last == tree.children.length) {
+      indices.removeLast();
+    }
+    indices = indices.toSet().toList();
     if (customRender.containsKey(tree.name)) {
       final render = customRender[tree.name]!.call(
         newContext,
@@ -317,7 +339,7 @@ class HtmlParser extends StatelessWidget {
     }
 
     //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK) {
+    if (tree.style.display == Display.BLOCK && !(tree is ReplacedElement)) {
       return WidgetSpan(
         child: ContainerSpan(
           key: AnchorKey.of(key, tree),
@@ -325,6 +347,7 @@ class HtmlParser extends StatelessWidget {
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
           children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+          indices: indices,
         ),
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
@@ -468,16 +491,23 @@ class HtmlParser extends StatelessWidget {
                       .toList(),
             ),
             style: newContext.style,
-            renderContext: context,
+            renderContext: newContext,
           ),
         ),
       );
     } else {
       ///[tree] is an inline element.
+      final children = tree.children.map((tree) => parseTree(newContext, tree)).toList();
+      //use provided indices to insert new-lines at those locations
+      //makes sure to account for list size changes with "+ i"
+      indices.forEachIndexed((i, element) {
+        if (newContext.parser.shrinkWrap) {
+          children.insert(element + i, TextSpan(text: "\n"));
+        }
+      });
       return TextSpan(
         style: newContext.style.generateTextStyle(),
-        children:
-        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        children: children,
       );
     }
   }
@@ -813,6 +843,7 @@ class ContainerSpan extends StatelessWidget {
   final Style style;
   final RenderContext newContext;
   final bool shrinkWrap;
+  final List<int> indices;
 
   ContainerSpan({
     this.key,
@@ -821,10 +852,18 @@ class ContainerSpan extends StatelessWidget {
     required this.style,
     required this.newContext,
     this.shrinkWrap = false,
+    this.indices = const [],
   }): super(key: key);
 
   @override
   Widget build(BuildContext _) {
+    //use provided indices to insert new-lines at those locations
+    //makes sure to account for list size changes with "+ i"
+    indices.forEachIndexed((i, element) {
+      if (children != null && newContext.parser.shrinkWrap) {
+        children!.insert(element + i, TextSpan(text: "\n"));
+      }
+    });
     return Container(
       decoration: BoxDecoration(
         border: style.border,
@@ -866,7 +905,7 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: calculateWidth(style.display, renderContext),
+      width: calculateWidth(),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -879,12 +918,22 @@ class StyledText extends StatelessWidget {
     );
   }
 
-  double? calculateWidth(Display? display, RenderContext context) {
-    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
+  double? calculateWidth() {
+    //if there is a specific text align then we should return the whole width,
+    //otherwise the text align will appear to be unchanged.
+    //potentially find a way to keep track of the max width needed for other
+    //elements in the doc and use that instead?
+    if (style.textAlign != null &&
+        ((style.textAlign != TextAlign.left && (style.direction == null || style.direction == TextDirection.ltr)) ||
+        (style.textAlign != TextAlign.right && style.direction == TextDirection.rtl))) {
       return double.infinity;
     }
-    if (renderContext.parser.shrinkWrap) {
-      return MediaQuery.of(context.buildContext).size.width;
+    if ((style.display == Display.BLOCK || style.display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
+      print(renderContext.tree.element?.localName);
+      return double.infinity;
+    }
+    if (!renderContext.parser.shrinkWrap && renderContext.tree.element?.localName == "html") {
+      return MediaQuery.of(renderContext.buildContext).size.width;
     }
     return null;
   }
