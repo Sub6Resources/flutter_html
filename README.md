@@ -34,6 +34,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 - [API Reference](#api-reference)
 
   - [Constructors](#constructors)
+  
+    - [Selectable Text](#selectable-text) 
 
   - [Parameters Table](#parameters)
   
@@ -143,13 +145,33 @@ For a full example, see [here](https://github.com/Sub6Resources/flutter_html/tre
 
 Below, you will find brief descriptions of the parameters the`Html` widget accepts and some code snippets to help you use this package.
 
-## Constructors:
+### Constructors:
 
 The package currently has two different constructors - `Html()` and `Html.fromDom()`. 
 
 The `Html()` constructor is for those who would like to directly pass HTML from the source to the package to be rendered. 
 
 If you would like to modify or sanitize the HTML before rendering it, then `Html.fromDom()` is for you - you can convert the HTML string to a `Document` and use its methods to modify the HTML as you wish. Then, you can directly pass the modified `Document` to the package. This eliminates the need to parse the modified `Document` back to a string, pass to `Html()`, and convert back to a `Document`, thus cutting down on load times.
+
+#### Selectable Text
+
+The package also has two constructors for selectable text support - `Html.selectable()` and `Html.selectableFromDom()`.
+
+The difference between the two is the same as noted above.
+
+Please note: Due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474), selectable text support is significantly watered down compared to the standard non-selectable version of the widget. The changes are as follows:
+
+1. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`. (Support for `customRender` may be added in the future).
+
+2. You cannot whitelist tags, you must use `blacklistedElements` to remove any tags that shouldn't be rendered. This is to make sure unsupported tags are not accidentally whitelisted, causing errors in the widget code.
+
+3. The list of tags that can be rendered is significantly reduced. Key omissions include no support for images/video/audio, table, and ul/ol.
+
+4. Styling support is significantly reduced. Only text-related styling works (e.g. bold or italic), while container related styling (e.g. borders or padding/margin) do not work.
+
+5. Due to the above, the margins between elements no longer appear. As a result, the HTML content will not have proper spacing between elements like `<h1>`. The default margin for `<body>` is removed, so it is recommended to wrap the `Html()` widget in a `Container()` with padding to achieve the same effect.
+
+Once the above issue is resolved, the aforementioned compromises will go away. Currently the `SelectableText.rich()` constructor does not support `WidgetSpan`s, resulting in the feature losses above.
 
 ### Parameters: 
 
@@ -303,6 +325,8 @@ Widget html = Html(
   },
 );
 ```
+
+</details>
 
 3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
