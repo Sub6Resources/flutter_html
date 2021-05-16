@@ -252,6 +252,8 @@ A powerful API that allows you to customize everything when rendering a specific
 
 To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget` or `InlineSpan`.
 
+Note: If you add any custom tags, you must add these tags to the [`tagsList`](#tagslist) parameter, otherwise they will not be rendered. See below for an example.
+
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
 
@@ -276,6 +278,7 @@ Widget html = Html(
         );
       },
     },
+  tagsList: Html.tags..addAll(["bird", "flutter"]),
 );
 ```
 
