@@ -62,6 +62,7 @@ class Html extends StatelessWidget {
     this.style = const {},
     this.navigationDelegateForIframe,
   }) : document = null,
+        _selectable = false,
         assert (data != null),
         anchorKey = GlobalKey(),
         super(key: key);
@@ -81,8 +82,51 @@ class Html extends StatelessWidget {
     this.style = const {},
     this.navigationDelegateForIframe,
   }) : data = null,
+        _selectable = false,
         assert(document != null),
-  anchorKey = GlobalKey(),
+        anchorKey = GlobalKey(),
+        super(key: key);
+
+  Html.selectable({
+    Key? key,
+    required this.data,
+    this.onLinkTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    List<String>? blacklistedElements,
+  }) : document = null,
+        customRender = const {},
+        customImageRenders = const {},
+        tagsList = List<String>.from(SELECTABLE_ELEMENTS)
+          ..removeWhere((element) => (blacklistedElements ?? []).contains(element)),
+        onMathError = null,
+        onImageError = null,
+        onImageTap = null,
+        navigationDelegateForIframe = null,
+        _selectable = true,
+        anchorKey = GlobalKey(),
+        super(key: key);
+
+  Html.selectableFromDom({
+    Key? key,
+    required this.document,
+    this.onLinkTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    List<String>? blacklistedElements,
+  }) : data = null,
+        customRender = const {},
+        customImageRenders = const {},
+        tagsList = List<String>.from(SELECTABLE_ELEMENTS)
+          ..removeWhere((element) => (blacklistedElements ?? []).contains(element)),
+        onMathError = null,
+        onImageError = null,
+        onImageTap = null,
+        navigationDelegateForIframe = null,
+        _selectable = true,
+        anchorKey = GlobalKey(),
         super(key: key);
 
   /// A unique key for this Html widget to ensure uniqueness of anchors
@@ -111,7 +155,6 @@ class Html extends StatelessWidget {
   /// You can return a widget here to override the default error widget.
   final OnMathError? onMathError;
 
-
   /// A parameter that should be set when the HTML widget is expected to be
   /// flexible
   final bool shrinkWrap;
@@ -133,6 +176,10 @@ class Html extends StatelessWidget {
   /// Iframe. It's necessary to use the webview_flutter package inside the app
   /// to use NavigationDelegate.
   final NavigationDelegate? navigationDelegateForIframe;
+
+  /// Whether the widget is set to be selectable or not
+  /// Controlled internally
+  final bool _selectable;
 
   static List<String> get tags => new List<String>.from(STYLED_ELEMENTS)
     ..addAll(INTERACTABLE_ELEMENTS)
@@ -157,6 +204,7 @@ class Html extends StatelessWidget {
         onImageError: onImageError,
         onMathError: onMathError,
         shrinkWrap: shrinkWrap,
+        selectable: _selectable,
         style: style,
         customRender: customRender,
         imageRenders: {}
