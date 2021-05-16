@@ -929,7 +929,6 @@ class StyledText extends StatelessWidget {
       return double.infinity;
     }
     if ((style.display == Display.BLOCK || style.display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
-      print(renderContext.tree.element?.localName);
       return double.infinity;
     }
     if (!renderContext.parser.shrinkWrap && renderContext.tree.element?.localName == "html") {
