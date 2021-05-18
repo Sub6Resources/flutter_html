@@ -105,7 +105,7 @@ class HtmlParser extends StatelessWidget {
     // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
     // to wrap everything when larger accessibility fonts are used.
     if (selectable) {
-      return StyledText.rich(
+      return StyledText.selectable(
         textSpan: parsedTree as TextSpan,
         style: cleanedTree.style,
         textScaleFactor: MediaQuery.of(context).textScaleFactor,
@@ -914,7 +914,7 @@ class StyledText extends StatelessWidget {
   }) : _selectable = false,
         super(key: key);
 
-  const StyledText.rich({
+  const StyledText.selectable({
     required TextSpan textSpan,
     required this.style,
     this.textScaleFactor = 1.0,

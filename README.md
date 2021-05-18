@@ -155,7 +155,7 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 
 #### Selectable Text
 
-The package also has two constructors for selectable text support - `Html.selectable()` and `Html.selectableFromDom()`.
+The package also has two constructors for selectable text support - `SelectableHtml()` and `SelectableHtml.fromDom()`.
 
 The difference between the two is the same as noted above.
 
@@ -192,7 +192,9 @@ Once the above issue is resolved, the aforementioned compromises will go away. C
 
 ### Getters:
 
-Currently the only getter is `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+1. `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+
+2. `SelectableHtml.tags`. This provides a list of all the tags that can be rendered in selectable mode.
 
 ### Data:
 

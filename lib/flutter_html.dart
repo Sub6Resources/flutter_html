@@ -62,7 +62,6 @@ class Html extends StatelessWidget {
     this.style = const {},
     this.navigationDelegateForIframe,
   }) : document = null,
-        _selectable = false,
         assert (data != null),
         anchorKey = GlobalKey(),
         super(key: key);
@@ -82,50 +81,7 @@ class Html extends StatelessWidget {
     this.style = const {},
     this.navigationDelegateForIframe,
   }) : data = null,
-        _selectable = false,
         assert(document != null),
-        anchorKey = GlobalKey(),
-        super(key: key);
-
-  Html.selectable({
-    Key? key,
-    required this.data,
-    this.onLinkTap,
-    this.onCssParseError,
-    this.shrinkWrap = false,
-    this.style = const {},
-    List<String>? blacklistedElements,
-  }) : document = null,
-        customRender = const {},
-        customImageRenders = const {},
-        tagsList = List<String>.from(SELECTABLE_ELEMENTS)
-          ..removeWhere((element) => (blacklistedElements ?? []).contains(element)),
-        onMathError = null,
-        onImageError = null,
-        onImageTap = null,
-        navigationDelegateForIframe = null,
-        _selectable = true,
-        anchorKey = GlobalKey(),
-        super(key: key);
-
-  Html.selectableFromDom({
-    Key? key,
-    required this.document,
-    this.onLinkTap,
-    this.onCssParseError,
-    this.shrinkWrap = false,
-    this.style = const {},
-    List<String>? blacklistedElements,
-  }) : data = null,
-        customRender = const {},
-        customImageRenders = const {},
-        tagsList = List<String>.from(SELECTABLE_ELEMENTS)
-          ..removeWhere((element) => (blacklistedElements ?? []).contains(element)),
-        onMathError = null,
-        onImageError = null,
-        onImageTap = null,
-        navigationDelegateForIframe = null,
-        _selectable = true,
         anchorKey = GlobalKey(),
         super(key: key);
 
@@ -177,10 +133,6 @@ class Html extends StatelessWidget {
   /// to use NavigationDelegate.
   final NavigationDelegate? navigationDelegateForIframe;
 
-  /// Whether the widget is set to be selectable or not
-  /// Controlled internally
-  final bool _selectable;
-
   static List<String> get tags => new List<String>.from(STYLED_ELEMENTS)
     ..addAll(INTERACTABLE_ELEMENTS)
     ..addAll(REPLACED_ELEMENTS)
@@ -204,7 +156,7 @@ class Html extends StatelessWidget {
         onImageError: onImageError,
         onMathError: onMathError,
         shrinkWrap: shrinkWrap,
-        selectable: _selectable,
+        selectable: false,
         style: style,
         customRender: customRender,
         imageRenders: {}
@@ -212,6 +164,114 @@ class Html extends StatelessWidget {
           ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
         navigationDelegateForIframe: navigationDelegateForIframe,
+      ),
+    );
+  }
+}
+
+class SelectableHtml extends StatelessWidget {
+  /// The `SelectableHtml` widget takes HTML as input and displays a RichText
+  /// tree of the parsed HTML content (which is selectable)
+  ///
+  /// **Attributes**
+  /// **data** *required* takes in a String of HTML data (required only for `Html` constructor).
+  /// **document** *required* takes in a Document of HTML data (required only for `Html.fromDom` constructor).
+  ///
+  /// **onLinkTap** This function is called whenever a link (`<a href>`)
+  /// is tapped.
+  ///
+  /// **blacklistedElements** Tag names in this array will not be rendered.
+  ///
+  /// **style** Pass in the style information for the Html here.
+  /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
+  ///
+  /// **PLEASE NOTE**
+  ///
+  /// There are a few caveats due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474):
+  ///
+  /// 1. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`.
+  ///
+  /// 2. You cannot whitelist tags, you must use `blacklistedElements` to remove any tags that shouldn't be rendered.
+  /// This is to make sure unsupported tags are not accidentally whitelisted, causing errors in the widget code.
+  ///
+  /// 3. The list of tags that can be rendered is significantly reduced.
+  /// Key omissions include no support for images/video/audio, table, and ul/ol because they all require widgets and `WidgetSpan`s.
+  ///
+  /// 4. Styling support is significantly reduced. Only text-related styling works
+  /// (e.g. bold or italic), while container related styling (e.g. borders or padding/margin)
+  /// do not work because we can't use the `ContainerSpan` class (it needs an enclosing `WidgetSpan`).
+  ///
+  /// 5. Due to the above, the margins between elements no longer appear.
+  /// As a result, the HTML content will not have proper spacing between elements like `h1`. The default margin for `body` is removed as well.
+  SelectableHtml({
+    Key? key,
+    required this.data,
+    this.onLinkTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    this.blacklistedElements = const [],
+  }) : document = null,
+        super(key: key);
+
+  SelectableHtml.fromDom({
+    Key? key,
+    required this.document,
+    this.onLinkTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    this.blacklistedElements = const [],
+  }) : data = null,
+        super(key: key);
+
+  /// The HTML data passed to the widget as a String
+  final String? data;
+
+  /// The HTML data passed to the widget as a pre-processed [dom.Document]
+  final dom.Document? document;
+
+  /// A function that defines what to do when a link is tapped
+  final OnTap? onLinkTap;
+
+  /// A function that defines what to do when CSS fails to parse
+  final OnCssParseError? onCssParseError;
+
+  /// A parameter that should be set when the HTML widget is expected to be
+  /// flexible
+  final bool shrinkWrap;
+
+  /// A list of HTML tags that defines what elements are not rendered
+  final List<String> blacklistedElements;
+
+  /// An API that allows you to override the default style for any HTML element
+  final Map<String, Style> style;
+
+  static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
+
+  @override
+  Widget build(BuildContext context) {
+    final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
+    final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
+
+    return Container(
+      width: width,
+      child: HtmlParser(
+        key: null,
+        htmlData: doc,
+        onLinkTap: onLinkTap,
+        onImageTap: null,
+        onCssParseError: onCssParseError,
+        onImageError: null,
+        onMathError: null,
+        shrinkWrap: shrinkWrap,
+        selectable: true,
+        style: style,
+        customRender: {},
+        imageRenders: {}
+          ..addAll(defaultImageRenders),
+        tagsList: SelectableHtml.tags..removeWhere((element) => (blacklistedElements).contains(element)),
+        navigationDelegateForIframe: null,
       ),
     );
   }
