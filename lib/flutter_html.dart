@@ -180,7 +180,7 @@ class SelectableHtml extends StatelessWidget {
   /// **onLinkTap** This function is called whenever a link (`<a href>`)
   /// is tapped.
   ///
-  /// **blacklistedElements** Tag names in this array will not be rendered.
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags that support selectable content are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -189,20 +189,15 @@ class SelectableHtml extends StatelessWidget {
   ///
   /// There are a few caveats due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474):
   ///
-  /// 1. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`.
-  ///
-  /// 2. You cannot whitelist tags, you must use `blacklistedElements` to remove any tags that shouldn't be rendered.
-  /// This is to make sure unsupported tags are not accidentally whitelisted, causing errors in the widget code.
-  ///
-  /// 3. The list of tags that can be rendered is significantly reduced.
+  /// 1. The list of tags that can be rendered is significantly reduced.
   /// Key omissions include no support for images/video/audio, table, and ul/ol because they all require widgets and `WidgetSpan`s.
   ///
-  /// 4. Styling support is significantly reduced. Only text-related styling works
+  /// 2. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`.
+  ///
+  /// 3. Styling support is significantly reduced. Only text-related styling works
   /// (e.g. bold or italic), while container related styling (e.g. borders or padding/margin)
   /// do not work because we can't use the `ContainerSpan` class (it needs an enclosing `WidgetSpan`).
-  ///
-  /// 5. Due to the above, the margins between elements no longer appear.
-  /// As a result, the HTML content will not have proper spacing between elements like `h1`. The default margin for `body` is removed as well.
+
   SelectableHtml({
     Key? key,
     required this.data,
@@ -210,7 +205,7 @@ class SelectableHtml extends StatelessWidget {
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
-    this.blacklistedElements = const [],
+    this.tagsList = const [],
   }) : document = null,
         super(key: key);
 
@@ -221,7 +216,7 @@ class SelectableHtml extends StatelessWidget {
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
-    this.blacklistedElements = const [],
+    this.tagsList = const [],
   }) : data = null,
         super(key: key);
 
@@ -242,7 +237,7 @@ class SelectableHtml extends StatelessWidget {
   final bool shrinkWrap;
 
   /// A list of HTML tags that defines what elements are not rendered
-  final List<String> blacklistedElements;
+  final List<String> tagsList;
 
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
@@ -270,7 +265,7 @@ class SelectableHtml extends StatelessWidget {
         customRender: {},
         imageRenders: {}
           ..addAll(defaultImageRenders),
-        tagsList: SelectableHtml.tags..removeWhere((element) => (blacklistedElements).contains(element)),
+        tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
       ),
     );

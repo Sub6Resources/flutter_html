@@ -304,7 +304,7 @@ class HtmlParser extends StatelessWidget {
       tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
     );
-    List<int> indices = [];
+    List<int> lineEndingIndices = [];
     tree.children.forEachIndexed((index, element) {
       //we want the element to be a block element, but we don't want to add
       //new-lines before/after the html and body
@@ -315,17 +315,17 @@ class HtmlParser extends StatelessWidget {
         //if the parent element is body and the element is first, we don't want
         //to add a new-line before
         if (index == 0 && element.element?.parent?.localName == "body") {
-          indices.add(index + 1);
+          lineEndingIndices.add(index + 1);
         } else {
-          indices.addAll([index, index + 1]);
+          lineEndingIndices.addAll([index, index + 1]);
         }
       }
     });
     //we don't need a new-line at the end
-    if (indices.isNotEmpty && indices.last == tree.children.length) {
-      indices.removeLast();
+    if (lineEndingIndices.isNotEmpty && lineEndingIndices.last == tree.children.length) {
+      lineEndingIndices.removeLast();
     }
-    indices = indices.toSet().toList();
+    lineEndingIndices = lineEndingIndices.toSet().toList();
     if (customRender.containsKey(tree.name)) {
       final render = customRender[tree.name]!.call(
         newContext,
@@ -359,7 +359,7 @@ class HtmlParser extends StatelessWidget {
         final children = tree.children.map((tree) => parseTree(newContext, tree)).toList();
         //use provided indices to insert new-lines at those locations
         //makes sure to account for list size changes with "+ i"
-        indices.forEachIndexed((i, element) {
+        lineEndingIndices.forEachIndexed((i, element) {
           children.insert(element + i, TextSpan(text: "\n"));
         });
         return TextSpan(
@@ -927,16 +927,13 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     if (_selectable) {
-      return SizedBox(
-        width: calculateWidth(style.display, renderContext),
-        child: SelectableText.rich(
-          textSpan as TextSpan,
-          style: style.generateTextStyle(),
-          textAlign: style.textAlign,
-          textDirection: style.direction,
-          textScaleFactor: textScaleFactor,
-          maxLines: style.maxLines,
-        ),
+      return SelectableText.rich(
+        textSpan as TextSpan,
+        style: style.generateTextStyle(),
+        textAlign: style.textAlign,
+        textDirection: style.direction,
+        textScaleFactor: textScaleFactor,
+        maxLines: style.maxLines,
       );
     }
     return SizedBox(
