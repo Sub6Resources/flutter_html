@@ -266,8 +266,7 @@ class SelectableHtml extends StatelessWidget {
         selectable: true,
         style: style,
         customRender: {},
-        imageRenders: {}
-          ..addAll(defaultImageRenders),
+        imageRenders: defaultImageRenders,
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
       ),
