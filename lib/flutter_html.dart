@@ -1,25 +1,38 @@
 library flutter_html;
 
-//export image render api
-export 'package:flutter_html/image_render.dart';
-//export style api
-export 'package:flutter_html/style.dart';
-//export render context api
-export 'package:flutter_html/html_parser.dart';
-//export src for advanced custom render uses (e.g. casting context.tree)
-export 'package:flutter_html/src/layout_element.dart';
-export 'package:flutter_html/src/replaced_element.dart';
-export 'package:flutter_html/src/styled_element.dart';
-export 'package:flutter_html/src/interactable_element.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:webview_flutter/webview_flutter.dart';
+
+//export render context api
+export 'package:flutter_html/html_parser.dart';
+//export render context api
+export 'package:flutter_html/html_parser.dart';
+//export image render api
+export 'package:flutter_html/image_render.dart';
+//export image render api
+export 'package:flutter_html/image_render.dart';
+export 'package:flutter_html/src/anchor.dart';
+export 'package:flutter_html/src/anchor.dart';
+export 'package:flutter_html/src/interactable_element.dart';
+export 'package:flutter_html/src/interactable_element.dart';
+//export src for advanced custom render uses (e.g. casting context.tree)
+export 'package:flutter_html/src/layout_element.dart';
+//export src for advanced custom render uses (e.g. casting context.tree)
+export 'package:flutter_html/src/layout_element.dart';
+export 'package:flutter_html/src/replaced_element.dart';
+export 'package:flutter_html/src/replaced_element.dart';
+export 'package:flutter_html/src/styled_element.dart';
+export 'package:flutter_html/src/styled_element.dart';
+//export style api
+export 'package:flutter_html/style.dart';
+//export style api
+export 'package:flutter_html/style.dart';
 
 class Html extends StatelessWidget {
   /// The `Html` widget takes HTML as input and displays a RichText
@@ -49,6 +62,7 @@ class Html extends StatelessWidget {
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
   Html({
     Key? key,
+    GlobalKey? anchorKey,
     required this.data,
     this.onLinkTap,
     this.customRender = const {},
@@ -61,13 +75,14 @@ class Html extends StatelessWidget {
     this.tagsList = const [],
     this.style = const {},
     this.navigationDelegateForIframe,
-  }) : document = null,
-        assert (data != null),
-        anchorKey = GlobalKey(),
+  })  : document = null,
+        assert(data != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
   Html.fromDom({
     Key? key,
+    GlobalKey? anchorKey,
     @required this.document,
     this.onLinkTap,
     this.customRender = const {},
@@ -80,13 +95,13 @@ class Html extends StatelessWidget {
     this.tagsList = const [],
     this.style = const {},
     this.navigationDelegateForIframe,
-  }) : data = null,
+  })  : data = null,
         assert(document != null),
-        anchorKey = GlobalKey(),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
   /// A unique key for this Html widget to ensure uniqueness of anchors
-  final Key anchorKey;
+  final GlobalKey _anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -142,13 +157,14 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
+    final dom.Document doc =
+        data != null ? HtmlParser.parseHTML(data!) : document!;
     final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(
       width: width,
       child: HtmlParser(
-        key: anchorKey,
+        key: _anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onImageTap: onImageTap,
