@@ -123,9 +123,9 @@ Add the following to your `pubspec.yaml` file:
 ## Currently Supported Inline CSS Attributes:
 |                  |        |            |          |              |                        |            |
 |------------------|--------|------------|----------|--------------|------------------------|------------|
-|`background-color`| `border` | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
-| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`     |
-| `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
+|`background-color`| `border` (including specific directions) | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
+| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`  (including specific directions)   |
+| `margin` (including specific directions) | `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
 
 Don't see a tag or attribute you need? File a feature request or contribute to the project!
 
@@ -252,6 +252,8 @@ A powerful API that allows you to customize everything when rendering a specific
 
 To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget` or `InlineSpan`.
 
+Note: If you add any custom tags, you must add these tags to the [`tagsList`](#tagslist) parameter, otherwise they will not be rendered. See below for an example.
+
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
 
@@ -276,6 +278,7 @@ Widget html = Html(
         );
       },
     },
+  tagsList: Html.tags..addAll(["bird", "flutter"]),
 );
 ```
 
@@ -303,6 +306,8 @@ Widget html = Html(
   },
 );
 ```
+
+</details>
 
 3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
