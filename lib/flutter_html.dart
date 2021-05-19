@@ -56,6 +56,7 @@ class Html extends StatelessWidget {
     this.onCssParseError,
     this.onImageError,
     this.onMathError,
+    this.strictMode = false,
     this.shrinkWrap = false,
     this.onImageTap,
     this.tagsList = const [],
@@ -75,6 +76,7 @@ class Html extends StatelessWidget {
     this.onCssParseError,
     this.onImageError,
     this.onMathError,
+    this.strictMode = false,
     this.shrinkWrap = false,
     this.onImageTap,
     this.tagsList = const [],
@@ -111,6 +113,8 @@ class Html extends StatelessWidget {
   /// You can return a widget here to override the default error widget.
   final OnMathError? onMathError;
 
+  /// When true, an exception will be thrown if two elements have the same ID
+  final bool strictMode;
 
   /// A parameter that should be set when the HTML widget is expected to be
   /// flexible
@@ -156,6 +160,7 @@ class Html extends StatelessWidget {
         onCssParseError: onCssParseError,
         onImageError: onImageError,
         onMathError: onMathError,
+        strictMode: strictMode,
         shrinkWrap: shrinkWrap,
         style: style,
         customRender: customRender,
@@ -164,6 +169,7 @@ class Html extends StatelessWidget {
           ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
         navigationDelegateForIframe: navigationDelegateForIframe,
+        anchors: [],
       ),
     );
   }

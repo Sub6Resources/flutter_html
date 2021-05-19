@@ -45,6 +45,7 @@ class HtmlParser extends StatelessWidget {
   final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
+  final bool strictMode;
   final bool shrinkWrap;
 
   final Map<String, Style> style;
@@ -54,6 +55,8 @@ class HtmlParser extends StatelessWidget {
   final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? _onAnchorTap;
 
+  final List<String> anchors;
+
   HtmlParser({
     required this.key,
     required this.htmlData,
@@ -62,13 +65,15 @@ class HtmlParser extends StatelessWidget {
     required this.onCssParseError,
     required this.onImageError,
     required this.onMathError,
+    required this.strictMode,
     required this.shrinkWrap,
     required this.style,
     required this.customRender,
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
+    required this.anchors,
+  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap, anchors): null, super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -293,7 +298,7 @@ class HtmlParser extends StatelessWidget {
       final render = customRender[tree.name]!.call(
         newContext,
         ContainerSpan(
-          key: AnchorKey.of(key, tree),
+          key: AnchorKey.of(key, tree, this),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -306,7 +311,7 @@ class HtmlParser extends StatelessWidget {
             ? render
             : WidgetSpan(
                 child: ContainerSpan(
-                  key: AnchorKey.of(key, tree),
+                  key: AnchorKey.of(key, tree, this),
                   newContext: newContext,
                   style: tree.style,
                   shrinkWrap: context.parser.shrinkWrap,
@@ -320,7 +325,7 @@ class HtmlParser extends StatelessWidget {
     if (tree.style.display == Display.BLOCK) {
       return WidgetSpan(
         child: ContainerSpan(
-          key: AnchorKey.of(key, tree),
+          key: AnchorKey.of(key, tree, this),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -339,7 +344,7 @@ class HtmlParser extends StatelessWidget {
 
       return WidgetSpan(
         child: ContainerSpan(
-          key: AnchorKey.of(key, tree),
+          key: AnchorKey.of(key, tree, this),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -410,7 +415,7 @@ class HtmlParser extends StatelessWidget {
         } else {
           return WidgetSpan(
             child: RawGestureDetector(
-              key: AnchorKey.of(key, tree),
+              key: AnchorKey.of(key, tree, this),
               gestures: {
                 MultipleTapGestureRecognizer:
                     GestureRecognizerFactoryWithHandlers<
@@ -458,7 +463,7 @@ class HtmlParser extends StatelessWidget {
       //Requires special layout features not available in the TextStyle API.
       return WidgetSpan(
         child: Transform.translate(
-          key: AnchorKey.of(key, tree),
+          key: AnchorKey.of(key, tree, this),
           offset: Offset(0, verticalOffset),
           child: StyledText(
             textSpan: TextSpan(
@@ -482,10 +487,10 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
+  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap, List<String> anchors) =>
           (String? url, RenderContext context, Map<String, String> attributes, dom.Element? element) {
         if (url?.startsWith("#") == true) {
-          final anchorContext = AnchorKey.forId(key, url!.substring(1))?.currentContext;
+          final anchorContext = AnchorKey.forId(key, url!.substring(1), anchors)?.currentContext;
           if (anchorContext != null) {
             Scrollable.ensureVisible(anchorContext);
           }

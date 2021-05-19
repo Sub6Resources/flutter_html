@@ -32,7 +32,7 @@ class TableLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
-      key: AnchorKey.of(context.parser.key, this),
+      key: AnchorKey.of(context.parser.key, this, context.parser),
       margin: style.margin,
       padding: style.padding,
       decoration: BoxDecoration(
@@ -282,7 +282,7 @@ class DetailsContentElement extends LayoutElement {
     }
     InlineSpan? firstChild = childrenList.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
-        key: AnchorKey.of(context.parser.key, this),
+        key: AnchorKey.of(context.parser.key, this, context.parser),
         expandedAlignment: Alignment.centerLeft,
         title: elementList.isNotEmpty == true && elementList.first.localName == "summary" ? StyledText(
           textSpan: TextSpan(

@@ -84,7 +84,7 @@ class ImageContentElement extends ReplacedElement {
       if (entry.key.call(attributes, element)) {
         final widget = entry.value.call(context, attributes, element);
         return RawGestureDetector(
-            key: AnchorKey.of(context.parser.key, this),
+            key: AnchorKey.of(context.parser.key, this, context.parser),
           child: widget,
           gestures: {
             MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
@@ -121,7 +121,7 @@ class AudioContentElement extends ReplacedElement {
   @override
   Widget toWidget(RenderContext context) {
     return Container(
-      key: AnchorKey.of(context.parser.key, this),
+      key: AnchorKey.of(context.parser.key, this, context.parser),
       width: context.style.width ?? 300,
       height: Theme.of(context.buildContext).platform == TargetPlatform.android
           ? 48 : 75,
@@ -171,7 +171,7 @@ class VideoContentElement extends ReplacedElement {
     return AspectRatio(
       aspectRatio: _width / _height,
       child: Container(
-        key: AnchorKey.of(context.parser.key, this),
+        key: AnchorKey.of(context.parser.key, this, context.parser),
         child: Chewie(
           controller: ChewieController(
             videoPlayerController: VideoPlayerController.network(
@@ -210,7 +210,7 @@ class SvgContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     return SvgPicture.string(
       data,
-      key: AnchorKey.of(context.parser.key, this),
+      key: AnchorKey.of(context.parser.key, this, context.parser),
       width: width,
       height: height,
     );
@@ -266,7 +266,7 @@ class RubyElement extends ReplacedElement {
       }
     });
     return Row(
-      key: AnchorKey.of(context.parser.key, this),
+      key: AnchorKey.of(context.parser.key, this, context.parser),
       crossAxisAlignment: CrossAxisAlignment.end,
       textBaseline: TextBaseline.alphabetic,
       mainAxisSize: MainAxisSize.min,
