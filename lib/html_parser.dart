@@ -285,7 +285,16 @@ class HtmlParser extends StatelessWidget {
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+          children: tree.children
+              .expand((tree) => [
+                    parseTree(newContext, tree),
+                    if (shrinkWrap &&
+                        tree.style.display == Display.BLOCK &&
+                        tree.element?.localName != "html" &&
+                        tree.element?.localName != "body")
+                      TextSpan(text: "\n"),
+                  ])
+              .toList(),
         ),
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
@@ -827,7 +836,7 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: calculateWidth(style.display, renderContext),
+      width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -840,12 +849,9 @@ class StyledText extends StatelessWidget {
     );
   }
 
-  double? calculateWidth(Display? display, RenderContext context) {
+  double? consumeExpandedBlock(Display? display, RenderContext context) {
     if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
       return double.infinity;
-    }
-    if (renderContext.parser.shrinkWrap) {
-      return MediaQuery.of(context.buildContext).size.width;
     }
     return null;
   }
