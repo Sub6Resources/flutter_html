@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/anchor.dart';
@@ -138,6 +139,13 @@ class TableLayoutElement extends LayoutElement {
           columnRowOffset[columni] = child.rowspan - 1;
           columni += child.colspan;
         }
+      }
+      if (row.children.length < columnRowOffset.length - 1) {
+        columnRowOffset.forEachIndexed((i, e) {
+          if (i >= row.children.length && e > 0) {
+            columnRowOffset[i] = columnRowOffset[i] - 1;
+          }
+        });
       }
       rowi++;
     }
