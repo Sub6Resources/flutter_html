@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
@@ -286,12 +287,18 @@ class HtmlParser extends StatelessWidget {
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
           children: tree.children
-              .expand((tree) => [
-                    parseTree(newContext, tree),
+              .expandIndexed((i, childTree) => [
                     if (shrinkWrap &&
-                        tree.style.display == Display.BLOCK &&
-                        tree.element?.localName != "html" &&
-                        tree.element?.localName != "body")
+                        childTree.style.display == Display.BLOCK &&
+                        i > 0 &&
+                        tree.children[i - 1] is ReplacedElement)
+                      TextSpan(text: "\n"),
+                    parseTree(newContext, childTree),
+                    if (shrinkWrap &&
+                        i != tree.children.length - 1 &&
+                        childTree.style.display == Display.BLOCK &&
+                        childTree.element?.localName != "html" &&
+                        childTree.element?.localName != "body")
                       TextSpan(text: "\n"),
                   ])
               .toList(),
@@ -433,12 +440,10 @@ class HtmlParser extends StatelessWidget {
           child: StyledText(
             textSpan: TextSpan(
               style: newContext.style.generateTextStyle(),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList(),
+              children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
             ),
             style: newContext.style,
-            renderContext: context,
+            renderContext: newContext,
           ),
         ),
       );
@@ -446,8 +451,15 @@ class HtmlParser extends StatelessWidget {
       ///[tree] is an inline element.
       return TextSpan(
         style: newContext.style.generateTextStyle(),
-        children:
-        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        children: tree.children
+            .expand((tree) => [
+                  parseTree(newContext, tree),
+                  if (tree.style.display == Display.BLOCK &&
+                      tree.element?.localName != "html" &&
+                      tree.element?.localName != "body")
+                    TextSpan(text: "\n"),
+                ])
+            .toList(),
       );
     }
   }
