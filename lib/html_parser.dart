@@ -409,22 +409,17 @@ class HtmlParser extends StatelessWidget {
           );
         } else {
           return WidgetSpan(
-            child: RawGestureDetector(
-              key: AnchorKey.of(key, tree),
-              gestures: {
-                MultipleTapGestureRecognizer:
-                    GestureRecognizerFactoryWithHandlers<
-                        MultipleTapGestureRecognizer>(
-                  () => MultipleTapGestureRecognizer(),
-                  (instance) {
-                    instance
-                      ..onTap = _onAnchorTap != null
-                          ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                          : null;
-                  },
-                ),
-              },
-              child: (childSpan as WidgetSpan).child,
+            child: MultipleTapGestureDetector(
+              onTap: _onAnchorTap != null
+                  ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                  : null,
+              child: GestureDetector(
+                key: AnchorKey.of(key, tree),
+                onTap: _onAnchorTap != null
+                    ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                    : null,
+                child: (childSpan as WidgetSpan).child,
+              ),
             ),
           );
         }
