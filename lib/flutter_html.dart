@@ -65,6 +65,7 @@ class Html extends StatelessWidget {
     GlobalKey? anchorKey,
     required this.data,
     this.onLinkTap,
+    this.onAnchorTap,
     this.customRender = const {},
     this.customImageRenders = const {},
     this.onCssParseError,
@@ -85,6 +86,7 @@ class Html extends StatelessWidget {
     GlobalKey? anchorKey,
     @required this.document,
     this.onLinkTap,
+    this.onAnchorTap,
     this.customRender = const {},
     this.customImageRenders = const {},
     this.onCssParseError,
@@ -111,6 +113,10 @@ class Html extends StatelessWidget {
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
+
+  /// A function that defines what to do when an anchor link is tapped. When this value is set,
+  /// the default anchor behaviour is overwritten.
+  final OnTap? onAnchorTap;
 
   /// An API that allows you to customize the entire process of image rendering.
   /// See the README for more details.
@@ -167,6 +173,7 @@ class Html extends StatelessWidget {
         key: _anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
+        onAnchorTap: onAnchorTap,
         onImageTap: onImageTap,
         onCssParseError: onCssParseError,
         onImageError: onImageError,
