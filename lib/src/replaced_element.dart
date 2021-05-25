@@ -286,13 +286,13 @@ class MathElement extends ReplacedElement {
     required this.element,
     this.texStr,
     String name = "math",
-  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(display: Display.BLOCK), elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {
     texStr = parseMathRecursive(element, r'');
     return Container(
-      width: MediaQuery.of(context.buildContext).size.width,
+      width: context.parser.shrinkWrap ? null : MediaQuery.of(context.buildContext).size.width,
       child: Math.tex(
         texStr ?? '',
         mathStyle: MathStyle.display,

@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
@@ -324,7 +325,22 @@ class HtmlParser extends StatelessWidget {
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+          children: tree.children
+              .expandIndexed((i, childTree) => [
+                    if (shrinkWrap &&
+                        childTree.style.display == Display.BLOCK &&
+                        i > 0 &&
+                        tree.children[i - 1] is ReplacedElement)
+                      TextSpan(text: "\n"),
+                    parseTree(newContext, childTree),
+                    if (shrinkWrap &&
+                        i != tree.children.length - 1 &&
+                        childTree.style.display == Display.BLOCK &&
+                        childTree.element?.localName != "html" &&
+                        childTree.element?.localName != "body")
+                      TextSpan(text: "\n"),
+                  ])
+              .toList(),
         ),
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
@@ -458,12 +474,10 @@ class HtmlParser extends StatelessWidget {
           child: StyledText(
             textSpan: TextSpan(
               style: newContext.style.generateTextStyle(),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList(),
+              children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
             ),
             style: newContext.style,
-            renderContext: context,
+            renderContext: newContext,
           ),
         ),
       );
@@ -471,8 +485,15 @@ class HtmlParser extends StatelessWidget {
       ///[tree] is an inline element.
       return TextSpan(
         style: newContext.style.generateTextStyle(),
-        children:
-        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        children: tree.children
+            .expand((tree) => [
+                  parseTree(newContext, tree),
+                  if (tree.style.display == Display.BLOCK &&
+                      tree.element?.localName != "html" &&
+                      tree.element?.localName != "body")
+                    TextSpan(text: "\n"),
+                ])
+            .toList(),
       );
     }
   }
@@ -861,7 +882,7 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: calculateWidth(style.display, renderContext),
+      width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -874,12 +895,9 @@ class StyledText extends StatelessWidget {
     );
   }
 
-  double? calculateWidth(Display? display, RenderContext context) {
+  double? consumeExpandedBlock(Display? display, RenderContext context) {
     if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
       return double.infinity;
-    }
-    if (renderContext.parser.shrinkWrap) {
-      return MediaQuery.of(context.buildContext).size.width;
     }
     return null;
   }
