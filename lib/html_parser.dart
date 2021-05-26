@@ -339,14 +339,12 @@ class HtmlParser extends StatelessWidget {
           style: newContext.style.generateTextStyle(),
           children: tree.children
               .expandIndexed((i, childTree) => [
-            if (shrinkWrap &&
-                childTree.style.display == Display.BLOCK &&
+            if (childTree.style.display == Display.BLOCK &&
                 i > 0 &&
                 tree.children[i - 1] is ReplacedElement)
               TextSpan(text: "\n"),
             parseTree(newContext, childTree),
-            if (shrinkWrap &&
-                i != tree.children.length - 1 &&
+            if (i != tree.children.length - 1 &&
                 childTree.style.display == Display.BLOCK &&
                 childTree.element?.localName != "html" &&
                 childTree.element?.localName != "body")
