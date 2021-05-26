@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
@@ -29,6 +30,10 @@ typedef OnMathError = Widget Function(
     String exception,
     String exceptionWithType,
 );
+typedef OnCssParseError = String? Function(
+  String css,
+  List<cssparser.Message> errors,
+);
 typedef CustomRender = dynamic Function(
   RenderContext context,
   Widget parsedChild,
@@ -39,6 +44,7 @@ class HtmlParser extends StatelessWidget {
   final dom.Document htmlData;
   final OnTap? onLinkTap;
   final OnTap? onImageTap;
+  final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
   final bool shrinkWrap;
@@ -55,6 +61,7 @@ class HtmlParser extends StatelessWidget {
     required this.htmlData,
     required this.onLinkTap,
     required this.onImageTap,
+    required this.onCssParseError,
     required this.onImageError,
     required this.onMathError,
     required this.shrinkWrap,
@@ -67,15 +74,20 @@ class HtmlParser extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCssDeclarations(htmlData.getElementsByTagName("style"), onCssParseError);
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRender.keys.toList(),
       tagsList,
       navigationDelegateForIframe,
     );
-    StyledElement inlineStyledTree = applyInlineStyles(lexedTree);
-    StyledElement customStyledTree = _applyCustomStyles(inlineStyledTree);
-    StyledElement cascadedStyledTree = _cascadeStyles(customStyledTree);
+    StyledElement? externalCssStyledTree;
+    if (declarations.isNotEmpty) {
+      externalCssStyledTree = _applyExternalCss(declarations, lexedTree);
+    }
+    StyledElement inlineStyledTree = _applyInlineStyles(externalCssStyledTree ?? lexedTree, onCssParseError);
+    StyledElement customStyledTree = _applyCustomStyles(style, inlineStyledTree);
+    StyledElement cascadedStyledTree = _cascadeStyles(style, customStyledTree);
     StyledElement cleanedTree = cleanTree(cascadedStyledTree);
     InlineSpan parsedTree = parseTree(
       RenderContext(
@@ -109,8 +121,8 @@ class HtmlParser extends StatelessWidget {
     return htmlparser.parse(data);
   }
 
-  /// [parseCSS] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
-  static css.StyleSheet parseCSS(String data) {
+  /// [parseCss] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
+  static css.StyleSheet parseCss(String data) {
     return cssparser.parse(data);
   }
 
@@ -190,34 +202,62 @@ class HtmlParser extends StatelessWidget {
     }
   }
 
-  static StyledElement applyInlineStyles(StyledElement tree) {
+  static Map<String, Map<String, List<css.Expression>>> _getExternalCssDeclarations(List<dom.Element> styles, OnCssParseError? errorHandler) {
+    String fullCss = "";
+    for (final e in styles) {
+      fullCss = fullCss + e.innerHtml;
+    }
+    if (fullCss.isNotEmpty) {
+      final declarations = parseExternalCss(fullCss, errorHandler);
+      return declarations;
+    } else {
+      return {};
+    }
+  }
+
+  static StyledElement _applyExternalCss(Map<String, Map<String, List<css.Expression>>> declarations, StyledElement tree) {
+    declarations.forEach((key, style) {
+      if (tree.matchesSelector(key)) {
+        tree.style = tree.style.merge(declarationsToStyle(style));
+      }
+    });
+
+    tree.children.forEach((e) => _applyExternalCss(declarations, e));
+
+    return tree;
+  }
+
+  static StyledElement _applyInlineStyles(StyledElement tree, OnCssParseError? errorHandler) {
     if (tree.attributes.containsKey("style")) {
-      tree.style = tree.style.merge(inlineCSSToStyle(tree.attributes['style']));
+      final newStyle = inlineCssToStyle(tree.attributes['style'], errorHandler);
+      if (newStyle != null) {
+        tree.style = tree.style.merge(newStyle);
+      }
     }
 
-    tree.children.forEach(applyInlineStyles);
+    tree.children.forEach((e) => _applyInlineStyles(e, errorHandler));
     return tree;
   }
 
   /// [applyCustomStyles] applies the [Style] objects passed into the [Html]
   /// widget onto the [StyledElement] tree, no cascading of styles is done at this point.
-  StyledElement _applyCustomStyles(StyledElement tree) {
+  static StyledElement _applyCustomStyles(Map<String, Style> style, StyledElement tree) {
     style.forEach((key, style) {
       if (tree.matchesSelector(key)) {
         tree.style = tree.style.merge(style);
       }
     });
-    tree.children.forEach(_applyCustomStyles);
+    tree.children.forEach((e) => _applyCustomStyles(style, e));
 
     return tree;
   }
 
   /// [_cascadeStyles] cascades all of the inherited styles down the tree, applying them to each
   /// child that doesn't specify a different style.
-  StyledElement _cascadeStyles(StyledElement tree) {
+  static StyledElement _cascadeStyles(Map<String, Style> style, StyledElement tree) {
     tree.children.forEach((child) {
       child.style = tree.style.copyOnlyInherited(child.style);
-      _cascadeStyles(child);
+      _cascadeStyles(style, child);
     });
 
     return tree;
@@ -279,14 +319,29 @@ class HtmlParser extends StatelessWidget {
     }
 
     //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK) {
+    if (tree.style.display == Display.BLOCK && tree.children.isNotEmpty) {
       return WidgetSpan(
         child: ContainerSpan(
           key: AnchorKey.of(key, tree),
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+          children: tree.children
+              .expandIndexed((i, childTree) => [
+                    if (shrinkWrap &&
+                        childTree.style.display == Display.BLOCK &&
+                        i > 0 &&
+                        tree.children[i - 1] is ReplacedElement)
+                      TextSpan(text: "\n"),
+                    parseTree(newContext, childTree),
+                    if (shrinkWrap &&
+                        i != tree.children.length - 1 &&
+                        childTree.style.display == Display.BLOCK &&
+                        childTree.element?.localName != "html" &&
+                        childTree.element?.localName != "body")
+                      TextSpan(text: "\n"),
+                  ])
+              .toList(),
         ),
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
@@ -375,21 +430,16 @@ class HtmlParser extends StatelessWidget {
             child: MouseRegion(
               key: AnchorKey.of(key, tree),
               cursor: SystemMouseCursors.click,
-              child: RawGestureDetector(
-                gestures: {
-                  MultipleTapGestureRecognizer:
-                      GestureRecognizerFactoryWithHandlers<
-                          MultipleTapGestureRecognizer>(
-                    () => MultipleTapGestureRecognizer(),
-                    (instance) {
-                      instance
-                        ..onTap = _onAnchorTap != null
-                          ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                          : null;
-                    },
-                  ),
-                },
-                child: (childSpan as WidgetSpan).child,
+              child: MultipleTapGestureDetector(
+              onTap: _onAnchorTap != null
+              ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                  : null,
+              child: GestureDetector(
+              key: AnchorKey.of(key, tree),
+              onTap: _onAnchorTap != null
+              ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                  : null,
+              child: (childSpan as WidgetSpan).child,
               ),
             ),
           );
@@ -430,12 +480,10 @@ class HtmlParser extends StatelessWidget {
           child: StyledText(
             textSpan: TextSpan(
               style: newContext.style.generateTextStyle(),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList(),
+              children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
             ),
             style: newContext.style,
-            renderContext: context,
+            renderContext: newContext,
           ),
         ),
       );
@@ -443,8 +491,15 @@ class HtmlParser extends StatelessWidget {
       ///[tree] is an inline element.
       return TextSpan(
         style: newContext.style.generateTextStyle(),
-        children:
-        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        children: tree.children
+            .expand((tree) => [
+                  parseTree(newContext, tree),
+                  if (tree.style.display == Display.BLOCK &&
+                      tree.element?.localName != "html" &&
+                      tree.element?.localName != "body")
+                    TextSpan(text: "\n"),
+                ])
+            .toList(),
       );
     }
   }
@@ -559,6 +614,9 @@ class HtmlParser extends StatelessWidget {
           tree.style.markerContent = '•';
           break;
         case ListStyleType.DECIMAL:
+          if (olStack.isEmpty) {
+            olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
           olStack.last.data += 1;
           tree.style.markerContent = '${olStack.last.data}.';
           break;
@@ -580,14 +638,15 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style.before != null) {
       tree.children.insert(
-          0, TextContentElement(text: tree.style.before, style: tree.style));
+          0, TextContentElement(text: tree.style.before, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
     }
     if (tree.style.after != null) {
       tree.children
-          .add(TextContentElement(text: tree.style.after, style: tree.style));
-    } else {
-      tree.children.forEach(_processBeforesAndAfters);
+          .add(TextContentElement(text: tree.style.after, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
     }
+
+    tree.children.forEach(_processBeforesAndAfters);
+
     return tree;
   }
 
@@ -706,7 +765,7 @@ class HtmlParser extends StatelessWidget {
     tree.children.forEach((child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
-      } else if (child is TextContentElement && (child.text!.isEmpty)) {
+      } else if (child is TextContentElement && (child.text!.trim().isEmpty)) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
@@ -829,23 +888,22 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: calculateWidth(style.display, renderContext),
+      width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
         textAlign: style.textAlign,
         textDirection: style.direction,
         textScaleFactor: textScaleFactor,
+        maxLines: style.maxLines,
+        overflow: style.textOverflow,
       ),
     );
   }
 
-  double? calculateWidth(Display? display, RenderContext context) {
+  double? consumeExpandedBlock(Display? display, RenderContext context) {
     if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
       return double.infinity;
-    }
-    if (renderContext.parser.shrinkWrap) {
-      return MediaQuery.of(context.buildContext).size.width;
     }
     return null;
   }

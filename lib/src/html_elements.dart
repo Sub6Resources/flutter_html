@@ -77,7 +77,6 @@ const INTERACTABLE_ELEMENTS = [
 const REPLACED_ELEMENTS = [
   "audio",
   "br",
-  "head",
   "iframe",
   "img",
   "svg",
