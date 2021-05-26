@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
@@ -690,7 +691,7 @@ class StyledText extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: calculateWidth(style.display, renderContext),
+      width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -703,12 +704,9 @@ class StyledText extends StatelessWidget {
     );
   }
 
-  double? calculateWidth(Display? display, RenderContext context) {
+  double? consumeExpandedBlock(Display? display, RenderContext context) {
     if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
       return double.infinity;
-    }
-    if (renderContext.parser.shrinkWrap) {
-      return MediaQuery.of(context.buildContext).size.width;
     }
     return null;
   }
