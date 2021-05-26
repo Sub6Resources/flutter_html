@@ -28,6 +28,7 @@ export 'package:flutter_html/html_parser.dart';
 export 'package:flutter_html/html_parser.dart';
 //export image render api
 export 'package:flutter_html/image_render.dart';
+export 'package:flutter_html/custom_render.dart';
 //export image render api
 export 'package:flutter_html/image_render.dart';
 export 'package:flutter_html/src/anchor.dart';

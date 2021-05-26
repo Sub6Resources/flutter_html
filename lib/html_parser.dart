@@ -1,7 +1,6 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
