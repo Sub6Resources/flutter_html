@@ -523,11 +523,21 @@ class HtmlParser extends StatelessWidget {
       /// If the text is the first element in the current tree node list, it
       /// starts with a whitespace, it isn't a line break, and either the
       /// whitespace is unnecessary or it is a block element, delete it.
+      ///
+      /// We should also delete the whitespace at any point in the node list
+      /// if the previous element is a <br> because that tag makes the element
+      /// act like a block element.
       if (textIndex < 1
           && tree.text!.startsWith(' ')
           && tree.element?.localName != "br"
           && (!keepLeadingSpace.data
               || BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""))
+      ) {
+        tree.text = tree.text!.replaceFirst(' ', '');
+      } else if (textIndex >= 1
+          && tree.text!.startsWith(' ')
+          && tree.element?.nodes[textIndex - 1] is dom.Element
+          && (tree.element?.nodes[textIndex - 1] as dom.Element).localName == "br"
       ) {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
