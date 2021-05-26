@@ -83,16 +83,19 @@ class ImageContentElement extends ReplacedElement {
     for (final entry in context.parser.imageRenders.entries) {
       if (entry.key.call(attributes, element)) {
         final widget = entry.value.call(context, attributes, element);
-        return RawGestureDetector(
-            key: AnchorKey.of(context.parser.key, this),
-          child: widget,
-          gestures: {
-            MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-                  () => MultipleTapGestureRecognizer(), (instance) {
-                instance..onTap = () => context.parser.onImageTap?.call(src, context, attributes, element);
+        return Builder(
+          builder: (buildContext) {
+            return GestureDetector(
+              key: AnchorKey.of(context.parser.key, this),
+              child: widget,
+              onTap: () {
+                if (MultipleTapGestureDetector.of(buildContext) != null) {
+                  MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+                }
+                context.parser.onImageTap?.call(src, context, attributes, element);
               },
-            ),
-          },
+            );
+          }
         );
       }
     }
@@ -283,13 +286,13 @@ class MathElement extends ReplacedElement {
     required this.element,
     this.texStr,
     String name = "math",
-  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(display: Display.BLOCK), elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {
     texStr = parseMathRecursive(element, r'');
     return Container(
-      width: MediaQuery.of(context.buildContext).size.width,
+      width: context.parser.shrinkWrap ? null : MediaQuery.of(context.buildContext).size.width,
       child: Math.tex(
         texStr ?? '',
         mathStyle: MathStyle.display,

@@ -304,28 +304,7 @@ class HtmlParser extends StatelessWidget {
       tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
     );
-    List<int> lineEndingIndices = [];
-    tree.children.forEachIndexed((index, element) {
-      //we want the element to be a block element, but we don't want to add
-      //new-lines before/after the html and body
-      if (element.style.display == Display.BLOCK
-          && element.element?.localName != "html"
-          && element.element?.localName != "body"
-      ) {
-        //if the parent element is body and the element is first, we don't want
-        //to add a new-line before
-        if (index == 0 && element.element?.parent?.localName == "body") {
-          lineEndingIndices.add(index + 1);
-        } else {
-          lineEndingIndices.addAll([index, index + 1]);
-        }
-      }
-    });
-    //we don't need a new-line at the end
-    if (lineEndingIndices.isNotEmpty && lineEndingIndices.last == tree.children.length) {
-      lineEndingIndices.removeLast();
-    }
-    lineEndingIndices = lineEndingIndices.toSet().toList();
+
     if (customRender.containsKey(tree.name)) {
       final render = customRender[tree.name]!.call(
         newContext,
@@ -354,17 +333,26 @@ class HtmlParser extends StatelessWidget {
     }
 
     //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK) {
+    if (tree.style.display == Display.BLOCK && tree.children.isNotEmpty) {
       if (newContext.parser.selectable) {
-        final children = tree.children.map((tree) => parseTree(newContext, tree)).toList();
-        //use provided indices to insert new-lines at those locations
-        //makes sure to account for list size changes with "+ i"
-        lineEndingIndices.forEachIndexed((i, element) {
-          children.insert(element + i, TextSpan(text: "\n"));
-        });
         return TextSpan(
           style: newContext.style.generateTextStyle(),
-          children: children,
+          children: tree.children
+              .expandIndexed((i, childTree) => [
+            if (shrinkWrap &&
+                childTree.style.display == Display.BLOCK &&
+                i > 0 &&
+                tree.children[i - 1] is ReplacedElement)
+              TextSpan(text: "\n"),
+            parseTree(newContext, childTree),
+            if (shrinkWrap &&
+                i != tree.children.length - 1 &&
+                childTree.style.display == Display.BLOCK &&
+                childTree.element?.localName != "html" &&
+                childTree.element?.localName != "body")
+              TextSpan(text: "\n"),
+          ])
+              .toList(),
         );
       }
       return WidgetSpan(
@@ -373,7 +361,22 @@ class HtmlParser extends StatelessWidget {
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+          children: tree.children
+              .expandIndexed((i, childTree) => [
+                    if (shrinkWrap &&
+                        childTree.style.display == Display.BLOCK &&
+                        i > 0 &&
+                        tree.children[i - 1] is ReplacedElement)
+                      TextSpan(text: "\n"),
+                    parseTree(newContext, childTree),
+                    if (shrinkWrap &&
+                        i != tree.children.length - 1 &&
+                        childTree.style.display == Display.BLOCK &&
+                        childTree.element?.localName != "html" &&
+                        childTree.element?.localName != "body")
+                      TextSpan(text: "\n"),
+                  ])
+              .toList(),
         ),
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
@@ -458,22 +461,17 @@ class HtmlParser extends StatelessWidget {
           );
         } else {
           return WidgetSpan(
-            child: RawGestureDetector(
-              key: AnchorKey.of(key, tree),
-              gestures: {
-                MultipleTapGestureRecognizer:
-                    GestureRecognizerFactoryWithHandlers<
-                        MultipleTapGestureRecognizer>(
-                  () => MultipleTapGestureRecognizer(),
-                  (instance) {
-                    instance
-                      ..onTap = _onAnchorTap != null
-                          ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                          : null;
-                  },
-                ),
-              },
-              child: (childSpan as WidgetSpan).child,
+            child: MultipleTapGestureDetector(
+              onTap: _onAnchorTap != null
+                  ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                  : null,
+              child: GestureDetector(
+                key: AnchorKey.of(key, tree),
+                onTap: _onAnchorTap != null
+                    ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                    : null,
+                child: (childSpan as WidgetSpan).child,
+              ),
             ),
           );
         }
@@ -512,12 +510,10 @@ class HtmlParser extends StatelessWidget {
           child: StyledText(
             textSpan: TextSpan(
               style: newContext.style.generateTextStyle(),
-              children: tree.children
-                      .map((tree) => parseTree(newContext, tree))
-                      .toList(),
+              children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
             ),
             style: newContext.style,
-            renderContext: context,
+            renderContext: newContext,
           ),
         ),
       );
@@ -525,8 +521,15 @@ class HtmlParser extends StatelessWidget {
       ///[tree] is an inline element.
       return TextSpan(
         style: newContext.style.generateTextStyle(),
-        children:
-        tree.children.map((tree) => parseTree(newContext, tree)).toList(),
+        children: tree.children
+            .expand((tree) => [
+                  parseTree(newContext, tree),
+                  if (tree.style.display == Display.BLOCK &&
+                      tree.element?.localName != "html" &&
+                      tree.element?.localName != "body")
+                    TextSpan(text: "\n"),
+                ])
+            .toList(),
       );
     }
   }
@@ -937,7 +940,7 @@ class StyledText extends StatelessWidget {
       );
     }
     return SizedBox(
-      width: calculateWidth(style.display, renderContext),
+      width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(
         textSpan,
         style: style.generateTextStyle(),
@@ -950,12 +953,9 @@ class StyledText extends StatelessWidget {
     );
   }
 
-  double? calculateWidth(Display? display, RenderContext context) {
+  double? consumeExpandedBlock(Display? display, RenderContext context) {
     if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
       return double.infinity;
-    }
-    if (renderContext.parser.shrinkWrap) {
-      return MediaQuery.of(context.buildContext).size.width;
     }
     return null;
   }

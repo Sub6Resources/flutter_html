@@ -105,13 +105,13 @@ Add the following to your `pubspec.yaml` file:
 |------------|-----------|-------|-------------|---------|---------|-------|------|--------|--------|--------|
 |`a`         | `abbr`    | `acronym`| `address`   | `article`| `aside` | `audio`| `b`  | `bdi`  | `bdo`  | `big`  |
 |`blockquote`| `body`    | `br`  | `caption`   | `cite`  | `code`  | `data`| `dd` | `del`  | `details`  | `dfn`  |
-| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `h1`  | `h2` | `h3`   | `h4`   |
-| `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   | `main` | 
-| `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` | `s`  |
-| `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
-| `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
-| `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder`   | `mfrac`  | 
-| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    |   | 
+| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `font` | `h1`  | `h2` | `h3`   |
+| `h4` | `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   |
+| `main` | `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` |
+| `s` | `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`|
+| `table` | `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  |
+| `ul` | `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder` |
+| `mfrac` | `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    | 
 
  
 ## Currently Supported CSS Attributes:
