@@ -201,21 +201,24 @@ CustomRender base64ImageRender() => CustomRender.fromWidget(widget: (context, bu
       return child;
     },
   );
-  return RawGestureDetector(
-    key: context.key,
-    child: widget,
-    gestures: {
-      MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-            () => MultipleTapGestureRecognizer(), (instance) {
-        instance..onTap = () => context.parser.onImageTap?.call(
-            _src(context.tree.element!.attributes.cast())!.split("base64,")[1].trim(),
-            context,
-            context.tree.element!.attributes.cast(),
-            context.tree.element
+  return Builder(
+      builder: (buildContext) {
+        return GestureDetector(
+          key: context.key,
+          child: widget,
+          onTap: () {
+            if (MultipleTapGestureDetector.of(buildContext) != null) {
+              MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+            }
+            context.parser.onImageTap?.call(
+                _src(context.tree.element!.attributes.cast())!.split("base64,")[1].trim(),
+                context,
+                context.tree.element!.attributes.cast(),
+                context.tree.element
+            );
+          },
         );
-      },
-      ),
-    },
+      }
   );
 });
 
@@ -235,16 +238,24 @@ CustomRender assetImageRender({
       return child;
     },
   );
-  return RawGestureDetector(
-    key: context.key,
-    child: widget,
-    gestures: {
-      MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-            () => MultipleTapGestureRecognizer(), (instance) {
-        instance..onTap = () => context.parser.onImageTap?.call(assetPath, context, context.tree.element!.attributes.cast(), context.tree.element);
-      },
-      ),
-    },
+  return Builder(
+      builder: (buildContext) {
+        return GestureDetector(
+          key: context.key,
+          child: widget,
+          onTap: () {
+            if (MultipleTapGestureDetector.of(buildContext) != null) {
+              MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+            }
+            context.parser.onImageTap?.call(
+                assetPath,
+                context,
+                context.tree.element!.attributes.cast(),
+                context.tree.element
+            );
+          },
+        );
+      }
   );
 });
 
@@ -321,16 +332,24 @@ CustomRender networkImageRender({
       }
     },
   );
-  return RawGestureDetector(
-    key: context.key,
-    child: widget,
-    gestures: {
-      MultipleTapGestureRecognizer: GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-            () => MultipleTapGestureRecognizer(), (instance) {
-        instance..onTap = () => context.parser.onImageTap?.call(src, context, context.tree.element!.attributes.cast(), context.tree.element);
-      },
-      ),
-    },
+  return Builder(
+      builder: (buildContext) {
+        return GestureDetector(
+          key: context.key,
+          child: widget,
+          onTap: () {
+            if (MultipleTapGestureDetector.of(buildContext) != null) {
+              MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+            }
+            context.parser.onImageTap?.call(
+                src,
+                context,
+                context.tree.element!.attributes.cast(),
+                context.tree.element
+            );
+          },
+        );
+      }
   );
 });
 

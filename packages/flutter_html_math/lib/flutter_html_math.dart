@@ -8,7 +8,7 @@ import 'package:flutter_math_fork/flutter_math.dart';
 CustomRender mathRender({OnMathError? onMathError}) => CustomRender.fromWidget(widget: (context, buildChildren) {
   String texStr = context.tree.element == null ? '' : parseMathRecursive(context.tree.element!, r'');
   return Container(
-      width: MediaQuery.of(context.buildContext).size.width,
+      width: context.parser.shrinkWrap ? null : MediaQuery.of(context.buildContext).size.width,
       child: Math.tex(
         texStr,
         mathStyle: MathStyle.display,

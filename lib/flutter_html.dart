@@ -1,17 +1,5 @@
 library flutter_html;
 
-//export image render api
-export 'package:flutter_html/image_render.dart';
-//export style api
-export 'package:flutter_html/style.dart';
-//export render context api
-export 'package:flutter_html/html_parser.dart';
-//export src for advanced custom render uses (e.g. casting context.tree)
-export 'package:flutter_html/src/layout_element.dart';
-export 'package:flutter_html/src/replaced_element.dart';
-export 'package:flutter_html/src/styled_element.dart';
-export 'package:flutter_html/src/interactable_element.dart';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_html/custom_render.dart';
 import 'package:flutter/rendering.dart';
@@ -19,17 +7,12 @@ import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:webview_flutter/webview_flutter.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
 //export render context api
 export 'package:flutter_html/html_parser.dart';
-//export image render api
-export 'package:flutter_html/image_render.dart';
 export 'package:flutter_html/custom_render.dart';
-//export image render api
-export 'package:flutter_html/image_render.dart';
 export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/interactable_element.dart';
