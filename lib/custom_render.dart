@@ -1,3 +1,4 @@
+import 'package:collection/collection.dart';
 
 import 'dart:async';
 import 'dart:convert';
@@ -11,7 +12,8 @@ import 'package:flutter_html/src/utils.dart';
 typedef CustomRenderMatcher = bool Function(RenderContext context);
 
 CustomRenderMatcher blockElementMatcher() => (context) {
-  return context.tree.style.display == Display.BLOCK;
+  return context.tree.style.display == Display.BLOCK
+      && context.tree.children.isNotEmpty;
 };
 
 CustomRenderMatcher listElementMatcher() => (context) {
@@ -99,8 +101,22 @@ CustomRender blockElementRender({
             newContext: context,
             style: style ?? context.tree.style,
             shrinkWrap: context.parser.shrinkWrap,
-            child: child,
-            children: children ?? buildChildren.call(),
+            children: children ?? context.tree.children
+                .expandIndexed((i, childTree) => [
+              if (context.parser.shrinkWrap &&
+                  childTree.style.display == Display.BLOCK &&
+                  i > 0 &&
+                  context.tree.children[i - 1] is ReplacedElement)
+                TextSpan(text: "\n"),
+              context.parser.parseTree(context, childTree),
+              if (context.parser.shrinkWrap &&
+                  i != context.tree.children.length - 1 &&
+                  childTree.style.display == Display.BLOCK &&
+                  childTree.element?.localName != "html" &&
+                  childTree.element?.localName != "body")
+                TextSpan(text: "\n"),
+            ])
+                .toList(),
           ),
 ));
 
@@ -354,8 +370,16 @@ CustomRender verticalAlignRender({
 
 CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
     CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
-  style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
-  children: children ?? buildChildren.call(),
+      style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
+      children: context.tree.children
+          .expand((tree) => [
+        context.parser.parseTree(context, tree),
+        if (tree.style.display == Display.BLOCK &&
+            tree.element?.localName != "html" &&
+            tree.element?.localName != "body")
+          TextSpan(text: "\n"),
+      ])
+          .toList(),
 ));
 
 final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
@@ -401,21 +425,17 @@ InlineSpan _getInteractableChildren(RenderContext context, InteractableElement t
     );
   } else {
     return WidgetSpan(
-      child: RawGestureDetector(
-        key: context.key,
-        gestures: {
-          MultipleTapGestureRecognizer:
-          GestureRecognizerFactoryWithHandlers<MultipleTapGestureRecognizer>(
-                () => MultipleTapGestureRecognizer(),
-                (instance) {
-                  instance
-                    ..onTap = context.parser.onAnchorTap != null
-                        ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                        : null;
-            },
-          ),
-        },
-        child: (childSpan as WidgetSpan).child,
+      child: MultipleTapGestureDetector(
+        onTap: context.parser.onAnchorTap != null
+            ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+            : null,
+        child: GestureDetector(
+          key: context.key,
+          onTap: context.parser.onAnchorTap != null
+              ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+              : null,
+          child: (childSpan as WidgetSpan).child,
+        ),
       ),
     );
   }
