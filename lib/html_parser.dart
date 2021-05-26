@@ -431,15 +431,16 @@ class HtmlParser extends StatelessWidget {
               key: AnchorKey.of(key, tree),
               cursor: SystemMouseCursors.click,
               child: MultipleTapGestureDetector(
-              onTap: _onAnchorTap != null
-              ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                  : null,
-              child: GestureDetector(
-              key: AnchorKey.of(key, tree),
-              onTap: _onAnchorTap != null
-              ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                  : null,
-              child: (childSpan as WidgetSpan).child,
+                onTap: _onAnchorTap != null
+                ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                    : null,
+                child: GestureDetector(
+                  key: AnchorKey.of(key, tree),
+                  onTap: _onAnchorTap != null
+                  ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                      : null,
+                  child: (childSpan as WidgetSpan).child,
+                ),
               ),
             ),
           );
