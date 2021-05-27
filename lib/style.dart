@@ -520,8 +520,16 @@ class LineHeight {
 }
 
 enum ListStyleType {
+  LOWER_ALPHA,
+  UPPER_ALPHA,
+  LOWER_LATIN,
+  UPPER_LATIN,
+  CIRCLE,
   DISC,
   DECIMAL,
+  LOWER_ROMAN,
+  UPPER_ROMAN,
+  SQUARE,
 }
 
 enum ListStylePosition {

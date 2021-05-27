@@ -36,6 +36,9 @@ dependencies:
   # plugin for firstWhereOrNull extension on lists
   collection: '>=1.15.0 <2.0.0'
 
+  # plugin to convert integers to numerals
+  numerus: '>=1.1.1 <2.0.0'
+
   flutter:
     sdk: flutter
 
