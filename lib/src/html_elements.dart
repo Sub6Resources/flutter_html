@@ -70,6 +70,40 @@ const STYLED_ELEMENTS = [
   "ul",
 ];
 
+const BLOCK_ELEMENTS = [
+  "article",
+  "aside",
+  "blockquote",
+  "body",
+  "center",
+  "dd",
+  "div",
+  "dl",
+  "dt",
+  "figcaption",
+  "figure",
+  "footer",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "header",
+  "hr",
+  "html",
+  "li",
+  "main",
+  "nav",
+  "noscript",
+  "ol",
+  "p",
+  "pre",
+  "section",
+  "summary",
+  "ul",
+];
+
 const INTERACTABLE_ELEMENTS = [
   "a",
 ];
