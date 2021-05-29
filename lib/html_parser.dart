@@ -6,6 +6,7 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/anchor.dart';
@@ -411,6 +412,7 @@ class HtmlParser extends StatelessWidget {
       InlineSpan addTaps(InlineSpan childSpan, TextStyle childStyle) {
         if (childSpan is TextSpan) {
           return TextSpan(
+            mouseCursor: SystemMouseCursors.click,
             text: childSpan.text,
             children: childSpan.children
                 ?.map((e) => addTaps(e, childStyle.merge(childSpan.style)))
@@ -426,16 +428,20 @@ class HtmlParser extends StatelessWidget {
           );
         } else {
           return WidgetSpan(
-            child: MultipleTapGestureDetector(
-              onTap: _onAnchorTap != null
-                  ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                  : null,
-              child: GestureDetector(
-                key: AnchorKey.of(key, tree),
+            child: MouseRegion(
+              key: AnchorKey.of(key, tree),
+              cursor: SystemMouseCursors.click,
+              child: MultipleTapGestureDetector(
                 onTap: _onAnchorTap != null
-                    ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
                     : null,
-                child: (childSpan as WidgetSpan).child,
+                child: GestureDetector(
+                  key: AnchorKey.of(key, tree),
+                  onTap: _onAnchorTap != null
+                  ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+                      : null,
+                  child: (childSpan as WidgetSpan).child,
+                ),
               ),
             ),
           );
@@ -443,12 +449,13 @@ class HtmlParser extends StatelessWidget {
       }
 
       return TextSpan(
+        mouseCursor: SystemMouseCursors.click,
         children: tree.children
                 .map((tree) => parseTree(newContext, tree))
                 .map((childSpan) {
-              return addTaps(childSpan,
-                  newContext.style.generateTextStyle().merge(childSpan.style));
-            }).toList(),
+          return addTaps(childSpan,
+            newContext.style.generateTextStyle().merge(childSpan.style));
+          }).toList(),
       );
     } else if (tree is LayoutElement) {
       return WidgetSpan(
