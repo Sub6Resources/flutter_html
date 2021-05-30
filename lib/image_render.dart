@@ -141,20 +141,26 @@ ImageRender networkImageRender({
         future: completer.future,
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
           if (snapshot.hasData) {
-            return AspectRatio(
-              aspectRatio: _aspectRatio(attributes, snapshot),
-              child: Image.network(
-                src,
-                headers: headers,
-                width: width ?? _width(attributes) ?? snapshot.data!.width,
-                height: height ?? _height(attributes),
-                frameBuilder: (ctx, child, frame, _) {
-                  if (frame == null) {
-                    return altWidget?.call(_alt(attributes)) ??
-                        Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
-                  }
-                  return child;
-                },
+            return Container(
+              constraints: BoxConstraints(
+                maxWidth: width ?? _width(attributes) ?? snapshot.data!.width,
+                maxHeight: (width ?? _width(attributes) ?? snapshot.data!.width) / _aspectRatio(attributes, snapshot)
+              ),
+              child: AspectRatio(
+                aspectRatio: _aspectRatio(attributes, snapshot),
+                child: Image.network(
+                  src,
+                  headers: headers,
+                  width: width ?? _width(attributes) ?? snapshot.data!.width,
+                  height: height ?? _height(attributes),
+                  frameBuilder: (ctx, child, frame, _) {
+                    if (frame == null) {
+                      return altWidget?.call(_alt(attributes)) ??
+                          Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
+                    }
+                    return child;
+                  },
+                ),
               ),
             );
           } else if (snapshot.hasError) {
