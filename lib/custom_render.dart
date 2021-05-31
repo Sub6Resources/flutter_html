@@ -54,12 +54,39 @@ class CustomRender {
   }) : inlineSpan = null;
 }
 
+class SelectableCustomRender extends CustomRender {
+  final TextSpan Function(RenderContext, List<TextSpan> Function()) textSpan;
+
+  SelectableCustomRender.fromTextSpan({
+    required this.textSpan,
+  }) : super.fromInlineSpan(inlineSpan: null);
+}
+
 CustomRender blockElementRender({
   Style? style,
   Widget? child,
   List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
-        WidgetSpan(
+    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) {
+        if (context.parser.selectable) {
+          return TextSpan(
+            style: context.style.generateTextStyle(),
+            children: (children as List<TextSpan>?) ?? context.tree.children
+                .expandIndexed((i, childTree) => [
+              if (childTree.style.display == Display.BLOCK &&
+                  i > 0 &&
+                  context.tree.children[i - 1] is ReplacedElement)
+                TextSpan(text: "\n"),
+              context.parser.parseTree(context, childTree),
+              if (i != context.tree.children.length - 1 &&
+                  childTree.style.display == Display.BLOCK &&
+                  childTree.element?.localName != "html" &&
+                  childTree.element?.localName != "body")
+                TextSpan(text: "\n"),
+            ])
+                .toList(),
+          );
+        }
+        return WidgetSpan(
           child: ContainerSpan(
             key: context.key,
             newContext: context,
@@ -81,8 +108,8 @@ CustomRender blockElementRender({
                 TextSpan(text: "\n"),
             ])
                 .toList(),
-          ),
-));
+          ));
+    });
 
 CustomRender listElementRender({
   Style? style,
@@ -229,20 +256,20 @@ InlineSpan _getInteractableChildren(RenderContext context, InteractableElement t
       semanticsLabel: childSpan.semanticsLabel,
       recognizer: TapGestureRecognizer()
         ..onTap =
-          context.parser.onAnchorTap != null ?
-              () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+          context.parser.internalOnAnchorTap != null ?
+              () => context.parser.internalOnAnchorTap!(tree.href, context, tree.attributes, tree.element)
               : null,
     );
   } else {
     return WidgetSpan(
       child: MultipleTapGestureDetector(
-        onTap: context.parser.onAnchorTap != null
-            ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+        onTap: context.parser.internalOnAnchorTap != null
+            ? () => context.parser.internalOnAnchorTap!(tree.href, context, tree.attributes, tree.element)
             : null,
         child: GestureDetector(
           key: context.key,
-          onTap: context.parser.onAnchorTap != null
-              ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+          onTap: context.parser.internalOnAnchorTap != null
+              ? () => context.parser.internalOnAnchorTap!(tree.href, context, tree.attributes, tree.element)
               : null,
           child: (childSpan as WidgetSpan).child,
         ),

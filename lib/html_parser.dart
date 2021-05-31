@@ -51,7 +51,7 @@ class HtmlParser extends StatelessWidget {
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
-  final OnTap? onAnchorTap;
+  final OnTap? internalOnAnchorTap;
 
   HtmlParser({
     required this.key,
@@ -69,7 +69,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  })  : this.onAnchorTap = onAnchorTap != null
+  })  : this.internalOnAnchorTap = onAnchorTap != null
           ? onAnchorTap
           : key != null
               ? _handleAnchorTap(key, onLinkTap)
@@ -333,18 +333,24 @@ class HtmlParser extends StatelessWidget {
     for (final entry in customRenders.keys) {
       if (entry.call(newContext)) {
         final buildChildren = () => tree.children.map((tree) => parseTree(context, tree)).toList();
+        if (newContext.parser.selectable && customRenders[entry] is SelectableCustomRender) {
+          final selectableBuildChildren = () => tree.children.map((tree) => parseTree(context, tree) as TextSpan).toList();
+          return (customRenders[entry] as SelectableCustomRender).textSpan.call(newContext, selectableBuildChildren);
+        }
+        if (newContext.parser.selectable) {
+          return customRenders[entry]!.inlineSpan!.call(newContext, buildChildren) as TextSpan;
+        }
         if (customRenders[entry]?.inlineSpan != null) {
           return customRenders[entry]!.inlineSpan!.call(newContext, buildChildren);
-        } else {
-          return WidgetSpan(
-            child: ContainerSpan(
-              newContext: newContext,
-              style: tree.style,
-              shrinkWrap: newContext.parser.shrinkWrap,
-              child: customRenders[entry]!.widget!.call(newContext, buildChildren),
-            ),
-          );
         }
+        return WidgetSpan(
+          child: ContainerSpan(
+            newContext: newContext,
+            style: tree.style,
+            shrinkWrap: newContext.parser.shrinkWrap,
+            child: customRenders[entry]!.widget!.call(newContext, buildChildren),
+          ),
+        );
       }
     }
     return WidgetSpan(child: Container(height: 0, width: 0));

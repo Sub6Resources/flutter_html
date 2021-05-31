@@ -228,6 +228,7 @@ class SelectableHtml extends StatelessWidget {
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
+    this.customRenders = const {},
     this.tagsList = const [],
   }) : document = null,
         super(key: key);
@@ -240,6 +241,7 @@ class SelectableHtml extends StatelessWidget {
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
+    this.customRenders = const {},
     this.tagsList = const [],
   }) : data = null,
         super(key: key);
@@ -270,6 +272,10 @@ class SelectableHtml extends StatelessWidget {
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
 
+  /// Either return a custom widget for specific node types or return null to
+  /// fallback to the default rendering.
+  final Map<CustomRenderMatcher, SelectableCustomRender> customRenders;
+
   static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
 
   @override
@@ -291,7 +297,9 @@ class SelectableHtml extends StatelessWidget {
         shrinkWrap: shrinkWrap,
         selectable: true,
         style: style,
-        customRenders: {},
+        customRenders: {}
+          ..addAll(customRenders)
+          ..addAll(defaultRenders),
         imageRenders: defaultImageRenders,
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
