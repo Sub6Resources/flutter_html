@@ -49,6 +49,7 @@ class HtmlParser extends StatelessWidget {
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
   final bool shrinkWrap;
+  final bool selectable;
 
   final Map<String, Style> style;
   final Map<String, CustomRender> customRender;
@@ -66,6 +67,7 @@ class HtmlParser extends StatelessWidget {
     required this.onImageError,
     required this.onMathError,
     required this.shrinkWrap,
+    required this.selectable,
     required this.style,
     required this.customRender,
     required this.imageRenders,
@@ -104,6 +106,19 @@ class HtmlParser extends StatelessWidget {
     // using textScaleFactor = 1.0 (which is the default). This ensures the correct
     // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
     // to wrap everything when larger accessibility fonts are used.
+    if (selectable) {
+      return StyledText.selectable(
+        textSpan: parsedTree as TextSpan,
+        style: cleanedTree.style,
+        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        renderContext: RenderContext(
+          buildContext: context,
+          parser: this,
+          tree: cleanedTree,
+          style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+        ),
+      );
+    }
     return StyledText(
       textSpan: parsedTree,
       style: cleanedTree.style,
@@ -321,6 +336,25 @@ class HtmlParser extends StatelessWidget {
 
     //Return the correct InlineSpan based on the element type.
     if (tree.style.display == Display.BLOCK && tree.children.isNotEmpty) {
+      if (newContext.parser.selectable) {
+        return TextSpan(
+          style: newContext.style.generateTextStyle(),
+          children: tree.children
+              .expandIndexed((i, childTree) => [
+            if (childTree.style.display == Display.BLOCK &&
+                i > 0 &&
+                tree.children[i - 1] is ReplacedElement)
+              TextSpan(text: "\n"),
+            parseTree(newContext, childTree),
+            if (i != tree.children.length - 1 &&
+                childTree.style.display == Display.BLOCK &&
+                childTree.element?.localName != "html" &&
+                childTree.element?.localName != "body")
+              TextSpan(text: "\n"),
+          ])
+              .toList(),
+        );
+      }
       return WidgetSpan(
         child: ContainerSpan(
           key: AnchorKey.of(key, tree),
@@ -1001,6 +1035,7 @@ class StyledText extends StatelessWidget {
   final double textScaleFactor;
   final RenderContext renderContext;
   final AnchorKey? key;
+  final bool _selectable;
 
   const StyledText({
     required this.textSpan,
@@ -1008,10 +1043,31 @@ class StyledText extends StatelessWidget {
     this.textScaleFactor = 1.0,
     required this.renderContext,
     this.key,
-  }) : super(key: key);
+  }) : _selectable = false,
+        super(key: key);
+
+  const StyledText.selectable({
+    required TextSpan textSpan,
+    required this.style,
+    this.textScaleFactor = 1.0,
+    required this.renderContext,
+    this.key,
+  }) : textSpan = textSpan,
+        _selectable = true,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (_selectable) {
+      return SelectableText.rich(
+        textSpan as TextSpan,
+        style: style.generateTextStyle(),
+        textAlign: style.textAlign,
+        textDirection: style.direction,
+        textScaleFactor: textScaleFactor,
+        maxLines: style.maxLines,
+      );
+    }
     return SizedBox(
       width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(

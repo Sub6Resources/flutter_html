@@ -11,26 +11,13 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
-//export render context api
-export 'package:flutter_html/html_parser.dart';
-//export image render api
 export 'package:flutter_html/image_render.dart';
-//export image render api
-export 'package:flutter_html/image_render.dart';
-export 'package:flutter_html/src/anchor.dart';
+//export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/interactable_element.dart';
-export 'package:flutter_html/src/interactable_element.dart';
-//export src for advanced custom render uses (e.g. casting context.tree)
-export 'package:flutter_html/src/layout_element.dart';
-//export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
-export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
-export 'package:flutter_html/src/styled_element.dart';
-//export style api
-export 'package:flutter_html/style.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
@@ -172,6 +159,7 @@ class Html extends StatelessWidget {
         onImageError: onImageError,
         onMathError: onMathError,
         shrinkWrap: shrinkWrap,
+        selectable: false,
         style: style,
         customRender: customRender,
         imageRenders: {}
@@ -179,6 +167,108 @@ class Html extends StatelessWidget {
           ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
         navigationDelegateForIframe: navigationDelegateForIframe,
+      ),
+    );
+  }
+}
+
+class SelectableHtml extends StatelessWidget {
+  /// The `SelectableHtml` widget takes HTML as input and displays a RichText
+  /// tree of the parsed HTML content (which is selectable)
+  ///
+  /// **Attributes**
+  /// **data** *required* takes in a String of HTML data (required only for `Html` constructor).
+  /// **document** *required* takes in a Document of HTML data (required only for `Html.fromDom` constructor).
+  ///
+  /// **onLinkTap** This function is called whenever a link (`<a href>`)
+  /// is tapped.
+  ///
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags that support selectable content are rendered.
+  ///
+  /// **style** Pass in the style information for the Html here.
+  /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
+  ///
+  /// **PLEASE NOTE**
+  ///
+  /// There are a few caveats due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474):
+  ///
+  /// 1. The list of tags that can be rendered is significantly reduced.
+  /// Key omissions include no support for images/video/audio, table, and ul/ol because they all require widgets and `WidgetSpan`s.
+  ///
+  /// 2. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`.
+  ///
+  /// 3. Styling support is significantly reduced. Only text-related styling works
+  /// (e.g. bold or italic), while container related styling (e.g. borders or padding/margin)
+  /// do not work because we can't use the `ContainerSpan` class (it needs an enclosing `WidgetSpan`).
+
+  SelectableHtml({
+    Key? key,
+    required this.data,
+    this.onLinkTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    this.tagsList = const [],
+  }) : document = null,
+        super(key: key);
+
+  SelectableHtml.fromDom({
+    Key? key,
+    required this.document,
+    this.onLinkTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    this.tagsList = const [],
+  }) : data = null,
+        super(key: key);
+
+  /// The HTML data passed to the widget as a String
+  final String? data;
+
+  /// The HTML data passed to the widget as a pre-processed [dom.Document]
+  final dom.Document? document;
+
+  /// A function that defines what to do when a link is tapped
+  final OnTap? onLinkTap;
+
+  /// A function that defines what to do when CSS fails to parse
+  final OnCssParseError? onCssParseError;
+
+  /// A parameter that should be set when the HTML widget is expected to be
+  /// flexible
+  final bool shrinkWrap;
+
+  /// A list of HTML tags that defines what elements are not rendered
+  final List<String> tagsList;
+
+  /// An API that allows you to override the default style for any HTML element
+  final Map<String, Style> style;
+
+  static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
+
+  @override
+  Widget build(BuildContext context) {
+    final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
+    final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
+
+    return Container(
+      width: width,
+      child: HtmlParser(
+        key: null,
+        htmlData: doc,
+        onLinkTap: onLinkTap,
+        onImageTap: null,
+        onCssParseError: onCssParseError,
+        onImageError: null,
+        onMathError: null,
+        shrinkWrap: shrinkWrap,
+        selectable: true,
+        style: style,
+        customRender: {},
+        imageRenders: defaultImageRenders,
+        tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
+        navigationDelegateForIframe: null,
       ),
     );
   }
