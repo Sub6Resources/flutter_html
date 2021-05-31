@@ -44,6 +44,7 @@ class HtmlParser extends StatelessWidget {
   final Key? key;
   final dom.Document htmlData;
   final OnTap? onLinkTap;
+  final OnTap? onAnchorTap;
   final OnTap? onImageTap;
   final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
@@ -62,6 +63,7 @@ class HtmlParser extends StatelessWidget {
     required this.key,
     required this.htmlData,
     required this.onLinkTap,
+    required this.onAnchorTap,
     required this.onImageTap,
     required this.onCssParseError,
     required this.onImageError,
@@ -73,7 +75,12 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  }): this._onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
+  })  : this._onAnchorTap = onAnchorTap != null
+          ? onAnchorTap
+          : key != null
+              ? _handleAnchorTap(key, onLinkTap)
+              : null,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
