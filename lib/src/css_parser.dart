@@ -194,6 +194,11 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
           break;
+        case 'list-style-type':
+          if (value.first is css.LiteralTerm) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.LiteralTerm) ?? style.listStyleType;
+          }
+          break;
         case 'margin':
           List<css.LiteralTerm>? marginLengths = value.whereType<css.LiteralTerm>().toList();
           /// List<css.LiteralTerm> might include other values than the ones we want for margin length, so make sure to remove those before passing it to [ExpressionMapping]
@@ -655,6 +660,32 @@ class ExpressionMapping {
     return LineHeight.normal;
   }
 
+  static ListStyleType? expressionToListStyleType(css.LiteralTerm value) {
+    switch (value.text) {
+      case 'disc':
+        return ListStyleType.DISC;
+      case 'circle':
+        return ListStyleType.CIRCLE;
+      case 'decimal':
+        return ListStyleType.DECIMAL;
+      case 'lower-alpha':
+        return ListStyleType.LOWER_ALPHA;
+      case 'lower-latin':
+        return ListStyleType.LOWER_LATIN;
+      case 'lower-roman':
+        return ListStyleType.LOWER_ROMAN;
+      case 'square':
+        return ListStyleType.SQUARE;
+      case 'upper-alpha':
+        return ListStyleType.UPPER_ALPHA;
+      case 'upper-latin':
+        return ListStyleType.UPPER_LATIN;
+      case 'upper-roman':
+        return ListStyleType.UPPER_ROMAN;
+    }
+    return null;
+  }
+
   static List<double?> expressionToPadding(List<css.Expression>? lengths) {
     double? left;
     double? right;
@@ -813,14 +844,15 @@ class ExpressionMapping {
     var text = _text.replaceFirst('#', '');
     if (text.length == 3)
       text = text.replaceAllMapped(
-          RegExp(r"[a-f]|\d"), (match) => '${match.group(0)}${match.group(0)}');
-    int color = int.parse(text, radix: 16);
-
-    if (color <= 0xffffff) {
-      return new Color(color).withAlpha(255);
+          RegExp(r"[a-f]|\d", caseSensitive: false),
+          (match) => '${match.group(0)}${match.group(0)}'
+      );
+    if (text.length > 6) {
+      text = "0x" + text;
     } else {
-      return new Color(color);
+      text = "0xFF" + text;
     }
+    return new Color(int.parse(text));
   }
 
   static Color? rgbOrRgbaToColor(String text) {

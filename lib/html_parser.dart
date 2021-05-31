@@ -4,6 +4,7 @@ import 'dart:math';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/anchor.dart';
@@ -14,6 +15,7 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
+import 'package:numerus/numerus.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(
@@ -36,11 +38,13 @@ class HtmlParser extends StatelessWidget {
   final Key? key;
   final dom.Document htmlData;
   final OnTap? onLinkTap;
+  final OnTap? onAnchorTap;
   final OnTap? onImageTap;
   final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
   final OnMathError? onMathError;
   final bool shrinkWrap;
+  final bool selectable;
 
   final Map<String, Style> style;
   final Map<CustomRenderMatcher, CustomRender> customRenders;
@@ -53,17 +57,24 @@ class HtmlParser extends StatelessWidget {
     required this.key,
     required this.htmlData,
     required this.onLinkTap,
+    required this.onAnchorTap,
     required this.onImageTap,
     required this.onCssParseError,
     required this.onImageError,
     required this.onMathError,
     required this.shrinkWrap,
+    required this.selectable,
     required this.style,
     required this.customRenders,
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  }): this.onAnchorTap = key != null ? _handleAnchorTap(key, onLinkTap): null, super(key: key);
+  })  : this.onAnchorTap = onAnchorTap != null
+          ? onAnchorTap
+          : key != null
+              ? _handleAnchorTap(key, onLinkTap)
+              : null,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -98,6 +109,19 @@ class HtmlParser extends StatelessWidget {
     // using textScaleFactor = 1.0 (which is the default). This ensures the correct
     // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
     // to wrap everything when larger accessibility fonts are used.
+    if (selectable) {
+      return StyledText.selectable(
+        textSpan: parsedTree as TextSpan,
+        style: cleanedTree.style,
+        textScaleFactor: MediaQuery.of(context).textScaleFactor,
+        renderContext: RenderContext(
+          buildContext: context,
+          parser: this,
+          tree: cleanedTree,
+          style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+        ),
+      );
+    }
     return StyledText(
       textSpan: parsedTree,
       style: cleanedTree.style,
@@ -358,8 +382,7 @@ class HtmlParser extends StatelessWidget {
   /// between and among inline elements. It does so by creating a boolean [Context]
   /// and passing it to the [_processInlineWhitespaceRecursive] function.
   static StyledElement _processInlineWhitespace(StyledElement tree) {
-    final whitespaceParsingContext = Context(false);
-    tree = _processInlineWhitespaceRecursive(tree, whitespaceParsingContext);
+    tree = _processInlineWhitespaceRecursive(tree, Context(false));
     return tree;
   }
 
@@ -368,33 +391,77 @@ class HtmlParser extends StatelessWidget {
   /// to the w3's HTML whitespace processing specification linked to above.
   static StyledElement _processInlineWhitespaceRecursive(
     StyledElement tree,
-    Context<bool> wpc,
+    Context<bool> keepLeadingSpace,
   ) {
-    if (tree.style.display == Display.BLOCK) {
-      wpc.data = false;
-    }
-
-    if (tree is ImageContentElement || tree is SvgContentElement) {
-      wpc.data = false;
-    }
-
     if (tree is TextContentElement) {
-      int index = -1;
-      if ((tree.element?.nodes.length ?? 0) > 1) {
-        index = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
+      /// initialize indices to negative numbers to make conditionals a little easier
+      int textIndex = -1;
+      int elementIndex = -1;
+      /// initialize parent after to a whitespace to account for elements that are
+      /// the last child in the list of elements
+      String parentAfterText = " ";
+      /// find the index of the text in the current tree
+      if ((tree.element?.nodes.length ?? 0) >= 1) {
+        textIndex = tree.element?.nodes.indexWhere((element) => element == tree.node) ?? -1;
       }
-      if (index < 1 && tree.text!.startsWith(' ')
-          && tree.element?.localName != "br") {
+      /// get the parent nodes
+      dom.NodeList? parentNodes = tree.element?.parent?.nodes;
+      /// find the index of the tree itself in the parent nodes
+      if ((parentNodes?.length ?? 0) >= 1) {
+        elementIndex = parentNodes?.indexWhere((element) => element == tree.element) ?? -1;
+      }
+      /// if the tree is any node except the last node in the node list and the
+      /// next node in the node list is a text node, then get its text. Otherwise
+      /// the next node will be a [dom.Element], so keep unwrapping that until
+      /// we get the underlying text node, and finally get its text.
+      if (elementIndex < (parentNodes?.length ?? 1) - 1 && parentNodes?[elementIndex + 1] is dom.Text) {
+        parentAfterText = parentNodes?[elementIndex + 1].text ?? " ";
+      } else if (elementIndex < (parentNodes?.length ?? 1) - 1) {
+        var parentAfter = parentNodes?[elementIndex + 1];
+        while (parentAfter is dom.Element) {
+          if (parentAfter.nodes.isNotEmpty) {
+            parentAfter = parentAfter.nodes.first;
+          } else {
+            break;
+          }
+        }
+        parentAfterText = parentAfter?.text ?? " ";
+      }
+      /// If the text is the first element in the current tree node list, it
+      /// starts with a whitespace, it isn't a line break, and either the
+      /// whitespace is unnecessary or it is a block element, delete it.
+      ///
+      /// We should also delete the whitespace at any point in the node list
+      /// if the previous element is a <br> because that tag makes the element
+      /// act like a block element.
+      if (textIndex < 1
+          && tree.text!.startsWith(' ')
+          && tree.element?.localName != "br"
+          && (!keepLeadingSpace.data
+              || BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""))
+      ) {
+        tree.text = tree.text!.replaceFirst(' ', '');
+      } else if (textIndex >= 1
+          && tree.text!.startsWith(' ')
+          && tree.element?.nodes[textIndex - 1] is dom.Element
+          && (tree.element?.nodes[textIndex - 1] as dom.Element).localName == "br"
+      ) {
         tree.text = tree.text!.replaceFirst(' ', '');
       }
-      if (index == (tree.element?.nodes.length ?? 1) - 1
-          && (tree.text!.endsWith(' ') || tree.text!.endsWith('\n'))
-          && tree.element?.localName != "br") {
-        tree.text = tree.text!.trimRight();
+      /// If the text is the last element in the current tree node list, it isn't
+      /// a line break, and the next text node starts with a whitespace,
+      /// update the [Context] to signify to that next text node whether it should
+      /// keep its whitespace. This is based on whether the current text ends with a
+      /// whitespace.
+      if (textIndex == (tree.element?.nodes.length ?? 1) - 1
+          && tree.element?.localName != "br"
+          && parentAfterText.startsWith(' ')
+      ) {
+        keepLeadingSpace.data = !tree.text!.endsWith(' ');
       }
     }
 
-    tree.children.forEach((e) => _processInlineWhitespaceRecursive(e, wpc));
+    tree.children.forEach((e) => _processInlineWhitespaceRecursive(e, keepLeadingSpace));
 
     return tree;
   }
@@ -419,7 +486,7 @@ class HtmlParser extends StatelessWidget {
   ///
   /// The function uses the [_processListCharactersRecursive] function to do most of its work.
   static StyledElement _processListCharacters(StyledElement tree) {
-    final olStack = ListQueue<Context<int>>();
+    final olStack = ListQueue<Context>();
     tree = _processListCharactersRecursive(tree, olStack);
     return tree;
   }
@@ -427,20 +494,98 @@ class HtmlParser extends StatelessWidget {
   /// [_processListCharactersRecursive] uses a Stack of integers to properly number and
   /// bullet all list items according to the [ListStyleType] they have been given.
   static StyledElement _processListCharactersRecursive(
-      StyledElement tree, ListQueue<Context<int>> olStack) {
-    if (tree.name == 'ol') {
-      olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+      StyledElement tree, ListQueue<Context> olStack) {
+    if (tree.name == 'ol' && tree.style.listStyleType != null) {
+      switch (tree.style.listStyleType!) {
+        case ListStyleType.LOWER_LATIN:
+        case ListStyleType.LOWER_ALPHA:
+        case ListStyleType.UPPER_LATIN:
+        case ListStyleType.UPPER_ALPHA:
+          olStack.add(Context<String>('a'));
+          if ((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']!) : null) != null) {
+            var start = int.tryParse(tree.attributes['start']!) ?? 1;
+            var x = 1;
+            while (x < start) {
+              olStack.last.data = olStack.last.data.toString().nextLetter();
+              x++;
+            }
+          }
+          break;
+        default:
+          olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          break;
+      }
     } else if (tree.style.display == Display.LIST_ITEM && tree.style.listStyleType != null) {
       switch (tree.style.listStyleType!) {
+        case ListStyleType.CIRCLE:
+          tree.style.markerContent = '○';
+          break;
+        case ListStyleType.SQUARE:
+          tree.style.markerContent = '■';
+          break;
         case ListStyleType.DISC:
           tree.style.markerContent = '•';
           break;
         case ListStyleType.DECIMAL:
           if (olStack.isEmpty) {
-            olStack.add(Context((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+            olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
           }
           olStack.last.data += 1;
           tree.style.markerContent = '${olStack.last.data}.';
+          break;
+        case ListStyleType.LOWER_LATIN:
+        case ListStyleType.LOWER_ALPHA:
+          if (olStack.isEmpty) {
+            olStack.add(Context<String>('a'));
+            if ((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']!) : null) != null) {
+              var start = int.tryParse(tree.attributes['start']!) ?? 1;
+              var x = 1;
+              while (x < start) {
+                olStack.last.data = olStack.last.data.toString().nextLetter();
+                x++;
+              }
+            }
+          }
+          tree.style.markerContent = olStack.last.data.toString() + ".";
+          olStack.last.data = olStack.last.data.toString().nextLetter();
+          break;
+        case ListStyleType.UPPER_LATIN:
+        case ListStyleType.UPPER_ALPHA:
+          if (olStack.isEmpty) {
+            olStack.add(Context<String>('a'));
+            if ((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start']!) : null) != null) {
+              var start = int.tryParse(tree.attributes['start']!) ?? 1;
+              var x = 1;
+              while (x < start) {
+                olStack.last.data = olStack.last.data.toString().nextLetter();
+                x++;
+              }
+            }
+          }
+          tree.style.markerContent = olStack.last.data.toString().toUpperCase() + ".";
+          olStack.last.data = olStack.last.data.toString().nextLetter();
+          break;
+        case ListStyleType.LOWER_ROMAN:
+          if (olStack.isEmpty) {
+            olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
+          olStack.last.data += 1;
+          if (olStack.last.data <= 0) {
+            tree.style.markerContent = '${olStack.last.data}.';
+          } else {
+            tree.style.markerContent = (olStack.last.data as int).toRomanNumeralString()!.toLowerCase() + ".";
+          }
+          break;
+        case ListStyleType.UPPER_ROMAN:
+          if (olStack.isEmpty) {
+            olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
+          }
+          olStack.last.data += 1;
+          if (olStack.last.data <= 0) {
+            tree.style.markerContent = '${olStack.last.data}.';
+          } else {
+            tree.style.markerContent = (olStack.last.data as int).toRomanNumeralString()! + ".";
+          }
           break;
       }
     }
@@ -587,7 +732,9 @@ class HtmlParser extends StatelessWidget {
     tree.children.forEach((child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
-      } else if (child is TextContentElement && (child.text!.trim().isEmpty)) {
+      } else if (child is TextContentElement
+          && child.text!.trim().isEmpty
+          && child.style.whiteSpace != WhiteSpace.PRE) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
@@ -700,6 +847,7 @@ class StyledText extends StatelessWidget {
   final double textScaleFactor;
   final RenderContext renderContext;
   final AnchorKey? key;
+  final bool _selectable;
 
   const StyledText({
     required this.textSpan,
@@ -707,10 +855,31 @@ class StyledText extends StatelessWidget {
     this.textScaleFactor = 1.0,
     required this.renderContext,
     this.key,
-  }) : super(key: key);
+  }) : _selectable = false,
+        super(key: key);
+
+  const StyledText.selectable({
+    required TextSpan textSpan,
+    required this.style,
+    this.textScaleFactor = 1.0,
+    required this.renderContext,
+    this.key,
+  }) : textSpan = textSpan,
+        _selectable = true,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    if (_selectable) {
+      return SelectableText.rich(
+        textSpan as TextSpan,
+        style: style.generateTextStyle(),
+        textAlign: style.textAlign,
+        textDirection: style.direction,
+        textScaleFactor: textScaleFactor,
+        maxLines: style.maxLines,
+      );
+    }
     return SizedBox(
       width: consumeExpandedBlock(style.display, renderContext),
       child: Text.rich(
@@ -730,5 +899,26 @@ class StyledText extends StatelessWidget {
       return double.infinity;
     }
     return null;
+  }
+}
+
+extension IterateLetters on String {
+  String nextLetter() {
+    String s = this.toLowerCase();
+    if (s == "z") {
+      return String.fromCharCode(s.codeUnitAt(0) - 25) + String.fromCharCode(s.codeUnitAt(0) - 25); // AA or aa
+    } else {
+      var lastChar = s.substring(s.length - 1);
+      var sub = s.substring(0, s.length - 1);
+      if (lastChar == "z") {
+        // If a string of length > 1 ends in Z/z,
+        // increment the string (excluding the last Z/z) recursively,
+        // and append A/a (depending on casing) to it
+        return sub.nextLetter() + 'a';
+      } else {
+        // (take till last char) append with (increment last char)
+        return sub + String.fromCharCode(lastChar.codeUnitAt(0) + 1);
+      }
+    }
   }
 }
