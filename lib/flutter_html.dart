@@ -190,6 +190,9 @@ class SelectableHtml extends StatelessWidget {
   /// **onLinkTap** This function is called whenever a link (`<a href>`)
   /// is tapped.
   ///
+  /// **onAnchorTap** This function is called whenever an anchor (#anchor-id)
+  /// is tapped.
+  ///
   /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags that support selectable content are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
@@ -212,6 +215,7 @@ class SelectableHtml extends StatelessWidget {
     Key? key,
     required this.data,
     this.onLinkTap,
+    this.onAnchorTap,
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
@@ -223,6 +227,7 @@ class SelectableHtml extends StatelessWidget {
     Key? key,
     required this.document,
     this.onLinkTap,
+    this.onAnchorTap,
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
@@ -238,6 +243,10 @@ class SelectableHtml extends StatelessWidget {
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
+
+  /// A function that defines what to do when an anchor link is tapped. When this value is set,
+  /// the default anchor behaviour is overwritten.
+  final OnTap? onAnchorTap;
 
   /// A function that defines what to do when CSS fails to parse
   final OnCssParseError? onCssParseError;
@@ -265,6 +274,7 @@ class SelectableHtml extends StatelessWidget {
         key: null,
         htmlData: doc,
         onLinkTap: onLinkTap,
+        onAnchorTap: onAnchorTap,
         onImageTap: null,
         onCssParseError: onCssParseError,
         onImageError: null,
