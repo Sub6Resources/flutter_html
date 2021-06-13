@@ -370,7 +370,11 @@ class DeclarationVisitor extends css.Visitor {
 
   @override
   void visitExpressions(css.Expressions node) {
-    _properties[_currentProperty]!.addAll(node.expressions);
+    if (_properties[_currentProperty] != null) {
+      _properties[_currentProperty]!.addAll(node.expressions);
+    } else {
+      _properties[_currentProperty] = node.expressions;
+    }
   }
 }
 
