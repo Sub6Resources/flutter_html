@@ -207,7 +207,7 @@ class SvgContentElement extends ReplacedElement {
     required this.width,
     required this.height,
     required dom.Element node,
-  }) : super(name: name, style: Style(), node: node, elementId: node.id);
+  }) : super(name: name, style: Style(), node: node, elementId: node.id, alignment: PlaceholderAlignment.middle);
 
   @override
   Widget toWidget(RenderContext context) {
