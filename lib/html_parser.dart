@@ -626,8 +626,10 @@ class HtmlParser extends StatelessWidget {
         parentAfterText = parentAfter?.text ?? " ";
       }
       /// If the text is the first element in the current tree node list, it
-      /// starts with a whitespace, it isn't a line break, and either the
-      /// whitespace is unnecessary or it is a block element, delete it.
+      /// starts with a whitespace, it isn't a line break, either the
+      /// whitespace is unnecessary or it is a block element, and either it is
+      /// first element in the parent node list or the previous element
+      /// in the parent node list ends with a whitespace, delete it.
       ///
       /// We should also delete the whitespace at any point in the node list
       /// if the previous element is a <br> because that tag makes the element
@@ -637,6 +639,10 @@ class HtmlParser extends StatelessWidget {
           && tree.element?.localName != "br"
           && (!keepLeadingSpace.data
               || BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""))
+          && (elementIndex < 1
+              || (elementIndex >= 1
+                  && parentNodes?[elementIndex - 1] is dom.Text
+                  && parentNodes![elementIndex - 1].text!.endsWith(" ")))
       ) {
         tree.text = tree.text!.replaceFirst(' ', '');
       } else if (textIndex >= 1
