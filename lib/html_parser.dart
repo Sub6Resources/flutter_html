@@ -90,6 +90,7 @@ class HtmlParser extends StatelessWidget {
       customRender.keys.toList(),
       tagsList,
       navigationDelegateForIframe,
+      context,
     );
     StyledElement? externalCssStyledTree;
     if (declarations.isNotEmpty) {
@@ -104,7 +105,7 @@ class HtmlParser extends StatelessWidget {
         buildContext: context,
         parser: this,
         tree: cleanedTree,
-        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+        style: cleanedTree.style,
       ),
       cleanedTree,
     );
@@ -122,7 +123,7 @@ class HtmlParser extends StatelessWidget {
           buildContext: context,
           parser: this,
           tree: cleanedTree,
-          style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+          style: cleanedTree.style,
         ),
       );
     }
@@ -134,7 +135,7 @@ class HtmlParser extends StatelessWidget {
         buildContext: context,
         parser: this,
         tree: cleanedTree,
-        style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+        style: cleanedTree.style,
       ),
     );
   }
@@ -155,12 +156,13 @@ class HtmlParser extends StatelessWidget {
     List<String> customRenderTags,
     List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
+    BuildContext context,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: <StyledElement>[],
       node: html.documentElement,
-      style: Style(),
+      style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
     );
 
     html.nodes.forEach((node) {
