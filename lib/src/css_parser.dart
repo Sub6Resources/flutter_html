@@ -44,8 +44,8 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               && !(element is css.EmTerm) && !(element is css.RemTerm)
               && !(element is css.NumberTerm))
           );
-          css.LiteralTerm borderWidth = borderWidths.firstWhere((element) => element != null)!;
-          css.Expression borderColor = value.firstWhere((element) => ExpressionMapping.expressionToColor(element) != null);
+          css.LiteralTerm? borderWidth = borderWidths.firstWhereOrNull((element) => element != null);
+          css.Expression? borderColor = value.firstWhereOrNull((element) => ExpressionMapping.expressionToColor(element) != null);
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
@@ -77,8 +77,8 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               && !(element is css.EmTerm) && !(element is css.RemTerm)
               && !(element is css.NumberTerm))
           );
-          css.LiteralTerm borderWidth = borderWidths.firstWhere((element) => element != null)!;
-          css.Expression borderColor = value.firstWhere((element) => ExpressionMapping.expressionToColor(element) != null);
+          css.LiteralTerm? borderWidth = borderWidths.firstWhereOrNull((element) => element != null);
+          css.Expression? borderColor = value.firstWhereOrNull((element) => ExpressionMapping.expressionToColor(element) != null);
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
@@ -110,8 +110,8 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               && !(element is css.EmTerm) && !(element is css.RemTerm)
               && !(element is css.NumberTerm))
           );
-          css.LiteralTerm borderWidth = borderWidths.firstWhere((element) => element != null)!;
-          css.Expression borderColor = value.firstWhere((element) => ExpressionMapping.expressionToColor(element) != null);
+          css.LiteralTerm? borderWidth = borderWidths.firstWhereOrNull((element) => element != null);
+          css.Expression? borderColor = value.firstWhereOrNull((element) => ExpressionMapping.expressionToColor(element) != null);
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
@@ -143,8 +143,8 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               && !(element is css.EmTerm) && !(element is css.RemTerm)
               && !(element is css.NumberTerm))
           );
-          css.LiteralTerm borderWidth = borderWidths.firstWhere((element) => element != null)!;
-          css.Expression borderColor = value.firstWhere((element) => ExpressionMapping.expressionToColor(element) != null);
+          css.LiteralTerm? borderWidth = borderWidths.firstWhereOrNull((element) => element != null);
+          css.Expression? borderColor = value.firstWhereOrNull((element) => ExpressionMapping.expressionToColor(element) != null);
           List<css.LiteralTerm?>? potentialStyles = value.whereType<css.LiteralTerm>().toList();
           /// Currently doesn't matter, as Flutter only supports "solid" or "none", but may support more in the future.
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
