@@ -1,10 +1,8 @@
 import 'dart:collection';
 import 'dart:math';
 
-import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -35,10 +33,6 @@ typedef OnCssParseError = String? Function(
   String css,
   List<cssparser.Message> errors,
 );
-typedef CustomRender = dynamic Function(
-  RenderContext context,
-  Widget parsedChild,
-);
 
 class HtmlParser extends StatelessWidget {
   final Key? key;
@@ -53,11 +47,11 @@ class HtmlParser extends StatelessWidget {
   final bool selectable;
 
   final Map<String, Style> style;
-  final Map<String, CustomRender> customRender;
+  final Map<CustomRenderMatcher, CustomRender> customRenders;
   final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
-  final OnTap? _onAnchorTap;
+  final OnTap? internalOnAnchorTap;
 
   HtmlParser({
     required this.key,
@@ -71,11 +65,11 @@ class HtmlParser extends StatelessWidget {
     required this.shrinkWrap,
     required this.selectable,
     required this.style,
-    required this.customRender,
+    required this.customRenders,
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-  })  : this._onAnchorTap = onAnchorTap != null
+  })  : this.internalOnAnchorTap = onAnchorTap != null
           ? onAnchorTap
           : key != null
               ? _handleAnchorTap(key, onLinkTap)
@@ -87,9 +81,11 @@ class HtmlParser extends StatelessWidget {
     Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCssDeclarations(htmlData.getElementsByTagName("style"), onCssParseError);
     StyledElement lexedTree = lexDomTree(
       htmlData,
-      customRender.keys.toList(),
+      customRenders.keys.toList(),
       tagsList,
       navigationDelegateForIframe,
+      context,
+      this,
     );
     StyledElement? externalCssStyledTree;
     if (declarations.isNotEmpty) {
@@ -152,9 +148,11 @@ class HtmlParser extends StatelessWidget {
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
   static StyledElement lexDomTree(
     dom.Document html,
-    List<String> customRenderTags,
+    List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
+    BuildContext context,
+    HtmlParser parser,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
@@ -166,9 +164,11 @@ class HtmlParser extends StatelessWidget {
     html.nodes.forEach((node) {
       tree.children.add(_recursiveLexer(
         node,
-        customRenderTags,
+        customRenderMatchers,
         tagsList,
         navigationDelegateForIframe,
+        context,
+        parser,
       ));
     });
 
@@ -181,18 +181,22 @@ class HtmlParser extends StatelessWidget {
   /// element and returns a [StyledElement] tree representing the element.
   static StyledElement _recursiveLexer(
     dom.Node node,
-    List<String> customRenderTags,
+    List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
+    BuildContext context,
+    HtmlParser parser,
   ) {
     List<StyledElement> children = <StyledElement>[];
 
     node.nodes.forEach((childNode) {
       children.add(_recursiveLexer(
         childNode,
-        customRenderTags,
+        customRenderMatchers,
         tagsList,
         navigationDelegateForIframe,
+        context,
+        parser,
       ));
     });
 
@@ -213,9 +217,20 @@ class HtmlParser extends StatelessWidget {
         return parseTableCellElement(node, children);
       } else if (TABLE_DEFINITION_ELEMENTS.contains(node.localName)) {
         return parseTableDefinitionElement(node, children);
-      } else if (customRenderTags.contains(node.localName)) {
-        return parseStyledElement(node, children);
       } else {
+        final StyledElement tree = parseStyledElement(node, children);
+        for (final entry in customRenderMatchers) {
+          if (entry.call(
+              RenderContext(
+                buildContext: context,
+                parser: parser,
+                tree: tree,
+                style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+              ),
+            )) {
+            return tree;
+          }
+        }
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
@@ -302,7 +317,7 @@ class HtmlParser extends StatelessWidget {
 
   /// [parseTree] converts a tree of [StyledElement]s to an [InlineSpan] tree.
   ///
-  /// [parseTree] is responsible for handling the [customRender] parameter and
+  /// [parseTree] is responsible for handling the [customRenders] parameter and
   /// deciding what different `Style.display` options look like as Widgets.
   InlineSpan parseTree(RenderContext context, StyledElement tree) {
     // Merge this element's style into the context so that children
@@ -312,239 +327,33 @@ class HtmlParser extends StatelessWidget {
       parser: this,
       tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
+      key: AnchorKey.of(key, tree),
     );
 
-    if (customRender.containsKey(tree.name)) {
-      final render = customRender[tree.name]!.call(
-        newContext,
-        ContainerSpan(
-          key: AnchorKey.of(key, tree),
-          newContext: newContext,
-          style: tree.style,
-          shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
-        ),
-      );
-      if (render != null) {
-        assert(render is InlineSpan || render is Widget);
-        return render is InlineSpan
-            ? render
-            : WidgetSpan(
-                child: ContainerSpan(
-                  key: AnchorKey.of(key, tree),
-                  newContext: newContext,
-                  style: tree.style,
-                  shrinkWrap: context.parser.shrinkWrap,
-                  child: render,
-                ),
-              );
-      }
-    }
-
-    //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK && tree.children.isNotEmpty) {
-      if (newContext.parser.selectable) {
-        return TextSpan(
-          style: newContext.style.generateTextStyle(),
-          children: tree.children
-              .expandIndexed((i, childTree) => [
-            if (childTree.style.display == Display.BLOCK &&
-                i > 0 &&
-                tree.children[i - 1] is ReplacedElement)
-              TextSpan(text: "\n"),
-            parseTree(newContext, childTree),
-            if (i != tree.children.length - 1 &&
-                childTree.style.display == Display.BLOCK &&
-                childTree.element?.localName != "html" &&
-                childTree.element?.localName != "body")
-              TextSpan(text: "\n"),
-          ])
-              .toList(),
-        );
-      }
-      return WidgetSpan(
-        child: ContainerSpan(
-          key: AnchorKey.of(key, tree),
-          newContext: newContext,
-          style: tree.style,
-          shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children
-              .expandIndexed((i, childTree) => [
-                    if (shrinkWrap &&
-                        childTree.style.display == Display.BLOCK &&
-                        i > 0 &&
-                        tree.children[i - 1] is ReplacedElement)
-                      TextSpan(text: "\n"),
-                    parseTree(newContext, childTree),
-                    if (shrinkWrap &&
-                        i != tree.children.length - 1 &&
-                        childTree.style.display == Display.BLOCK &&
-                        childTree.element?.localName != "html" &&
-                        childTree.element?.localName != "body")
-                      TextSpan(text: "\n"),
-                  ])
-              .toList(),
-        ),
-      );
-    } else if (tree.style.display == Display.LIST_ITEM) {
-      List<InlineSpan> getChildren(StyledElement tree) {
-        InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
-        List<InlineSpan> children = tree.children.map((tree) => parseTree(newContext, tree)).toList();
-        if (tree.style.listStylePosition == ListStylePosition.INSIDE) {
-          children.insert(0, tabSpan);
+    for (final entry in customRenders.keys) {
+      if (entry.call(newContext)) {
+        final buildChildren = () => tree.children.map((tree) => parseTree(context, tree)).toList();
+        if (newContext.parser.selectable && customRenders[entry] is SelectableCustomRender) {
+          final selectableBuildChildren = () => tree.children.map((tree) => parseTree(context, tree) as TextSpan).toList();
+          return (customRenders[entry] as SelectableCustomRender).textSpan.call(newContext, selectableBuildChildren);
         }
-        return children;
-      }
-
-      return WidgetSpan(
-        child: ContainerSpan(
-          key: AnchorKey.of(key, tree),
-          newContext: newContext,
-          style: tree.style,
-          shrinkWrap: context.parser.shrinkWrap,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            textDirection: tree.style.direction,
-            children: [
-              tree.style.listStylePosition == ListStylePosition.OUTSIDE ?
-              Padding(
-                padding: tree.style.padding ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
-                child: Text(
-                    "${newContext.style.markerContent}",
-                    textAlign: TextAlign.right,
-                    style: newContext.style.generateTextStyle()
-                ),
-              ) : Container(height: 0, width: 0),
-              Text("\t", textAlign: TextAlign.right),
-              Expanded(
-                  child: Padding(
-                      padding: tree.style.listStylePosition == ListStylePosition.INSIDE ?
-                        EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
-                      child: StyledText(
-                        textSpan: TextSpan(
-                          text: (tree.style.listStylePosition ==
-                              ListStylePosition.INSIDE)
-                              ? '${newContext.style.markerContent}'
-                              : null,
-                          children: getChildren(tree),
-                          style: newContext.style.generateTextStyle(),
-                        ),
-                        style: newContext.style,
-                        renderContext: context,
-                      )
-                  )
-              )
-            ],
-          ),
-        ),
-      );
-    } else if (tree is ReplacedElement) {
-      if (tree is TextContentElement) {
-        return TextSpan(text: tree.text);
-      } else {
+        if (newContext.parser.selectable) {
+          return customRenders[entry]!.inlineSpan!.call(newContext, buildChildren) as TextSpan;
+        }
+        if (customRenders[entry]?.inlineSpan != null) {
+          return customRenders[entry]!.inlineSpan!.call(newContext, buildChildren);
+        }
         return WidgetSpan(
-          alignment: tree.alignment,
-          baseline: TextBaseline.alphabetic,
-          child: tree.toWidget(context)!,
+          child: ContainerSpan(
+            newContext: newContext,
+            style: tree.style,
+            shrinkWrap: newContext.parser.shrinkWrap,
+            child: customRenders[entry]!.widget!.call(newContext, buildChildren),
+          ),
         );
       }
-    } else if (tree is InteractableElement) {
-      InlineSpan addTaps(InlineSpan childSpan, TextStyle childStyle) {
-        if (childSpan is TextSpan) {
-          return TextSpan(
-            mouseCursor: SystemMouseCursors.click,
-            text: childSpan.text,
-            children: childSpan.children
-                ?.map((e) => addTaps(e, childStyle.merge(childSpan.style)))
-                .toList(),
-            style: newContext.style.generateTextStyle().merge(
-                childSpan.style == null
-                    ? childStyle
-                    : childStyle.merge(childSpan.style)),
-            semanticsLabel: childSpan.semanticsLabel,
-            recognizer: TapGestureRecognizer()
-              ..onTap =
-                  _onAnchorTap != null ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element) : null,
-          );
-        } else {
-          return WidgetSpan(
-            child: MouseRegion(
-              key: AnchorKey.of(key, tree),
-              cursor: SystemMouseCursors.click,
-              child: MultipleTapGestureDetector(
-                onTap: _onAnchorTap != null
-                ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                    : null,
-                child: GestureDetector(
-                  key: AnchorKey.of(key, tree),
-                  onTap: _onAnchorTap != null
-                  ? () => _onAnchorTap!(tree.href, context, tree.attributes, tree.element)
-                      : null,
-                  child: (childSpan as WidgetSpan).child,
-                ),
-              ),
-            ),
-          );
-        }
-      }
-
-      return TextSpan(
-        mouseCursor: SystemMouseCursors.click,
-        children: tree.children
-                .map((tree) => parseTree(newContext, tree))
-                .map((childSpan) {
-          return addTaps(childSpan,
-            newContext.style.generateTextStyle().merge(childSpan.style));
-          }).toList(),
-      );
-    } else if (tree is LayoutElement) {
-      return WidgetSpan(
-        child: tree.toWidget(context)!,
-      );
-    } else if (tree.style.verticalAlign != null &&
-        tree.style.verticalAlign != VerticalAlign.BASELINE) {
-      late double verticalOffset;
-      switch (tree.style.verticalAlign) {
-        case VerticalAlign.SUB:
-          verticalOffset = tree.style.fontSize!.size! / 2.5;
-          break;
-        case VerticalAlign.SUPER:
-          verticalOffset = tree.style.fontSize!.size! / -2.5;
-          break;
-        default:
-          break;
-      }
-      //Requires special layout features not available in the TextStyle API.
-      return WidgetSpan(
-        child: Transform.translate(
-          key: AnchorKey.of(key, tree),
-          offset: Offset(0, verticalOffset),
-          child: StyledText(
-            textSpan: TextSpan(
-              style: newContext.style.generateTextStyle(),
-              children: tree.children.map((tree) => parseTree(newContext, tree)).toList(),
-            ),
-            style: newContext.style,
-            renderContext: newContext,
-          ),
-        ),
-      );
-    } else {
-      ///[tree] is an inline element.
-      return TextSpan(
-        style: newContext.style.generateTextStyle(),
-        children: tree.children
-            .expand((tree) => [
-                  parseTree(newContext, tree),
-                  if (tree.style.display == Display.BLOCK &&
-                      tree.element?.localName != "html" &&
-                      tree.element?.localName != "body")
-                    TextSpan(text: "\n"),
-                ])
-            .toList(),
-      );
     }
+    return WidgetSpan(child: Container(height: 0, width: 0));
   }
 
   static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
@@ -987,12 +796,14 @@ class RenderContext {
   final HtmlParser parser;
   final StyledElement tree;
   final Style style;
+  final AnchorKey? key;
 
   RenderContext({
     required this.buildContext,
     required this.parser,
     required this.tree,
     required this.style,
+    this.key,
   });
 }
 

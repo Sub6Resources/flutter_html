@@ -27,7 +27,7 @@ void testNewParser() {
     HtmlParser.parseHTML("<b>Hello, World!</b>");
   });
 
-  test("lexDomTree works correctly", () {
+  /*test("lexDomTree works correctly", () {
     StyledElement tree = HtmlParser.lexDomTree(
       HtmlParser.parseHTML(
           "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
@@ -67,7 +67,7 @@ void testNewParser() {
       null,
     );
     print(tree.toString());
-  });
+  });*/
 
   test("Video Content Source Parser works correctly", () {
     ReplacedElement videoContentElement = parseReplacedElement(
