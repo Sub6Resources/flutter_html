@@ -31,6 +31,11 @@ class TableLayoutElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    final withinAnotherTable = element?.parent?.localName == 'td';
+    final isNestedWithinDivWithinTable =
+        element?.parent?.parent?.localName == 'td';
+    final childWithoutLayoutBuilder =
+        withinAnotherTable || isNestedWithinDivWithinTable;
     return Container(
       key: AnchorKey.of(context.parser.key, this),
       margin: style.margin,
@@ -41,11 +46,15 @@ class TableLayoutElement extends LayoutElement {
       ),
       width: style.width,
       height: style.height,
-      child: LayoutBuilder(builder: (_, constraints) => _layoutCells(context, constraints)),
+      child: childWithoutLayoutBuilder
+          ? _layoutCells(context, null)
+          : LayoutBuilder(
+              builder: (_, constraints) => _layoutCells(context, constraints),
+            ),
     );
   }
 
-  Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
+  Widget _layoutCells(RenderContext context, BoxConstraints? constraints) {
     final rows = <TableRowLayoutElement>[];
     List<TrackSize> columnSizes = <TrackSize>[];
     for (var child in children) {
@@ -58,7 +67,7 @@ class TableLayoutElement extends LayoutElement {
               final colWidth = c.attributes["width"];
               return List.generate(span, (index) {
                 if (colWidth != null && colWidth.endsWith("%")) {
-                  if (!constraints.hasBoundedWidth) {
+                  if (!(constraints?.hasBoundedWidth ?? false)) {
                     // In a horizontally unbounded container; always wrap content instead of applying flex
                     return IntrinsicContentTrackSize();
                   }
