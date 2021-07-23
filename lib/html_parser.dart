@@ -342,7 +342,8 @@ class HtmlParser extends StatelessWidget {
     }
 
     //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK && tree.children.isNotEmpty) {
+    if (tree.style.display == Display.BLOCK &&
+        (tree.children.isNotEmpty || tree.element?.localName == "hr")) {
       if (newContext.parser.selectable) {
         return TextSpan(
           style: newContext.style.generateTextStyle(),
