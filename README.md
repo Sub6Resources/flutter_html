@@ -272,7 +272,7 @@ A powerful API that allows you to customize everything when rendering a specific
 
 `CustomRenderMatcher` is a function that requires a `bool` to be returned. It exposes the `RenderContext` which provides `BuildContext` and access to the HTML tree.
 
-The `CustomRender` class has two constructors: `CustomRender.fromWidget()` and `CustomRender.fromInlineSpan()`. Both require a `<Widget/InlineSpan> Function(RenderContext, Function())`. The `Function()` argument is a function that will provide you with the element's children when needed.
+The `CustomRender` class has two constructors: `CustomRender.widget()` and `CustomRender.inlineSpan()`. Both require a `<Widget/InlineSpan> Function(RenderContext, Function())`. The `Function()` argument is a function that will provide you with the element's children when needed.
 
 To use this API, create a matching function and an instance of `CustomRender`. 
 
@@ -289,8 +289,8 @@ Widget html = Html(
   <flutter horizontal></flutter>
   """,
   customRender: {
-      birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
-      flutterMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => FlutterLogo(
+      birdMatcher(): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
+      flutterMatcher(): CustomRender.widget(widget: (context, buildChildren) => FlutterLogo(
         style: (context.tree.element!.attributes['horizontal'] != null)
             ? FlutterLogoStyle.horizontal
             : FlutterLogoStyle.markOnly,
@@ -321,7 +321,7 @@ Widget html = Html(
   </table>
   """,
   customRender: {
-    tableMatcher(): CustomRender.fromWidget(widget: (context, child) {
+    tableMatcher(): CustomRender.widget(widget: (context, child) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: (context.tree as TableLayoutElement).toWidget(context),
@@ -348,7 +348,7 @@ Widget html = Html(
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
    customRender: {
-      iframeYT(): CustomRender.fromWidget(widget: (context, buildChildren) {
+      iframeYT(): CustomRender.widget(widget: (context, buildChildren) {
         double? width = double.tryParse(context.tree.attributes['width'] ?? "");
         double? height = double.tryParse(context.tree.attributes['height'] ?? "");
         return Container(
@@ -368,7 +368,7 @@ Widget html = Html(
           ),
         );
       }),
-      iframeOther(): CustomRender.fromWidget(widget: (context, buildChildren) {
+      iframeOther(): CustomRender.widget(widget: (context, buildChildren) {
         double? width = double.tryParse(context.tree.attributes['width'] ?? "");
         double? height = double.tryParse(context.tree.attributes['height'] ?? "");
         return Container(
@@ -384,7 +384,7 @@ Widget html = Html(
           ),
         );
       }),
-      iframeNull(): CustomRender.fromWidget(widget: (context, buildChildren) => Container(height: 0, width: 0)),
+      iframeNull(): CustomRender.widget(widget: (context, buildChildren) => Container(height: 0, width: 0)),
    }
  );
 
@@ -818,7 +818,7 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRender: {
-    texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
+    texMatcher(): CustomRender.widget(widget: (context, buildChildren) => Math.tex(
       context.tree.element?.innerHtml ?? '',
       mathStyle: MathStyle.display,
       textStyle: context.style.generateTextStyle(),

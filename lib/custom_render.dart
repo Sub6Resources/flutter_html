@@ -7,10 +7,14 @@ import 'package:flutter_html/src/utils.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
 
-CustomRenderMatcher blockElementMatcher() => (context) {
-  return context.tree.style.display == Display.BLOCK
-      && context.tree.children.isNotEmpty;
+CustomRenderMatcher tagMatcher(String tag) => (context) {
+  return context.tree.element?.localName == tag;
 };
+
+CustomRenderMatcher blockElementMatcher() => (context) {
+      return context.tree.style.display == Display.BLOCK &&
+          (context.tree.children.isNotEmpty || context.tree.element?.localName == "hr");
+    };
 
 CustomRenderMatcher listElementMatcher() => (context) {
   return context.tree.style.display == Display.LIST_ITEM;
@@ -45,11 +49,11 @@ class CustomRender {
   final InlineSpan Function(RenderContext, List<InlineSpan> Function())? inlineSpan;
   final Widget Function(RenderContext, List<InlineSpan> Function())? widget;
 
-  CustomRender.fromInlineSpan({
+  CustomRender.inlineSpan({
     required this.inlineSpan,
   }) : widget = null;
 
-  CustomRender.fromWidget({
+  CustomRender.widget({
     required this.widget,
   }) : inlineSpan = null;
 }
@@ -59,14 +63,14 @@ class SelectableCustomRender extends CustomRender {
 
   SelectableCustomRender.fromTextSpan({
     required this.textSpan,
-  }) : super.fromInlineSpan(inlineSpan: null);
+  }) : super.inlineSpan(inlineSpan: null);
 }
 
 CustomRender blockElementRender({
   Style? style,
   Widget? child,
-  List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) {
+  List<InlineSpan>? children,}) =>
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) {
         if (context.parser.selectable) {
           return TextSpan(
             style: context.style.generateTextStyle(),
@@ -115,7 +119,7 @@ CustomRender listElementRender({
   Style? style,
   Widget? child,
   List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
         WidgetSpan(
           child: ContainerSpan(
             key: context.key,
@@ -164,18 +168,18 @@ CustomRender listElementRender({
 ));
 
 CustomRender replacedElementRender({PlaceholderAlignment? alignment, TextBaseline? baseline, Widget? child}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
   alignment: alignment ?? (context.tree as ReplacedElement).alignment,
   baseline: baseline ?? TextBaseline.alphabetic,
   child: child ?? (context.tree as ReplacedElement).toWidget(context)!,
 ));
 
 CustomRender textContentElementRender({String? text}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
       TextSpan(text: text ?? (context.tree as TextContentElement).text));
 
 CustomRender interactableElementRender({List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
   children: children ?? (context.tree as InteractableElement).children
       .map((tree) => context.parser.parseTree(context, tree))
       .map((childSpan) {
@@ -185,7 +189,7 @@ CustomRender interactableElementRender({List<InlineSpan>? children}) =>
 ));
 
 CustomRender layoutElementRender({Widget? child}) =>
-  CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+  CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
     child: child ?? (context.tree as LayoutElement).toWidget(context)!,
 ));
 
@@ -193,7 +197,7 @@ CustomRender verticalAlignRender({
   double? verticalOffset,
   Style? style,
   List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
   child: Transform.translate(
     key: context.key,
     offset: Offset(0, verticalOffset ?? _getVerticalOffset(context.tree)),
@@ -209,7 +213,7 @@ CustomRender verticalAlignRender({
 ));
 
 CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
       style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
       children: context.tree.children
           .expand((tree) => [

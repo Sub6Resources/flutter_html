@@ -270,7 +270,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           tagsList: Html.tags..addAll(["tex", "bird", "flutter"]),
           customRenders: {
-            texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
+            tagMatcher("tex"): CustomRender.widget(widget: (context, buildChildren) => Math.tex(
               context.tree.element?.innerHtml ?? '',
               mathStyle: MathStyle.display,
               textStyle: context.style.generateTextStyle(),
@@ -282,15 +282,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 }
               },
             )),
-            birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
-            flutterMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => FlutterLogo(
+            tagMatcher("bird"): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
+            tagMatcher("flutter"): CustomRender.widget(widget: (context, buildChildren) => FlutterLogo(
               style: (context.tree.element!.attributes['horizontal'] != null)
                   ? FlutterLogoStyle.horizontal
                   : FlutterLogoStyle.markOnly,
               textColor: context.style.color!,
               size: context.style.fontSize!.size! * 5,
             )),
-            tableMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => SingleChildScrollView(
+            tagMatcher("table"): CustomRender.widget(widget: (context, buildChildren) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: (context.tree as TableLayoutElement).toWidget(context),
             )),
@@ -336,11 +336,3 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
-
-CustomRenderMatcher tableMatcher() => (context) => context.tree.element?.localName == 'table';
-
-CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
-
-CustomRenderMatcher birdMatcher() => (context) => context.tree.element?.localName == 'bird';
-
-CustomRenderMatcher flutterMatcher() => (context) => context.tree.element?.localName == 'flutter';
