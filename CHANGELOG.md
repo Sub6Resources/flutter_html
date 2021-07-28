@@ -1,3 +1,24 @@
+## [2.1.1] - July 27, 2021:
+* Improves hr tag support
+* Fixes a leading whitespace issue
+* Fixes some crashes with CSS parsing
+
+## [2.1.0] - June 3, 2021:
+* SelectableHtml widget (supporting a subset of tags) which allow text selection
+* Fixed shrinkWrap to actually shrink the horizontal space
+* Support style tags to apply styling from inline css
+* Support applying styles from Flutter themes
+* Mouse hover on links when using Flutter Web
+* Allow custom anchor link tap implementations
+* Support additional list styling options
+* Fix several minor whitespace issues in text flow
+* Fixed specific colspan/rowspan usages in tables
+* Fixed whitespace issues around images
+* Swallow duplicate ids to prevent crashing the widget
+* Fixes crashing tap detection when using both link and image taps
+* Updates external dependencies
+* Raised minimum Flutter version to 2.2.0
+
 ## [2.0.0] - April 29, 2021:
 * Stable release with all 2.0.0-nullsafety.X changes
 
