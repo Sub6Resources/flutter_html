@@ -1,4 +1,7 @@
-## [2.1.1] - July 27, 2021:
+## [2.1.1] - July 28, 2021:
+* Stable release with all 2.1.1-preview.X changes
+
+## [2.1.1-preview.0] - July 27, 2021:
 * Improves hr tag support
 * Fixes a leading whitespace issue
 * Fixes some crashes with CSS parsing
