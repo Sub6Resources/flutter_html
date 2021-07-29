@@ -213,6 +213,7 @@ class SelectableHtml extends StatelessWidget {
 
   SelectableHtml({
     Key? key,
+    GlobalKey? anchorKey,
     required this.data,
     this.onLinkTap,
     this.onAnchorTap,
@@ -221,10 +222,13 @@ class SelectableHtml extends StatelessWidget {
     this.style = const {},
     this.tagsList = const [],
   }) : document = null,
+        assert(data != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
   SelectableHtml.fromDom({
     Key? key,
+    GlobalKey? anchorKey,
     required this.document,
     this.onLinkTap,
     this.onAnchorTap,
@@ -233,7 +237,12 @@ class SelectableHtml extends StatelessWidget {
     this.style = const {},
     this.tagsList = const [],
   }) : data = null,
+        assert(document != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
+
+  /// A unique key for this Html widget to ensure uniqueness of anchors
+  final GlobalKey _anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -271,7 +280,7 @@ class SelectableHtml extends StatelessWidget {
     return Container(
       width: width,
       child: HtmlParser(
-        key: null,
+        key: _anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onAnchorTap: onAnchorTap,
