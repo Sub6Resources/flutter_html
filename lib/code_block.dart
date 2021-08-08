@@ -41,7 +41,11 @@ class _CodeBlockState extends State<CodeBlock> {
   void initState() {
     super.initState();
     if (widget.language == null) {
-      final hashKey = sha1.convert(utf8.encode(widget.code)).toString();
+      // the first 250 chars should be enough to detect the code language, hopefully
+      final codeFragment = widget.code.length > 250
+          ? widget.code.substring(0, 250)
+          : widget.code;
+      final hashKey = sha1.convert(utf8.encode(codeFragment)).toString();
       if (_detectionMap[hashKey] != null) {
         language = _detectionMap[hashKey];
       } else {
@@ -52,7 +56,7 @@ class _CodeBlockState extends State<CodeBlock> {
               return lang;
             }
           }
-          return _autodetectLanguage(widget.code);
+          return _autodetectLanguage(codeFragment);
         }();
         _futureDetectionMap[hashKey].then((String lang) async {
           _detectionMap[hashKey] = lang;
@@ -94,16 +98,16 @@ class _CodeBlockState extends State<CodeBlock> {
               BoxConstraints(maxHeight: widget.maxLines == 1 ? 20 : 250),
           child: Scrollbar(
             isAlwaysShown: true,
-            controller: _horizontalScrollController,
+            controller: _verticalScrollController,
             child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              controller: _horizontalScrollController,
+              scrollDirection: Axis.vertical,
+              controller: _verticalScrollController,
               child: Scrollbar(
                 isAlwaysShown: true,
-                controller: _verticalScrollController,
+                controller: _horizontalScrollController,
                 child: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  controller: _verticalScrollController,
+                  scrollDirection: Axis.horizontal,
+                  controller: _horizontalScrollController,
                   child: HighlightView(
                     widget.code.replaceAll(RegExp(r'\n$'), ''),
                     language: language,

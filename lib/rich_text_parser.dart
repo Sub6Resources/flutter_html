@@ -728,6 +728,7 @@ class HtmlRichTextParser extends StatelessWidget {
             ));
             nextContext.linkStyle = parseContext.linkStyle.merge(TextStyle(
               fontFamily: 'monospace',
+              color: monokaiTheme['root'].color,
               backgroundColor: monokaiTheme['root'].backgroundColor,
             ));
             break;
@@ -894,9 +895,8 @@ class HtmlRichTextParser extends StatelessWidget {
                     RegExp(r"^[@#!+][^:]+:[^\/]+$").firstMatch(identifier) !=
                         null;
               } else {
-                final match =
-                    RegExp(r"^matrix:(r|roomid|u)\/([^\/]+)$")
-                        .firstMatch(urlLower.split('?').first.split('#').first);
+                final match = RegExp(r"^matrix:(r|roomid|u)\/([^\/]+)$")
+                    .firstMatch(urlLower.split('?').first.split('#').first);
                 isPill = match != null;
                 if (isPill) {
                   identifier = {

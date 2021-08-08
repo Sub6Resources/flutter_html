@@ -1,3 +1,7 @@
+## [0.3.1] - 8th Aug 2021
+- Fix link colour in inline code blocks
+- Fix long code blocks causing language autodetection to take long
+
 ## [0.3.0] - 11th Apr 2021
 - Update matrix: URI schemes
 - Fix small rendering bug with flutter 2
