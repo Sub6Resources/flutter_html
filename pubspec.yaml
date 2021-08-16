@@ -29,7 +29,7 @@ dependencies:
   chewie_audio: ^1.1.2
 
   # Plugins for rendering the <svg> tag.
-  flutter_svg: ^0.20.0-nullsafety.3
+  flutter_svg: ^0.19.1
 
   flutter:
     sdk: flutter
