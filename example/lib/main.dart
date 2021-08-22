@@ -51,6 +51,8 @@ Hello <b>Wo</b><i>rl</i>d<br>nyaaa <a href="https://example.org/meow">link<br>br
 
 https://example.org meow <sub>low</sub> <sup> high</sup>
 <br>
+<span data-mx-spoiler="heya">hmm https://example.org how are you?</span>
+<br>
 <font color="red">red text</font>
 hmm <font color="red"> red</font><font color="green"> green</font>
 </p>

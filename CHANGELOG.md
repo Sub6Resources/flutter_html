@@ -1,3 +1,6 @@
+## [1.0.1] - 22nd Aug 2021
+- Bring back the (rough) `maxLines` property
+
 ## [1.0.0] - 22nd Aug 2021
 - Complete re-write of the html renderer
 - Null safety

@@ -566,7 +566,9 @@ class TextParser extends StatelessWidget {
     final cleanup = (bool thisNodeBlock, bool lastElement) {
       if (currentChildren.isNotEmpty) {
         widgets.add(CleanRichText(
-            _optimizeTextspan(TextSpan(children: currentChildren))));
+          _optimizeTextspan(TextSpan(children: currentChildren)),
+          maxLines: maxLines,
+        ));
         currentChildren = <InlineSpan>[];
       }
       // trailing blank nodes and trailing SizedBox'es
@@ -603,6 +605,9 @@ class TextParser extends StatelessWidget {
       lastNodeBlock = thisNodeBlock;
     }
     cleanup(lastNodeBlock, true);
+    while (maxLines != null && widgets.length > maxLines!) {
+      widgets.removeLast();
+    }
     if (widgets.length == 1) {
       return widgets.first;
     }
@@ -618,11 +623,13 @@ class TextParser extends StatelessWidget {
   Widget _parseNode(
       BuildContext context, ParseContext parseContext, dom.Node node) {
     if (node is dom.Text) {
-      return CleanRichText(_parseTextNode(context, parseContext, node));
+      return CleanRichText(_parseTextNode(context, parseContext, node),
+          maxLines: maxLines);
     } else if (node is dom.Element) {
       final tag = node.localName?.toLowerCase();
       if (!SUPPORTED_BLOCK_ELEMENTS.contains(tag)) {
-        return CleanRichText(_parseInlineNode(context, parseContext, node));
+        return CleanRichText(_parseInlineNode(context, parseContext, node),
+            maxLines: maxLines);
       }
       final nextContext = ParseContext.fromContext(parseContext);
       final fontSize = nextContext.textStyle.fontSize ?? 14.0;
