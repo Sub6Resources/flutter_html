@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 
 @immutable
 class ImageProperties {
-  final String semanticLabel;
+  final String? semanticLabel;
   final bool excludeFromSemantics;
-  final double width;
-  final double height;
-  final Color color;
-  final BlendMode colorBlendMode;
-  final BoxFit fit;
+  final double? width;
+  final double? height;
+  final Color? color;
+  final BlendMode? colorBlendMode;
+  final BoxFit? fit;
   final AlignmentGeometry alignment;
   final ImageRepeat repeat;
-  final Rect centerSlice;
+  final Rect? centerSlice;
   final bool matchTextDirection;
   final FilterQuality filterQuality;
   final double scale;

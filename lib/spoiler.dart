@@ -2,11 +2,11 @@ import 'package:flutter/material.dart';
 
 class Spoiler extends StatefulWidget {
   final Widget child;
-  final String reason;
+  final String? reason;
 
   const Spoiler({
-    Key key,
-    this.child,
+    Key? key,
+    required this.child,
     this.reason,
   }) : super(key: key);
 
@@ -19,20 +19,21 @@ class _SpoilerState extends State<Spoiler> {
 
   @override
   Widget build(BuildContext context) {
+    final fontSize = DefaultTextStyle.of(context).style.fontSize ?? 14.0;
     return InkWell(
       child: AbsorbPointer(
         absorbing: hidden,
         child: Wrap(
           children: <Widget>[
-            if (this.widget.reason != null && this.widget.reason.isNotEmpty)
+            if (this.widget.reason?.isNotEmpty ?? false)
               Padding(
                 padding: EdgeInsets.only(
-                  top: DefaultTextStyle.of(context).style.fontSize * 0.15,
+                  top: fontSize * 0.15,
                 ),
                 child: Text(
                   "(${this.widget.reason})",
                   style: TextStyle(
-                    fontSize: DefaultTextStyle.of(context).style.fontSize * 0.7,
+                    fontSize: fontSize * 0.7,
                   ),
                 ),
               ),

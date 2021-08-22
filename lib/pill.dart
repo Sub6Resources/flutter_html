@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import 'rich_text_parser.dart';
+import 'text_parser.dart';
 
 class Pill extends StatelessWidget {
   final String identifier;
   final String url;
-  final Future<Map<String, dynamic>> future;
-  final OnPillTap onTap;
-  final GetMxcUrl getMxcUrl;
+  final Future<Map<String, dynamic>>? future;
+  final OnPillTap? onTap;
+  final GetMxcUrl? getMxcUrl;
 
   const Pill({
-    Key key,
-    this.identifier,
-    this.url,
+    Key? key,
+    required this.identifier,
+    required this.url,
     this.future,
     this.onTap,
     this.getMxcUrl,
@@ -26,22 +26,23 @@ class Pill extends StatelessWidget {
       builder:
           (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
         String displayname = this.identifier;
-        String avatarUrl;
+        String? avatarUrl;
         if (snapshot.hasData && snapshot.data != null) {
-          if (snapshot.data['displayname'] is String &&
-              snapshot.data['displayname'].isNotEmpty) {
-            displayname = snapshot.data['displayname'];
+          if (snapshot.data!['displayname'] is String &&
+              snapshot.data!['displayname'].isNotEmpty) {
+            displayname = snapshot.data!['displayname'];
           }
-          if (snapshot.data['avatar_url'] is String &&
-              snapshot.data['avatar_url'].isNotEmpty &&
+          if (snapshot.data!['avatar_url'] is String &&
+              snapshot.data!['avatar_url'].isNotEmpty &&
               this.getMxcUrl != null) {
-            avatarUrl = snapshot.data['avatar_url'];
+            avatarUrl = snapshot.data!['avatar_url'];
             displayname = ' $displayname';
           }
         }
-        final avatarSize = DefaultTextStyle.of(context).style.fontSize;
-        String url = avatarUrl != null
-            ? this.getMxcUrl(avatarUrl, avatarSize, avatarSize, animated: false)
+        final avatarSize = DefaultTextStyle.of(context).style.fontSize ?? 14.0;
+        final renderUrl = avatarUrl != null
+            ? getMxcUrl?.call(avatarUrl, avatarSize, avatarSize,
+                animated: false)
             : null;
         final padding = avatarSize / 20;
         return InkWell(
@@ -61,19 +62,17 @@ class Pill extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                if (avatarUrl != null)
+                if (renderUrl != null)
                   CircleAvatar(
                     radius: avatarSize / 2,
-                    backgroundImage: CachedNetworkImageProvider(url),
+                    backgroundImage: CachedNetworkImageProvider(renderUrl),
                   ),
                 Text(displayname, style: TextStyle(color: Colors.white)),
               ],
             ),
           ),
           onTap: () {
-            if (this.onTap != null) {
-              this.onTap(this.url);
-            }
+            this.onTap?.call(this.url);
           },
         );
       },

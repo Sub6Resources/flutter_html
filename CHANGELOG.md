@@ -1,3 +1,8 @@
+## [1.0.0] - 22nd Aug 2021
+- Complete re-write of the html renderer
+- Null safety
+- Addition of `details` and `summary` tags
+
 ## [0.3.1] - 8th Aug 2021
 - Fix link colour in inline code blocks
 - Fix long code blocks causing language autodetection to take long
