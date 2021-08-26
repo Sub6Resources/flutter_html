@@ -185,6 +185,7 @@ Once the above issue is resolved, the aforementioned compromises will go away. C
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
+| `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
 ### Getters:
 
