@@ -745,7 +745,7 @@ class TextParser extends StatelessWidget {
                       width: fontSize,
                       child: Text(bulletPoint, style: nextContext.textStyle),
                     ),
-                    e,
+                    Flexible(child: e),
                   ],
                 ),
               );
@@ -778,7 +778,7 @@ class TextParser extends StatelessWidget {
                           5,
                       child: Text('${entry++}.', style: nextContext.textStyle),
                     ),
-                    e,
+                    Flexible(child: e),
                   ],
                 ),
               );

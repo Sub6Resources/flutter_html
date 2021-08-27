@@ -1,3 +1,6 @@
+## [1.0.2] - 27th Aug 2021
+- Fix list overflow
+
 ## [1.0.1] - 22nd Aug 2021
 - Bring back the (rough) `maxLines` property
 
