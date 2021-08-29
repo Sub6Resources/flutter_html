@@ -294,7 +294,7 @@ Widget html = Html(
           style: (context.tree.element!.attributes['horizontal'] != null)
               ? FlutterLogoStyle.horizontal
               : FlutterLogoStyle.markOnly,
-          textColor: context.style.color,
+          textColor: context.style.color!,
           size: context.style.fontSize!.size! * 5,
         );
       },
