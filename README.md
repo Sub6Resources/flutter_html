@@ -804,14 +804,15 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRender: {
-    "tex": (_, __, ___, element) => Math.tex(
-      element.text,
+    "tex": (RenderContext context, _) => Math.tex(
+      context.tree.element!.text,
       onErrorFallback: (FlutterMathException e) {
         //return your error widget here e.g.
         return Text(e.message);
       },
     ),
-  }
+  },
+  tagsList: Html.tags..add('tex'),
 );
 ```
 
