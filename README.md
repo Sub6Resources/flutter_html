@@ -185,6 +185,7 @@ Once the above issue is resolved, the aforementioned compromises will go away. C
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
+| `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
 ### Getters:
 
@@ -293,7 +294,7 @@ Widget html = Html(
           style: (context.tree.element!.attributes['horizontal'] != null)
               ? FlutterLogoStyle.horizontal
               : FlutterLogoStyle.markOnly,
-          textColor: context.style.color,
+          textColor: context.style.color!,
           size: context.style.fontSize!.size! * 5,
         );
       },
@@ -803,14 +804,15 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRender: {
-    "tex": (_, __, ___, element) => Math.tex(
-      element.text,
+    "tex": (RenderContext context, _) => Math.tex(
+      context.tree.element!.text,
       onErrorFallback: (FlutterMathException e) {
         //return your error widget here e.g.
         return Text(e.message);
       },
     ),
-  }
+  },
+  tagsList: Html.tags..add('tex'),
 );
 ```
 

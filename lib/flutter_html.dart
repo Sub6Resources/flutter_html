@@ -213,6 +213,7 @@ class SelectableHtml extends StatelessWidget {
 
   SelectableHtml({
     Key? key,
+    GlobalKey? anchorKey,
     required this.data,
     this.onLinkTap,
     this.onAnchorTap,
@@ -220,11 +221,15 @@ class SelectableHtml extends StatelessWidget {
     this.shrinkWrap = false,
     this.style = const {},
     this.tagsList = const [],
+    this.selectionControls
   }) : document = null,
+        assert(data != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
   SelectableHtml.fromDom({
     Key? key,
+    GlobalKey? anchorKey,
     required this.document,
     this.onLinkTap,
     this.onAnchorTap,
@@ -232,8 +237,14 @@ class SelectableHtml extends StatelessWidget {
     this.shrinkWrap = false,
     this.style = const {},
     this.tagsList = const [],
+    this.selectionControls
   }) : data = null,
+        assert(document != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
+
+  /// A unique key for this Html widget to ensure uniqueness of anchors
+  final GlobalKey _anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -261,6 +272,10 @@ class SelectableHtml extends StatelessWidget {
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
 
+  /// Custom Selection controls allows you to override default toolbar and build custom toolbar
+  /// options
+  final TextSelectionControls? selectionControls;
+
   static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
 
   @override
@@ -271,7 +286,7 @@ class SelectableHtml extends StatelessWidget {
     return Container(
       width: width,
       child: HtmlParser(
-        key: null,
+        key: _anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onAnchorTap: onAnchorTap,
@@ -286,6 +301,7 @@ class SelectableHtml extends StatelessWidget {
         imageRenders: defaultImageRenders,
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
+        selectionControls: selectionControls,
       ),
     );
   }
