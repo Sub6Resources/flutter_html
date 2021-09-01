@@ -61,13 +61,17 @@ const htmlData = r"""
       <p>
       <q>Famous quote...</q>
       </p>
-      <table style="height: 400">
+      <table>
+      <colgroup>
+        <col width="50%" />
+        <col span="2" width="25%" />
+      </colgroup>
       <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
       </thead>
       <tbody>
       <tr>
-        <td rowspan='2'>Rowspan</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
         <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
@@ -264,13 +268,13 @@ class _MyHomePageState extends State<MyHomePage> {
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
           },
           customRender: {
-            // "table": (context, child) {
-            //   return SingleChildScrollView(
-            //     scrollDirection: Axis.horizontal,
-            //     child:
-            //         (context.tree as TableLayoutElement).toWidget(context),
-            //   );
-            // },
+            "table": (context, child) {
+              return SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child:
+                    (context.tree as TableLayoutElement).toWidget(context),
+              );
+            },
             "bird": (RenderContext context, Widget child) {
               return TextSpan(text: "🐦");
             },
