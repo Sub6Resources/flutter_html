@@ -245,9 +245,11 @@ class HtmlParser extends StatelessWidget {
 
   static StyledElement _applyExternalCss(Map<String, Map<String, List<css.Expression>>> declarations, StyledElement tree) {
     declarations.forEach((key, style) {
-      if (tree.matchesSelector(key)) {
-        tree.style = tree.style.merge(declarationsToStyle(style));
-      }
+      try {
+        if (tree.matchesSelector(key)) {
+          tree.style = tree.style.merge(declarationsToStyle(style));
+        }
+      } catch (_) {}
     });
 
     tree.children.forEach((e) => _applyExternalCss(declarations, e));
