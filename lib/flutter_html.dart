@@ -12,12 +12,14 @@ import 'package:webview_flutter/webview_flutter.dart';
 //export render context api
 export 'package:flutter_html/html_parser.dart';
 export 'package:flutter_html/image_render.dart';
+
 //export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
+
 //export style api
 export 'package:flutter_html/style.dart';
 
@@ -95,8 +97,8 @@ class Html extends StatelessWidget {
   /// The HTML data passed to the widget as a String
   final String? data;
 
-  /// The HTML data passed to the widget as a pre-processed [dom.Document]
-  final dom.Document? document;
+  /// The HTML data passed to the widget as a pre-processed [dom.Element]
+  final dom.Element? document;
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
@@ -150,8 +152,7 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dom.Document doc =
-        data != null ? HtmlParser.parseHTML(data!) : document!;
+    final dom.Element doc = data != null ? HtmlParser.parseHTML(data!): document!;
     final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(
@@ -169,9 +170,7 @@ class Html extends StatelessWidget {
         selectable: false,
         style: style,
         customRender: customRender,
-        imageRenders: {}
-          ..addAll(customImageRenders)
-          ..addAll(defaultImageRenders),
+        imageRenders: {}..addAll(customImageRenders)..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
         navigationDelegateForIframe: navigationDelegateForIframe,
       ),
@@ -211,34 +210,34 @@ class SelectableHtml extends StatelessWidget {
   /// (e.g. bold or italic), while container related styling (e.g. borders or padding/margin)
   /// do not work because we can't use the `ContainerSpan` class (it needs an enclosing `WidgetSpan`).
 
-  SelectableHtml({
-    Key? key,
-    GlobalKey? anchorKey,
-    required this.data,
-    this.onLinkTap,
-    this.onAnchorTap,
-    this.onCssParseError,
-    this.shrinkWrap = false,
-    this.style = const {},
-    this.tagsList = const [],
-    this.selectionControls
-  }) : document = null,
+  SelectableHtml(
+      {Key? key,
+      GlobalKey? anchorKey,
+      required this.data,
+      this.onLinkTap,
+      this.onAnchorTap,
+      this.onCssParseError,
+      this.shrinkWrap = false,
+      this.style = const {},
+      this.tagsList = const [],
+      this.selectionControls})
+      : document = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
-  SelectableHtml.fromDom({
-    Key? key,
-    GlobalKey? anchorKey,
-    required this.document,
-    this.onLinkTap,
-    this.onAnchorTap,
-    this.onCssParseError,
-    this.shrinkWrap = false,
-    this.style = const {},
-    this.tagsList = const [],
-    this.selectionControls
-  }) : data = null,
+  SelectableHtml.fromDom(
+      {Key? key,
+      GlobalKey? anchorKey,
+      required this.document,
+      this.onLinkTap,
+      this.onAnchorTap,
+      this.onCssParseError,
+      this.shrinkWrap = false,
+      this.style = const {},
+      this.tagsList = const [],
+      this.selectionControls})
+      : data = null,
         assert(document != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -249,8 +248,8 @@ class SelectableHtml extends StatelessWidget {
   /// The HTML data passed to the widget as a String
   final String? data;
 
-  /// The HTML data passed to the widget as a pre-processed [dom.Document]
-  final dom.Document? document;
+  /// The HTML data passed to the widget as a pre-processed [dom.Element]
+  final dom.Element? document;
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
@@ -280,7 +279,7 @@ class SelectableHtml extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
+    final dom.Element doc = data != null ? HtmlParser.parseHTML(data!) : document!;
     final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(

@@ -42,7 +42,7 @@ typedef CustomRender = dynamic Function(
 
 class HtmlParser extends StatelessWidget {
   final Key? key;
-  final dom.Document htmlData;
+  final dom.Element htmlData;
   final OnTap? onLinkTap;
   final OnTap? onAnchorTap;
   final OnTap? onImageTap;
@@ -143,9 +143,9 @@ class HtmlParser extends StatelessWidget {
     );
   }
 
-  /// [parseHTML] converts a string of HTML to a DOM document using the dart `html` library.
-  static dom.Document parseHTML(String data) {
-    return htmlparser.parse(data);
+  /// [parseHTML] converts a string of HTML to a DOM element using the dart `html` library.
+  static dom.Element parseHTML(String data) {
+    return htmlparser.parse(data).documentElement!;
   }
 
   /// [parseCss] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
@@ -155,7 +155,7 @@ class HtmlParser extends StatelessWidget {
 
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
   static StyledElement lexDomTree(
-    dom.Document html,
+    dom.Element html,
     List<String> customRenderTags,
     List<String> tagsList,
     NavigationDelegate? navigationDelegateForIframe,
@@ -164,7 +164,7 @@ class HtmlParser extends StatelessWidget {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: <StyledElement>[],
-      node: html.documentElement,
+      node: html,
       style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
     );
 
