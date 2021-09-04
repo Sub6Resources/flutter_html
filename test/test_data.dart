@@ -24,8 +24,7 @@ const testData = <String, String>{
   'dl': '<dl>Hello, World!</dl>',
   'dt': '<dt>Hello, World!</dt>',
   'em': '<em>Hello, World!</em>',
-  'figcaption_figure':
-      '<figure><figcaption>Hello, World!</figcaption></figure>',
+  'figcaption_figure': '<figure><figcaption>Hello, World!</figcaption></figure>',
   'font': '<font>Hello, World!</font>',
   'footer': '<footer>Hello, World!</footer>',
   'h1': '<h1>Hello, World!</h1>',
@@ -68,30 +67,28 @@ const testData = <String, String>{
   'span-with-inline-css-color': '<p>Hello, <span style="color: red;">World!</span></p>',
   'span-with-inline-css-color-rgb': '<p>Hello, <span style="color: rgb(252, 186, 3);">World!</span></p>',
   'span-with-inline-css-color-rgba': '<p>Hello, <span style="color: rgba(252, 186, 3,0.5);">World!</span></p>',
-  'span-with-inline-css-backgroundcolor': '<p>Hello, <span style="background-color: red; color: rgba(0, 0, 0,0.5);">World!</span></p>',
-  'span-with-inline-css-backgroundcolor-rgb': '<p>Hello, <span style="background-color: rgb(252, 186, 3); color: rgba(0, 0, 0,0.5);">World!</span></p>',
-  'span-with-inline-css-backgroundcolor-rgba': '<p>Hello, <span style="background-color: rgba(252, 186, 3,0.5); color: rgba(0, 0, 0,0.5);">World!</span></p>',
+  'span-with-inline-css-backgroundcolor':
+      '<p>Hello, <span style="background-color: red; color: rgba(0, 0, 0,0.5);">World!</span></p>',
+  'span-with-inline-css-backgroundcolor-rgb':
+      '<p>Hello, <span style="background-color: rgb(252, 186, 3); color: rgba(0, 0, 0,0.5);">World!</span></p>',
+  'span-with-inline-css-backgroundcolor-rgba':
+      '<p>Hello, <span style="background-color: rgba(252, 186, 3,0.5); color: rgba(0, 0, 0,0.5);">World!</span></p>',
   'strike': '<strike>Hello, World!</strike>',
   'strong': '<strong>Hello, World!</strong>',
   'sub': '<sub>Hello, World!</sub>',
   'sup': '<sup>Hello, World!</sup>',
-  'table':
-      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
-  'tbody':
-      '<table><tr><th>Hello</th><th>World!</th></tr><tbody><tr><td>Hello</td><td>World!</td></tr></tbody></table>',
-  'td':
-      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'table': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'tbody': '<table><tr><th>Hello</th><th>World!</th></tr><tbody><tr><td>Hello</td><td>World!</td></tr></tbody></table>',
+  'td': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
   'template': '<template>Hello, World!</template>',
-  'tfoot':
-      '<table><tr><th>Hello</th><th>World!</th></tr><tfoot><tr><td>Hello</td><td>World!</td></tr></tfoot></table>',
-  'th':
-      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
-  'thead':
-      '<table><thead><tr><th>Hello</th><th>World!</th></tr></thead><tr><td>Hello</td><td>World!</td></tr></table>',
+  'tfoot': '<table><tr><th>Hello</th><th>World!</th></tr><tfoot><tr><td>Hello</td><td>World!</td></tr></tfoot></table>',
+  'th': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'thead': '<table><thead><tr><th>Hello</th><th>World!</th></tr></thead><tr><td>Hello</td><td>World!</td></tr></table>',
   'time': '<time>3:00 PM</time>',
-  'tr':
-      '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
+  'tr': '<table><tr><th>Hello</th><th>World!</th></tr><tr><td>Hello</td><td>World!</td></tr></table>',
   'tt': '<tt>Hello, World!</tt>',
   'u': '<u>Hello, World!</u>',
   'var': '<var>Hello, World!</var>',
+  'iframe-with-giphy-image': '<iframe src="https://giphy.com/gifs/animated-twitter-lovethisgif-3MnkJJZjwOzja" width="500" height="375"></iframe>',
+  'iframe-with-giphy-image-embed': '<iframe src="https://giphy.com/embed/3MnkJJZjwOzja" width="500" height="375"></iframe>'
 };

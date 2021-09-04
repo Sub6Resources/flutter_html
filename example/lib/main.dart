@@ -236,6 +236,10 @@ const htmlData = r"""
       </math>
       <h3>Tex Support with the custom tex tag:</h3>
       <tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>
+      <h3>Giphy image from iframe:</h3>
+      <iframe src="https://giphy.com/gifs/animated-twitter-lovethisgif-3MnkJJZjwOzja" width="250" height="175"></iframe> 
+      <h3>Giphy embeded image from iframe:</h3>
+      <iframe src="https://giphy.com/embed/3MnkJJZjwOzja" width="250" height="175"></iframe>
       <p id='bottom'><a href='#top'>Scroll to top</a></p>
 """;
 
@@ -304,9 +308,9 @@ class _MyHomePageState extends State<MyHomePage> {
                     attr["src"] != null && attr["src"]!.startsWith("/wiki"):
                 networkImageRender(
                     mapUrl: (url) => "https://upload.wikimedia.org" + url!),
+
             // Custom placeholder image for broken links
-            networkSourceMatcher():
-                networkImageRender(altWidget: (_) => FlutterLogo()),
+            networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
           },
           onLinkTap: (url, _, __, ___) {
             print("Opening $url...");

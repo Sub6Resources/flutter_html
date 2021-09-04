@@ -9,8 +9,8 @@ import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/src/widgets/iframe_unsupported.dart'
-  if (dart.library.io) 'package:flutter_html/src/widgets/iframe_mobile.dart'
-  if (dart.library.html) 'package:flutter_html/src/widgets/iframe_web.dart';
+    if (dart.library.io) 'package:flutter_html/src/widgets/iframe_mobile.dart'
+    if (dart.library.html) 'package:flutter_html/src/widgets/iframe_web.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -34,9 +34,7 @@ abstract class ReplacedElement extends StyledElement {
   }) : super(name: name, children: [], style: style, node: node, elementId: elementId);
 
   static List<String?> parseMediaSources(List<dom.Element> elements) {
-    return elements
-        .where((element) => element.localName == 'source')
-        .map((element) {
+    return elements.where((element) => element.localName == 'source').map((element) {
       return element.attributes['src'];
     }).toList();
   }
@@ -83,20 +81,18 @@ class ImageContentElement extends ReplacedElement {
     for (final entry in context.parser.imageRenders.entries) {
       if (entry.key.call(attributes, element)) {
         final widget = entry.value.call(context, attributes, element);
-        return Builder(
-          builder: (buildContext) {
-            return GestureDetector(
-              key: AnchorKey.of(context.parser.key, this),
-              child: widget,
-              onTap: () {
-                if (MultipleTapGestureDetector.of(buildContext) != null) {
-                  MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
-                }
-                context.parser.onImageTap?.call(src, context, attributes, element);
-              },
-            );
-          }
-        );
+        return Builder(builder: (buildContext) {
+          return GestureDetector(
+            key: AnchorKey.of(context.parser.key, this),
+            child: widget,
+            onTap: () {
+              if (MultipleTapGestureDetector.of(buildContext) != null) {
+                MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+              }
+              context.parser.onImageTap?.call(src, context, attributes, element);
+            },
+          );
+        });
       }
     }
     return SizedBox(width: 0, height: 0);
@@ -126,8 +122,7 @@ class AudioContentElement extends ReplacedElement {
     return Container(
       key: AnchorKey.of(context.parser.key, this),
       width: context.style.width ?? 300,
-      height: Theme.of(context.buildContext).platform == TargetPlatform.android
-          ? 48 : 75,
+      height: Theme.of(context.buildContext).platform == TargetPlatform.android ? 48 : 75,
       child: ChewieAudio(
         controller: ChewieAudioController(
           videoPlayerController: VideoPlayerController.network(
@@ -180,9 +175,7 @@ class VideoContentElement extends ReplacedElement {
             videoPlayerController: VideoPlayerController.network(
               src.first ?? "",
             ),
-            placeholder: poster != null
-                ? Image.network(poster!)
-                : Container(color: Colors.black),
+            placeholder: poster != null ? Image.network(poster!) : Container(color: Colors.black),
             autoPlay: autoplay,
             looping: loop,
             showControls: showControls,
@@ -253,15 +246,10 @@ class RubyElement extends ReplacedElement {
                   alignment: Alignment.bottomCenter,
                   child: Center(
                       child: Transform(
-                          transform:
-                              Matrix4.translationValues(0, -(rubyYPos), 0),
+                          transform: Matrix4.translationValues(0, -(rubyYPos), 0),
                           child: Text(c.innerHtml,
-                              style: context.style
-                                  .generateTextStyle()
-                                  .copyWith(fontSize: rubySize))))),
-              Container(
-                  child: Text(textNode!.text!.trim(),
-                      style: context.style.generateTextStyle())),
+                              style: context.style.generateTextStyle().copyWith(fontSize: rubySize))))),
+              Container(child: Text(textNode!.text!.trim(), style: context.style.generateTextStyle())),
             ],
           );
           widgets.add(widget);
@@ -286,26 +274,29 @@ class MathElement extends ReplacedElement {
     required this.element,
     this.texStr,
     String name = "math",
-  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(display: Display.BLOCK), elementId: element.id);
+  }) : super(
+            name: name,
+            alignment: PlaceholderAlignment.middle,
+            style: Style(display: Display.BLOCK),
+            elementId: element.id);
 
   @override
   Widget toWidget(RenderContext context) {
     texStr = parseMathRecursive(element, r'');
     return Container(
-      width: context.parser.shrinkWrap ? null : MediaQuery.of(context.buildContext).size.width,
-      child: Math.tex(
-        texStr ?? '',
-        mathStyle: MathStyle.display,
-        textStyle: context.style.generateTextStyle(),
-        onErrorFallback: (FlutterMathException e) {
-          if (context.parser.onMathError != null) {
-            return context.parser.onMathError!.call(texStr ?? '', e.message, e.messageWithType);
-          } else {
-            return Text(e.message);
-          }
-        },
-      )
-    );
+        width: context.parser.shrinkWrap ? null : MediaQuery.of(context.buildContext).size.width,
+        child: Math.tex(
+          texStr ?? '',
+          mathStyle: MathStyle.display,
+          textStyle: context.style.generateTextStyle(),
+          onErrorFallback: (FlutterMathException e) {
+            if (context.parser.onMathError != null) {
+              return context.parser.onMathError!.call(texStr ?? '', e.message, e.messageWithType);
+            } else {
+              return Text(e.message);
+            }
+          },
+        ));
   }
 
   String parseMathRecursive(dom.Node node, String parsed) {
@@ -318,11 +309,15 @@ class MathElement extends ReplacedElement {
       }
       // note: munder, mover, and munderover do not support placing braces and other
       // markings above/below elements, instead they are treated as super/subscripts for now.
-      if ((node.localName == "msup" || node.localName == "msub"
-          || node.localName == "munder" || node.localName == "mover") && nodeList.length == 2) {
+      if ((node.localName == "msup" ||
+              node.localName == "msub" ||
+              node.localName == "munder" ||
+              node.localName == "mover") &&
+          nodeList.length == 2) {
         parsed = parseMathRecursive(nodeList[0], parsed);
-        parsed = parseMathRecursive(nodeList[1],
-            parsed + "${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{") + "}";
+        parsed = parseMathRecursive(
+                nodeList[1], parsed + "${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{") +
+            "}";
       }
       if ((node.localName == "msubsup" || node.localName == "munderover") && nodeList.length == 3) {
         parsed = parseMathRecursive(nodeList[0], parsed);
@@ -382,28 +377,11 @@ ReplacedElement parseReplacedElement(
         node: element,
       );
     case "br":
-      return TextContentElement(
-        text: "\n",
-        style: Style(whiteSpace: WhiteSpace.PRE),
-        element: element,
-        node: element
-      );
+      return TextContentElement(text: "\n", style: Style(whiteSpace: WhiteSpace.PRE), element: element, node: element);
     case "iframe":
-      return IframeContentElement(
-          name: "iframe",
-          src: element.attributes['src'],
-          width: double.tryParse(element.attributes['width'] ?? ""),
-          height: double.tryParse(element.attributes['height'] ?? ""),
-          navigationDelegate: navigationDelegateForIframe,
-          node: element,
-      );
+      return _parseIframeElement(element, navigationDelegateForIframe);
     case "img":
-      return ImageContentElement(
-        name: "img",
-        src: element.attributes['src'],
-        alt: element.attributes['alt'],
-        node: element,
-      );
+      return _parseImgElement(element);
     case "video":
       final sources = <String?>[
         if (element.attributes['src'] != null) element.attributes['src'],
@@ -443,4 +421,45 @@ ReplacedElement parseReplacedElement(
     default:
       return EmptyContentElement(name: element.localName == null ? "[[No Name]]" : element.localName!);
   }
+}
+
+ReplacedElement _parseIframeElement(
+  dom.Element element,
+  NavigationDelegate? navigationDelegateForIframe,
+) {
+  final src = element.attributes['src'] ?? '';
+  final giphyId = GiphyUtils.getId(src);
+  if (giphyId != null && giphyId.isNotEmpty) {
+    final url = GiphyUtils.buildUrlFromId(giphyId);
+    element.attributes['src'] = url;
+    return ImageContentElement(
+      name: "img",
+      src: url,
+      alt: element.attributes['alt'],
+      node: element,
+    );
+  }
+  return IframeContentElement(
+    name: "iframe",
+    src: element.attributes['src'],
+    width: double.tryParse(element.attributes['width'] ?? ""),
+    height: double.tryParse(element.attributes['height'] ?? ""),
+    navigationDelegate: navigationDelegateForIframe,
+    node: element,
+  );
+}
+
+ReplacedElement _parseImgElement(dom.Element element) {
+  String src = element.attributes['src'] ?? '';
+  final giphyId = GiphyUtils.getId(src);
+  if (giphyId != null && giphyId.isNotEmpty) {
+    src = GiphyUtils.buildUrlFromId(giphyId);
+    element.attributes['src'] = src;
+  }
+  return ImageContentElement(
+    name: "img",
+    src: src,
+    alt: element.attributes['alt'],
+    node: element,
+  );
 }

@@ -82,3 +82,28 @@ String getRandString(int len) {
   var values = List<int>.generate(len, (i) =>  random.nextInt(255));
   return base64UrlEncode(values);
 }
+
+// This class responsible for parse a url and check Giphy image.
+class GiphyUtils {
+  static final List<RegExp> URL_REGEXP_LIST = [
+    RegExp('^(https?://(www\\.)?)?media\\.giphy\\.com/media/(?<id>\\w+)/giphy\\.\\w+'),
+    RegExp('^(https?://(www\\.)?)?media\\d+\\.giphy\\.com/media/(?<id>\\w+)/giphy\\.\\w+'),
+    RegExp('^(https?://(www\\.)?)?giphy\\.com/gifs/((\\w+)-)*(?<id>\\w+)\$'),
+    RegExp('^(https?://(www\\.)?)?giphy\\.com/embed/(?<id>\\w+)'),
+  ];
+
+  GiphyUtils._();
+
+  static String? getId(String url) {
+    return URL_REGEXP_LIST
+        .where((regex) => regex.hasMatch(url))
+        .map((regex) => regex.firstMatch(url))
+        .where((element) => element != null)
+        .map((match) => match?.namedGroup("id"))
+        .firstWhere((element) => true, orElse: () => null);
+  }
+
+  static String buildUrlFromId(String id) {
+    return 'https://i.giphy.com/$id.gif';
+  }
+}
