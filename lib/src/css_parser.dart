@@ -830,37 +830,20 @@ class ExpressionMapping {
       RegExp nonNumberRegex = RegExp(r'\s+(\d+\.\d+)\s+');
       if (offsetX is css.LiteralTerm && offsetY is css.LiteralTerm) {
         if (color != null && ExpressionMapping.expressionToColor(color) != null) {
-          if (blurRadius is css.LiteralTerm) {
-            shadow.add(Shadow(
-                color: expressionToColor(color)!,
-                offset: Offset(
-                    double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
-                    double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
-                blurRadius: double.tryParse((blurRadius as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!
-            ));
-          } else {
-            shadow.add(Shadow(
-                color: expressionToColor(color)!,
-                offset: Offset(
-                    double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
-                    double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
-            ));
-          }
+          shadow.add(Shadow(
+              color: expressionToColor(color)!,
+              offset: Offset(
+                  double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
+                  double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
+              blurRadius: (blurRadius is css.LiteralTerm) ? double.tryParse((blurRadius as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))! : null,
+          ));
         } else {
-          if (blurRadius is css.LiteralTerm) {
-            shadow.add(Shadow(
-                offset: Offset(
-                    double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
-                    double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
-                blurRadius: double.tryParse((blurRadius as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!
-            ));
-          } else {
-            shadow.add(Shadow(
-                offset: Offset(
-                    double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
-                    double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
-            ));
-          }
+          shadow.add(Shadow(
+              offset: Offset(
+                  double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
+                  double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
+              blurRadius: (blurRadius is css.LiteralTerm) ? double.tryParse((blurRadius as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))! : null,
+          ));
         }
       }
     }
