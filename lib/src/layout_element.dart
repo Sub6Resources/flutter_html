@@ -117,7 +117,7 @@ class TableLayoutElement extends LayoutElement {
           final pxSize = double.tryParse(width) ?? 120;
           cells.add(GridPlacement(
             child: Container(
-              width: pxSize,
+              width: double.infinity,
               padding: child.style.padding ?? row.style.padding,
               decoration: BoxDecoration(
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
