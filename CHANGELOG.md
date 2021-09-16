@@ -1,3 +1,7 @@
+## [1.0.3] - 16th Se 2021:
+- Fix `a` tags not properly obaying the `linkStyle`
+- Slightly increase the padding to the left of `blockquote` tags
+
 ## [1.0.2] - 27th Aug 2021
 - Fix list overflow
 

@@ -418,8 +418,10 @@ class TextParser extends StatelessWidget {
               );
             }
           }
+          nextContext.textStyle =
+              parseContext.textStyle.merge(parseContext.linkStyle);
           return LinkTextSpan(
-            style: parseContext.textStyle.merge(parseContext.linkStyle),
+            style: nextContext.textStyle,
             url: url ?? '',
             onLinkTap: onLinkTap,
             children: <InlineSpan>[
@@ -642,7 +644,12 @@ class TextParser extends StatelessWidget {
                     color: defaultTextStyle?.color ?? Colors.black, width: 3),
               ),
             ),
-            padding: EdgeInsets.all(2.0),
+            padding: EdgeInsets.only(
+              left: 6.0,
+              right: 2.0,
+              top: 2.0,
+              bottom: 2.0,
+            ),
             child: _parseChildNodes(context, nextContext, node.nodes),
           );
         case 'pre':
