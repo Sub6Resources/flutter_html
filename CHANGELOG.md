@@ -1,4 +1,7 @@
-## [1.0.3] - 16th Se 2021:
+## [1.0.4] - 21st Sep 2021:
+- Fix entries of ordered lists being incorrectly indented sometimes
+
+## [1.0.3] - 16th Sep 2021:
 - Fix `a` tags not properly obaying the `linkStyle`
 - Slightly increase the padding to the left of `blockquote` tags
 

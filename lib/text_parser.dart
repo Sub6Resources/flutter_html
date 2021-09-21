@@ -768,6 +768,8 @@ class TextParser extends StatelessWidget {
           }
           final entries =
               _parseChildNodesList(context, nextContext, node.nodes, {'li'});
+          final olWidth =
+              fontSize * ((entry + entries.length).toString().length) * 0.6 + 5;
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
@@ -779,10 +781,7 @@ class TextParser extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     SizedBox(
-                      width: fontSize *
-                              ((entry + entries.length).toString().length) *
-                              0.6 +
-                          5,
+                      width: olWidth,
                       child: Text('${entry++}.', style: nextContext.textStyle),
                     ),
                     Flexible(child: e),
