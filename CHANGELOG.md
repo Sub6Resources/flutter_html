@@ -1,3 +1,6 @@
+## [1.0.5] - 25th Sep 2021:
+- Update `flutter_matrix_html`
+
 ## [1.0.4] - 21st Sep 2021:
 - Fix entries of ordered lists being incorrectly indented sometimes
 
