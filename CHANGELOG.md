@@ -1,6 +1,7 @@
 ## [2.1.3] - October 1, 2021:
 * Update minimum versions of dependencies for Flutter 2.5 compatibility
 * Extended and fixed support for css shadow
+* Fix block tags with explicit whitespace from being stripped
 
 ## [2.1.2] - September 2, 2021:
 * Allow setting selectionControls with SelectableHtml
