@@ -944,13 +944,17 @@ class HtmlParser extends StatelessWidget {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
       } else if (child is TextContentElement
-          && child.text!.trim().isEmpty
+          && tree.name == "body" 
+          && child.text!.trim().isEmpty) {
+        toRemove.add(child);
+      } else if (child is TextContentElement
+          && child.text!.isEmpty
           && child.style.whiteSpace != WhiteSpace.PRE) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.style.whiteSpace != WhiteSpace.PRE &&
           tree.style.display == Display.BLOCK &&
-          child.text!.trim().isEmpty &&
+          child.text!.isEmpty &&
           lastChildBlock) {
         toRemove.add(child);
       } else if (child.style.display == Display.NONE) {
