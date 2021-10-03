@@ -1,3 +1,6 @@
+## [2.1.4] - October 3, 2021:
+* Fix regression in usage of line breaks in body being stripped
+
 ## [2.1.3] - October 1, 2021:
 * Update minimum versions of dependencies for Flutter 2.5 compatibility
 * Extended and fixed support for css shadow
