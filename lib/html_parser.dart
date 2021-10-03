@@ -945,7 +945,7 @@ class HtmlParser extends StatelessWidget {
         toRemove.add(child);
       } else if (child is TextContentElement
           && tree.name == "body" 
-          && child.text!.trim().isEmpty) {
+          && child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);
       } else if (child is TextContentElement
           && child.text!.isEmpty
