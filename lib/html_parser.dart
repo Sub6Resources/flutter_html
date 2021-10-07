@@ -273,9 +273,11 @@ class HtmlParser extends StatelessWidget {
   /// widget onto the [StyledElement] tree, no cascading of styles is done at this point.
   static StyledElement _applyCustomStyles(Map<String, Style> style, StyledElement tree) {
     style.forEach((key, style) {
-      if (tree.matchesSelector(key)) {
-        tree.style = tree.style.merge(style);
-      }
+      try {
+        if (tree.matchesSelector(key)) {
+          tree.style = tree.style.merge(style);
+        }
+      } catch (_) {}
     });
     tree.children.forEach((e) => _applyCustomStyles(style, e));
 
