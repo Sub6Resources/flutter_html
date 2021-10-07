@@ -98,7 +98,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^2.1.4
+      flutter_html: ^2.1.5
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |

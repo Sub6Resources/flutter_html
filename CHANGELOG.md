@@ -1,3 +1,8 @@
+## [2.1.5] - October 7, 2021:
+* Ignore unsupported custom style selectors when using fromCss
+* Fix SVG tag usage inside tables
+* Properly fix regression in usage of line breaks
+
 ## [2.1.4] - October 3, 2021:
 * Fix regression in usage of line breaks in body being stripped
 
