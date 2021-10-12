@@ -43,7 +43,7 @@ class Html extends StatelessWidget {
   ///
   /// **onImageTap** This is called whenever an image is tapped.
   ///
-  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags are rendered.
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default all supported HTML tags are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -126,7 +126,7 @@ class Html extends StatelessWidget {
   /// A function that defines what to do when an image is tapped
   final OnTap? onImageTap;
 
-  /// A list of HTML tags that defines what elements are not rendered
+  /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
 
   /// Either return a custom widget for specific node types or return null to
@@ -193,7 +193,7 @@ class SelectableHtml extends StatelessWidget {
   /// **onAnchorTap** This function is called whenever an anchor (#anchor-id)
   /// is tapped.
   ///
-  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags that support selectable content are rendered.
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default, all tags that support selectable content are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -266,7 +266,7 @@ class SelectableHtml extends StatelessWidget {
   /// flexible
   final bool shrinkWrap;
 
-  /// A list of HTML tags that defines what elements are not rendered
+  /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
 
   /// An API that allows you to override the default style for any HTML element
