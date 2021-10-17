@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as parser;
+import 'package:csslib/parser.dart' as cssParser;
+import 'package:csslib/visitor.dart' as css;
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:matrix_link_text/link_text.dart';
 import 'package:flutter_highlight/themes/monokai.dart';
@@ -231,6 +233,43 @@ class TextParser extends StatelessWidget {
       children.add(ts);
     }
     return TextSpan(children: children);
+  }
+
+  List<_ParseRubyResult> _parseChildRuby(
+      BuildContext context, ParseContext parseContext, List<dom.Node> nodes) {
+    final res = <_ParseRubyResult>[];
+    var children = <InlineSpan>[];
+    for (final node in nodes) {
+      final tag = node is dom.Element ? node.localName?.toLowerCase() : null;
+      if (tag == 'rp') {
+        continue; // ignore rp tags
+      } else if (tag == 'rt') {
+        // do ruby magic
+        final nextContext = ParseContext.fromContext(parseContext);
+        final fontSize = nextContext.textStyle.fontSize ?? 14.0;
+        nextContext.textStyle = nextContext.textStyle.merge(
+          TextStyle(
+            fontSize: fontSize * OFFSET_TAGS_FONT_SIZE_FACTOR,
+          ),
+        );
+        final ts = _parseInlineNode(context, nextContext, node);
+        res.add(_ParseRubyResult(
+          text: ts,
+          base: TextSpan(children: children),
+        ));
+        children = <InlineSpan>[];
+      } else {
+        final ts = _parseInlineNode(context, parseContext, node);
+        children.add(ts);
+      }
+    }
+    if (children.isNotEmpty) {
+      res.add(_ParseRubyResult(
+        text: TextSpan(),
+        base: TextSpan(children: children),
+      ));
+    }
+    return res;
   }
 
   InlineSpan _parseInlineNode(
@@ -499,6 +538,49 @@ class TextParser extends StatelessWidget {
               ),
             ),
           );
+        case 'ruby':
+          final parsedStyle = node.attributes['style'] != null
+              ? cssParser.parse('.tag {${node.attributes['style']}}')
+              : null;
+          final under = (parsedStyle?.topLevels.isNotEmpty ?? false) &&
+                  parsedStyle?.topLevels.first is css.RuleSet
+              ? (parsedStyle!.topLevels.first as css.RuleSet)
+                  .declarationGroup
+                  .declarations
+                  .any((d) =>
+                      (d is css.Declaration) &&
+                      d.property == 'ruby-position' &&
+                      (d.expression is css.Expressions) &&
+                      ((d.expression as css.Expressions)
+                          .expressions
+                          .isNotEmpty) &&
+                      ((d.expression as css.Expressions).expressions.first
+                          is css.LiteralTerm) &&
+                      ((d.expression as css.Expressions).expressions.first
+                                  as css.LiteralTerm)
+                              .text
+                              .toLowerCase() ==
+                          'under')
+              : false;
+          final res = _parseChildRuby(context, parseContext, node.nodes);
+          final children = <InlineSpan>[];
+          for (final r in res) {
+            children.add(WidgetSpan(
+              child: Column(
+                children: <Widget>[
+                  CleanRichText(r.base, maxLines: maxLines),
+                  CleanRichText(r.text, maxLines: maxLines),
+                ],
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisSize: MainAxisSize.min,
+                verticalDirection:
+                    under ? VerticalDirection.down : VerticalDirection.up,
+              ),
+              alignment: PlaceholderAlignment.baseline,
+              baseline: TextBaseline.alphabetic,
+            ));
+          }
+          return TextSpan(children: children);
       }
       return _parseInlineChildNodes(context, nextContext, node.nodes);
     } else {
@@ -903,4 +985,10 @@ class _ParseTableResult {
   final List<List<Widget>> rows;
   final Widget? caption;
   _ParseTableResult({required this.rows, this.caption});
+}
+
+class _ParseRubyResult {
+  final InlineSpan text;
+  final InlineSpan base;
+  _ParseRubyResult({required this.text, required this.base});
 }

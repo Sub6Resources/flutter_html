@@ -122,6 +122,15 @@ inside paragraph <b>inside bold<h1>heading</h1>bold</b>paragraph
   recommended.</p>
 </details>
 
+<details>
+  <summary>System Requirements which are very, very long. So long even, that it overflows the summary field. Who thought that would have happened? Apparently not soru, because she initially didn't think of that. Which is why she is writing now this long summary text to test it.</summary>
+  <p>Requires a computer running an operating system. The computer
+  must have some memory and ideally some kind of long-term storage.
+  An input device as well as some form of output device is
+  recommended.</p>
+</details>
+
+
 <pre><code class=\"language-dart\">    if (parseContext.condenseWhitespace) {
       finalText = _condenseHtmlWhitespace(node.text);
       // TODO: figure out how to access before and after to condense around the tag borders
@@ -129,6 +138,33 @@ inside paragraph <b>inside bold<h1>heading</h1>bold</b>paragraph
 </code></pre>
 
 <code>inline code</code>
+
+<p>
+hmmm <ruby>
+明日 <rp>(</rp><rt>Ashita</rt><rp>)</rp>
+</ruby> hmmmm
+</p>
+<hr>
+<p>
+<ruby> 明<rp>(</rp><rt>あ</rt><rp>)</rp>日<rp>(</rp><rt>した</rt><rp>)</rp></ruby>
+</p>
+<hr>
+<p>
+foxes <ruby style="ruby-position: over;"><ruby style="ruby-position: under;">明<rp>(</rp><rt >あ</rt><rp>)</rp>日<rp>(</rp><rt>した</rt><rp>)</rp></ruby><rp>(</rp><rt>Ashita</rt><rp>)</rp></ruby> floof
+</p>
+<hr>
+<p>
+hmmmmmm<ruby style="ruby-position: over;"><ruby style="ruby-position: under;">mm<rp>(</rp><rt >あ</rt><rp>)</rp>mmm<rp>(</rp><rt>した</rt><rp>)</rp></ruby><rp>(</rp><rt>Ashita</rt><rp>)</rp></ruby>mmmmmmm
+</p>
+<hr>
+<p>
+hmmm <ruby style="ruby-position: under;">
+明日 <rp>(</rp><rt>Ashita</rt><rp>)</rp>
+</ruby> hmmmm
+</p>
+<p>
+outside ruby <ruby>inside ruby<rp>(</rp><rt>rt</rt><rp>)</rp> moar ruby</ruby> outside ruby
+</p>
             """,
             onLinkTap: (url) => print('clicked on url $url'),
             linkStyle: TextStyle(decoration: TextDecoration.underline),

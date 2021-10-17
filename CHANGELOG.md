@@ -1,3 +1,7 @@
+## [1.1.0] - 8th Nov 2021:
+- Add support for `<ruby>`, `<rp>` and `<rt>` tags
+- Fix the `<summary>` of the `<details>` tag overflowing
+
 ## [1.0.5] - 25th Sep 2021:
 - Update `flutter_matrix_html`
 

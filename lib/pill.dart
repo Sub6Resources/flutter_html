@@ -21,10 +21,10 @@ class Pill extends StatelessWidget {
 
   @override
   build(BuildContext context) {
-    return FutureBuilder<Map<String, dynamic>>(
+    return FutureBuilder<Map<String, dynamic>?>(
       future: this.future ?? Future.value(null),
-      builder:
-          (BuildContext context, AsyncSnapshot<Map<String, dynamic>> snapshot) {
+      builder: (BuildContext context,
+          AsyncSnapshot<Map<String, dynamic>?> snapshot) {
         String displayname = this.identifier;
         String? avatarUrl;
         if (snapshot.hasData && snapshot.data != null) {

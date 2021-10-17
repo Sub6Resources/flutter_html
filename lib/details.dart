@@ -47,7 +47,7 @@ class _DetailsState extends State<Details> {
                     color: widget.color,
                   ),
                   SizedBox(width: 5),
-                  widget.summary ?? Text('Summary'),
+                  Flexible(child: widget.summary ?? Text('Summary')),
                 ],
               ),
             ),
