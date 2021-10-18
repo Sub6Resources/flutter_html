@@ -194,6 +194,9 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
           break;
+        case 'height':
+          style.height = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.height;
+          break;
         case 'list-style-type':
           if (value.first is css.LiteralTerm) {
             style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.LiteralTerm) ?? style.listStyleType;
@@ -297,6 +300,9 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           break;
         case 'text-shadow':
           style.textShadow = ExpressionMapping.expressionToTextShadow(value);
+          break;
+        case 'width':
+          style.width = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.width;
           break;
       }
     }
