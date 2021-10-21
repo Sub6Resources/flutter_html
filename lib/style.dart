@@ -530,6 +530,7 @@ enum ListStyleType {
   LOWER_ROMAN,
   UPPER_ROMAN,
   SQUARE,
+  NONE,
 }
 
 enum ListStylePosition {
