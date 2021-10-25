@@ -650,7 +650,7 @@ class HtmlParser extends StatelessWidget {
     if (tree.children.isEmpty) {
       // Handle case (4) from above.
       if ((tree.style.height ?? 0) == 0) {
-        tree.style.margin = EdgeInsets.zero;
+        tree.style.margin = tree.style.margin?.collapse() ?? Margins.zero;
       }
       return tree;
     }
@@ -666,47 +666,47 @@ class HtmlParser extends StatelessWidget {
     // Handle case (1) from above.
     // Top margins cannot collapse if the element has padding
     if ((tree.style.padding?.top ?? 0) == 0) {
-      final parentTop = tree.style.margin?.top ?? 0;
-      final firstChildTop = tree.children.first.style.margin?.top ?? 0;
+      final parentTop = tree.style.margin?.top?.value ?? 0;
+      final firstChildTop = tree.children.first.style.margin?.top?.value ?? 0;
       final newOuterMarginTop = max(parentTop, firstChildTop);
 
       // Set the parent's margin
       if (tree.style.margin == null) {
-        tree.style.margin = EdgeInsets.only(top: newOuterMarginTop);
+        tree.style.margin = Margins.only(top: newOuterMarginTop);
       } else {
-        tree.style.margin = tree.style.margin!.copyWith(top: newOuterMarginTop);
+        tree.style.margin = tree.style.margin!.copyWithEdge(top: newOuterMarginTop);
       }
 
       // And remove the child's margin
       if (tree.children.first.style.margin == null) {
-        tree.children.first.style.margin = EdgeInsets.zero;
+        tree.children.first.style.margin = Margins.zero;
       } else {
         tree.children.first.style.margin =
-            tree.children.first.style.margin!.copyWith(top: 0);
+            tree.children.first.style.margin!.copyWithEdge(top: 0);
       }
     }
 
     // Handle case (3) from above.
     // Bottom margins cannot collapse if the element has padding
     if ((tree.style.padding?.bottom ?? 0) == 0) {
-      final parentBottom = tree.style.margin?.bottom ?? 0;
-      final lastChildBottom = tree.children.last.style.margin?.bottom ?? 0;
+      final parentBottom = tree.style.margin?.bottom?.value ?? 0;
+      final lastChildBottom = tree.children.last.style.margin?.bottom?.value ?? 0;
       final newOuterMarginBottom = max(parentBottom, lastChildBottom);
 
       // Set the parent's margin
       if (tree.style.margin == null) {
-        tree.style.margin = EdgeInsets.only(bottom: newOuterMarginBottom);
+        tree.style.margin = Margins.only(bottom: newOuterMarginBottom);
       } else {
         tree.style.margin =
-            tree.style.margin!.copyWith(bottom: newOuterMarginBottom);
+            tree.style.margin!.copyWithEdge(bottom: newOuterMarginBottom);
       }
 
       // And remove the child's margin
       if (tree.children.last.style.margin == null) {
-        tree.children.last.style.margin = EdgeInsets.zero;
+        tree.children.last.style.margin = Margins.zero;
       } else {
         tree.children.last.style.margin =
-            tree.children.last.style.margin!.copyWith(bottom: 0);
+            tree.children.last.style.margin!.copyWithEdge(bottom: 0);
       }
     }
 
@@ -714,24 +714,24 @@ class HtmlParser extends StatelessWidget {
     if (tree.children.length > 1) {
       for (int i = 1; i < tree.children.length; i++) {
         final previousSiblingBottom =
-            tree.children[i - 1].style.margin?.bottom ?? 0;
-        final thisTop = tree.children[i].style.margin?.top ?? 0;
+            tree.children[i - 1].style.margin?.bottom?.value ?? 0;
+        final thisTop = tree.children[i].style.margin?.top?.value ?? 0;
         final newInternalMargin = max(previousSiblingBottom, thisTop) / 2;
 
         if (tree.children[i - 1].style.margin == null) {
           tree.children[i - 1].style.margin =
-              EdgeInsets.only(bottom: newInternalMargin);
+              Margins.only(bottom: newInternalMargin);
         } else {
           tree.children[i - 1].style.margin = tree.children[i - 1].style.margin!
-              .copyWith(bottom: newInternalMargin);
+              .copyWithEdge(bottom: newInternalMargin);
         }
 
         if (tree.children[i].style.margin == null) {
           tree.children[i].style.margin =
-              EdgeInsets.only(top: newInternalMargin);
+              Margins.only(top: newInternalMargin);
         } else {
           tree.children[i].style.margin =
-              tree.children[i].style.margin!.copyWith(top: newInternalMargin);
+              tree.children[i].style.margin!.copyWithEdge(top: newInternalMargin);
         }
       }
     }
@@ -840,7 +840,14 @@ class ContainerSpan extends StatelessWidget {
 
   @override
   Widget build(BuildContext _) {
-    return Container(
+
+    // Elements that are inline should ignore margin: auto for alignment.
+    var alignment = shrinkWrap ? null : style.alignment;
+    if(style.display == Display.BLOCK) {
+      alignment = style.margin?.alignment ?? alignment;
+    }
+
+    Widget container = Container(
       decoration: BoxDecoration(
         border: style.border,
         color: style.backgroundColor,
@@ -848,8 +855,8 @@ class ContainerSpan extends StatelessWidget {
       height: style.height,
       width: style.width,
       padding: style.padding?.nonNegative,
-      margin: style.margin?.nonNegative,
-      alignment: shrinkWrap ? null : style.alignment,
+      margin: style.margin?.asInsets.nonNegative,
+      alignment: alignment,
       child: child ??
           StyledText(
             textSpan: TextSpan(
@@ -860,6 +867,8 @@ class ContainerSpan extends StatelessWidget {
             renderContext: newContext,
           ),
     );
+
+    return container;
   }
 }
 
