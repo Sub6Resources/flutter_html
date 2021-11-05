@@ -40,7 +40,6 @@ void testNewParser(BuildContext context) {
         "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
     [],
     [],
-    null,
     context,
   );
   print(tree.toString());
@@ -50,7 +49,6 @@ void testNewParser(BuildContext context) {
         "Hello, World! <a href='https://example.com'>This is a link</a>"),
     [],
     [],
-    null,
     context,
   );
   print(tree.toString());
@@ -59,7 +57,6 @@ void testNewParser(BuildContext context) {
     HtmlParser.parseHTML("<img src='https://image.example.com' />"),
     [],
     [],
-    null,
     context,
   );
   print(tree.toString());
@@ -69,47 +66,9 @@ void testNewParser(BuildContext context) {
         "<div><div><div><div><a href='link'>Link</a><div>Hello, World! <b>Bold and <i>Italic</i></b></div></div></div></div></div>"),
     [],
     [],
-    null,
     context,
   );
   print(tree.toString());
-
-  ReplacedElement videoContentElement = parseReplacedElement(
-    HtmlParser.parseHTML("""
-      <video width="320" height="240" controls>
-       <source src="movie.mp4" type="video/mp4">
-       <source src="movie.ogg" type="video/ogg">
-       Your browser does not support the video tag.
-      </video>
-    """).getElementsByTagName("video")[0],
-    null,
-  );
-
-  expect(videoContentElement, isA<VideoContentElement>());
-  if (videoContentElement is VideoContentElement) {
-    expect(videoContentElement.showControls, equals(true),
-        reason: "Controls isn't working");
-    expect(videoContentElement.src, hasLength(2),
-        reason: "Not enough sources...");
-  }
-
-  ReplacedElement audioContentElement = parseReplacedElement(
-    HtmlParser.parseHTML("""
-      <audio controls>
-        <source src='audio.mp3' type='audio/mpeg'>
-        <source src='audio.wav' type='audio/wav'>
-        Your browser does not support the audio tag.
-      </audio>
-    """).getElementsByTagName("audio")[0],
-    null,
-  );
-  expect(audioContentElement, isA<AudioContentElement>());
-  if (audioContentElement is AudioContentElement) {
-    expect(audioContentElement.showControls, equals(true),
-        reason: "Controls isn't working");
-    expect(audioContentElement.src, hasLength(2),
-        reason: "Not enough sources...");
-  }
 
   Style style1 = Style(
     display: Display.BLOCK,

@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 Map<String, String> namedColors = {
@@ -58,7 +57,8 @@ class MultipleTapGestureDetector extends InheritedWidget {
   }) : super(key: key, child: child);
 
   static MultipleTapGestureDetector? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<MultipleTapGestureDetector>();
+    return context
+        .dependOnInheritedWidgetOfExactType<MultipleTapGestureDetector>();
   }
 
   @override
@@ -79,6 +79,6 @@ class CustomBorderSide {
 
 String getRandString(int len) {
   var random = Random.secure();
-  var values = List<int>.generate(len, (i) =>  random.nextInt(255));
+  var values = List<int>.generate(len, (i) => random.nextInt(255));
   return base64UrlEncode(values);
 }

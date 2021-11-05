@@ -7,7 +7,6 @@ import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:webview_flutter/webview_flutter.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
@@ -62,7 +61,6 @@ class Html extends StatelessWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-    this.navigationDelegateForIframe,
   })  : document = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -83,7 +81,6 @@ class Html extends StatelessWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-    this.navigationDelegateForIframe,
   })  : data = null,
         assert(document != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -136,11 +133,6 @@ class Html extends StatelessWidget {
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
 
-  /// Decides how to handle a specific navigation request in the WebView of an
-  /// Iframe. It's necessary to use the webview_flutter package inside the app
-  /// to use NavigationDelegate.
-  final NavigationDelegate? navigationDelegateForIframe;
-
   static List<String> get tags => new List<String>.from(STYLED_ELEMENTS)
     ..addAll(INTERACTABLE_ELEMENTS)
     ..addAll(REPLACED_ELEMENTS)
@@ -173,7 +165,6 @@ class Html extends StatelessWidget {
           ..addAll(customImageRenders)
           ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
-        navigationDelegateForIframe: navigationDelegateForIframe,
       ),
     );
   }
@@ -300,7 +291,6 @@ class SelectableHtml extends StatelessWidget {
         customRender: {},
         imageRenders: defaultImageRenders,
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
-        navigationDelegateForIframe: null,
         selectionControls: selectionControls,
       ),
     );
