@@ -155,6 +155,11 @@ class TableLayoutElement extends LayoutElement {
         max(0, columnMax - finalColumnSizes.length),
         (_) => IntrinsicContentTrackSize());
 
+    if (finalColumnSizes.isEmpty || rowSizes.isEmpty) {
+      // No actual cells to show
+      return SizedBox();
+    }
+
     return LayoutGrid(
       gridFit: GridFit.loose,
       columnSizes: finalColumnSizes,
