@@ -456,7 +456,7 @@ class HtmlParser extends StatelessWidget {
         return WidgetSpan(
           alignment: tree.alignment,
           baseline: TextBaseline.alphabetic,
-          child: tree.toWidget(context)!,
+          child: tree.toWidget(newContext)!,
         );
       }
     } else if (tree is InteractableElement) {
