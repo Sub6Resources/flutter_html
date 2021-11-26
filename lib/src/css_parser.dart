@@ -230,6 +230,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
                 break;
             }
           }
+          break;
         case 'height':
           style.height = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.height;
           break;

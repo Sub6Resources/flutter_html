@@ -540,20 +540,7 @@ class ListStyleType {
   static const LOWER_ROMAN = ListStyleType("LOWER_ROMAN");
   static const UPPER_ROMAN = ListStyleType("UPPER_ROMAN");
   static const SQUARE = ListStyleType("SQUARE");
-}
-
-enum ListStyleType {
-  LOWER_ALPHA,
-  UPPER_ALPHA,
-  LOWER_LATIN,
-  UPPER_LATIN,
-  CIRCLE,
-  DISC,
-  DECIMAL,
-  LOWER_ROMAN,
-  UPPER_ROMAN,
-  SQUARE,
-  NONE,
+  static const NONE = ListStyleType("NONE");
 }
 
 enum ListStylePosition {
