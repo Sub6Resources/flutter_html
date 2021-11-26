@@ -13,9 +13,9 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
     <td align="center">Screenshot 3</td>
   </tr>
   <tr>
-    <td><img alt="A Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot.png" width="250"/></td>
-    <td><img alt="Another Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot2.png" width="250"/></td>
-    <td><img alt="Yet another Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot3.png" width="250"/></td>
+    <td><img alt="A Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot.png" width="250"/></td>
+    <td><img alt="Another Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot2.png" width="250"/></td>
+    <td><img alt="Yet another Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot3.png" width="250"/></td>
   </tr>
  </table>
 
@@ -34,6 +34,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 - [API Reference](#api-reference)
 
   - [Constructors](#constructors)
+  
+    - [Selectable Text](#selectable-text) 
 
   - [Parameters Table](#parameters)
   
@@ -96,20 +98,20 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^2.0.0
+      flutter_html: ^2.1.5
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
 |------------|-----------|-------|-------------|---------|---------|-------|------|--------|--------|--------|
 |`a`         | `abbr`    | `acronym`| `address`   | `article`| `aside` | `audio`| `b`  | `bdi`  | `bdo`  | `big`  |
 |`blockquote`| `body`    | `br`  | `caption`   | `cite`  | `code`  | `data`| `dd` | `del`  | `details`  | `dfn`  |
-| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `h1`  | `h2` | `h3`   | `h4`   |
-| `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   | `main` | 
-| `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` | `s`  |
-| `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
-| `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
-| `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder`   | `mfrac`  | 
-| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    |   | 
+| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `font` | `h1`  | `h2` | `h3`   |
+| `h4` | `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   |
+| `main` | `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` |
+| `s` | `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`|
+| `table` | `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  |
+| `ul` | `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder` |
+| `mfrac` | `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    | 
 
  
 ## Currently Supported CSS Attributes:
@@ -143,13 +145,29 @@ For a full example, see [here](https://github.com/Sub6Resources/flutter_html/tre
 
 Below, you will find brief descriptions of the parameters the`Html` widget accepts and some code snippets to help you use this package.
 
-## Constructors:
+### Constructors:
 
 The package currently has two different constructors - `Html()` and `Html.fromDom()`. 
 
 The `Html()` constructor is for those who would like to directly pass HTML from the source to the package to be rendered. 
 
 If you would like to modify or sanitize the HTML before rendering it, then `Html.fromDom()` is for you - you can convert the HTML string to a `Document` and use its methods to modify the HTML as you wish. Then, you can directly pass the modified `Document` to the package. This eliminates the need to parse the modified `Document` back to a string, pass to `Html()`, and convert back to a `Document`, thus cutting down on load times.
+
+#### Selectable Text
+
+The package also has two constructors for selectable text support - `SelectableHtml()` and `SelectableHtml.fromDom()`.
+
+The difference between the two is the same as noted above.
+
+Please note: Due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474), selectable text support is significantly watered down compared to the standard non-selectable version of the widget. The changes are as follows:
+
+1. The list of tags that can be rendered is significantly reduced. Key omissions include no support for images/video/audio, table, and ul/ol.
+
+2. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`. (Support for `customRender` may be added in the future).
+
+3. Styling support is significantly reduced. Only text-related styling works (e.g. bold or italic), while container related styling (e.g. borders or padding/margin) do not work.
+
+Once the above issue is resolved, the aforementioned compromises will go away. Currently the `SelectableText.rich()` constructor does not support `WidgetSpan`s, resulting in the feature losses above.
 
 ### Parameters: 
 
@@ -160,17 +178,20 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `onLinkTap` | A function that defines what the widget should do when a link is tapped. The function exposes the `src` of the link as a `String` to use in your implementation. |
 | `customRender` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
 | `onImageError` | A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation. |
-| `omMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
+| `onMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
 | `shrinkWrap` | A `bool` used while rendering different widgets to specify whether they should be shrink-wrapped or not, like `ContainerSpan` |
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
 | `tagsList` | A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to include.  |
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
+| `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
 ### Getters:
 
-Currently the only getter is `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+1. `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in excluding elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+
+2. `SelectableHtml.tags`. This provides a list of all the tags that can be rendered in selectable mode.
 
 ### Data:
 
@@ -252,6 +273,8 @@ A powerful API that allows you to customize everything when rendering a specific
 
 To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget` or `InlineSpan`.
 
+Note: If you add any custom tags, you must add these tags to the [`tagsList`](#tagslist) parameter, otherwise they will not be rendered. See below for an example.
+
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
 
@@ -271,11 +294,12 @@ Widget html = Html(
           style: (context.tree.element!.attributes['horizontal'] != null)
               ? FlutterLogoStyle.horizontal
               : FlutterLogoStyle.markOnly,
-          textColor: context.style.color,
+          textColor: context.style.color!,
           size: context.style.fontSize!.size! * 5,
         );
       },
     },
+  tagsList: Html.tags..addAll(["bird", "flutter"]),
 );
 ```
 
@@ -303,6 +327,8 @@ Widget html = Html(
   },
 );
 ```
+
+</details>
 
 3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
@@ -414,7 +440,7 @@ A list of elements the `Html` widget should render. The list should contain the 
 #### Example Usage - tagsList - Excluding Tags:
 You may have instances where you can choose between two different types of HTML tags to display the same content. In the example below, the `<video>` and `<iframe>` elements are going to display the same content.
 
-The `blacklistedElements` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `blacklistedElements` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
+The `tagsList` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `tagsList` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
 
 ```dart
 Widget html = Html(
@@ -778,14 +804,15 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRender: {
-    "tex": (_, __, ___, element) => Math.tex(
-      element.text,
+    "tex": (RenderContext context, _) => Math.tex(
+      context.tree.element!.text,
       onErrorFallback: (FlutterMathException e) {
         //return your error widget here e.g.
         return Text(e.message);
       },
     ),
-  }
+  },
+  tagsList: Html.tags..add('tex'),
 );
 ```
 

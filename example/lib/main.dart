@@ -250,6 +250,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
+          tagsList: Html.tags..addAll(["bird", "flutter"]),
           style: {
             "table": Style(
               backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),

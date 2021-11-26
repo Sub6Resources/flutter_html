@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_svg/parser.dart';
 import 'package:html/dom.dart' as dom;
 
 typedef ImageSourceMatcher = bool Function(
@@ -11,9 +12,12 @@ typedef ImageSourceMatcher = bool Function(
   dom.Element? element,
 );
 
-final _dataUriFormat = RegExp("^(?<scheme>data):(?<mime>image\/[\\w\+\-\.]+)(?<encoding>;base64)?\,(?<data>.*)");
+final _dataUriFormat = RegExp(
+    "^(?<scheme>data):(?<mime>image\/[\\w\+\-\.]+)(?<encoding>;base64)?\,(?<data>.*)");
 
-ImageSourceMatcher dataUriMatcher({String? encoding = 'base64', String? mime}) => (attributes, element) {
+ImageSourceMatcher dataUriMatcher(
+        {String? encoding = 'base64', String? mime}) =>
+    (attributes, element) {
       if (_src(attributes) == null) return false;
       final dataUri = _dataUriFormat.firstMatch(_src(attributes)!);
       return dataUri != null &&
@@ -61,7 +65,8 @@ ImageRender base64ImageRender() => (context, attributes, element) {
         decodedImage,
         frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
-            return Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
+            return Text(_alt(attributes) ?? "",
+                style: context.style.generateTextStyle());
           }
           return child;
         },
@@ -75,7 +80,9 @@ ImageRender assetImageRender({
     (context, attributes, element) {
       final assetPath = _src(attributes)!.replaceFirst('asset:', '');
       if (_src(attributes)!.endsWith(".svg")) {
-        return SvgPicture.asset(assetPath);
+        return SvgPicture.asset(assetPath,
+            width: width ?? _width(attributes),
+            height: height ?? _height(attributes));
       } else {
         return Image.asset(
           assetPath,
@@ -83,7 +90,8 @@ ImageRender assetImageRender({
           height: height ?? _height(attributes),
           frameBuilder: (ctx, child, frame, _) {
             if (frame == null) {
-              return Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
+              return Text(_alt(attributes) ?? "",
+                  style: context.style.generateTextStyle());
             }
             return child;
           },
@@ -123,39 +131,55 @@ ImageRender networkImageRender({
         }
       });
 
-      image.image.resolve(ImageConfiguration()).addListener(
-            ImageStreamListener((ImageInfo image, bool synchronousCall) {
-              var myImage = image.image;
-              Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-              if (!completer.isCompleted) {
-                completer.complete(size);
-              }
-            }, onError: (object, stacktrace) {
-              if (!completer.isCompleted) {
-                completer.completeError(object);
-              }
-            }),
-          );
+      var listener =
+          ImageStreamListener((ImageInfo image, bool synchronousCall) {
+        var myImage = image.image;
+        Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+        if (!completer.isCompleted) {
+          completer.complete(size);
+        }
+      }, onError: (object, stacktrace) {
+        if (!completer.isCompleted) {
+          completer.completeError(object);
+        }
+      });
+
+      image.image.resolve(ImageConfiguration()).addListener(listener);
       return FutureBuilder<Size>(
         future: completer.future,
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
+          if (completer.isCompleted) {
+            image.image.resolve(ImageConfiguration()).removeListener(listener);
+          }
           if (snapshot.hasData) {
-            return Image.network(
-              src,
-              headers: headers,
-              width: width ?? _width(attributes) ?? snapshot.data!.width,
-              height: height ?? _height(attributes),
-              frameBuilder: (ctx, child, frame, _) {
-                if (frame == null) {
-                  return altWidget?.call(_alt(attributes)) ??
-                      Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
-                }
-                return child;
-              },
+            return Container(
+              constraints: BoxConstraints(
+                  maxWidth: width ?? _width(attributes) ?? snapshot.data!.width,
+                  maxHeight:
+                      (width ?? _width(attributes) ?? snapshot.data!.width) /
+                          _aspectRatio(attributes, snapshot)),
+              child: AspectRatio(
+                aspectRatio: _aspectRatio(attributes, snapshot),
+                child: Image.network(
+                  src,
+                  headers: headers,
+                  width: width ?? _width(attributes) ?? snapshot.data!.width,
+                  height: height ?? _height(attributes),
+                  frameBuilder: (ctx, child, frame, _) {
+                    if (frame == null) {
+                      return altWidget?.call(_alt(attributes)) ??
+                          Text(_alt(attributes) ?? "",
+                              style: context.style.generateTextStyle());
+                    }
+                    return child;
+                  },
+                ),
+              ),
             );
           } else if (snapshot.hasError) {
             return altWidget?.call(_alt(attributes)) ??
-                Text(_alt(attributes) ?? "", style: context.style.generateTextStyle());
+                Text(_alt(attributes) ?? "",
+                    style: context.style.generateTextStyle());
           } else {
             return loadingWidget?.call() ?? const CircularProgressIndicator();
           }
@@ -204,10 +228,28 @@ String? _alt(Map<String, String> attributes) {
 
 double? _height(Map<String, String> attributes) {
   final heightString = attributes["height"];
-  return heightString == null ? heightString as double? : double.tryParse(heightString);
+  return heightString == null
+      ? heightString as double?
+      : double.tryParse(heightString);
 }
 
 double? _width(Map<String, String> attributes) {
   final widthString = attributes["width"];
-  return widthString == null ? widthString as double? : double.tryParse(widthString);
+  return widthString == null
+      ? widthString as double?
+      : double.tryParse(widthString);
+}
+
+double _aspectRatio(
+    Map<String, String> attributes, AsyncSnapshot<Size> calculated) {
+  final heightString = attributes["height"];
+  final widthString = attributes["width"];
+  if (heightString != null && widthString != null) {
+    final height = double.tryParse(heightString);
+    final width = double.tryParse(widthString);
+    return height == null || width == null
+        ? calculated.data!.aspectRatio
+        : width / height;
+  }
+  return calculated.data!.aspectRatio;
 }

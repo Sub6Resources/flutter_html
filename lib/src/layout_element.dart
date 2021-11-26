@@ -99,11 +99,14 @@ class TableLayoutElement extends LayoutElement {
 
     // Place the cells in the rows/columns
     final cells = <GridPlacement>[];
-    final columnRowOffset = List.generate(columnMax + 1, (_) => 0);
+    final columnRowOffset = List.generate(columnMax, (_) => 0);
     int rowi = 0;
     for (var row in rows) {
       int columni = 0;
       for (var child in row.children) {
+        if (columni > columnMax - 1 ) {
+          break;
+        }
         while (columnRowOffset[columni] > 0) {
           columnRowOffset[columni] = columnRowOffset[columni] - 1;
           columni++;
@@ -131,13 +134,17 @@ class TableLayoutElement extends LayoutElement {
               ),
             ),
             columnStart: columni,
-            columnSpan: child.colspan,
+            columnSpan: min(child.colspan, columnMax - columni),
             rowStart: rowi,
-            rowSpan: child.rowspan,
+            rowSpan: min(child.rowspan, rows.length - rowi),
           ));
           columnRowOffset[columni] = child.rowspan - 1;
           columni += child.colspan;
         }
+      }
+      while (columni < columnRowOffset.length) {
+        columnRowOffset[columni] = columnRowOffset[columni] - 1;
+        columni++;
       }
       rowi++;
     }

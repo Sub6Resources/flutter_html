@@ -3,19 +3,28 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_html/src/styled_element.dart';
 
 class AnchorKey extends GlobalKey {
+  static final Set<AnchorKey> _registry = <AnchorKey>{};
+
   final Key parentKey;
   final String id;
 
   const AnchorKey._(this.parentKey, this.id) : super.constructor();
 
   static AnchorKey? of(Key? parentKey, StyledElement? id) {
-    return forId(parentKey, id?.elementId);
+    final key = forId(parentKey, id?.elementId);
+    if (key == null || _registry.contains(key)) {
+      // Invalid id or already created a key with this id: silently ignore
+      return null;
+    }
+    _registry.add(key);
+    return key;
   }
 
   static AnchorKey? forId(Key? parentKey, String? id) {
     if (parentKey == null || id == null || id.isEmpty || id == "[[No ID]]") {
       return null;
     }
+
     return AnchorKey._(parentKey, id);
   }
 
