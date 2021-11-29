@@ -59,6 +59,7 @@ class HtmlParser extends StatelessWidget {
   final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? _onAnchorTap;
   final TextSelectionControls? selectionControls;
+  final ScrollPhysics? scrollPhysics;
 
   HtmlParser({
     required this.key,
@@ -76,7 +77,8 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-    this.selectionControls
+    this.selectionControls,
+    this.scrollPhysics,
   })  : this._onAnchorTap = onAnchorTap != null
           ? onAnchorTap
           : key != null
@@ -128,6 +130,7 @@ class HtmlParser extends StatelessWidget {
           style: cleanedTree.style,
         ),
         selectionControls: selectionControls,
+        scrollPhysics: scrollPhysics,
       );
     }
     return StyledText(
@@ -1073,6 +1076,7 @@ class StyledText extends StatelessWidget {
   final AnchorKey? key;
   final bool _selectable;
   final TextSelectionControls? selectionControls;
+  final ScrollPhysics? scrollPhysics;
 
   const StyledText({
     required this.textSpan,
@@ -1081,6 +1085,7 @@ class StyledText extends StatelessWidget {
     required this.renderContext,
     this.key,
     this.selectionControls,
+    this.scrollPhysics,
   }) : _selectable = false,
         super(key: key);
 
@@ -1090,7 +1095,8 @@ class StyledText extends StatelessWidget {
     this.textScaleFactor = 1.0,
     required this.renderContext,
     this.key,
-    this.selectionControls
+    this.selectionControls,
+    this.scrollPhysics,
   }) : textSpan = textSpan,
         _selectable = true,
         super(key: key);
@@ -1106,6 +1112,7 @@ class StyledText extends StatelessWidget {
         textScaleFactor: textScaleFactor,
         maxLines: style.maxLines,
         selectionControls: selectionControls,
+        scrollPhysics: scrollPhysics,
       );
     }
     return SizedBox(
