@@ -59,6 +59,7 @@ class HtmlParser extends StatelessWidget {
   final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? _onAnchorTap;
   final TextSelectionControls? selectionControls;
+  final ScrollPhysics? scrollPhysics;
 
   HtmlParser({
     required this.key,
@@ -76,7 +77,8 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-    this.selectionControls
+    this.selectionControls,
+    this.scrollPhysics,
   })  : this._onAnchorTap = onAnchorTap != null
           ? onAnchorTap
           : key != null
@@ -128,6 +130,7 @@ class HtmlParser extends StatelessWidget {
           style: cleanedTree.style,
         ),
         selectionControls: selectionControls,
+        scrollPhysics: scrollPhysics,
       );
     }
     return StyledText(
@@ -420,11 +423,7 @@ class HtmlParser extends StatelessWidget {
               tree.style.listStylePosition == ListStylePosition.OUTSIDE ?
               Padding(
                 padding: tree.style.padding ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
-                child: Text(
-                    "${newContext.style.markerContent}",
-                    textAlign: TextAlign.right,
-                    style: newContext.style.generateTextStyle()
-                ),
+                child: newContext.style.markerContent
               ) : Container(height: 0, width: 0),
               Text("\t", textAlign: TextAlign.right),
               Expanded(
@@ -433,11 +432,10 @@ class HtmlParser extends StatelessWidget {
                         EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
                       child: StyledText(
                         textSpan: TextSpan(
-                          text: (tree.style.listStylePosition ==
-                              ListStylePosition.INSIDE)
-                              ? '${newContext.style.markerContent}'
-                              : null,
-                          children: getChildren(tree),
+                          children: getChildren(tree)..insertAll(0, tree.style.listStylePosition == ListStylePosition.INSIDE ?
+                            [
+                              WidgetSpan(alignment: PlaceholderAlignment.middle, child: newContext.style.markerContent ?? Container(height: 0, width: 0))
+                            ] : []),
                           style: newContext.style.generateTextStyle(),
                         ),
                         style: newContext.style,
@@ -451,12 +449,12 @@ class HtmlParser extends StatelessWidget {
       );
     } else if (tree is ReplacedElement) {
       if (tree is TextContentElement) {
-        return TextSpan(text: tree.text);
+        return TextSpan(text: tree.text?.transformed(tree.style.textTransform));
       } else {
         return WidgetSpan(
           alignment: tree.alignment,
           baseline: TextBaseline.alphabetic,
-          child: tree.toWidget(context)!,
+          child: tree.toWidget(newContext)!,
         );
       }
     } else if (tree is InteractableElement) {
@@ -708,7 +706,10 @@ class HtmlParser extends StatelessWidget {
   /// bullet all list items according to the [ListStyleType] they have been given.
   static StyledElement _processListCharactersRecursive(
       StyledElement tree, ListQueue<Context> olStack) {
-    if (tree.name == 'ol' && tree.style.listStyleType != null) {
+    if (tree.style.listStylePosition == null) {
+      tree.style.listStylePosition = ListStylePosition.OUTSIDE;
+    }
+    if (tree.name == 'ol' && tree.style.listStyleType != null && tree.style.listStyleType!.type == "marker") {
       switch (tree.style.listStyleType!) {
         case ListStyleType.LOWER_LATIN:
         case ListStyleType.LOWER_ALPHA:
@@ -728,26 +729,31 @@ class HtmlParser extends StatelessWidget {
           olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
           break;
       }
+    } else if (tree.style.display == Display.LIST_ITEM && tree.style.listStyleType != null && tree.style.listStyleType!.type == "widget") {
+      tree.style.markerContent = tree.style.listStyleType!.widget!;
+    } else if (tree.style.display == Display.LIST_ITEM && tree.style.listStyleType != null && tree.style.listStyleType!.type == "image") {
+      tree.style.markerContent = Image.network(tree.style.listStyleType!.text);
     } else if (tree.style.display == Display.LIST_ITEM && tree.style.listStyleType != null) {
+      String marker = "";
       switch (tree.style.listStyleType!) {
         case ListStyleType.NONE:
           tree.style.markerContent = '';
           break;
         case ListStyleType.CIRCLE:
-          tree.style.markerContent = '○';
+          marker = '○';
           break;
         case ListStyleType.SQUARE:
-          tree.style.markerContent = '■';
+          marker = '■';
           break;
         case ListStyleType.DISC:
-          tree.style.markerContent = '•';
+          marker = '•';
           break;
         case ListStyleType.DECIMAL:
           if (olStack.isEmpty) {
             olStack.add(Context<int>((tree.attributes['start'] != null ? int.tryParse(tree.attributes['start'] ?? "") ?? 1 : 1) - 1));
           }
           olStack.last.data += 1;
-          tree.style.markerContent = '${olStack.last.data}.';
+          marker = '${olStack.last.data}.';
           break;
         case ListStyleType.LOWER_LATIN:
         case ListStyleType.LOWER_ALPHA:
@@ -762,7 +768,7 @@ class HtmlParser extends StatelessWidget {
               }
             }
           }
-          tree.style.markerContent = olStack.last.data.toString() + ".";
+          marker = olStack.last.data.toString() + ".";
           olStack.last.data = olStack.last.data.toString().nextLetter();
           break;
         case ListStyleType.UPPER_LATIN:
@@ -778,7 +784,7 @@ class HtmlParser extends StatelessWidget {
               }
             }
           }
-          tree.style.markerContent = olStack.last.data.toString().toUpperCase() + ".";
+          marker = olStack.last.data.toString().toUpperCase() + ".";
           olStack.last.data = olStack.last.data.toString().nextLetter();
           break;
         case ListStyleType.LOWER_ROMAN:
@@ -787,9 +793,9 @@ class HtmlParser extends StatelessWidget {
           }
           olStack.last.data += 1;
           if (olStack.last.data <= 0) {
-            tree.style.markerContent = '${olStack.last.data}.';
+            marker = '${olStack.last.data}.';
           } else {
-            tree.style.markerContent = (olStack.last.data as int).toRomanNumeralString()!.toLowerCase() + ".";
+            marker = (olStack.last.data as int).toRomanNumeralString()!.toLowerCase() + ".";
           }
           break;
         case ListStyleType.UPPER_ROMAN:
@@ -798,12 +804,16 @@ class HtmlParser extends StatelessWidget {
           }
           olStack.last.data += 1;
           if (olStack.last.data <= 0) {
-            tree.style.markerContent = '${olStack.last.data}.';
+            marker = '${olStack.last.data}.';
           } else {
-            tree.style.markerContent = (olStack.last.data as int).toRomanNumeralString()! + ".";
+            marker = (olStack.last.data as int).toRomanNumeralString()! + ".";
           }
           break;
       }
+      tree.style.markerContent = Text(
+          marker,
+          textAlign: TextAlign.right,
+      );
     }
 
     tree.children.forEach((e) => _processListCharactersRecursive(e, olStack));
@@ -1067,6 +1077,7 @@ class StyledText extends StatelessWidget {
   final AnchorKey? key;
   final bool _selectable;
   final TextSelectionControls? selectionControls;
+  final ScrollPhysics? scrollPhysics;
 
   const StyledText({
     required this.textSpan,
@@ -1075,6 +1086,7 @@ class StyledText extends StatelessWidget {
     required this.renderContext,
     this.key,
     this.selectionControls,
+    this.scrollPhysics,
   }) : _selectable = false,
         super(key: key);
 
@@ -1084,7 +1096,8 @@ class StyledText extends StatelessWidget {
     this.textScaleFactor = 1.0,
     required this.renderContext,
     this.key,
-    this.selectionControls
+    this.selectionControls,
+    this.scrollPhysics,
   }) : textSpan = textSpan,
         _selectable = true,
         super(key: key);
@@ -1100,6 +1113,7 @@ class StyledText extends StatelessWidget {
         textScaleFactor: textScaleFactor,
         maxLines: style.maxLines,
         selectionControls: selectionControls,
+        scrollPhysics: scrollPhysics,
       );
     }
     return SizedBox(

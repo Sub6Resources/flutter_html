@@ -30,16 +30,20 @@ class IframeContentElement extends ReplacedElement {
     return Container(
       width: width ?? (height ?? 150) * 2,
       height: height ?? (width ?? 300) / 2,
-      child: WebView(
-        initialUrl: src,
-        key: key,
-        javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
-            ? JavascriptMode.unrestricted
-            : JavascriptMode.disabled,
-        navigationDelegate: navigationDelegate,
-        gestureRecognizers: {
-          Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())
-        },
+      child: ContainerSpan(
+        style: context.style,
+        newContext: context,
+        child: WebView(
+          initialUrl: src,
+          key: key,
+          javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
+              ? JavascriptMode.unrestricted
+              : JavascriptMode.disabled,
+          navigationDelegate: navigationDelegate,
+          gestureRecognizers: {
+            Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())
+          },
+        ),
       ),
     );
   }
