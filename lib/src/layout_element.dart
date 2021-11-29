@@ -87,15 +87,20 @@ class TableLayoutElement extends LayoutElement {
     }
 
     // All table rows have a height intrinsic to their (spanned) contents
-    final rowSizes =
-        List.generate(rows.length, (_) => IntrinsicContentTrackSize());
+    final rowSizes = List.generate(rows.length, (_) => IntrinsicContentTrackSize());
 
     // Calculate column bounds
-    int columnMax = rows
-        .map((row) => row.children
-            .whereType<TableCellElement>()
-            .fold(0, (int value, child) => value + child.colspan))
-        .fold(0, max);
+    int columnMax = 0;
+    List<int> rowSpanOffsets = [];
+    for (final row in rows) {
+      final cols = row.children.whereType<TableCellElement>().fold(0, (int value, child) => value + child.colspan) +
+          rowSpanOffsets.fold<int>(0, (int offset, child) => child);
+      columnMax = max(cols, columnMax);
+      rowSpanOffsets = [
+        ...rowSpanOffsets.map((value) => value - 1).where((value) => value > 0),
+        ...row.children.whereType<TableCellElement>().map((cell) => cell.rowspan - 1),
+      ];
+    }
 
     // Place the cells in the rows/columns
     final cells = <GridPlacement>[];
