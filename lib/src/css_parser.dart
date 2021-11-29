@@ -230,6 +230,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
                 break;
             }
           }
+          break;
         case 'height':
           style.height = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.height;
           break;
@@ -336,6 +337,18 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           break;
         case 'text-shadow':
           style.textShadow = ExpressionMapping.expressionToTextShadow(value);
+          break;
+        case 'text-transform':
+          final val = (value.first as css.LiteralTerm).text;
+          if (val == 'uppercase') {
+            style.textTransform = TextTransform.uppercase;
+          } else if (val == 'lowercase') {
+            style.textTransform = TextTransform.lowercase;
+          } else if (val == 'capitalize') {
+            style.textTransform = TextTransform.capitalize;
+          } else {
+            style.textTransform = TextTransform.none;
+          }
           break;
         case 'width':
           style.width = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.width;
