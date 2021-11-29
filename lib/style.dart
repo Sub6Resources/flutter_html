@@ -191,6 +191,8 @@ class Style {
   ///
   TextOverflow? textOverflow;
 
+  TextTransform? textTransform;
+
   Style({
     this.backgroundColor = Colors.transparent,
     this.color,
@@ -225,6 +227,7 @@ class Style {
     this.markerContent,
     this.maxLines,
     this.textOverflow,
+    this.textTransform = TextTransform.none,
   }) {
     if (this.alignment == null &&
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
@@ -317,6 +320,7 @@ class Style {
       markerContent: other.markerContent,
       maxLines: other.maxLines,
       textOverflow: other.textOverflow,
+      textTransform: other.textTransform,
     );
   }
 
@@ -354,6 +358,7 @@ class Style {
       wordSpacing: child.wordSpacing ?? wordSpacing,
       maxLines: child.maxLines ?? maxLines,
       textOverflow: child.textOverflow ?? textOverflow,
+      textTransform: child.textTransform ?? textTransform,
     );
   }
 
@@ -391,6 +396,7 @@ class Style {
     Widget? markerContent,
     int? maxLines,
     TextOverflow? textOverflow,
+    TextTransform? textTransform,
     bool? beforeAfterNull,
   }) {
     return Style(
@@ -428,6 +434,7 @@ class Style {
       markerContent: markerContent ?? this.markerContent,
       maxLines: maxLines ?? this.maxLines,
       textOverflow: textOverflow ?? this.textOverflow,
+      textTransform: textTransform ?? this.textTransform,
     );
   }
 
@@ -447,6 +454,7 @@ class Style {
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
     this.lineHeight = LineHeight(textStyle.height ?? 1.2);
+    this.textTransform = TextTransform.none;
   }
 }
 
@@ -546,6 +554,13 @@ class ListStyleType {
 enum ListStylePosition {
   OUTSIDE,
   INSIDE,
+}
+
+enum TextTransform {
+  uppercase,
+  lowercase,
+  capitalize,
+  none,
 }
 
 enum VerticalAlign {
