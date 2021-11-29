@@ -221,7 +221,8 @@ class SelectableHtml extends StatelessWidget {
     this.shrinkWrap = false,
     this.style = const {},
     this.tagsList = const [],
-    this.selectionControls
+    this.selectionControls,
+    this.scrollPhysics,
   }) : document = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -237,7 +238,8 @@ class SelectableHtml extends StatelessWidget {
     this.shrinkWrap = false,
     this.style = const {},
     this.tagsList = const [],
-    this.selectionControls
+    this.selectionControls,
+    this.scrollPhysics,
   }) : data = null,
         assert(document != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -276,6 +278,9 @@ class SelectableHtml extends StatelessWidget {
   /// options
   final TextSelectionControls? selectionControls;
 
+  /// Allows you to override the default scrollPhysics for [SelectableText.rich]
+  final ScrollPhysics? scrollPhysics;
+
   static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
 
   @override
@@ -302,6 +307,7 @@ class SelectableHtml extends StatelessWidget {
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
         selectionControls: selectionControls,
+        scrollPhysics: scrollPhysics,
       ),
     );
   }
