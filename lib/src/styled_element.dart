@@ -188,7 +188,7 @@ StyledElement parseStyledElement(
             ExpressionMapping.namedColorToColor(element.attributes['color']!) :
           null,
         fontFamily: element.attributes['face']?.split(",").first,
-        fontSize: numberToFontSize(element.attributes['size'] ?? ''),
+        fontSize: element.attributes['size'] != null ? numberToFontSize(element.attributes['size']!) : null,
       );
       break;
     case "h1":
