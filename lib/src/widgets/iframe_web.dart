@@ -39,11 +39,15 @@ class IframeContentElement extends ReplacedElement {
     return Container(
         width: width ?? (height ?? 150) * 2,
         height: height ?? (width ?? 300) / 2,
-        child: Directionality(
-            textDirection: TextDirection.ltr,
-            child: HtmlElementView(
-              viewType: createdViewId,
-            )
+        child: ContainerSpan(
+          style: context.style,
+          newContext: context,
+          child: Directionality(
+              textDirection: TextDirection.ltr,
+              child: HtmlElementView(
+                viewType: createdViewId,
+              )
+          ),
         )
     );
   }

@@ -150,7 +150,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
           /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.style], so make sure to remove those before passing it to [ExpressionMapping]
           potentialStyles.removeWhere((element) => element == null || !possibleBorderValues.contains(element.text));
-          css.LiteralTerm borderStyle = potentialStyles.first!;
+          css.LiteralTerm? borderStyle = potentialStyles.firstOrNull;
           Border newBorder = Border(
             left: style.border?.left ?? BorderSide.none,
             right: style.border?.right ?? BorderSide.none,
@@ -193,6 +193,43 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           break;
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
+          break;
+        case 'list-style':
+          css.LiteralTerm? position = value.firstWhereOrNull((e) => e is css.LiteralTerm && (e.text == "outside" || e.text == "inside")) as css.LiteralTerm?;
+          css.UriTerm? image = value.firstWhereOrNull((e) => e is css.UriTerm) as css.UriTerm?;
+          css.LiteralTerm? type = value.firstWhereOrNull((e) => e is css.LiteralTerm && e.text != "outside" && e.text != "inside") as css.LiteralTerm?;
+          if (position != null) {
+            switch (position.text) {
+              case 'outside':
+                style.listStylePosition = ListStylePosition.OUTSIDE;
+                break;
+              case 'inside':
+                style.listStylePosition = ListStylePosition.INSIDE;
+                break;
+            }
+          }
+          if (image != null) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(image) ?? style.listStyleType;
+          } else if (type != null) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(type) ?? style.listStyleType;
+          }
+          break;
+        case 'list-style-image':
+          if (value.first is css.UriTerm) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.UriTerm) ?? style.listStyleType;
+          }
+          break;
+        case 'list-style-position':
+          if (value.first is css.LiteralTerm) {
+            switch ((value.first as css.LiteralTerm).text) {
+              case 'outside':
+                style.listStylePosition = ListStylePosition.OUTSIDE;
+                break;
+              case 'inside':
+                style.listStylePosition = ListStylePosition.INSIDE;
+                break;
+            }
+          }
           break;
         case 'height':
           style.height = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.height;
@@ -300,6 +337,18 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           break;
         case 'text-shadow':
           style.textShadow = ExpressionMapping.expressionToTextShadow(value);
+          break;
+        case 'text-transform':
+          final val = (value.first as css.LiteralTerm).text;
+          if (val == 'uppercase') {
+            style.textTransform = TextTransform.uppercase;
+          } else if (val == 'lowercase') {
+            style.textTransform = TextTransform.lowercase;
+          } else if (val == 'capitalize') {
+            style.textTransform = TextTransform.capitalize;
+          } else {
+            style.textTransform = TextTransform.none;
+          }
           break;
         case 'width':
           style.width = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.width;
@@ -671,6 +720,9 @@ class ExpressionMapping {
   }
 
   static ListStyleType? expressionToListStyleType(css.LiteralTerm value) {
+    if (value is css.UriTerm) {
+      return ListStyleType.fromImage(value.text);
+    }
     switch (value.text) {
       case 'disc':
         return ListStyleType.DISC;

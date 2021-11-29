@@ -31,10 +31,13 @@ class IframeContentElement extends ReplacedElement {
     return Container(
       width: width ?? (height ?? 150) * 2,
       height: height ?? (width ?? 300) / 2,
-      child: webview.WebView(
-        initialUrl: src,
-        key: key,
-        javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
+      child: ContainerSpan(
+        style: context.style,
+        newContext: context,
+        child: webview.WebView(
+          initialUrl: src,
+          key: key,
+          javascriptMode: sandboxMode == null || sandboxMode == "allow-scripts"
             ? webview.JavascriptMode.unrestricted
             : webview.JavascriptMode.disabled,
         navigationDelegate: (request) async {
@@ -48,9 +51,10 @@ class IframeContentElement extends ReplacedElement {
             return webview.NavigationDecision.navigate;
           }
         },
-        gestureRecognizers: {
-          Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())
-        },
+          gestureRecognizers: {
+            Factory<VerticalDragGestureRecognizer>(() => VerticalDragGestureRecognizer())
+          },
+        ),
       ),
     );
   }
