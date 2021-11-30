@@ -267,10 +267,6 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.topLeft,
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
-            'iframe': Style(
-              display: Display.BLOCK,
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            ),
           },
           customRender: {
             "table": (context, child) {
