@@ -3,7 +3,6 @@ import 'dart:math';
 
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
 import 'package:flutter_html/style.dart';
@@ -81,10 +80,13 @@ class CustomBorderSide {
   BorderStyle style;
 }
 
+/// Helps keep track of controllers used by [Html] widgets.
+/// A map is used so that controllers are not duplicated on widget rebuild
 class InternalControllers {
-  List<ChewieAudioController> chewieAudioControllers = [];
-  List<ChewieController> chewieControllers = [];
-  List<VideoPlayerController> videoPlayerControllers = [];
+  Map<int, ChewieAudioController> chewieAudioControllers = {};
+  Map<int, ChewieController> chewieControllers = {};
+  Map<int, VideoPlayerController> audioPlayerControllers = {};
+  Map<int, VideoPlayerController> videoPlayerControllers = {};
 }
 
 String getRandString(int len) {

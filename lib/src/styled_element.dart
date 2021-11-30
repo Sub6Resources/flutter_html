@@ -3,6 +3,7 @@ import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 //TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
+//ignore: implementation_imports
 import 'package:html/src/query_selector.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -12,7 +13,7 @@ class StyledElement {
   final List<String> elementClasses;
   List<StyledElement> children;
   Style style;
-  final dom.Node? _node;
+  final dom.Element? _node;
 
   StyledElement({
     this.name = "[[No name]]",
@@ -24,7 +25,7 @@ class StyledElement {
   }) : this._node = node;
 
   bool matchesSelector(String selector) =>
-      _node != null && matches(_node as dom.Element, selector);
+      _node != null && matches(_node!, selector);
 
   Map<String, String> get attributes =>
       _node?.attributes.map((key, value) {
@@ -32,7 +33,7 @@ class StyledElement {
       }) ??
       Map<String, String>();
 
-  dom.Element? get element => _node as dom.Element?;
+  dom.Element? get element => _node;
 
   @override
   String toString() {

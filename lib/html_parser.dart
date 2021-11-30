@@ -58,7 +58,7 @@ class HtmlParser extends StatelessWidget {
   final List<String> tagsList;
   final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? _onAnchorTap;
-  final Html root;
+  final Html? root;
   final TextSelectionControls? selectionControls;
   final ScrollPhysics? scrollPhysics;
 
@@ -78,7 +78,7 @@ class HtmlParser extends StatelessWidget {
     required this.imageRenders,
     required this.tagsList,
     required this.navigationDelegateForIframe,
-    required this.root,
+    this.root,
     this.selectionControls,
     this.scrollPhysics,
   })  : this._onAnchorTap = onAnchorTap != null
