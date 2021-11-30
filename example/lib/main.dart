@@ -74,7 +74,7 @@ const htmlData = r"""
         <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
-        <td colspan="2"><img alt='Google' src='https://hdwallsource.com/img/2014/7/large-40566-41516-hd-wallpapers.jpg' /></td>
+        <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
       </tr>
       </tbody>
       <tfoot>
@@ -122,7 +122,7 @@ const htmlData = r"""
       </p>
       <h3>Image support:</h3>
       <h3>Network png</h3>
-      <img alt='Google' src='https://hdwallsource.com/img/2014/7/large-40566-41516-hd-wallpapers.jpg' />
+      <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
       <h3>Network svg</h3>
       <img src='https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/android.svg' />
       <h3>Local asset png</h3>
@@ -247,9 +247,8 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('flutter_html Example'),
         centerTitle: true,
       ),
-      body: ListView.builder(
-        itemCount: 5,
-        itemBuilder: (context, index) => Html(
+      body: SingleChildScrollView(
+        child: Html(
           data: htmlData,
           tagsList: Html.tags..addAll(["bird", "flutter"]),
           style: {
@@ -268,13 +267,17 @@ class _MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.topLeft,
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
+            'iframe': Style(
+              display: Display.BLOCK,
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            ),
           },
           customRender: {
             "table": (context, child) {
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
                 child:
-                (context.tree as TableLayoutElement).toWidget(context),
+                    (context.tree as TableLayoutElement).toWidget(context),
               );
             },
             "bird": (RenderContext context, Widget child) {
@@ -296,19 +299,19 @@ class _MyHomePageState extends State<MyHomePage> {
               return FlutterLogo(size: 36);
             },
             networkSourceMatcher(domains: ["mydomain.com"]):
-            networkImageRender(
+                networkImageRender(
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt ?? ""),
               loadingWidget: () => Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url
-                (attr, _) =>
-            attr["src"] != null && attr["src"]!.startsWith("/wiki"):
-            networkImageRender(
-                mapUrl: (url) => "https://upload.wikimedia.org" + url!),
+            (attr, _) =>
+                    attr["src"] != null && attr["src"]!.startsWith("/wiki"):
+                networkImageRender(
+                    mapUrl: (url) => "https://upload.wikimedia.org" + url!),
             // Custom placeholder image for broken links
             networkSourceMatcher():
-            networkImageRender(altWidget: (_) => FlutterLogo()),
+                networkImageRender(altWidget: (_) => FlutterLogo()),
           },
           onLinkTap: (url, _, __, ___) {
             print("Opening $url...");
@@ -327,7 +330,7 @@ class _MyHomePageState extends State<MyHomePage> {
             });
           },
         ),
-      )
+      ),
     );
   }
 }
