@@ -120,37 +120,43 @@ ImageRender networkImageRender({
         },
       );
       Completer<Size> completer = Completer();
-      Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
-        if (frame == null) {
-          if (!completer.isCompleted) {
-            completer.completeError("error");
+      if (context.parser.cachedImageSizes[src] != null) {
+        completer.complete(context.parser.cachedImageSizes[src]);
+      } else {
+        Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+          if (frame == null) {
+            if (!completer.isCompleted) {
+              completer.completeError("error");
+            }
+            return child;
+          } else {
+            return child;
           }
-          return child;
-        } else {
-          return child;
-        }
-      });
+        });
 
-      var listener =
-          ImageStreamListener((ImageInfo image, bool synchronousCall) {
-        var myImage = image.image;
-        Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
-        if (!completer.isCompleted) {
-          completer.complete(size);
-        }
-      }, onError: (object, stacktrace) {
-        if (!completer.isCompleted) {
-          completer.completeError(object);
-        }
-      });
+        ImageStreamListener? listener;
+        listener = ImageStreamListener((ImageInfo imageInfo, bool synchronousCall) {
+          var myImage = imageInfo.image;
+          Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+          if (!completer.isCompleted) {
+            context.parser.cachedImageSizes[src] = size;
+            completer.complete(size);
+            image.image.resolve(ImageConfiguration()).removeListener(listener!);
+          }
+        }, onError: (object, stacktrace) {
+          if (!completer.isCompleted) {
+            completer.completeError(object);
+            image.image.resolve(ImageConfiguration()).removeListener(listener!);
+          }
+        });
 
-      image.image.resolve(ImageConfiguration()).addListener(listener);
+        image.image.resolve(ImageConfiguration()).addListener(listener);
+      }
+
       return FutureBuilder<Size>(
         future: completer.future,
+        initialData: context.parser.cachedImageSizes[src],
         builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
-          if (completer.isCompleted) {
-            image.image.resolve(ImageConfiguration()).removeListener(listener);
-          }
           if (snapshot.hasData) {
             return Container(
               constraints: BoxConstraints(
