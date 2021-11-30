@@ -109,16 +109,6 @@ ImageRender networkImageRender({
 }) =>
     (context, attributes, element) {
       final src = mapUrl?.call(_src(attributes)) ?? _src(attributes)!;
-      precacheImage(
-        NetworkImage(
-          src,
-          headers: headers,
-        ),
-        context.buildContext,
-        onError: (exception, StackTrace? stackTrace) {
-          context.parser.onImageError?.call(exception, stackTrace);
-        },
-      );
       Completer<Size> completer = Completer();
       if (context.parser.cachedImageSizes[src] != null) {
         completer.complete(context.parser.cachedImageSizes[src]);
