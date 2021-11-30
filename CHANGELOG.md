@@ -1,3 +1,63 @@
+## [2.1.5] - October 7, 2021:
+* Ignore unsupported custom style selectors when using fromCss
+* Fix SVG tag usage inside tables
+* Properly fix regression in usage of line breaks
+
+## [2.1.4] - October 3, 2021:
+* Fix regression in usage of line breaks in body being stripped
+
+## [2.1.3] - October 1, 2021:
+* Update minimum versions of dependencies for Flutter 2.5 compatibility
+* Extended and fixed support for css shadow
+* Fix block tags with explicit whitespace from being stripped
+
+## [2.1.2] - September 2, 2021:
+* Allow setting selectionControls with SelectableHtml
+* Fix onLinkTap not working with SelectableHtml
+* Don't crash when parsing unsupported :hover
+* Prevent endless loading when using animated images
+
+## [2.1.1] - July 28, 2021:
+* Stable release with all 2.1.1-preview.X changes
+
+## [2.1.1-preview.0] - July 27, 2021:
+* Improves hr tag support
+* Fixes a leading whitespace issue
+* Fixes some crashes with CSS parsing
+
+## [2.1.0] - June 3, 2021:
+* SelectableHtml widget (supporting a subset of tags) which allow text selection
+* Fixed shrinkWrap to actually shrink the horizontal space
+* Support style tags to apply styling from inline css
+* Support applying styles from Flutter themes
+* Mouse hover on links when using Flutter Web
+* Allow custom anchor link tap implementations
+* Support additional list styling options
+* Fix several minor whitespace issues in text flow
+* Fixed specific colspan/rowspan usages in tables
+* Fixed whitespace issues around images
+* Swallow duplicate ids to prevent crashing the widget
+* Fixes crashing tap detection when using both link and image taps
+* Updates external dependencies
+* Raised minimum Flutter version to 2.2.0
+
+## [2.0.0] - April 29, 2021:
+* Stable release with all 2.0.0-nullsafety.X changes
+
+## [2.0.0-nullsafety.1] - April 29, 2021:
+* Support basic MathML
+* Support inner links
+* Supply full context tree to custom render
+* Include or exclude specific tags via `tagsList` parameter
+* Fixed lists not rendering correctly
+* Fixes for colspans in tables
+* Fixed various exceptions when using inline styles
+* Fixed text decoration not cascading between parent and child
+* [BREAKING] support whitelisting tags
+   * See the README for details on how to migrate `blacklistedElements` (deprecated) to `tagsList`
+*  Fixed `failed assertion` error when tap-scrolling on any link
+* Updated dependencies
+
 ## [2.0.0-nullsafety.0] - March 5, 2021:
 * Nullsafety support
 * Official Flutter Web support

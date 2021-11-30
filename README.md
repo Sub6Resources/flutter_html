@@ -13,9 +13,9 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
     <td align="center">Screenshot 3</td>
   </tr>
   <tr>
-    <td><img alt="A Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot.png" width="250"/></td>
-    <td><img alt="Another Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot2.png" width="250"/></td>
-    <td><img alt="Yet another Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot3.png" width="250"/></td>
+    <td><img alt="A Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot.png" width="250"/></td>
+    <td><img alt="Another Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot2.png" width="250"/></td>
+    <td><img alt="Yet another Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot3.png" width="250"/></td>
   </tr>
  </table>
 
@@ -36,6 +36,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 - [API Reference](#api-reference)
 
   - [Constructors](#constructors)
+  
+    - [Selectable Text](#selectable-text) 
 
   - [Parameters Table](#parameters)
   
@@ -100,20 +102,20 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^1.3.0
+      flutter_html: ^2.1.5
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
 |------------|-----------|-------|-------------|---------|---------|-------|------|--------|--------|--------|
 |`a`         | `abbr`    | `acronym`| `address`   | `article`| `aside` | `audio`| `b`  | `bdi`  | `bdo`  | `big`  |
 |`blockquote`| `body`    | `br`  | `caption`   | `cite`  | `code`  | `data`| `dd` | `del`  | `details`  | `dfn`  |
-| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `h1`  | `h2` | `h3`   | `h4`   |
-| `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   | `main` | 
-| `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` | `s`  |
-| `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`| `table`| 
-| `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  | `ul` |
-| `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder`   | `mfrac`  | 
-| `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    |   | 
+| `div` | `dl`        | `dt`      | `em`  | `figcaption`| `figure`| `footer`| `font` | `h1`  | `h2` | `h3`   |
+| `h4` | `h5` |`h6`        | `header`  | `hr`  | `i`         | `iframe`| `img`   | `ins` | `kbd`| `li`   |
+| `main` | `mark` | `nav`       | `noscript`|`ol`   | `p`         | `pre`   | `q`     | `rp`  | `rt` | `ruby` |
+| `s` | `samp` | `section`   | `small`   | `span`| `strike`    | `strong`| `sub`   | `sup` | `summary` | `svg`|
+| `table` | `tbody` | `td` | `template` | `tfoot`   | `th`  | `thead`     |`time`   | `tr`    | `tt`  | `u`  |
+| `ul` | `var` | `video` |  `math`:  |  `mrow`  |  `msup`    | `msub`  |  `mover`   | `munder`  | `msubsup`  | `moverunder` |
+| `mfrac` | `mlongdiv` | `msqrt` |  `mroot`  |  `mi`  |  `mn`    | `mo`  |  |   |   |    | 
 
  
 ## Currently Supported CSS Attributes:
@@ -127,9 +129,9 @@ Add the following to your `pubspec.yaml` file:
 ## Currently Supported Inline CSS Attributes:
 |                  |        |            |          |              |                        |            |
 |------------------|--------|------------|----------|--------------|------------------------|------------|
-|`background-color`| `border` | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
-| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`     |
-| `margin`| `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
+|`background-color`| `border` (including specific directions) | `color`| `direction`| `display`| `font-family`| `font-feature-settings` |
+| `font-size`|`font-style`      | `font-weight`| `line-height` | `list-style-type`  | `list-style-position`|`padding`  (including specific directions)   |
+| `margin` (including specific directions) | `text-align`| `text-decoration`| `text-decoration-color`| `text-decoration-style`| `text-shadow` | |
 
 Don't see a tag or attribute you need? File a feature request or contribute to the project!
 
@@ -177,13 +179,29 @@ For a full example, see [here](https://github.com/Sub6Resources/flutter_html/tre
 
 Below, you will find brief descriptions of the parameters the`Html` widget accepts and some code snippets to help you use this package.
 
-## Constructors:
+### Constructors:
 
 The package currently has two different constructors - `Html()` and `Html.fromDom()`. 
 
 The `Html()` constructor is for those who would like to directly pass HTML from the source to the package to be rendered. 
 
 If you would like to modify or sanitize the HTML before rendering it, then `Html.fromDom()` is for you - you can convert the HTML string to a `Document` and use its methods to modify the HTML as you wish. Then, you can directly pass the modified `Document` to the package. This eliminates the need to parse the modified `Document` back to a string, pass to `Html()`, and convert back to a `Document`, thus cutting down on load times.
+
+#### Selectable Text
+
+The package also has two constructors for selectable text support - `SelectableHtml()` and `SelectableHtml.fromDom()`.
+
+The difference between the two is the same as noted above.
+
+Please note: Due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474), selectable text support is significantly watered down compared to the standard non-selectable version of the widget. The changes are as follows:
+
+1. The list of tags that can be rendered is significantly reduced. Key omissions include no support for images/video/audio, table, and ul/ol.
+
+2. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`. (Support for `customRender` may be added in the future).
+
+3. Styling support is significantly reduced. Only text-related styling works (e.g. bold or italic), while container related styling (e.g. borders or padding/margin) do not work.
+
+Once the above issue is resolved, the aforementioned compromises will go away. Currently the `SelectableText.rich()` constructor does not support `WidgetSpan`s, resulting in the feature losses above.
 
 ### Parameters: 
 
@@ -194,13 +212,14 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `onLinkTap` | A function that defines what the widget should do when a link is tapped. The function exposes the `src` of the link as a `String` to use in your implementation. |
 | `customRender` | A powerful API that allows you to customize everything when rendering a specific HTML tag. |
 | `onImageError` | A function that defines what the widget should do when an image fails to load. The function exposes the exception `Object` and `StackTrace` to use in your implementation. |
-| `omMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
+| `onMathError` | A function that defines what the widget should do when a math fails to render. The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math` as a `String`. |
 | `shrinkWrap` | A `bool` used while rendering different widgets to specify whether they should be shrink-wrapped or not, like `ContainerSpan` |
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
 | `tagsList` | A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to include.  |
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
+| `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
 ### Methods:
 
@@ -210,7 +229,9 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 
 ### Getters:
 
-Currently the only getter is `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+1. `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in excluding elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+
+2. `SelectableHtml.tags`. This provides a list of all the tags that can be rendered in selectable mode.
 
 ### Data:
 
@@ -282,17 +303,20 @@ Widget html = Html(
 );
 ```
 
+Inner links (such as `<a href="#top">Back to the top</a>` will work out of the box by scrolling the viewport, as long as your `Html` widget is wrapped in a scroll container such as a `SingleChildScrollView`.
+
 ### customRender:
 
-A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
+A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can change the default behaviour or add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
-`customRender` accepts a `Map<String, CustomRender>`. The `CustomRender` type is a function that requires a `Widget` to be returned. It exposes `RenderContext`, the `Widget` that would have been rendered by `Html` without a `customRender` defined, the `attributes` of the HTML element as a `Map<String, String>`, and the HTML element itself as `Element`.
+`customRender` accepts a `Map<String, CustomRender>`. The `CustomRender` type is a function that requires a `Widget` or `InlineSpan` to be returned. It exposes `RenderContext` and the `Widget` that would have been rendered by `Html` without a `customRender` defined. The `RenderContext` contains the build context, styling and the HTML element, with attrributes and its subtree,.
 
-To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget`.
+To use this API, set the key as the tag of the HTML element you wish to provide a custom implementation for, and create a function with the above parameters that returns a `Widget` or `InlineSpan`.
+
+Note: If you add any custom tags, you must add these tags to the [`tagsList`](#tagslist) parameter, otherwise they will not be rendered. See below for an example.
 
 #### Example Usages - customRender:
 1. Simple example - rendering custom HTML tags
-<details><summary>View code</summary>
 
 ```dart
 Widget html = Html(
@@ -302,24 +326,51 @@ Widget html = Html(
   <flutter horizontal></flutter>
   """,
   customRender: {
-      "bird": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
+      "bird": (RenderContext context, Widget child) {
         return TextSpan(text: "🐦");
       },
-      "flutter": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
+      "flutter": (RenderContext context, Widget child) {
         return FlutterLogo(
-          style: (attributes['horizontal'] != null)
+          style: (context.tree.element!.attributes['horizontal'] != null)
               ? FlutterLogoStyle.horizontal
               : FlutterLogoStyle.markOnly,
-          textColor: context.style.color,
-          size: context.style.fontSize.size * 5,
+          textColor: context.style.color!,
+          size: context.style.fontSize!.size! * 5,
         );
       },
     },
+  tagsList: Html.tags..addAll(["bird", "flutter"]),
 );
 ```
+
+2. Complex example - wrapping the default widget with your own, in this case placing a horizontal scroll around a (potentially too wide) table.
+
+<details><summary>View code</summary>
+
+```dart
+Widget html = Html(
+  data: """
+  <table style="width:100%">
+    <caption>Monthly savings</caption>
+    <tr> <th>January</th> <th>February</th> <th>March</th> <th>April</th> <th>May</th> <th>June</th> <th>July</th> <th>August</th> <th>September</th> <th>October</th> <th>November</th> <th>December</th> </tr>
+    <tr> <td>\$100</td> <td>\$50</td> <td>\$80</td> <td>\$60</td> <td>\$90</td> <td>\$140</td> <td>\$110</td> <td>\$80</td> <td>\$90</td> <td>\$60</td> <td>\$40</td> <td>\$70</td> </tr>
+    <tr> <td>\90</td> <td>\$60</td> <td>\$80</td> <td>\$80</td> <td>\$100</td> <td>\$160</td> <td>\$150</td> <td>\$110</td> <td>\$100</td> <td>\$60</td> <td>\$30</td> <td>\$80</td> </tr>
+  </table>
+  """,
+  customRender: {
+    "table": (context, child) {
+      return SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: (context.tree as TableLayoutElement).toWidget(context),
+      );
+    }
+  },
+);
+```
+
 </details>
 
-2. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content
+3. Complex example - rendering an `iframe` differently based on whether it is an embedded youtube video or some other embedded content.
 
 <details><summary>View code</summary>
 
@@ -332,25 +383,26 @@ Widget html = Html(
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
    customRender: {
-      "iframe": (RenderContext context, Widget child, Map<String, String> attributes, dom.Element? element) {
-         if (attributes != null) {
-           double width = double.tryParse(attributes['width'] ?? "");
-           double height = double.tryParse(attributes['height'] ?? "");
+      "iframe": (RenderContext context, Widget child) {
+         final attrs = context.tree.element?.attributes;
+         if (attrs != null) {
+           double? width = double.tryParse(attrs['width'] ?? "");
+           double? height = double.tryParse(attrs['height'] ?? "");
            return Container(
              width: width ?? (height ?? 150) * 2,
              height: height ?? (width ?? 300) / 2,
              child: WebView(
-                initialUrl: attributes['src'] ?? "about:blank",
+                initialUrl: attrs['src'] ?? "about:blank",
                 javascriptMode: JavascriptMode.unrestricted,
                 //no need for scrolling gesture recognizers on embedded youtube, so set gestureRecognizers null
                 //on other iframe content scrolling might be necessary, so use VerticalDragGestureRecognizer
-                gestureRecognizers: attributes['src'] != null && attributes['src']!.contains("youtube.com/embed") ? null : [
+                gestureRecognizers: attrs['src'] != null && attrs['src']!.contains("youtube.com/embed") ? null : [
                   Factory(() => VerticalDragGestureRecognizer())
                 ].toSet(),
                 navigationDelegate: (NavigationRequest request) async {
                 //no need to load any url besides the embedded youtube url when displaying embedded youtube, so prevent url loading
                 //on other iframe content allow all url loading
-                  if (attributes['src'] != null && attributes['src']!.contains("youtube.com/embed")) {
+                  if (attrs['src'] != null && attrs['src']!.contains("youtube.com/embed")) {
                     if (!request.url.contains("youtube.com/embed")) {
                       return NavigationDecision.prevent;
                     } else {
@@ -428,7 +480,7 @@ A list of elements the `Html` widget should render. The list should contain the 
 #### Example Usage - tagsList - Excluding Tags:
 You may have instances where you can choose between two different types of HTML tags to display the same content. In the example below, the `<video>` and `<iframe>` elements are going to display the same content.
 
-The `blacklistedElements` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `blacklistedElements` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
+The `tagsList` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `tagsList` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
 
 ```dart
 Widget html = Html(
@@ -792,14 +844,15 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRender: {
-    "tex": (_, __, ___, element) => Math.tex(
-      element.text,
+    "tex": (RenderContext context, _) => Math.tex(
+      context.tree.element!.text,
       onErrorFallback: (FlutterMathException e) {
         //return your error widget here e.g.
         return Text(e.message);
       },
     ),
-  }
+  },
+  tagsList: Html.tags..add('tex'),
 );
 ```
 

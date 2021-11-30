@@ -6,6 +6,7 @@ import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:video_player/video_player.dart';
+import 'package:flutter_html/style.dart';
 
 Map<String, String> namedColors = {
   "White": "#FFFFFF",
@@ -51,11 +52,21 @@ class Context<T> {
 
 // This class is a workaround so that both an image
 // and a link can detect taps at the same time.
-class MultipleTapGestureRecognizer extends TapGestureRecognizer {
-  @override
-  void rejectGesture(int pointer) {
-    acceptGesture(pointer);
+class MultipleTapGestureDetector extends InheritedWidget {
+  final void Function()? onTap;
+
+  const MultipleTapGestureDetector({
+    Key? key,
+    required Widget child,
+    required this.onTap,
+  }) : super(key: key, child: child);
+
+  static MultipleTapGestureDetector? of(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<MultipleTapGestureDetector>();
   }
+
+  @override
+  bool updateShouldNotify(MultipleTapGestureDetector oldWidget) => false;
 }
 
 class CustomBorderSide {
@@ -80,4 +91,34 @@ String getRandString(int len) {
   var random = Random.secure();
   var values = List<int>.generate(len, (i) =>  random.nextInt(255));
   return base64UrlEncode(values);
+}
+
+extension TextTransformUtil on String? {
+  String? transformed(TextTransform? transform) {
+    if (this == null) return null;
+    if (transform == TextTransform.uppercase) {
+      return this!.toUpperCase();
+    } else if (transform == TextTransform.lowercase) {
+      return this!.toLowerCase();
+    } else if (transform == TextTransform.capitalize) {
+      final stringBuffer = StringBuffer();
+
+      var capitalizeNext = true;
+      for (final letter in this!.toLowerCase().codeUnits) {
+        // UTF-16: A-Z => 65-90, a-z => 97-122.
+        if (capitalizeNext && letter >= 97 && letter <= 122) {
+          stringBuffer.writeCharCode(letter - 32);
+          capitalizeNext = false;
+        } else {
+          // UTF-16: 32 == space, 46 == period
+          if (letter == 32 || letter == 46) capitalizeNext = true;
+          stringBuffer.writeCharCode(letter);
+        }
+      }
+
+      return stringBuffer.toString();
+    } else {
+      return this;
+    }
+  }
 }

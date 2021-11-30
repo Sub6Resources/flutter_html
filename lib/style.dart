@@ -1,6 +1,8 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/css_parser.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package.
@@ -173,7 +175,23 @@ class Style {
   String? after;
   Border? border;
   Alignment? alignment;
-  String? markerContent;
+  Widget? markerContent;
+
+  /// MaxLine
+  ///
+  ///
+  ///
+  ///
+  int? maxLines;
+
+  /// TextOverflow
+  ///
+  ///
+  ///
+  ///
+  TextOverflow? textOverflow;
+
+  TextTransform? textTransform;
 
   Style({
     this.backgroundColor = Colors.transparent,
@@ -189,7 +207,7 @@ class Style {
     this.lineHeight,
     this.letterSpacing,
     this.listStyleType,
-    this.listStylePosition = ListStylePosition.OUTSIDE,
+    this.listStylePosition,
     this.padding,
     this.margin,
     this.textAlign,
@@ -207,11 +225,33 @@ class Style {
     this.border,
     this.alignment,
     this.markerContent,
+    this.maxLines,
+    this.textOverflow,
+    this.textTransform = TextTransform.none,
   }) {
     if (this.alignment == null &&
         (display == Display.BLOCK || display == Display.LIST_ITEM)) {
       this.alignment = Alignment.centerLeft;
     }
+  }
+
+  static Map<String, Style> fromThemeData(ThemeData theme) => {
+    'h1': Style.fromTextStyle(theme.textTheme.headline1!),
+    'h2': Style.fromTextStyle(theme.textTheme.headline2!),
+    'h3': Style.fromTextStyle(theme.textTheme.headline3!),
+    'h4': Style.fromTextStyle(theme.textTheme.headline4!),
+    'h5': Style.fromTextStyle(theme.textTheme.headline5!),
+    'h6': Style.fromTextStyle(theme.textTheme.headline6!),
+    'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
+  };
+
+  static Map<String, Style> fromCss(String css, OnCssParseError? onCssParseError) {
+    final declarations = parseExternalCss(css, onCssParseError);
+    Map<String, Style> styleMap = {};
+    declarations.forEach((key, value) {
+      styleMap[key] = declarationsToStyle(value);
+    });
+    return styleMap;
   }
 
   TextStyle generateTextStyle() {
@@ -278,6 +318,9 @@ class Style {
       //TODO merge border
       alignment: other.alignment,
       markerContent: other.markerContent,
+      maxLines: other.maxLines,
+      textOverflow: other.textOverflow,
+      textTransform: other.textTransform,
     );
   }
 
@@ -313,6 +356,9 @@ class Style {
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
+      maxLines: child.maxLines ?? maxLines,
+      textOverflow: child.textOverflow ?? textOverflow,
+      textTransform: child.textTransform ?? textTransform,
     );
   }
 
@@ -347,7 +393,11 @@ class Style {
     String? after,
     Border? border,
     Alignment? alignment,
-    String? markerContent,
+    Widget? markerContent,
+    int? maxLines,
+    TextOverflow? textOverflow,
+    TextTransform? textTransform,
+    bool? beforeAfterNull,
   }) {
     return Style(
       backgroundColor: backgroundColor ?? this.backgroundColor,
@@ -377,11 +427,14 @@ class Style {
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
       wordSpacing: wordSpacing ?? this.wordSpacing,
-      before: before ?? this.before,
-      after: after ?? this.after,
+      before: beforeAfterNull == true ? null : before ?? this.before,
+      after: beforeAfterNull == true ? null : after ?? this.after,
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       markerContent: markerContent ?? this.markerContent,
+      maxLines: maxLines ?? this.maxLines,
+      textOverflow: textOverflow ?? this.textOverflow,
+      textTransform: textTransform ?? this.textTransform,
     );
   }
 
@@ -401,6 +454,7 @@ class Style {
     this.textShadow = textStyle.shadows;
     this.wordSpacing = textStyle.wordSpacing;
     this.lineHeight = LineHeight(textStyle.height ?? 1.2);
+    this.textTransform = TextTransform.none;
   }
 }
 
@@ -473,14 +527,53 @@ class LineHeight {
   static const normal = LineHeight(1.2);
 }
 
+class ListStyleType {
+  final String text;
+  final String type;
+  final Widget? widget;
+
+  const ListStyleType(this.text, {this.type = "marker", this.widget});
+
+  factory ListStyleType.fromImage(String url) => ListStyleType(url, type: "image");
+
+  factory ListStyleType.fromWidget(Widget widget) => ListStyleType("", widget: widget, type: "widget");
+
+  static const LOWER_ALPHA = ListStyleType("LOWER_ALPHA");
+  static const UPPER_ALPHA = ListStyleType("UPPER_ALPHA");
+  static const LOWER_LATIN = ListStyleType("LOWER_LATIN");
+  static const UPPER_LATIN = ListStyleType("UPPER_LATIN");
+  static const CIRCLE = ListStyleType("CIRCLE");
+  static const DISC = ListStyleType("DISC");
+  static const DECIMAL = ListStyleType("DECIMAL");
+  static const LOWER_ROMAN = ListStyleType("LOWER_ROMAN");
+  static const UPPER_ROMAN = ListStyleType("UPPER_ROMAN");
+  static const SQUARE = ListStyleType("SQUARE");
+}
+
 enum ListStyleType {
+  LOWER_ALPHA,
+  UPPER_ALPHA,
+  LOWER_LATIN,
+  UPPER_LATIN,
+  CIRCLE,
   DISC,
   DECIMAL,
+  LOWER_ROMAN,
+  UPPER_ROMAN,
+  SQUARE,
+  NONE,
 }
 
 enum ListStylePosition {
   OUTSIDE,
   INSIDE,
+}
+
+enum TextTransform {
+  uppercase,
+  lowercase,
+  capitalize,
+  none,
 }
 
 enum VerticalAlign {
