@@ -31,8 +31,6 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
 - [Why flutter_html?](#why-this-package)
 
-- [Recommended Usage](#recommended-usage)
-
 - [API Reference](#api-reference)
 
   - [Constructors](#constructors)
@@ -141,36 +139,6 @@ This package is designed with simplicity in mind. Originally created to allow ba
 this project has expanded to include support for basic styling as well! 
 If you need something more robust and customizable, the package also provides a number of optional custom APIs for extremely granular control over widget rendering!
 
-## Recommended Usage
-
-```dart
-  late final Html htmlWidget;
-  final String htmlData = '<p>html data</p>';
-
-  //dispose is especially important when using <video> or <audio> in your HTML code
-  @override
-  void dispose() {
-    htmlWidget.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return new Scaffold(
-      appBar: AppBar(
-        title: Text('flutter_html Usage'),
-        centerTitle: true,
-      ),
-      body: SingleChildScrollView(
-        child: htmlWidget = Html(
-          data: htmlData, //required
-          //other parameters here
-        ),
-      ),
-    );
-  }
-```
-
 ## API Reference:
 
 For the full API reference, see [here](https://pub.dev/documentation/flutter_html/latest/).
@@ -225,13 +193,21 @@ Once the above issue is resolved, the aforementioned compromises will go away. C
 
 |  Methods  |   Description   |
 |--------------|-----------------|
-| `dispose()` | Disposes all `ChewieController`s, `ChewieAudioController`s, and `VideoPlayerController`s. |
+| `disposeAll()` | Disposes all `ChewieController`s, `ChewieAudioController`s, and `VideoPlayerController`s being used by every `Html` widget. (Note: `Html` widgets automatically dispose their controllers, this method is only provided in case you need other behavior) |
 
 ### Getters:
 
 1. `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in excluding elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
 
 2. `SelectableHtml.tags`. This provides a list of all the tags that can be rendered in selectable mode.
+
+3. `Html.chewieAudioControllers`. This provides a list of all `ChewieAudioController`s being used by `Html` widgets.
+
+4. `Html.chewieControllers`. This provides a list of all `ChewieController`s being used by `Html` widgets.
+
+5. `Html.videoPlayerControllers`. This provides a list of all `VideoPlayerController`s being used for video widgets by `Html` widgets.
+
+6. `Html.audioPlayerControllers`. This provides a list of all `VideoPlayerController`s being used for audio widgets by `Html` widgets.
 
 ### Data:
 
