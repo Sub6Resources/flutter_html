@@ -422,7 +422,7 @@ class HtmlParser extends StatelessWidget {
             children: [
               tree.style.listStylePosition == ListStylePosition.OUTSIDE ?
               Padding(
-                padding: tree.style.padding ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
+                padding: tree.style.padding?.nonNegative ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
                 child: newContext.style.markerContent
               ) : Container(height: 0, width: 0),
               Text("\t", textAlign: TextAlign.right),
@@ -1053,8 +1053,8 @@ class ContainerSpan extends StatelessWidget {
       ),
       height: style.height,
       width: style.width,
-      padding: style.padding,
-      margin: style.margin,
+      padding: style.padding?.nonNegative,
+      margin: style.margin?.nonNegative,
       alignment: shrinkWrap ? null : style.alignment,
       child: child ??
           StyledText(
