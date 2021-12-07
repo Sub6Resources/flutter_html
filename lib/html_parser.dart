@@ -401,9 +401,11 @@ class HtmlParser extends StatelessWidget {
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
       List<InlineSpan> getChildren(StyledElement tree) {
-        InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
         List<InlineSpan> children = tree.children.map((tree) => parseTree(newContext, tree)).toList();
         if (tree.style.listStylePosition == ListStylePosition.INSIDE) {
+          final tabSpan = WidgetSpan(
+            child: Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
+          );
           children.insert(0, tabSpan);
         }
         return children;
@@ -425,7 +427,7 @@ class HtmlParser extends StatelessWidget {
                 padding: tree.style.padding ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
                 child: newContext.style.markerContent
               ) : Container(height: 0, width: 0),
-              Text("\t", textAlign: TextAlign.right),
+              Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
               Expanded(
                   child: Padding(
                       padding: tree.style.listStylePosition == ListStylePosition.INSIDE ?
