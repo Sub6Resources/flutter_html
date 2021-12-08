@@ -36,6 +36,7 @@ class TableLayoutElement extends LayoutElement {
       key: AnchorKey.of(context.parser.key, this),
       padding: style.padding?.nonNegative,
       margin: style.margin?.nonNegative,
+      alignment: style.alignment,
       decoration: BoxDecoration(
         color: style.backgroundColor,
         border: style.border,
@@ -88,19 +89,25 @@ class TableLayoutElement extends LayoutElement {
     }
 
     // All table rows have a height intrinsic to their (spanned) contents
-    final rowSizes =
-        List.generate(rows.length, (_) => IntrinsicContentTrackSize());
+    final rowSizes = List.generate(rows.length, (_) => IntrinsicContentTrackSize());
 
     // Calculate column bounds
-    int columnMax = rows
-        .map((row) => row.children
-            .whereType<TableCellElement>()
-            .fold(0, (int value, child) => value + child.colspan))
-        .fold(0, max);
+    int columnMax = 0;
+    List<int> rowSpanOffsets = [];
+    for (final row in rows) {
+      final cols = row.children.whereType<TableCellElement>().fold(0, (int value, child) => value + child.colspan) +
+          rowSpanOffsets.fold<int>(0, (int offset, child) => child);
+      columnMax = max(cols, columnMax);
+      rowSpanOffsets = [
+        ...rowSpanOffsets.map((value) => value - 1).where((value) => value > 0),
+        ...row.children.whereType<TableCellElement>().map((cell) => cell.rowspan - 1),
+      ];
+    }
 
     // Place the cells in the rows/columns
     final cells = <GridPlacement>[];
     final columnRowOffset = List.generate(columnMax, (_) => 0);
+    final columnColspanOffset = List.generate(columnMax, (_) => 0);
     int rowi = 0;
     for (var row in rows) {
       int columni = 0;
@@ -108,11 +115,11 @@ class TableLayoutElement extends LayoutElement {
         if (columni > columnMax - 1 ) {
           break;
         }
-        while (columnRowOffset[columni] > 0) {
-          columnRowOffset[columni] = columnRowOffset[columni] - 1;
-          columni++;
-        }
         if (child is TableCellElement) {
+          while (columnRowOffset[columni] > 0) {
+            columnRowOffset[columni] = columnRowOffset[columni] - 1;
+            columni += columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
+          }
           cells.add(GridPlacement(
             child: Container(
               width: double.infinity,
@@ -140,6 +147,7 @@ class TableLayoutElement extends LayoutElement {
             rowSpan: min(child.rowspan, rows.length - rowi),
           ));
           columnRowOffset[columni] = child.rowspan - 1;
+          columnColspanOffset[columni] = child.colspan;
           columni += child.colspan;
         }
       }
