@@ -22,6 +22,7 @@ const STYLED_ELEMENTS = [
   "kbd",
   "mark",
   "q",
+  "rt",
   "s",
   "samp",
   "small",
