@@ -5,6 +5,7 @@ import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/styled_element.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:html/dom.dart' as dom;
@@ -33,8 +34,8 @@ class TableLayoutElement extends LayoutElement {
   Widget toWidget(RenderContext context) {
     return Container(
       key: AnchorKey.of(context.parser.key, this),
-      margin: style.margin,
-      padding: style.padding,
+      padding: style.padding?.nonNegative,
+      margin: style.margin?.nonNegative,
       alignment: style.alignment,
       decoration: BoxDecoration(
         color: style.backgroundColor,
@@ -122,7 +123,7 @@ class TableLayoutElement extends LayoutElement {
           cells.add(GridPlacement(
             child: Container(
               width: double.infinity,
-              padding: child.style.padding ?? row.style.padding,
+              padding: child.style.padding?.nonNegative ?? row.style.padding?.nonNegative,
               decoration: BoxDecoration(
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
                 border: child.style.border ?? row.style.border,
