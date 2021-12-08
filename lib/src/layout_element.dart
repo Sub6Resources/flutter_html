@@ -35,6 +35,7 @@ class TableLayoutElement extends LayoutElement {
       key: AnchorKey.of(context.parser.key, this),
       margin: style.margin,
       padding: style.padding,
+      alignment: style.alignment,
       decoration: BoxDecoration(
         color: style.backgroundColor,
         border: style.border,
