@@ -1,3 +1,16 @@
+## [2.2.0] - November 29, 2021:
+* Explicitly declare multiplatform support
+* Extended and fixed list-style (marker) support
+* Basic support for height/width css properties
+* Support changing scroll physics of SelectableText.rich
+* Support text transform css property
+* Bumped minimum flutter_math_fork version for Flutter 2.5 compatibility
+* Fix styling of iframes
+* Fix nested font tag application
+* Fix whitespace rendering between list items
+* Prevent crash on empty <table> tag and tables with both colspan/rowspan
+* Prevent crash on use of negative margins in css
+
 ## [2.1.5] - October 7, 2021:
 * Ignore unsupported custom style selectors when using fromCss
 * Fix SVG tag usage inside tables
