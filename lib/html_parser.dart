@@ -13,12 +13,12 @@ import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
+import 'package:flutter_html/src/navigation_delegate.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
 import 'package:numerus/numerus.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(
     String? url,
@@ -737,7 +737,6 @@ class HtmlParser extends StatelessWidget {
       String marker = "";
       switch (tree.style.listStyleType!) {
         case ListStyleType.NONE:
-          tree.style.markerContent = '';
           break;
         case ListStyleType.CIRCLE:
           marker = '○';
@@ -959,7 +958,7 @@ class HtmlParser extends StatelessWidget {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
       } else if (child is TextContentElement
-          && tree.name == "body"
+          && (tree.name == "body" || tree.name == "ul")
           && child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);
       } else if (child is TextContentElement
@@ -1054,7 +1053,7 @@ class ContainerSpan extends StatelessWidget {
       height: style.height,
       width: style.width,
       padding: style.padding,
-      margin: style.margin,
+      margin: style.margin?.clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity)),
       alignment: shrinkWrap ? null : style.alignment,
       child: child ??
           StyledText(

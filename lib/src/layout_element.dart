@@ -100,6 +100,7 @@ class TableLayoutElement extends LayoutElement {
     // Place the cells in the rows/columns
     final cells = <GridPlacement>[];
     final columnRowOffset = List.generate(columnMax, (_) => 0);
+    final columnColspanOffset = List.generate(columnMax, (_) => 0);
     int rowi = 0;
     for (var row in rows) {
       int columni = 0;
@@ -107,11 +108,11 @@ class TableLayoutElement extends LayoutElement {
         if (columni > columnMax - 1 ) {
           break;
         }
-        while (columnRowOffset[columni] > 0) {
-          columnRowOffset[columni] = columnRowOffset[columni] - 1;
-          columni++;
-        }
         if (child is TableCellElement) {
+          while (columnRowOffset[columni] > 0) {
+            columnRowOffset[columni] = columnRowOffset[columni] - 1;
+            columni += columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
+          }
           cells.add(GridPlacement(
             child: Container(
               width: double.infinity,
@@ -139,6 +140,7 @@ class TableLayoutElement extends LayoutElement {
             rowSpan: min(child.rowspan, rows.length - rowi),
           ));
           columnRowOffset[columni] = child.rowspan - 1;
+          columnColspanOffset[columni] = child.colspan;
           columni += child.colspan;
         }
       }
@@ -154,6 +156,11 @@ class TableLayoutElement extends LayoutElement {
     finalColumnSizes += List.generate(
         max(0, columnMax - finalColumnSizes.length),
         (_) => IntrinsicContentTrackSize());
+
+    if (finalColumnSizes.isEmpty || rowSizes.isEmpty) {
+      // No actual cells to show
+      return SizedBox();
+    }
 
     return LayoutGrid(
       gridFit: GridFit.loose,
