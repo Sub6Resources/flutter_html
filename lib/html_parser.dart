@@ -61,6 +61,8 @@ class HtmlParser extends StatelessWidget {
   final TextSelectionControls? selectionControls;
   final ScrollPhysics? scrollPhysics;
 
+  final Map<String, Size> cachedImageSizes = {};
+
   HtmlParser({
     required this.key,
     required this.htmlData,
