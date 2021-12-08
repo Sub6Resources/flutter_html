@@ -7,7 +7,7 @@ import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_html/src/navigation_delegate.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
@@ -18,6 +18,7 @@ export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
+export 'package:flutter_html/src/navigation_delegate.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
