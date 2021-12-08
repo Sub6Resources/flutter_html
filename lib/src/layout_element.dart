@@ -114,7 +114,8 @@ class TableLayoutElement extends LayoutElement {
         if (child is TableCellElement) {
           cells.add(GridPlacement(
             child: Container(
-              width: double.infinity,
+              width: child.style.width ?? double.infinity,
+              height: child.style.height ?? double.infinity,
               padding: child.style.padding ?? row.style.padding,
               decoration: BoxDecoration(
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
