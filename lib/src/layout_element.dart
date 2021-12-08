@@ -122,7 +122,8 @@ class TableLayoutElement extends LayoutElement {
           }
           cells.add(GridPlacement(
             child: Container(
-              width: double.infinity,
+              width: child.style.width ?? double.infinity,
+              height: child.style.height,
               padding: child.style.padding?.nonNegative ?? row.style.padding?.nonNegative,
               decoration: BoxDecoration(
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
