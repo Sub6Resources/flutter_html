@@ -318,7 +318,7 @@ class HtmlParser extends StatelessWidget {
   ///
   /// [parseTree] is responsible for handling the [customRender] parameter and
   /// deciding what different `Style.display` options look like as Widgets.
-  InlineSpan parseTree(RenderContext context, StyledElement tree) {
+  InlineSpan parseTree(RenderContext context, StyledElement tree, {bool ignoreBlockDisplay = false}) {
     // Merge this element's style into the context so that children
     // inherit the correct style
     RenderContext newContext = RenderContext(
@@ -356,7 +356,7 @@ class HtmlParser extends StatelessWidget {
     }
 
     //Return the correct InlineSpan based on the element type.
-    if (tree.style.display == Display.BLOCK &&
+    if (tree.style.display == Display.BLOCK && !ignoreBlockDisplay &&
         (tree.children.isNotEmpty || tree.element?.localName == "hr")) {
       if (newContext.parser.selectable) {
         return TextSpan(
@@ -383,8 +383,9 @@ class HtmlParser extends StatelessWidget {
           newContext: newContext,
           style: tree.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: tree.children
-              .expandIndexed((i, childTree) => [
+          children: tree is InteractableElement
+              ? [parseTree(newContext, tree, ignoreBlockDisplay: true)]
+              : tree.children.expandIndexed((i, childTree) => [
                     if (shrinkWrap &&
                         childTree.style.display == Display.BLOCK &&
                         i > 0 &&
