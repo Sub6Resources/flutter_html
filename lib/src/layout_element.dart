@@ -110,20 +110,31 @@ class TableLayoutElement extends LayoutElement {
     final columnColspanOffset = List.generate(columnMax, (_) => 0);
     int rowi = 0;
     for (var row in rows) {
+      // We must draw all child in row with the current constraints to avoid width overflow.
+      // If we add in a customer render a horizontal SingleChildScrollView, constraint will be infinite and a scroll effect will take place, no issue.
+      double availableWidth = constraints.maxWidth;
+
       int columni = 0;
       for (var child in row.children) {
         if (columni > columnMax - 1 ) {
           break;
         }
         if (child is TableCellElement) {
+          double childWidth = child.style.width ?? double.infinity;
+          childWidth = childWidth > availableWidth ? availableWidth : childWidth;
+
           while (columnRowOffset[columni] > 0) {
             columnRowOffset[columni] = columnRowOffset[columni] - 1;
             columni += columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
           }
           cells.add(GridPlacement(
             child: Container(
-              width: child.style.width ?? double.infinity,
-              height: child.style.height,
+              constraints: BoxConstraints(
+                // Constraint to avoid width overflow
+                maxWidth: childWidth,
+                // Don't constraint height to let cell expand vertically.
+                minHeight: child.style.height ?? 0,
+              ),
               padding: child.style.padding?.nonNegative ?? row.style.padding?.nonNegative,
               decoration: BoxDecoration(
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
@@ -147,6 +158,9 @@ class TableLayoutElement extends LayoutElement {
             rowStart: rowi,
             rowSpan: min(child.rowspan, rows.length - rowi),
           ));
+          // We add an item, so let's reduce the available space.
+          availableWidth -= childWidth;
+
           columnRowOffset[columni] = child.rowspan - 1;
           columnColspanOffset[columni] = child.colspan;
           columni += child.colspan;
