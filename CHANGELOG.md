@@ -1,3 +1,10 @@
+## [2.2.1] - December 8, 2021:
+* Allow styling on ruby tags
+* Allow width/height/alignment styling on table/tr/td tags
+* Prevent images causing rebuilding and leaking memory
+* Fixes display of list items on iOS with font weights below 400
+* Prevent crash on negative margins or paddings
+
 ## [2.2.0] - November 29, 2021:
 * Explicitly declare multiplatform support
 * Extended and fixed list-style (marker) support
