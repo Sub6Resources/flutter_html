@@ -344,9 +344,9 @@ class HtmlParser extends StatelessWidget {
 
     for (final entry in customRenders.keys) {
       if (entry.call(newContext)) {
-        final buildChildren = () => tree.children.map((tree) => parseTree(context, tree)).toList();
+        final buildChildren = () => tree.children.map((tree) => parseTree(newContext, tree)).toList();
         if (newContext.parser.selectable && customRenders[entry] is SelectableCustomRender) {
-          final selectableBuildChildren = () => tree.children.map((tree) => parseTree(context, tree) as TextSpan).toList();
+          final selectableBuildChildren = () => tree.children.map((tree) => parseTree(newContext, tree) as TextSpan).toList();
           return (customRenders[entry] as SelectableCustomRender).textSpan.call(newContext, selectableBuildChildren);
         }
         if (newContext.parser.selectable) {

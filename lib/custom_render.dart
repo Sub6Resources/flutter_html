@@ -2,7 +2,6 @@ import 'package:collection/collection.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/utils.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
@@ -133,7 +132,7 @@ CustomRender listElementRender({
               children: [
                 (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.OUTSIDE ?
                 Padding(
-                  padding: style?.padding ?? context.tree.style.padding
+                  padding: style?.padding?.nonNegative ?? context.tree.style.padding?.nonNegative
                       ?? EdgeInsets.only(left: (style?.direction ?? context.tree.style.direction) != TextDirection.rtl ? 10.0 : 0.0,
                           right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0),
                   child: Text(
@@ -142,7 +141,7 @@ CustomRender listElementRender({
                       style: style?.generateTextStyle() ?? context.style.generateTextStyle()
                   ),
                 ) : Container(height: 0, width: 0),
-                Text("\t", textAlign: TextAlign.right),
+                Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
                 Expanded(
                     child: Padding(
                         padding: (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.INSIDE ?
@@ -176,7 +175,7 @@ CustomRender replacedElementRender({PlaceholderAlignment? alignment, TextBaselin
 
 CustomRender textContentElementRender({String? text}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
-      TextSpan(text: text ?? (context.tree as TextContentElement).text));
+      TextSpan(text: (text ?? (context.tree as TextContentElement).text).transformed(context.tree.style.textTransform)));
 
 CustomRender interactableElementRender({List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
@@ -238,9 +237,11 @@ final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
 };
 
 List<InlineSpan> _getListElementChildren(ListStylePosition? position, Function() buildChildren) {
-  InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
   List<InlineSpan> children = buildChildren.call();
   if (position == ListStylePosition.INSIDE) {
+    final tabSpan = WidgetSpan(
+      child: Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
+    );
     children.insert(0, tabSpan);
   }
   return children;
