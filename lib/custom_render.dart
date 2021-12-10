@@ -135,11 +135,7 @@ CustomRender listElementRender({
                   padding: style?.padding?.nonNegative ?? context.tree.style.padding?.nonNegative
                       ?? EdgeInsets.only(left: (style?.direction ?? context.tree.style.direction) != TextDirection.rtl ? 10.0 : 0.0,
                           right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0),
-                  child: Text(
-                      "${style?.markerContent ?? context.style.markerContent}",
-                      textAlign: TextAlign.right,
-                      style: style?.generateTextStyle() ?? context.style.generateTextStyle()
-                  ),
+                  child: style?.markerContent ?? context.style.markerContent
                 ) : Container(height: 0, width: 0),
                 Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
                 Expanded(
@@ -149,11 +145,11 @@ CustomRender listElementRender({
                             right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
                         child: StyledText(
                           textSpan: TextSpan(
-                            text: ((style?.listStylePosition ?? context.tree.style.listStylePosition) ==
-                                ListStylePosition.INSIDE)
-                                ? "${style?.markerContent ?? context.style.markerContent}"
-                                : null,
-                            children: _getListElementChildren(style?.listStylePosition ?? context.tree.style.listStylePosition, buildChildren),
+                            children: _getListElementChildren(style?.listStylePosition ?? context.tree.style.listStylePosition, buildChildren)
+                              ..insertAll(0, context.tree.style.listStylePosition == ListStylePosition.INSIDE ?
+                            [
+                              WidgetSpan(alignment: PlaceholderAlignment.middle, child: style?.markerContent ?? context.style.markerContent ?? Container(height: 0, width: 0))
+                            ] : []),
                             style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
                           ),
                           style: style ?? context.style,
