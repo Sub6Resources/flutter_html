@@ -13,12 +13,12 @@ import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/layout_element.dart';
+import 'package:flutter_html/src/navigation_delegate.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
 import 'package:numerus/numerus.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 typedef OnTap = void Function(
     String? url,
@@ -61,6 +61,8 @@ class HtmlParser extends StatelessWidget {
   final Html? root;
   final TextSelectionControls? selectionControls;
   final ScrollPhysics? scrollPhysics;
+
+  final Map<String, Size> cachedImageSizes = {};
 
   HtmlParser({
     required this.key,
@@ -216,7 +218,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, navigationDelegateForIframe);
+        return parseReplacedElement(node, children, navigationDelegateForIframe);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
@@ -403,9 +405,11 @@ class HtmlParser extends StatelessWidget {
       );
     } else if (tree.style.display == Display.LIST_ITEM) {
       List<InlineSpan> getChildren(StyledElement tree) {
-        InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
         List<InlineSpan> children = tree.children.map((tree) => parseTree(newContext, tree)).toList();
         if (tree.style.listStylePosition == ListStylePosition.INSIDE) {
+          final tabSpan = WidgetSpan(
+            child: Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
+          );
           children.insert(0, tabSpan);
         }
         return children;
@@ -424,10 +428,10 @@ class HtmlParser extends StatelessWidget {
             children: [
               tree.style.listStylePosition == ListStylePosition.OUTSIDE ?
               Padding(
-                padding: tree.style.padding ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
+                padding: tree.style.padding?.nonNegative ?? EdgeInsets.only(left: tree.style.direction != TextDirection.rtl ? 10.0 : 0.0, right: tree.style.direction == TextDirection.rtl ? 10.0 : 0.0),
                 child: newContext.style.markerContent
               ) : Container(height: 0, width: 0),
-              Text("\t", textAlign: TextAlign.right),
+              Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
               Expanded(
                   child: Padding(
                       padding: tree.style.listStylePosition == ListStylePosition.INSIDE ?
@@ -739,7 +743,6 @@ class HtmlParser extends StatelessWidget {
       String marker = "";
       switch (tree.style.listStyleType!) {
         case ListStyleType.NONE:
-          tree.style.markerContent = '';
           break;
         case ListStyleType.CIRCLE:
           marker = '○';
@@ -961,7 +964,7 @@ class HtmlParser extends StatelessWidget {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
       } else if (child is TextContentElement
-          && tree.name == "body"
+          && (tree.name == "body" || tree.name == "ul")
           && child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);
       } else if (child is TextContentElement
@@ -1055,8 +1058,8 @@ class ContainerSpan extends StatelessWidget {
       ),
       height: style.height,
       width: style.width,
-      padding: style.padding,
-      margin: style.margin,
+      padding: style.padding?.nonNegative,
+      margin: style.margin?.nonNegative,
       alignment: shrinkWrap ? null : style.alignment,
       child: child ??
           StyledText(

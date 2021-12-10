@@ -25,7 +25,7 @@ class StyledElement {
   }) : this._node = node;
 
   bool matchesSelector(String selector) =>
-      _node != null && matches(_node!, selector);
+      (_node != null && matches(_node!, selector)) || name == selector;
 
   Map<String, String> get attributes =>
       _node?.attributes.map((key, value) {

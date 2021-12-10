@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/src/navigation_delegate.dart';
 import 'package:flutter_html/src/replaced_element.dart';
 import 'package:flutter_html/style.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 import 'package:html/dom.dart' as dom;
 
 /// [IframeContentElement is a [ReplacedElement] with web content.

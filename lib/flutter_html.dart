@@ -10,8 +10,8 @@ import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
+import 'package:flutter_html/src/navigation_delegate.dart';
 import 'package:video_player/video_player.dart';
-import 'package:webview_flutter/webview_flutter.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
@@ -22,6 +22,7 @@ export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
+export 'package:flutter_html/src/navigation_delegate.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
@@ -67,8 +68,7 @@ class Html extends StatefulWidget {
     this.tagsList = const [],
     this.style = const {},
     this.navigationDelegateForIframe,
-  })
-      : document = null,
+  })  : document = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -89,8 +89,7 @@ class Html extends StatefulWidget {
     this.tagsList = const [],
     this.style = const {},
     this.navigationDelegateForIframe,
-  })
-      : data = null,
+  })  : data = null,
         assert(document != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
