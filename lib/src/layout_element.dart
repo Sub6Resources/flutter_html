@@ -5,6 +5,7 @@ import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/styled_element.dart';
+import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/style.dart';
 import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:html/dom.dart' as dom;
@@ -33,8 +34,9 @@ class TableLayoutElement extends LayoutElement {
   Widget toWidget(RenderContext context) {
     return Container(
       key: AnchorKey.of(context.parser.key, this),
-      margin: style.margin,
-      padding: style.padding,
+      padding: style.padding?.nonNegative,
+      margin: style.margin?.nonNegative,
+      alignment: style.alignment,
       decoration: BoxDecoration(
         color: style.backgroundColor,
         border: style.border,
@@ -87,19 +89,25 @@ class TableLayoutElement extends LayoutElement {
     }
 
     // All table rows have a height intrinsic to their (spanned) contents
-    final rowSizes =
-        List.generate(rows.length, (_) => IntrinsicContentTrackSize());
+    final rowSizes = List.generate(rows.length, (_) => IntrinsicContentTrackSize());
 
     // Calculate column bounds
-    int columnMax = rows
-        .map((row) => row.children
-            .whereType<TableCellElement>()
-            .fold(0, (int value, child) => value + child.colspan))
-        .fold(0, max);
+    int columnMax = 0;
+    List<int> rowSpanOffsets = [];
+    for (final row in rows) {
+      final cols = row.children.whereType<TableCellElement>().fold(0, (int value, child) => value + child.colspan) +
+          rowSpanOffsets.fold<int>(0, (int offset, child) => child);
+      columnMax = max(cols, columnMax);
+      rowSpanOffsets = [
+        ...rowSpanOffsets.map((value) => value - 1).where((value) => value > 0),
+        ...row.children.whereType<TableCellElement>().map((cell) => cell.rowspan - 1),
+      ];
+    }
 
     // Place the cells in the rows/columns
     final cells = <GridPlacement>[];
     final columnRowOffset = List.generate(columnMax, (_) => 0);
+    final columnColspanOffset = List.generate(columnMax, (_) => 0);
     int rowi = 0;
     for (var row in rows) {
       int columni = 0;
@@ -107,15 +115,16 @@ class TableLayoutElement extends LayoutElement {
         if (columni > columnMax - 1 ) {
           break;
         }
-        while (columnRowOffset[columni] > 0) {
-          columnRowOffset[columni] = columnRowOffset[columni] - 1;
-          columni++;
-        }
         if (child is TableCellElement) {
+          while (columnRowOffset[columni] > 0) {
+            columnRowOffset[columni] = columnRowOffset[columni] - 1;
+            columni += columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
+          }
           cells.add(GridPlacement(
             child: Container(
-              width: double.infinity,
-              padding: child.style.padding ?? row.style.padding,
+              width: child.style.width ?? double.infinity,
+              height: child.style.height,
+              padding: child.style.padding?.nonNegative ?? row.style.padding?.nonNegative,
               decoration: BoxDecoration(
                 color: child.style.backgroundColor ?? row.style.backgroundColor,
                 border: child.style.border ?? row.style.border,
@@ -139,6 +148,7 @@ class TableLayoutElement extends LayoutElement {
             rowSpan: min(child.rowspan, rows.length - rowi),
           ));
           columnRowOffset[columni] = child.rowspan - 1;
+          columnColspanOffset[columni] = child.colspan;
           columni += child.colspan;
         }
       }
@@ -154,6 +164,11 @@ class TableLayoutElement extends LayoutElement {
     finalColumnSizes += List.generate(
         max(0, columnMax - finalColumnSizes.length),
         (_) => IntrinsicContentTrackSize());
+
+    if (finalColumnSizes.isEmpty || rowSizes.isEmpty) {
+      // No actual cells to show
+      return SizedBox();
+    }
 
     return LayoutGrid(
       gridFit: GridFit.loose,

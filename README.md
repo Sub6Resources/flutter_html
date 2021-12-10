@@ -98,7 +98,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^2.1.1
+      flutter_html: ^2.2.1
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
@@ -185,6 +185,7 @@ Once the above issue is resolved, the aforementioned compromises will go away. C
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
 | `navigationDelegateForIframe` | Allows you to set the `NavigationDelegate` for the `WebView`s of all the iframes rendered by the `Html` widget. |
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
+| `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
 ### Getters:
 
@@ -268,13 +269,13 @@ Inner links (such as `<a href="#top">Back to the top</a>` will work out of the b
 
 A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can change the default behaviour or add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
-`customRender` accepts a `Map<CustomRenderMatcher, CustomRender>`. 
+`customRender` accepts a `Map<CustomRenderMatcher, CustomRender>`.
 
 `CustomRenderMatcher` is a function that requires a `bool` to be returned. It exposes the `RenderContext` which provides `BuildContext` and access to the HTML tree.
 
 The `CustomRender` class has two constructors: `CustomRender.widget()` and `CustomRender.inlineSpan()`. Both require a `<Widget/InlineSpan> Function(RenderContext, Function())`. The `Function()` argument is a function that will provide you with the element's children when needed.
 
-To use this API, create a matching function and an instance of `CustomRender`. 
+To use this API, create a matching function and an instance of `CustomRender`.
 
 Note: If you add any custom tags, you must add these tags to the [`tagsList`](#tagslist) parameter, otherwise they will not be rendered. See below for an example.
 
@@ -390,7 +391,7 @@ Widget html = Html(
 
 CustomRenderMatcher iframeYT() => (context) => context.tree.element?.attributes['src']?.contains("youtube.com/embed") ?? false;
 
-CustomRenderMatcher iframeOther() => (context) => !(context.tree.element?.attributes['src']?.contains("youtube.com/embed") 
+CustomRenderMatcher iframeOther() => (context) => !(context.tree.element?.attributes['src']?.contains("youtube.com/embed")
   ?? context.tree.element?.attributes['src'] == null);
 
 CustomRenderMatcher iframeNull() => (context) => context.tree.element?.attributes['src'] == null;
@@ -830,7 +831,8 @@ Widget htmlWidget = Html(
         }
       },
     )),
-  }
+  },
+  tagsList: Html.tags..add('tex'),
 );
 
 CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';

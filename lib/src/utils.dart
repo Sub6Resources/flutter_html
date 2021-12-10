@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/style.dart';
 
 Map<String, String> namedColors = {
   "White": "#FFFFFF",
@@ -80,4 +81,38 @@ String getRandString(int len) {
   var random = Random.secure();
   var values = List<int>.generate(len, (i) =>  random.nextInt(255));
   return base64UrlEncode(values);
+}
+
+extension TextTransformUtil on String? {
+  String? transformed(TextTransform? transform) {
+    if (this == null) return null;
+    if (transform == TextTransform.uppercase) {
+      return this!.toUpperCase();
+    } else if (transform == TextTransform.lowercase) {
+      return this!.toLowerCase();
+    } else if (transform == TextTransform.capitalize) {
+      final stringBuffer = StringBuffer();
+
+      var capitalizeNext = true;
+      for (final letter in this!.toLowerCase().codeUnits) {
+        // UTF-16: A-Z => 65-90, a-z => 97-122.
+        if (capitalizeNext && letter >= 97 && letter <= 122) {
+          stringBuffer.writeCharCode(letter - 32);
+          capitalizeNext = false;
+        } else {
+          // UTF-16: 32 == space, 46 == period
+          if (letter == 32 || letter == 46) capitalizeNext = true;
+          stringBuffer.writeCharCode(letter);
+        }
+      }
+
+      return stringBuffer.toString();
+    } else {
+      return this;
+    }
+  }
+}
+
+extension ClampedEdgeInsets on EdgeInsetsGeometry {
+  EdgeInsetsGeometry get nonNegative => this.clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity));
 }

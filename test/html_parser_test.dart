@@ -84,6 +84,7 @@ void testNewParser(BuildContext context) {
        Your browser does not support the video tag.
       </video>
     """).getElementsByTagName("video")[0],
+    [],
     null,
   );
 
@@ -103,6 +104,7 @@ void testNewParser(BuildContext context) {
         Your browser does not support the audio tag.
       </audio>
     """).getElementsByTagName("audio")[0],
+    [],
     null,
   );
   expect(audioContentElement, isA<AudioContentElement>());

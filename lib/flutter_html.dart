@@ -8,7 +8,7 @@ import 'package:flutter_html/image_render.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_html/src/navigation_delegate.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
@@ -25,6 +25,7 @@ export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
+export 'package:flutter_html/src/navigation_delegate.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
@@ -50,7 +51,7 @@ class Html extends StatelessWidget {
   ///
   /// **onImageTap** This is called whenever an image is tapped.
   ///
-  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags are rendered.
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default all supported HTML tags are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -133,7 +134,7 @@ class Html extends StatelessWidget {
   /// A function that defines what to do when an image is tapped
   final OnTap? onImageTap;
 
-  /// A list of HTML tags that defines what elements are not rendered
+  /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
 
   /// Either return a custom widget for specific node types or return null to
@@ -202,7 +203,7 @@ class SelectableHtml extends StatelessWidget {
   /// **onAnchorTap** This function is called whenever an anchor (#anchor-id)
   /// is tapped.
   ///
-  /// **tagsList** Tag names in this array will be the only tags rendered. By default all tags that support selectable content are rendered.
+  /// **tagsList** Tag names in this array will be the only tags rendered. By default, all tags that support selectable content are rendered.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -222,6 +223,7 @@ class SelectableHtml extends StatelessWidget {
 
   SelectableHtml({
     Key? key,
+    GlobalKey? anchorKey,
     required this.data,
     this.onLinkTap,
     this.onAnchorTap,
@@ -230,11 +232,16 @@ class SelectableHtml extends StatelessWidget {
     this.style = const {},
     this.customRenders = const {},
     this.tagsList = const [],
+    this.selectionControls,
+    this.scrollPhysics,
   }) : document = null,
+        assert(data != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
   SelectableHtml.fromDom({
     Key? key,
+    GlobalKey? anchorKey,
     required this.document,
     this.onLinkTap,
     this.onAnchorTap,
@@ -243,8 +250,15 @@ class SelectableHtml extends StatelessWidget {
     this.style = const {},
     this.customRenders = const {},
     this.tagsList = const [],
+    this.selectionControls,
+    this.scrollPhysics,
   }) : data = null,
+        assert(document != null),
+        _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
+
+  /// A unique key for this Html widget to ensure uniqueness of anchors
+  final GlobalKey _anchorKey;
 
   /// The HTML data passed to the widget as a String
   final String? data;
@@ -266,11 +280,18 @@ class SelectableHtml extends StatelessWidget {
   /// flexible
   final bool shrinkWrap;
 
-  /// A list of HTML tags that defines what elements are not rendered
+  /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
 
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
+
+  /// Custom Selection controls allows you to override default toolbar and build custom toolbar
+  /// options
+  final TextSelectionControls? selectionControls;
+
+  /// Allows you to override the default scrollPhysics for [SelectableText.rich]
+  final ScrollPhysics? scrollPhysics;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -286,7 +307,7 @@ class SelectableHtml extends StatelessWidget {
     return Container(
       width: width,
       child: HtmlParser(
-        key: null,
+        key: _anchorKey,
         htmlData: doc,
         onLinkTap: onLinkTap,
         onAnchorTap: onAnchorTap,
@@ -303,6 +324,8 @@ class SelectableHtml extends StatelessWidget {
         imageRenders: defaultImageRenders,
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
+        selectionControls: selectionControls,
+        scrollPhysics: scrollPhysics,
       ),
     );
   }

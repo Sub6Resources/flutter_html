@@ -158,6 +158,7 @@ const htmlData = """
       body: SingleChildScrollView(
         child: Html(
           data: htmlData,
+          tagsList: Html.tags..addAll(["flutter"]),
           //Optional parameters:
           style: {
             "html": Style(
