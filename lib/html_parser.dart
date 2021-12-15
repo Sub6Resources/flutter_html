@@ -550,6 +550,8 @@ class HtmlParser extends StatelessWidget {
             .expand((tree) => [
                   parseTree(newContext, tree),
                   if (tree.style.display == Display.BLOCK &&
+                      tree.element?.parent?.localName != "th" &&
+                      tree.element?.parent?.localName != "td" &&
                       tree.element?.localName != "html" &&
                       tree.element?.localName != "body")
                     TextSpan(text: "\n"),
