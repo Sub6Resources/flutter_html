@@ -3,16 +3,11 @@ import 'dart:math';
 import 'package:chewie/chewie.dart';
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_html/html_parser.dart';
-import 'package:flutter_html/src/anchor.dart';
-import 'package:flutter_html/src/html_elements.dart';
-import 'package:flutter_html/src/navigation_delegate.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_html/src/widgets/iframe_unsupported.dart'
   if (dart.library.io) 'package:flutter_html/src/widgets/iframe_mobile.dart'
   if (dart.library.html) 'package:flutter_html/src/widgets/iframe_web.dart';
-import 'package:flutter_html/style.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:html/dom.dart' as dom;
@@ -124,21 +119,25 @@ class AudioContentElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
+    final VideoPlayerController audioController = VideoPlayerController.network(
+      src.first ?? "",
+    );
+    final ChewieAudioController chewieAudioController = ChewieAudioController(
+      videoPlayerController: audioController,
+      autoPlay: autoplay,
+      looping: loop,
+      showControls: showControls,
+      autoInitialize: true,
+    );
+    context.parser.root?.addController(element.hashCode, audioController, isAudioController: true);
+    context.parser.root?.addController(element.hashCode, chewieAudioController);
     return Container(
       key: AnchorKey.of(context.parser.key, this),
       width: context.style.width ?? 300,
       height: Theme.of(context.buildContext).platform == TargetPlatform.android
           ? 48 : 75,
       child: ChewieAudio(
-        controller: ChewieAudioController(
-          videoPlayerController: VideoPlayerController.network(
-            src.first ?? "",
-          ),
-          autoPlay: autoplay,
-          looping: loop,
-          showControls: showControls,
-          autoInitialize: true,
-        ),
+        controller: chewieAudioController,
       ),
     );
   }
@@ -172,24 +171,28 @@ class VideoContentElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     final double _width = width ?? (height ?? 150) * 2;
     final double _height = height ?? (width ?? 300) / 2;
+    final VideoPlayerController videoController = VideoPlayerController.network(
+      src.first ?? "",
+    );
+    final ChewieController chewieController = ChewieController(
+      videoPlayerController: videoController,
+      placeholder: poster != null && poster!.isNotEmpty
+          ? Image.network(poster!)
+          : Container(color: Colors.black),
+      autoPlay: autoplay,
+      looping: loop,
+      showControls: showControls,
+      autoInitialize: true,
+      aspectRatio: _width / _height,
+    );
+    context.parser.root?.addController(element.hashCode, videoController);
+    context.parser.root?.addController(element.hashCode, chewieController);
     return AspectRatio(
       aspectRatio: _width / _height,
       child: Container(
         key: AnchorKey.of(context.parser.key, this),
         child: Chewie(
-          controller: ChewieController(
-            videoPlayerController: VideoPlayerController.network(
-              src.first ?? "",
-            ),
-            placeholder: poster != null && poster!.isNotEmpty
-                ? Image.network(poster!)
-                : Container(color: Colors.black),
-            autoPlay: autoplay,
-            looping: loop,
-            showControls: showControls,
-            autoInitialize: true,
-            aspectRatio: _width / _height,
-          ),
+          controller: chewieController,
         ),
       ),
     );

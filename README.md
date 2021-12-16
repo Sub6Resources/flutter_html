@@ -39,6 +39,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 
   - [Parameters Table](#parameters)
   
+  - [Methods](#methods)
+  
   - [Getters](#getters)
 
   - [Data](#data)
@@ -187,11 +189,25 @@ Once the above issue is resolved, the aforementioned compromises will go away. C
 | `customImageRender` | A powerful API that allows you to fully customize how images are loaded. |
 | `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
+### Methods:
+
+|  Methods  |   Description   |
+|--------------|-----------------|
+| `disposeAll()` | Disposes all `ChewieController`s, `ChewieAudioController`s, and `VideoPlayerController`s being used by every `Html` widget. (Note: `Html` widgets automatically dispose their controllers, this method is only provided in case you need other behavior) |
+
 ### Getters:
 
 1. `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in excluding elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
 
 2. `SelectableHtml.tags`. This provides a list of all the tags that can be rendered in selectable mode.
+
+3. `Html.chewieAudioControllers`. This provides a list of all `ChewieAudioController`s being used by `Html` widgets.
+
+4. `Html.chewieControllers`. This provides a list of all `ChewieController`s being used by `Html` widgets.
+
+5. `Html.videoPlayerControllers`. This provides a list of all `VideoPlayerController`s being used for video widgets by `Html` widgets.
+
+6. `Html.audioPlayerControllers`. This provides a list of all `VideoPlayerController`s being used for audio widgets by `Html` widgets.
 
 ### Data:
 

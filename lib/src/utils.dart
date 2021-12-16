@@ -1,7 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
 
+import 'package:chewie/chewie.dart';
+import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
+import 'package:video_player/video_player.dart';
 import 'package:flutter_html/style.dart';
 
 Map<String, String> namedColors = {
@@ -75,6 +78,15 @@ class CustomBorderSide {
   Color? color;
   double width;
   BorderStyle style;
+}
+
+/// Helps keep track of controllers used by [Html] widgets.
+/// A map is used so that controllers are not duplicated on widget rebuild
+class InternalControllers {
+  Map<int, ChewieAudioController> chewieAudioControllers = {};
+  Map<int, ChewieController> chewieControllers = {};
+  Map<int, VideoPlayerController> audioPlayerControllers = {};
+  Map<int, VideoPlayerController> videoPlayerControllers = {};
 }
 
 String getRandString(int len) {
