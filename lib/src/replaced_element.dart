@@ -181,7 +181,7 @@ class VideoContentElement extends ReplacedElement {
             videoPlayerController: VideoPlayerController.network(
               src.first ?? "",
             ),
-            placeholder: poster != null
+            placeholder: poster != null && poster!.isNotEmpty
                 ? Image.network(poster!)
                 : Container(color: Colors.black),
             autoPlay: autoplay,

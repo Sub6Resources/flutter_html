@@ -1,6 +1,6 @@
 name: example
 description: flutter_html example app.
-
+publish_to: none
 version: 1.0.0+1
 
 environment:

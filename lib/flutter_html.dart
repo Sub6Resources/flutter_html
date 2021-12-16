@@ -1,6 +1,7 @@
 library flutter_html;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_html/custom_render.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/image_render.dart';
@@ -11,6 +12,12 @@ import 'package:flutter_html/src/navigation_delegate.dart';
 
 //export render context api
 export 'package:flutter_html/html_parser.dart';
+//export render context api
+export 'package:flutter_html/html_parser.dart';
+//export image render api
+export 'package:flutter_html/image_render.dart';
+export 'package:flutter_html/custom_render.dart';
+//export image render api
 export 'package:flutter_html/image_render.dart';
 //export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
@@ -54,7 +61,7 @@ class Html extends StatelessWidget {
     required this.data,
     this.onLinkTap,
     this.onAnchorTap,
-    this.customRender = const {},
+    this.customRenders = const {},
     this.customImageRenders = const {},
     this.onCssParseError,
     this.onImageError,
@@ -75,7 +82,7 @@ class Html extends StatelessWidget {
     @required this.document,
     this.onLinkTap,
     this.onAnchorTap,
-    this.customRender = const {},
+    this.customRenders = const {},
     this.customImageRenders = const {},
     this.onCssParseError,
     this.onImageError,
@@ -132,7 +139,7 @@ class Html extends StatelessWidget {
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
-  final Map<String, CustomRender> customRender;
+  final Map<CustomRenderMatcher, CustomRender> customRenders;
 
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
@@ -169,7 +176,9 @@ class Html extends StatelessWidget {
         shrinkWrap: shrinkWrap,
         selectable: false,
         style: style,
-        customRender: customRender,
+        customRenders: {}
+          ..addAll(customRenders)
+          ..addAll(defaultRenders),
         imageRenders: {}
           ..addAll(customImageRenders)
           ..addAll(defaultImageRenders),
@@ -221,6 +230,7 @@ class SelectableHtml extends StatelessWidget {
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
+    this.customRenders = const {},
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
@@ -238,6 +248,7 @@ class SelectableHtml extends StatelessWidget {
     this.onCssParseError,
     this.shrinkWrap = false,
     this.style = const {},
+    this.customRenders = const {},
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
@@ -282,6 +293,10 @@ class SelectableHtml extends StatelessWidget {
   /// Allows you to override the default scrollPhysics for [SelectableText.rich]
   final ScrollPhysics? scrollPhysics;
 
+  /// Either return a custom widget for specific node types or return null to
+  /// fallback to the default rendering.
+  final Map<CustomRenderMatcher, SelectableCustomRender> customRenders;
+
   static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
 
   @override
@@ -303,7 +318,9 @@ class SelectableHtml extends StatelessWidget {
         shrinkWrap: shrinkWrap,
         selectable: true,
         style: style,
-        customRender: {},
+        customRenders: {}
+          ..addAll(customRenders)
+          ..addAll(defaultRenders),
         imageRenders: defaultImageRenders,
         tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
         navigationDelegateForIframe: null,
