@@ -214,6 +214,8 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
           .expand((tree) => [
         context.parser.parseTree(context, tree),
         if (tree.style.display == Display.BLOCK &&
+            tree.element?.parent?.localName != "th" &&
+            tree.element?.parent?.localName != "td" &&
             tree.element?.localName != "html" &&
             tree.element?.localName != "body")
           TextSpan(text: "\n"),
