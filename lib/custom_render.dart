@@ -15,9 +15,9 @@ CustomRenderMatcher tagMatcher(String tag) => (context) {
 };
 
 CustomRenderMatcher blockElementMatcher() => (context) {
-      return context.tree.style.display == Display.BLOCK &&
-          (context.tree.children.isNotEmpty || context.tree.element?.localName == "hr");
-    };
+  return context.tree.style.display == Display.BLOCK &&
+      (context.tree.children.isNotEmpty || context.tree.element?.localName == "hr");
+};
 
 CustomRenderMatcher listElementMatcher() => (context) {
   return context.tree.style.display == Display.LIST_ITEM;
@@ -31,7 +31,7 @@ CustomRenderMatcher dataUriMatcher({String? encoding = 'base64', String? mime}) 
   if (context.tree.element?.attributes == null
       || _src(context.tree.element!.attributes.cast()) == null) return false;
   final dataUri = _dataUriFormat.firstMatch(_src(context.tree.element!.attributes.cast())!);
-  return dataUri != null &&
+  return dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml" &&
       (mime == null || dataUri.namedGroup('mime') == mime) &&
       (encoding == null || dataUri.namedGroup('encoding') == ';$encoding');
 };
@@ -57,7 +57,8 @@ CustomRenderMatcher networkSourceMatcher({
 CustomRenderMatcher assetUriMatcher() => (context) =>
     context.tree.element?.attributes.cast() != null
     && _src(context.tree.element!.attributes.cast()) != null
-    && _src(context.tree.element!.attributes.cast())!.startsWith("asset:");
+    && _src(context.tree.element!.attributes.cast())!.startsWith("asset:")
+    && !_src(context.tree.element!.attributes.cast())!.endsWith(".svg");
 
 CustomRenderMatcher textContentElementMatcher() => (context) {
   return context.tree is TextContentElement;
@@ -209,7 +210,7 @@ CustomRender textContentElementRender({String? text}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
       TextSpan(text: (text ?? (context.tree as TextContentElement).text).transformed(context.tree.style.textTransform)));
 
-CustomRender base64ImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender base64ImageRender() => CustomRender.widget(widget: (context, buildChildren) {
   final decodedImage = base64.decode(_src(context.tree.element!.attributes.cast())!.split("base64,")[1].trim());
   precacheImage(
     MemoryImage(decodedImage),
@@ -228,9 +229,9 @@ CustomRender base64ImageRender() => CustomRender.fromWidget(widget: (context, bu
     },
   );
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: widget,
           onTap: () {
             if (MultipleTapGestureDetector.of(buildContext) != null) {
@@ -251,7 +252,7 @@ CustomRender base64ImageRender() => CustomRender.fromWidget(widget: (context, bu
 CustomRender assetImageRender({
   double? width,
   double? height,
-}) => CustomRender.fromWidget(widget: (context, buildChildren) {
+}) => CustomRender.widget(widget: (context, buildChildren) {
   final assetPath = _src(context.tree.element!.attributes.cast())!.replaceFirst('asset:', '');
   final widget = Image.asset(
     assetPath,
@@ -265,9 +266,9 @@ CustomRender assetImageRender({
     },
   );
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: widget,
           onTap: () {
             if (MultipleTapGestureDetector.of(buildContext) != null) {
@@ -292,62 +293,71 @@ CustomRender networkImageRender({
   double? height,
   Widget Function(String?)? altWidget,
   Widget Function()? loadingWidget,
-}) => CustomRender.fromWidget(widget: (context, buildChildren) {
+}) => CustomRender.widget(widget: (context, buildChildren) {
   final src = mapUrl?.call(_src(context.tree.element!.attributes.cast()))
       ?? _src(context.tree.element!.attributes.cast())!;
-  precacheImage(
-    NetworkImage(
-      src,
-      headers: headers,
-    ),
-    context.buildContext,
-    onError: (exception, StackTrace? stackTrace) {
-      context.parser.onImageError?.call(exception, stackTrace);
-    },
-  );
   Completer<Size> completer = Completer();
-  Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
-    if (frame == null) {
-      if (!completer.isCompleted) {
-        completer.completeError("error");
+  if (context.parser.cachedImageSizes[src] != null) {
+    completer.complete(context.parser.cachedImageSizes[src]);
+  } else {
+    Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+      if (frame == null) {
+        if (!completer.isCompleted) {
+          completer.completeError("error");
+        }
+        return child;
+      } else {
+        return child;
       }
-      return child;
-    } else {
-      return child;
-    }
-  });
+    });
 
-  image.image.resolve(ImageConfiguration()).addListener(
-    ImageStreamListener((ImageInfo image, bool synchronousCall) {
-      var myImage = image.image;
+    ImageStreamListener? listener;
+    listener = ImageStreamListener((ImageInfo imageInfo, bool synchronousCall) {
+      var myImage = imageInfo.image;
       Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
       if (!completer.isCompleted) {
+        context.parser.cachedImageSizes[src] = size;
         completer.complete(size);
+        image.image.resolve(ImageConfiguration()).removeListener(listener!);
       }
     }, onError: (object, stacktrace) {
       if (!completer.isCompleted) {
         completer.completeError(object);
+        image.image.resolve(ImageConfiguration()).removeListener(listener!);
       }
-    }),
-  );
+    });
+
+    image.image.resolve(ImageConfiguration()).addListener(listener);
+  }
+  final attributes = context.tree.element!.attributes.cast<String, String>();
   final widget = FutureBuilder<Size>(
     future: completer.future,
+    initialData: context.parser.cachedImageSizes[src],
     builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
       if (snapshot.hasData) {
-        return Image.network(
-          src,
-          headers: headers,
-          width: width ?? _width(context.tree.element!.attributes.cast())
-              ?? snapshot.data!.width,
-          height: height ?? _height(context.tree.element!.attributes.cast()),
-          frameBuilder: (ctx, child, frame, _) {
-            if (frame == null) {
-              return altWidget?.call(_alt(context.tree.element!.attributes.cast())) ??
-                  Text(_alt(context.tree.element!.attributes.cast())
-                      ?? "", style: context.style.generateTextStyle());
-            }
-            return child;
-          },
+        return Container(
+          constraints: BoxConstraints(
+              maxWidth: width ?? _width(attributes) ?? snapshot.data!.width,
+              maxHeight:
+              (width ?? _width(attributes) ?? snapshot.data!.width) /
+                  _aspectRatio(attributes, snapshot)),
+          child: AspectRatio(
+            aspectRatio: _aspectRatio(attributes, snapshot),
+            child: Image.network(
+              src,
+              headers: headers,
+              width: width ?? _width(attributes) ?? snapshot.data!.width,
+              height: height ?? _height(attributes),
+              frameBuilder: (ctx, child, frame, _) {
+                if (frame == null) {
+                  return altWidget?.call(_alt(attributes)) ??
+                      Text(_alt(attributes) ?? "",
+                          style: context.style.generateTextStyle());
+                }
+                return child;
+              },
+            ),
+          ),
         );
       } else if (snapshot.hasError) {
         return altWidget?.call(_alt(context.tree.element!.attributes.cast())) ??
@@ -359,9 +369,9 @@ CustomRender networkImageRender({
     },
   );
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: widget,
           onTap: () {
             if (MultipleTapGestureDetector.of(buildContext) != null) {
@@ -519,4 +529,22 @@ double? _height(Map<String, String> attributes) {
 double? _width(Map<String, String> attributes) {
   final widthString = attributes["width"];
   return widthString == null ? widthString as double? : double.tryParse(widthString);
+}
+
+double _aspectRatio(
+    Map<String, String> attributes, AsyncSnapshot<Size> calculated) {
+  final heightString = attributes["height"];
+  final widthString = attributes["width"];
+  if (heightString != null && widthString != null) {
+    final height = double.tryParse(heightString);
+    final width = double.tryParse(widthString);
+    return height == null || width == null
+        ? calculated.data!.aspectRatio
+        : width / height;
+  }
+  return calculated.data!.aspectRatio;
+}
+
+extension ClampedEdgeInsets on EdgeInsetsGeometry {
+  EdgeInsetsGeometry get nonNegative => this.clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity));
 }

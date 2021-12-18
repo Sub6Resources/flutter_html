@@ -3,13 +3,13 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/shims/dart_ui.dart' as ui;
+import 'package:flutter_html_iframe/shims/dart_ui.dart' as ui;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
 
 import 'package:webview_flutter/webview_flutter.dart';
 
-CustomRender iframeRender({NavigationDelegate? navigationDelegate}) => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender iframeRender({NavigationDelegate? navigationDelegate}) => CustomRender.widget(widget: (context, buildChildren) {
   final html.IFrameElement iframe = html.IFrameElement()
     ..width = (double.tryParse(context.tree.element?.attributes['width'] ?? "")
         ?? (double.tryParse(context.tree.element?.attributes['height'] ?? "") ?? 150) * 2).toString()
@@ -24,11 +24,15 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) => CustomRen
           ?? (double.tryParse(context.tree.element?.attributes['height'] ?? "") ?? 150) * 2,
       height: double.tryParse(context.tree.element?.attributes['height'] ?? "")
           ?? (double.tryParse(context.tree.element?.attributes['width'] ?? "") ?? 300) / 2,
-      child: Directionality(
-          textDirection: TextDirection.ltr,
-          child: HtmlElementView(
-            viewType: createdViewId,
-          )
+      child: ContainerSpan(
+        style: context.style,
+        newContext: context,
+        child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: HtmlElementView(
+              viewType: createdViewId,
+            )
+        ),
       )
   );
 });

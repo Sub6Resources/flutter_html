@@ -4,14 +4,10 @@ import 'dart:math';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
-import 'package:flutter_html/src/layout_element.dart';
 import 'package:flutter_html/src/utils.dart';
-import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
 import 'package:numerus/numerus.dart';
@@ -42,6 +38,7 @@ class HtmlParser extends StatelessWidget {
   final Map<CustomRenderMatcher, CustomRender> customRenders;
   final List<String> tagsList;
   final OnTap? internalOnAnchorTap;
+  final Html? root;
   final TextSelectionControls? selectionControls;
   final ScrollPhysics? scrollPhysics;
 
@@ -60,6 +57,7 @@ class HtmlParser extends StatelessWidget {
     required this.style,
     required this.customRenders,
     required this.tagsList,
+    this.root,
     this.selectionControls,
     this.scrollPhysics,
   })  : this.internalOnAnchorTap = onAnchorTap != null
@@ -881,7 +879,22 @@ class StyledText extends StatelessWidget {
     this.textScaleFactor = 1.0,
     required this.renderContext,
     this.key,
-  }) : super(key: key);
+    this.selectionControls,
+    this.scrollPhysics,
+  }) : _selectable = false,
+        super(key: key);
+
+  const StyledText.selectable({
+    required TextSpan textSpan,
+    required this.style,
+    this.textScaleFactor = 1.0,
+    required this.renderContext,
+    this.key,
+    this.selectionControls,
+    this.scrollPhysics,
+  }) : textSpan = textSpan,
+        _selectable = true,
+        super(key: key);
 
   @override
   Widget build(BuildContext context) {

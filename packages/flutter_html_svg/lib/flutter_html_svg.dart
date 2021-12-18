@@ -8,14 +8,13 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-CustomRender svgTagRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgTagRender() => CustomRender.widget(widget: (context, buildChildren) {
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: SvgPicture.string(
             context.tree.element?.outerHtml ?? "",
-            key: context.key,
             width: double.tryParse(context.tree.element?.attributes['width'] ?? ""),
             height: double.tryParse(context.tree.element?.attributes['width'] ?? ""),
           ),
@@ -35,14 +34,14 @@ CustomRender svgTagRender() => CustomRender.fromWidget(widget: (context, buildCh
   );
 });
 
-CustomRender svgDataImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgDataImageRender() => CustomRender.widget(widget: (context, buildChildren) {
   final dataUri = _dataUriFormat.firstMatch(_src(context.tree.element?.attributes.cast() ?? <String, String>{})!);
   final data = dataUri?.namedGroup('data');
   if (data == null) return Container(height: 0, width: 0);
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: dataUri?.namedGroup('encoding') == ';base64' ? SvgPicture.memory(
             base64.decode(data.trim()),
             width: _width(context.tree.element?.attributes.cast() ?? <String, String>{}),
@@ -64,14 +63,14 @@ CustomRender svgDataImageRender() => CustomRender.fromWidget(widget: (context, b
   );
 });
 
-CustomRender svgNetworkImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgNetworkImageRender() => CustomRender.widget(widget: (context, buildChildren) {
   if (context.tree.element?.attributes["src"] == null) {
     return Container(height: 0, width: 0);
   }
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: SvgPicture.network(
             context.tree.element!.attributes["src"]!,
             width: _width(context.tree.element!.attributes.cast()),
@@ -93,15 +92,15 @@ CustomRender svgNetworkImageRender() => CustomRender.fromWidget(widget: (context
   );
 });
 
-CustomRender svgAssetImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender svgAssetImageRender() => CustomRender.widget(widget: (context, buildChildren) {
   if ( _src(context.tree.element?.attributes.cast() ?? <String, String>{}) == null) {
     return Container(height: 0, width: 0);
   }
   final assetPath = _src(context.tree.element!.attributes.cast())!.replaceFirst('asset:', '');
   return Builder(
+      key: context.key,
       builder: (buildContext) {
         return GestureDetector(
-          key: context.key,
           child: SvgPicture.asset(assetPath),
           onTap: () {
             if (MultipleTapGestureDetector.of(buildContext) != null) {

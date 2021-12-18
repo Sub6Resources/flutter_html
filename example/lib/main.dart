@@ -301,7 +301,7 @@ class _MyHomePageState extends State<MyHomePage> {
             svgDataUriMatcher(): svgDataImageRender(),
             svgAssetUriMatcher(): svgAssetImageRender(),
             svgNetworkSourceMatcher(): svgNetworkImageRender(),
-            networkSourceMatcher(domains: ["flutter.dev"]): CustomRender.fromWidget(
+            networkSourceMatcher(domains: ["flutter.dev"]): CustomRender.widget(
                 widget: (context, buildChildren) {
                   return FlutterLogo(size: 36);
                 }),

@@ -86,7 +86,3 @@ extension TextTransformUtil on String? {
     }
   }
 }
-
-extension ClampedEdgeInsets on EdgeInsetsGeometry {
-  EdgeInsetsGeometry get nonNegative => this.clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity));
-}

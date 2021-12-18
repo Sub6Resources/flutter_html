@@ -2,7 +2,6 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/custom_render.dart';
-import 'package:flutter/rendering.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
@@ -19,11 +18,10 @@ export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
-export 'package:flutter_html/src/navigation_delegate.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
-class Html extends StatelessWidget {
+class Html extends StatefulWidget {
   /// The `Html` widget takes HTML as input and displays a RichText
   /// tree of the parsed HTML content.
   ///
@@ -133,34 +131,44 @@ class Html extends StatelessWidget {
     ..addAll(EXTERNAL_ELEMENTS);
 
   @override
-  Widget build(BuildContext context) {
-    final dom.Document doc =
-        data != null ? HtmlParser.parseHTML(data!) : document!;
-    final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
+  State<StatefulWidget> createState() => _HtmlState();
+}
 
+class _HtmlState extends State<Html> {
+  late final dom.Document doc;
+
+  @override
+  void initState() {
+    super.initState();
+    doc =
+    widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.document!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: width,
+      width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
       child: HtmlParser(
-        key: _anchorKey,
+        key: widget._anchorKey,
         htmlData: doc,
-        onLinkTap: onLinkTap,
-        onAnchorTap: onAnchorTap,
-        onImageTap: onImageTap,
-        onCssParseError: onCssParseError,
-        onImageError: onImageError,
-        shrinkWrap: shrinkWrap,
+        onLinkTap: widget.onLinkTap,
+        onAnchorTap: widget.onAnchorTap,
+        onImageTap: widget.onImageTap,
+        onCssParseError: widget.onCssParseError,
+        onImageError: widget.onImageError,
+        shrinkWrap: widget.shrinkWrap,
         selectable: false,
-        style: style,
+        style: widget.style,
         customRenders: {}
-          ..addAll(customRenders)
+          ..addAll(widget.customRenders)
           ..addAll(defaultRenders),
-        tagsList: tagsList.isEmpty ? Html.tags : tagsList,
+        tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
       ),
     );
   }
 }
 
-class SelectableHtml extends StatelessWidget {
+class SelectableHtml extends StatefulWidget {
   /// The `SelectableHtml` widget takes HTML as input and displays a RichText
   /// tree of the parsed HTML content (which is selectable)
   ///
@@ -271,32 +279,40 @@ class SelectableHtml extends StatelessWidget {
   static List<String> get tags => new List<String>.from(SELECTABLE_ELEMENTS);
 
   @override
-  Widget build(BuildContext context) {
-    final dom.Document doc = data != null ? HtmlParser.parseHTML(data!) : document!;
-    final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
+  State<StatefulWidget> createState() => _SelectableHtmlState();
+}
 
+class _SelectableHtmlState extends State<SelectableHtml> {
+  late final dom.Document doc;
+
+  @override
+  void initState() {
+    super.initState();
+    doc =
+    widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.document!;
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      width: width,
+      width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
       child: HtmlParser(
-        key: _anchorKey,
+        key: widget._anchorKey,
         htmlData: doc,
-        onLinkTap: onLinkTap,
-        onAnchorTap: onAnchorTap,
+        onLinkTap: widget.onLinkTap,
+        onAnchorTap: widget.onAnchorTap,
         onImageTap: null,
-        onCssParseError: onCssParseError,
+        onCssParseError: widget.onCssParseError,
         onImageError: null,
-        onMathError: null,
-        shrinkWrap: shrinkWrap,
+        shrinkWrap: widget.shrinkWrap,
         selectable: true,
-        style: style,
+        style: widget.style,
         customRenders: {}
-          ..addAll(customRenders)
+          ..addAll(widget.customRenders)
           ..addAll(defaultRenders),
-        imageRenders: defaultImageRenders,
-        tagsList: tagsList.isEmpty ? SelectableHtml.tags : tagsList,
-        navigationDelegateForIframe: null,
-        selectionControls: selectionControls,
-        scrollPhysics: scrollPhysics,
+        tagsList: widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
+        selectionControls: widget.selectionControls,
+        scrollPhysics: widget.scrollPhysics,
       ),
     );
   }

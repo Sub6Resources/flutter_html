@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
-CustomRender mathRender({OnMathError? onMathError}) => CustomRender.fromWidget(widget: (context, buildChildren) {
+CustomRender mathRender({OnMathError? onMathError}) => CustomRender.widget(widget: (context, buildChildren) {
   String texStr = context.tree.element == null ? '' : parseMathRecursive(context.tree.element!, r'');
   return Container(
       width: context.parser.shrinkWrap ? null : MediaQuery.of(context.buildContext).size.width,

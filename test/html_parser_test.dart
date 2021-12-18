@@ -1,8 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/html_parser.dart';
-import 'package:flutter_html/src/html_elements.dart';
-import 'package:flutter_html/style.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -39,8 +36,7 @@ void testNewParser(BuildContext context) {
     HtmlParser.parseHTML(
         "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
     [],
-    [],
-    null,
+    Html.tags,
     context,
     HtmlParser(
       key: null,
@@ -51,14 +47,11 @@ void testNewParser(BuildContext context) {
       onImageTap: null,
       onCssParseError: null,
       onImageError: null,
-      onMathError: null,
       shrinkWrap: false,
       selectable: true,
       style: {},
       customRenders: defaultRenders,
-      imageRenders: defaultImageRenders,
       tagsList: Html.tags,
-      navigationDelegateForIframe: null,
       selectionControls: null,
       scrollPhysics: null,
     )
@@ -69,8 +62,7 @@ void testNewParser(BuildContext context) {
     HtmlParser.parseHTML(
         "Hello, World! <a href='https://example.com'>This is a link</a>"),
     [],
-    [],
-    null,
+    Html.tags,
     context,
     HtmlParser(
       key: null,
@@ -81,14 +73,11 @@ void testNewParser(BuildContext context) {
       onImageTap: null,
       onCssParseError: null,
       onImageError: null,
-      onMathError: null,
       shrinkWrap: false,
       selectable: true,
       style: {},
       customRenders: defaultRenders,
-      imageRenders: defaultImageRenders,
       tagsList: Html.tags,
-      navigationDelegateForIframe: null,
       selectionControls: null,
       scrollPhysics: null,
     )
@@ -98,8 +87,7 @@ void testNewParser(BuildContext context) {
   tree = HtmlParser.lexDomTree(
     HtmlParser.parseHTML("<img src='https://image.example.com' />"),
     [],
-    [],
-    null,
+    Html.tags,
     context,
     HtmlParser(
       key: null,
@@ -109,14 +97,11 @@ void testNewParser(BuildContext context) {
       onImageTap: null,
       onCssParseError: null,
       onImageError: null,
-      onMathError: null,
       shrinkWrap: false,
       selectable: true,
       style: {},
       customRenders: defaultRenders,
-      imageRenders: defaultImageRenders,
       tagsList: Html.tags,
-      navigationDelegateForIframe: null,
       selectionControls: null,
       scrollPhysics: null,
     )
@@ -127,8 +112,7 @@ void testNewParser(BuildContext context) {
     HtmlParser.parseHTML(
         "<div><div><div><div><a href='link'>Link</a><div>Hello, World! <b>Bold and <i>Italic</i></b></div></div></div></div></div>"),
     [],
-    [],
-    null,
+    Html.tags,
     context,
     HtmlParser(
       key: null,
@@ -139,21 +123,18 @@ void testNewParser(BuildContext context) {
       onImageTap: null,
       onCssParseError: null,
       onImageError: null,
-      onMathError: null,
       shrinkWrap: false,
       selectable: true,
       style: {},
       customRenders: defaultRenders,
-      imageRenders: defaultImageRenders,
       tagsList: Html.tags,
-      navigationDelegateForIframe: null,
       selectionControls: null,
       scrollPhysics: null,
     )
   );
   print(tree.toString());
 
-  ReplacedElement videoContentElement = parseReplacedElement(
+  /*ReplacedElement videoContentElement = parseReplacedElement(
     HtmlParser.parseHTML("""
       <video width="320" height="240" controls>
        <source src="movie.mp4" type="video/mp4">
@@ -190,7 +171,7 @@ void testNewParser(BuildContext context) {
         reason: "Controls isn't working");
     expect(audioContentElement.src, hasLength(2),
         reason: "Not enough sources...");
-  }
+  }*/
 
   Style style1 = Style(
     display: Display.BLOCK,
