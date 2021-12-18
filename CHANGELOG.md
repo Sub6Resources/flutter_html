@@ -1,3 +1,66 @@
+## [2.2.1] - December 8, 2021:
+* Allow styling on ruby tags
+* Allow width/height/alignment styling on table/tr/td tags
+* Prevent images causing rebuilding and leaking memory
+* Fixes display of list items on iOS with font weights below 400
+* Prevent crash on negative margins or paddings
+
+## [2.2.0] - November 29, 2021:
+* Explicitly declare multiplatform support
+* Extended and fixed list-style (marker) support
+* Basic support for height/width css properties
+* Support changing scroll physics of SelectableText.rich
+* Support text transform css property
+* Bumped minimum flutter_math_fork version for Flutter 2.5 compatibility
+* Fix styling of iframes
+* Fix nested font tag application
+* Fix whitespace rendering between list items
+* Prevent crash on empty <table> tag and tables with both colspan/rowspan
+* Prevent crash on use of negative margins in css
+
+## [2.1.5] - October 7, 2021:
+* Ignore unsupported custom style selectors when using fromCss
+* Fix SVG tag usage inside tables
+* Properly fix regression in usage of line breaks
+
+## [2.1.4] - October 3, 2021:
+* Fix regression in usage of line breaks in body being stripped
+
+## [2.1.3] - October 1, 2021:
+* Update minimum versions of dependencies for Flutter 2.5 compatibility
+* Extended and fixed support for css shadow
+* Fix block tags with explicit whitespace from being stripped
+
+## [2.1.2] - September 2, 2021:
+* Allow setting selectionControls with SelectableHtml
+* Fix onLinkTap not working with SelectableHtml
+* Don't crash when parsing unsupported :hover
+* Prevent endless loading when using animated images
+
+## [2.1.1] - July 28, 2021:
+* Stable release with all 2.1.1-preview.X changes
+
+## [2.1.1-preview.0] - July 27, 2021:
+* Improves hr tag support
+* Fixes a leading whitespace issue
+* Fixes some crashes with CSS parsing
+
+## [2.1.0] - June 3, 2021:
+* SelectableHtml widget (supporting a subset of tags) which allow text selection
+* Fixed shrinkWrap to actually shrink the horizontal space
+* Support style tags to apply styling from inline css
+* Support applying styles from Flutter themes
+* Mouse hover on links when using Flutter Web
+* Allow custom anchor link tap implementations
+* Support additional list styling options
+* Fix several minor whitespace issues in text flow
+* Fixed specific colspan/rowspan usages in tables
+* Fixed whitespace issues around images
+* Swallow duplicate ids to prevent crashing the widget
+* Fixes crashing tap detection when using both link and image taps
+* Updates external dependencies
+* Raised minimum Flutter version to 2.2.0
+
 ## [2.0.0] - April 29, 2021:
 * Stable release with all 2.0.0-nullsafety.X changes
 

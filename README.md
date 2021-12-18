@@ -13,9 +13,9 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
     <td align="center">Screenshot 3</td>
   </tr>
   <tr>
-    <td><img alt="A Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot.png" width="250"/></td>
-    <td><img alt="Another Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot2.png" width="250"/></td>
-    <td><img alt="Yet another Screenshot of flutter_html" src="https://github.com/Sub6Resources/flutter_html/blob/master/.github/flutter_html_screenshot3.png" width="250"/></td>
+    <td><img alt="A Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot.png" width="250"/></td>
+    <td><img alt="Another Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot2.png" width="250"/></td>
+    <td><img alt="Yet another Screenshot of flutter_html" src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot3.png" width="250"/></td>
   </tr>
  </table>
 
@@ -34,6 +34,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 - [API Reference](#api-reference)
 
   - [Constructors](#constructors)
+
+    - [Selectable Text](#selectable-text)
 
   - [Parameters Table](#parameters)
   
@@ -54,7 +56,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   - [tagsList](#tagslist)
 
   - [style](#style)
-    
+
 - [Rendering Reference](#rendering-reference)
 
   - [Image](#image)
@@ -72,7 +74,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
   - [`flutter_html_svg`](#flutter_html_svg)
   
   - [`flutter_html_table`](#flutter_html_table)
-  
+
   - [`flutter_html_video`](#flutter_html_video)
   
 - [Notes](#notes)
@@ -86,7 +88,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^2.0.0
+      flutter_html: ^2.2.1
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
@@ -133,7 +135,7 @@ For a full example, see [here](https://github.com/Sub6Resources/flutter_html/tre
 
 Below, you will find brief descriptions of the parameters the`Html` widget accepts and some code snippets to help you use this package.
 
-## Constructors:
+### Constructors:
 
 The package currently has two different constructors - `Html()` and `Html.fromDom()`. 
 
@@ -141,7 +143,23 @@ The `Html()` constructor is for those who would like to directly pass HTML from 
 
 If you would like to modify or sanitize the HTML before rendering it, then `Html.fromDom()` is for you - you can convert the HTML string to a `Document` and use its methods to modify the HTML as you wish. Then, you can directly pass the modified `Document` to the package. This eliminates the need to parse the modified `Document` back to a string, pass to `Html()`, and convert back to a `Document`, thus cutting down on load times.
 
-### Parameters: 
+#### Selectable Text
+
+The package also has two constructors for selectable text support - `SelectableHtml()` and `SelectableHtml.fromDom()`.
+
+The difference between the two is the same as noted above.
+
+Please note: Due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474), selectable text support is significantly watered down compared to the standard non-selectable version of the widget. The changes are as follows:
+
+1. The list of tags that can be rendered is significantly reduced. Key omissions include no support for images/video/audio, table, and ul/ol.
+
+2. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`. (Support for `customRender` may be added in the future).
+
+3. Styling support is significantly reduced. Only text-related styling works (e.g. bold or italic), while container related styling (e.g. borders or padding/margin) do not work.
+
+Once the above issue is resolved, the aforementioned compromises will go away. Currently the `SelectableText.rich()` constructor does not support `WidgetSpan`s, resulting in the feature losses above.
+
+### Parameters:
 
 |  Parameters  |   Description   |
 |--------------|-----------------|
@@ -154,10 +172,13 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 | `onImageTap` | A function that defines what the widget should do when an image is tapped. The function exposes the `src` of the image as a `String` to use in your implementation. |
 | `tagsList` | A list of elements the `Html` widget should render. The list should contain the tags of the HTML elements you wish to include.  |
 | `style` | A powerful API that allows you to customize the style that should be used when rendering a specific HTMl tag. |
+| `selectionControls` |  A custom text selection controls that allow you to override default toolbar and build toolbar with custom text selection options. See an [example](https://github.com/justinmc/flutter-text-selection-menu-examples/blob/master/lib/custom_menu_page.dart). |
 
 ### Getters:
 
-Currently the only getter is `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in blacklisting elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+1. `Html.tags`. This provides a list of all the tags the package renders. The main use case is to assist in excluding elements using `tagsList`. See an [example](#example-usage---tagslist---excluding-tags) below.
+
+2. `SelectableHtml.tags`. This provides a list of all the tags that can be rendered in selectable mode.
 
 ### Data:
 
@@ -235,13 +256,13 @@ Inner links (such as `<a href="#top">Back to the top</a>` will work out of the b
 
 A powerful API that allows you to customize everything when rendering a specific HTML tag. This means you can change the default behaviour or add support for HTML elements that aren't supported natively. You can also make up your own custom tags in your HTML!
 
-`customRender` accepts a `Map<CustomRenderMatcher, CustomRender>`. 
+`customRender` accepts a `Map<CustomRenderMatcher, CustomRender>`.
 
 `CustomRenderMatcher` is a function that requires a `bool` to be returned. It exposes the `RenderContext` which provides `BuildContext` and access to the HTML tree.
 
-The `CustomRender` class has two constructors: `CustomRender.fromWidget()` and `CustomRender.fromInlineSpan()`. Both require a `<Widget/InlineSpan> Function(RenderContext, Function())`. The `Function()` argument is a function that will provide you with the element's children when needed.
+The `CustomRender` class has two constructors: `CustomRender.widget()` and `CustomRender.inlineSpan()`. Both require a `<Widget/InlineSpan> Function(RenderContext, Function())`. The `Function()` argument is a function that will provide you with the element's children when needed.
 
-To use this API, create a matching function and an instance of `CustomRender`. 
+To use this API, create a matching function and an instance of `CustomRender`.
 
 #### Example Usages - customRenders:
 Note: If you add any custom tags, you must add these tags to the [`tagsList`](#tagslist) parameter, otherwise they will not be rendered. See below for an example.
@@ -256,8 +277,8 @@ Widget html = Html(
   <flutter horizontal></flutter>
   """,
   customRenders: {
-      birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
-      flutterMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => FlutterLogo(
+      birdMatcher(): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
+      flutterMatcher(): CustomRender.widget(widget: (context, buildChildren) => FlutterLogo(
         style: (context.tree.element!.attributes['horizontal'] != null)
             ? FlutterLogoStyle.horizontal
             : FlutterLogoStyle.markOnly,
@@ -290,7 +311,7 @@ Widget html = Html(
   </table>
   """,
   customRenders: {
-    tableMatcher(): CustomRender.fromWidget(widget: (context, child) {
+    tableMatcher(): CustomRender.widget(widget: (context, child) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: (context.tree as TableLayoutElement).toWidget(context),
@@ -317,7 +338,7 @@ Widget html = Html(
    <iframe src="https://www.youtube.com/embed/tgbNymZ7vqY"></iframe>
    """,
    customRenders: {
-      iframeYT(): CustomRender.fromWidget(widget: (context, buildChildren) {
+      iframeYT(): CustomRender.widget(widget: (context, buildChildren) {
         double? width = double.tryParse(context.tree.attributes['width'] ?? "");
         double? height = double.tryParse(context.tree.attributes['height'] ?? "");
         return Container(
@@ -337,7 +358,7 @@ Widget html = Html(
           ),
         );
       }),
-      iframeOther(): CustomRender.fromWidget(widget: (context, buildChildren) {
+      iframeOther(): CustomRender.widget(widget: (context, buildChildren) {
         double? width = double.tryParse(context.tree.attributes['width'] ?? "");
         double? height = double.tryParse(context.tree.attributes['height'] ?? "");
         return Container(
@@ -353,13 +374,13 @@ Widget html = Html(
           ),
         );
       }),
-      iframeNull(): CustomRender.fromWidget(widget: (context, buildChildren) => Container(height: 0, width: 0)),
+      iframeNull(): CustomRender.widget(widget: (context, buildChildren) => Container(height: 0, width: 0)),
    }
  );
 
 CustomRenderMatcher iframeYT() => (context) => context.tree.element?.attributes['src']?.contains("youtube.com/embed") ?? false;
 
-CustomRenderMatcher iframeOther() => (context) => !(context.tree.element?.attributes['src']?.contains("youtube.com/embed") 
+CustomRenderMatcher iframeOther() => (context) => !(context.tree.element?.attributes['src']?.contains("youtube.com/embed")
   ?? context.tree.element?.attributes['src'] == null);
 
 CustomRenderMatcher iframeNull() => (context) => context.tree.element?.attributes['src'] == null;
@@ -405,7 +426,7 @@ A list of elements the `Html` widget should render. The list should contain the 
 #### Example Usage - tagsList - Excluding Tags:
 You may have instances where you can choose between two different types of HTML tags to display the same content. In the example below, the `<video>` and `<iframe>` elements are going to display the same content.
 
-The `blacklistedElements` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `blacklistedElements` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
+The `tagsList` parameter allows you to change which element is rendered. Iframes can be advantageous because they allow parallel loading - Flutter just has to wait for the webview to be initialized before rendering the page, possibly cutting down on load time. Video can be advantageous because it provides a 100% native experience with Flutter widgets, but it may take more time to render the page. You may know that Flutter webview is a little janky in its current state on Android, so using `tagsList` and a simple condition, you can get the best of both worlds - choose the video widget to render on Android and the iframe webview to render on iOS.
 
 ```dart
 Widget html = Html(
@@ -493,185 +514,6 @@ Widget html = Html(
 ```
 
 More examples and in-depth details available [here](https://github.com/Sub6Resources/flutter_html/wiki/Style).
-
-<!---
-### customImageRender:
-
-A powerful API that allows you to customize what the `Html` widget does when rendering an image, down to the most minute detail.
-
-`customImageRender` accepts a `Map<ImageSourceMatcher, ImageRender>`. `ImageSourceMatcher` provides the matching function, while `ImageRender` provides the widget to be rendered.
-
-The default image renders are:
-
-```dart
-final Map<ImageSourceMatcher, ImageRender> defaultImageRenders = {
-  base64UriMatcher(): base64ImageRender(),
-  assetUriMatcher(): assetImageRender(),
-  networkSourceMatcher(extension: "svg"): svgNetworkImageRender(),
-  networkSourceMatcher(): networkImageRender(),
-};
-```
-
-See [the source code](https://github.com/Sub6Resources/flutter_html/blob/master/lib/image_render.dart) for details on how these are implemented.
-
-When setting `customImageRenders`, the package will prioritize the custom renders first, while the default ones are used as a fallback.
-
-Note: Order is very important when you set `customImageRenders`. The more specific your `ImageSourceMatcher`, the higher up in the `customImageRender` list it should be.
-
-#### typedef ImageSourceMatcher
-
-This is type defined as a function that passes the attributes as a `Map<String, String>` and the DOM element as `dom.Element`. This type is used to define how an image should be matched i.e. whether the package should override the default rendering method and instead use your custom implementation.
-
-A typical usage would look something like this:
-
-```dart
-ImageSourceMatcher base64UriMatcher() => (attributes, element) =>
-    attributes["src"] != null &&
-    attributes["src"]!.startsWith("data:image") &&
-    attributes["src"]!.contains("base64,");
-```
-
-In the above example, the matcher checks whether the image's `src` either starts with "data:image" or contains "base64,", since these indicate an image in base64 format.
-
-You can also declare your own variables in the function itself, which would look like this:
-
-```dart
-ImageSourceMatcher networkSourceMatcher({
-/// all three are optional, you don't need to have these in the function
-  List<String> schemas: const ["https", "http"],
-  List<String> domains: const ["your domain 1", "your domain 2"],
-  String extension: "your extension",
-}) =>
-    (attributes, element) {
-      final src = Uri.parse(attributes["src"] ?? "about:blank");
-      return schemas.contains(src.scheme) &&
-          domains.contains(src.host) &&
-          src.path.endsWith(".$extension");
-    };
-```
-
-In the above example, the possible schemas are checked against the scheme of the `src`, and optionally the domains and extensions are also checked. This implementation allows for extremely granular control over what images are matched, and could even be changed on the fly with a variable.
-
-#### typedef ImageRender
-
-This is a type defined as a function that passes the attributes of the image as a `Map<String, String>`, the current [`RenderContext`](https://github.com/Sub6Resources/flutter_html/wiki/All-About-customRender#rendercontext-context), and the DOM element as `dom.Element`. This type is used to define the widget that should be rendered when used in conjunction with an `ImageSourceMatcher`.
-
-A typical usage might look like this:
-
-```dart
-ImageRender base64ImageRender() => (context, attributes, element) {
-      final decodedImage = base64.decode(attributes["src"] != null ?
-          attributes["src"].split("base64,")[1].trim() : "about:blank");
-      return Image.memory(
-        decodedImage,
-      );
-    };
-```
-
-The above example should be used with the `base64UriMatcher()` in the examples for `ImageSourceMatcher`.
-
-Just like functions for `ImageSourceMatcher`, you can declare your own variables in the function itself:
-
-```dart
-ImageRender networkImageRender({
-  Map<String, String> headers,
-  double width,
-  double height,
-  Widget Function(String) altWidget,
-}) =>
-    (context, attributes, element) {
-      return Image.network(
-        attributes["src"] ?? "about:blank",
-        headers: headers,
-        width: width,
-        height: height,
-        frameBuilder: (ctx, child, frame, _) {
-          if (frame == null) {
-            return altWidget.call(attributes["alt"]) ??
-                Text(attributes["alt"] ?? "",
-                    style: context.style.generateTextStyle());
-          }
-          return child;
-        },
-      );
-    };
-```
-
-Implementing these variables allows you to customize every last detail of how the widget is rendered.
-
-#### Example Usages - customImageRender:
-
-`customImageRender` can be used in two different ways:
-
-1. Overriding a default render:
-```dart
-Widget html = Html(
-  data: """
-  <img alt='Flutter' src='https://flutter.dev/assets/flutter-lockup-1caf6476beed76adec3c477586da54de6b552b2f42108ec5bc68dc63bae2df75.png' /><br />
-  <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /><br />
-  """,
-  customImageRenders: {
-    networkSourceMatcher(domains: ["flutter.dev"]):
-        (context, attributes, element) {
-      return FlutterLogo(size: 36);
-    },
-    networkSourceMatcher(): networkImageRender(
-      headers: {"Custom-Header": "some-value"},
-      altWidget: (alt) => Text(alt ?? ""),
-      loadingWidget: () => Text("Loading..."),
-    ),
-            (attr, _) => attr["src"] != null && attr["src"]!.startsWith("/wiki"):
-    networkImageRender(
-            mapUrl: (url) => "https://upload.wikimedia.org" + url),
-  },
-);
-```
-
-Above, there are three custom `networkSourceMatcher`s, which will be applied - in order - before the default implementations. 
-
-When an image with URL `flutter.dev` is detected, rather than displaying the image, the render will display the flutter logo. If the image is any other image, it keeps the default widget, but just sets the headers and the alt text in case that image happens to be broken. The final render handles relative paths by rewriting them, specifically prefixing them with a base url. Note that the customizations of the previous custom renders do not apply. For example, the headers that the second render would apply are not applied in this third render.  
-
-2. Creating your own renders:
-```dart
-ImageSourceMatcher classAndIdMatcher({String classToMatch, String idToMatch}) => (attributes, element) =>
-    attributes["class"] != null && attributes["id"] != null &&
-    (attributes["class"]!.contains(classToMatch) ||
-    attributes["id"]!.contains(idToMatch));
-
-ImageRender classAndIdRender({String classToMatch, String idToMatch}) => (context, attributes, element) {
-  if (attributes["class"] != null && attributes["class"]!.contains(classToMatch)) {
-    return Image.asset(attributes["src"] ?? "about:blank");
-  } else {
-    return Image.network(
-      attributes["src"] ?? "about:blank",
-      semanticLabel: attributes["longdesc"] ?? "",
-      width: attributes["width"],
-      height: attributes["height"],
-      color: context.style.color,
-      frameBuilder: (ctx, child, frame, _) {
-          if (frame == null) {
-            return Text(attributes["alt"] ?? "", style: context.style.generateTextStyle());
-          }
-          return child;
-        },
-    ); 
-  }
-};
-
-Widget html = Html(
-  data: """
-  <img alt='alt text' class='class1-class2' src='assets/flutter.png' /><br />
-  <img alt='alt text 2' id='imageId' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /><br />
-  """,
-  customImageRenders: {
-    classAndIdMatcher(classToMatch: "class1", idToMatch: "imageId"): classAndIdRender(classToMatch: "class1", idToMatch: "imageId")
-  },
-);
-```
-
-The above example has a matcher that checks for either a class or an id, and then returns two different widgets based on whether a class was matched or an id was matched. 
-
-The sky is the limit when using the custom image renders. You can make it as granular as you want, or as all-encompassing as you want, and you have full control of everything. Plus you get the package's style parsing to use in your custom widgets, so your code looks neat and readable!--->
 
 ## Rendering Reference
 
@@ -803,7 +645,7 @@ Then, use the `customRender` parameter to add the widget to render Tex. It could
 Widget htmlWidget = Html(
   data: r"""<tex>i\hbar\frac{\partial}{\partial t}\Psi(\vec x,t) = -\frac{\hbar}{2m}\nabla^2\Psi(\vec x,t)+ V(\vec x)\Psi(\vec x,t)</tex>""",
   customRenders: {
-    texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
+    texMatcher(): CustomRender.widget(widget: (context, buildChildren) => Math.tex(
       context.tree.element?.innerHtml ?? '',
       mathStyle: MathStyle.display,
       textStyle: context.style.generateTextStyle(),
@@ -812,7 +654,8 @@ Widget htmlWidget = Html(
         return Text(e.message);
       },
     )),
-  }
+  },
+  tagsList: Html.tags..add('tex'),
 );
 
 CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
@@ -857,7 +700,7 @@ Widget html = Html(
 
 ### `flutter_html_video`
 
-This package renders video elements using the [`chewie`](https://pub.dev/packages/chewie) and the [`video_player`](https://pub.dev/packages/video_player) plugin. 
+This package renders video elements using the [`chewie`](https://pub.dev/packages/chewie) and the [`video_player`](https://pub.dev/packages/video_player) plugin.
 
 The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `poster`, `width`, `height`, and `muted` when rendering the video widget.
 

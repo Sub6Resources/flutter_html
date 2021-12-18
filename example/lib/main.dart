@@ -104,9 +104,11 @@ const htmlData = r"""
             <li>a</li>
             <li>nested</li>
             <li>unordered
-            <ol>
+            <ol style="list-style-type: lower-alpha;" start="5">
             <li>With a nested</li>
-            <li>ordered list.</li>
+            <li>ordered list</li>
+            <li>with a lower alpha list style</li>
+            <li>starting at letter e</li>
             </ol>
             </li>
             <li>list</li>
@@ -269,7 +271,7 @@ class _MyHomePageState extends State<MyHomePage> {
           },
           tagsList: Html.tags..addAll(['tex', 'bird', 'flutter']),
           customRenders: {
-            texMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => Math.tex(
+            tagMatcher("tex"): CustomRender.widget(widget: (context, buildChildren) => Math.tex(
               context.tree.element?.innerHtml ?? '',
               mathStyle: MathStyle.display,
               textStyle: context.style.generateTextStyle(),
@@ -277,15 +279,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 return Text(e.message);
               },
             )),
-            birdMatcher(): CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
-            flutterMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => FlutterLogo(
+            tagMatcher("bird"): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
+            tagMatcher("flutter"): CustomRender.widget(widget: (context, buildChildren) => FlutterLogo(
               style: (context.tree.element!.attributes['horizontal'] != null)
                   ? FlutterLogoStyle.horizontal
                   : FlutterLogoStyle.markOnly,
               textColor: context.style.color!,
               size: context.style.fontSize!.size! * 5,
             )),
-            tableMatcher(): CustomRender.fromWidget(widget: (context, buildChildren) => SingleChildScrollView(
+            tagMatcher("table"): CustomRender.widget(widget: (context, buildChildren) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
               child: tableRender.call().widget!.call(context, buildChildren),
             )),

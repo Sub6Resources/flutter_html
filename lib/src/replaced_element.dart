@@ -19,9 +19,10 @@ abstract class ReplacedElement extends StyledElement {
     required String name,
     required Style style,
     required String elementId,
+    List<StyledElement>? children,
     dom.Element? node,
     this.alignment = PlaceholderAlignment.aboveBaseline,
-  }) : super(name: name, children: [], style: style, node: node, elementId: elementId);
+  }) : super(name: name, children: children ?? [], style: style, node: node, elementId: elementId);
 
   static List<String?> parseMediaSources(List<dom.Element> elements) {
     return elements
@@ -65,22 +66,24 @@ class EmptyContentElement extends ReplacedElement {
 class RubyElement extends ReplacedElement {
   dom.Element element;
 
-  RubyElement({required this.element, String name = "ruby"})
-      : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id);
+  RubyElement({
+    required this.element,
+    required List<StyledElement> children,
+    String name = "ruby"
+  }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id, children: children);
 
   @override
   Widget toWidget(RenderContext context) {
-    dom.Node? textNode;
+    String? textNode;
     List<Widget> widgets = <Widget>[];
-    //TODO calculate based off of parent font size.
     final rubySize = max(9.0, context.style.fontSize!.size! / 2);
     final rubyYPos = rubySize + rubySize / 2;
-    element.nodes.forEach((c) {
-      if (c.nodeType == dom.Node.TEXT_NODE) {
-        textNode = c;
+    context.tree.children.forEach((c) {
+      if (c is TextContentElement) {
+        textNode = c.text;
       }
-      if (c is dom.Element) {
-        if (c.localName == "rt" && textNode != null) {
+      if (!(c is TextContentElement)) {
+        if (c.name == "rt" && textNode != null) {
           final widget = Stack(
             alignment: Alignment.center,
             children: <Widget>[
@@ -90,12 +93,23 @@ class RubyElement extends ReplacedElement {
                       child: Transform(
                           transform:
                               Matrix4.translationValues(0, -(rubyYPos), 0),
-                          child: Text(c.innerHtml,
-                              style: context.style
-                                  .generateTextStyle()
-                                  .copyWith(fontSize: rubySize))))),
-              Container(
-                  child: Text(textNode!.text!.trim(),
+                          child: ContainerSpan(
+                            newContext: RenderContext(
+                              buildContext: context.buildContext,
+                              parser: context.parser,
+                              style: c.style,
+                              tree: c,
+                            ),
+                            style: c.style,
+                            child: Text(c.element!.innerHtml,
+                                style: c.style
+                                    .generateTextStyle()
+                                    .copyWith(fontSize: rubySize)),
+                          )))),
+              ContainerSpan(
+                  newContext: context,
+                  style: context.style,
+                  child: Text(textNode!.trim(),
                       style: context.style.generateTextStyle())),
             ],
           );
@@ -115,6 +129,7 @@ class RubyElement extends ReplacedElement {
 
 ReplacedElement parseReplacedElement(
   dom.Element element,
+  List<StyledElement> children,
 ) {
   switch (element.localName) {
     case "br":
@@ -127,6 +142,7 @@ ReplacedElement parseReplacedElement(
     case "ruby":
       return RubyElement(
         element: element,
+        children: children,
       );
     default:
       return EmptyContentElement(name: element.localName == null ? "[[No Name]]" : element.localName!);

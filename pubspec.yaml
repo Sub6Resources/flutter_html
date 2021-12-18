@@ -1,11 +1,11 @@
 name: flutter_html
 description: A Flutter widget rendering static HTML and CSS as Flutter widgets.
-version: 2.0.0
+version: 2.2.1
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
   sdk: '>=2.12.0 <3.0.0'
-  flutter: '>=1.17.0'
+  flutter: '>=2.2.0'
 
 dependencies:
   # Plugin for parsing html
@@ -16,6 +16,9 @@ dependencies:
 
   # Plugin for firstWhereOrNull extension on lists
   collection: '>=1.15.0 <2.0.0'
+
+  # plugin to convert integers to numerals
+  numerus: '>=1.1.1 <2.0.0'
 
   flutter:
     sdk: flutter

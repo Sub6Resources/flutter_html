@@ -6,15 +6,18 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/utils.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
 
-CustomRenderMatcher blockElementMatcher() => (context) {
-  return context.tree.style.display == Display.BLOCK
-      && context.tree.children.isNotEmpty;
+CustomRenderMatcher tagMatcher(String tag) => (context) {
+  return context.tree.element?.localName == tag;
 };
+
+CustomRenderMatcher blockElementMatcher() => (context) {
+      return context.tree.style.display == Display.BLOCK &&
+          (context.tree.children.isNotEmpty || context.tree.element?.localName == "hr");
+    };
 
 CustomRenderMatcher listElementMatcher() => (context) {
   return context.tree.style.display == Display.LIST_ITEM;
@@ -81,21 +84,48 @@ class CustomRender {
   final InlineSpan Function(RenderContext, List<InlineSpan> Function())? inlineSpan;
   final Widget Function(RenderContext, List<InlineSpan> Function())? widget;
 
-  CustomRender.fromInlineSpan({
+  CustomRender.inlineSpan({
     required this.inlineSpan,
   }) : widget = null;
 
-  CustomRender.fromWidget({
+  CustomRender.widget({
     required this.widget,
   }) : inlineSpan = null;
+}
+
+class SelectableCustomRender extends CustomRender {
+  final TextSpan Function(RenderContext, List<TextSpan> Function()) textSpan;
+
+  SelectableCustomRender.fromTextSpan({
+    required this.textSpan,
+  }) : super.inlineSpan(inlineSpan: null);
 }
 
 CustomRender blockElementRender({
   Style? style,
   Widget? child,
-  List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
-        WidgetSpan(
+  List<InlineSpan>? children,}) =>
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) {
+        if (context.parser.selectable) {
+          return TextSpan(
+            style: context.style.generateTextStyle(),
+            children: (children as List<TextSpan>?) ?? context.tree.children
+                .expandIndexed((i, childTree) => [
+              if (childTree.style.display == Display.BLOCK &&
+                  i > 0 &&
+                  context.tree.children[i - 1] is ReplacedElement)
+                TextSpan(text: "\n"),
+              context.parser.parseTree(context, childTree),
+              if (i != context.tree.children.length - 1 &&
+                  childTree.style.display == Display.BLOCK &&
+                  childTree.element?.localName != "html" &&
+                  childTree.element?.localName != "body")
+                TextSpan(text: "\n"),
+            ])
+                .toList(),
+          );
+        }
+        return WidgetSpan(
           child: ContainerSpan(
             key: context.key,
             newContext: context,
@@ -117,14 +147,14 @@ CustomRender blockElementRender({
                 TextSpan(text: "\n"),
             ])
                 .toList(),
-          ),
-));
+          ));
+    });
 
 CustomRender listElementRender({
   Style? style,
   Widget? child,
   List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
         WidgetSpan(
           child: ContainerSpan(
             key: context.key,
@@ -138,16 +168,12 @@ CustomRender listElementRender({
               children: [
                 (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.OUTSIDE ?
                 Padding(
-                  padding: style?.padding ?? context.tree.style.padding
+                  padding: style?.padding?.nonNegative ?? context.tree.style.padding?.nonNegative
                       ?? EdgeInsets.only(left: (style?.direction ?? context.tree.style.direction) != TextDirection.rtl ? 10.0 : 0.0,
                           right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0),
-                  child: Text(
-                      "${style?.markerContent ?? context.style.markerContent}",
-                      textAlign: TextAlign.right,
-                      style: style?.generateTextStyle() ?? context.style.generateTextStyle()
-                  ),
+                  child: style?.markerContent ?? context.style.markerContent
                 ) : Container(height: 0, width: 0),
-                Text("\t", textAlign: TextAlign.right),
+                Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
                 Expanded(
                     child: Padding(
                         padding: (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.INSIDE ?
@@ -155,11 +181,11 @@ CustomRender listElementRender({
                             right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0) : EdgeInsets.zero,
                         child: StyledText(
                           textSpan: TextSpan(
-                            text: ((style?.listStylePosition ?? context.tree.style.listStylePosition) ==
-                                ListStylePosition.INSIDE)
-                                ? "${style?.markerContent ?? context.style.markerContent}"
-                                : null,
-                            children: _getListElementChildren(style?.listStylePosition ?? context.tree.style.listStylePosition, buildChildren),
+                            children: _getListElementChildren(style?.listStylePosition ?? context.tree.style.listStylePosition, buildChildren)
+                              ..insertAll(0, context.tree.style.listStylePosition == ListStylePosition.INSIDE ?
+                            [
+                              WidgetSpan(alignment: PlaceholderAlignment.middle, child: style?.markerContent ?? context.style.markerContent ?? Container(height: 0, width: 0))
+                            ] : []),
                             style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
                           ),
                           style: style ?? context.style,
@@ -173,15 +199,15 @@ CustomRender listElementRender({
 ));
 
 CustomRender replacedElementRender({PlaceholderAlignment? alignment, TextBaseline? baseline, Widget? child}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
   alignment: alignment ?? (context.tree as ReplacedElement).alignment,
   baseline: baseline ?? TextBaseline.alphabetic,
   child: child ?? (context.tree as ReplacedElement).toWidget(context)!,
 ));
 
 CustomRender textContentElementRender({String? text}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) =>
-      TextSpan(text: text ?? (context.tree as TextContentElement).text));
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
+      TextSpan(text: (text ?? (context.tree as TextContentElement).text).transformed(context.tree.style.textTransform)));
 
 CustomRender base64ImageRender() => CustomRender.fromWidget(widget: (context, buildChildren) {
   final decodedImage = base64.decode(_src(context.tree.element!.attributes.cast())!.split("base64,")[1].trim());
@@ -354,7 +380,7 @@ CustomRender networkImageRender({
 });
 
 CustomRender interactableElementRender({List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
   children: children ?? (context.tree as InteractableElement).children
       .map((tree) => context.parser.parseTree(context, tree))
       .map((childSpan) {
@@ -364,7 +390,7 @@ CustomRender interactableElementRender({List<InlineSpan>? children}) =>
 ));
 
 CustomRender layoutElementRender({Widget? child}) =>
-  CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+  CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
     child: child ?? (context.tree as LayoutElement).toWidget(context)!,
 ));
 
@@ -372,7 +398,7 @@ CustomRender verticalAlignRender({
   double? verticalOffset,
   Style? style,
   List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => WidgetSpan(
   child: Transform.translate(
     key: context.key,
     offset: Offset(0, verticalOffset ?? _getVerticalOffset(context.tree)),
@@ -388,12 +414,14 @@ CustomRender verticalAlignRender({
 ));
 
 CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
-    CustomRender.fromInlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
+    CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
       style: style?.generateTextStyle() ?? context.style.generateTextStyle(),
       children: context.tree.children
           .expand((tree) => [
         context.parser.parseTree(context, tree),
         if (tree.style.display == Display.BLOCK &&
+            tree.element?.parent?.localName != "th" &&
+            tree.element?.parent?.localName != "td" &&
             tree.element?.localName != "html" &&
             tree.element?.localName != "body")
           TextSpan(text: "\n"),
@@ -416,9 +444,11 @@ final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
 };
 
 List<InlineSpan> _getListElementChildren(ListStylePosition? position, Function() buildChildren) {
-  InlineSpan tabSpan = WidgetSpan(child: Text("\t", textAlign: TextAlign.right));
   List<InlineSpan> children = buildChildren.call();
   if (position == ListStylePosition.INSIDE) {
+    final tabSpan = WidgetSpan(
+      child: Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
+    );
     children.insert(0, tabSpan);
   }
   return children;
@@ -438,20 +468,20 @@ InlineSpan _getInteractableChildren(RenderContext context, InteractableElement t
       semanticsLabel: childSpan.semanticsLabel,
       recognizer: TapGestureRecognizer()
         ..onTap =
-          context.parser.onAnchorTap != null ?
-              () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+          context.parser.internalOnAnchorTap != null ?
+              () => context.parser.internalOnAnchorTap!(tree.href, context, tree.attributes, tree.element)
               : null,
     );
   } else {
     return WidgetSpan(
       child: MultipleTapGestureDetector(
-        onTap: context.parser.onAnchorTap != null
-            ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+        onTap: context.parser.internalOnAnchorTap != null
+            ? () => context.parser.internalOnAnchorTap!(tree.href, context, tree.attributes, tree.element)
             : null,
         child: GestureDetector(
           key: context.key,
-          onTap: context.parser.onAnchorTap != null
-              ? () => context.parser.onAnchorTap!(tree.href, context, tree.attributes, tree.element)
+          onTap: context.parser.internalOnAnchorTap != null
+              ? () => context.parser.internalOnAnchorTap!(tree.href, context, tree.attributes, tree.element)
               : null,
           child: (childSpan as WidgetSpan).child,
         ),
