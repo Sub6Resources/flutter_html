@@ -330,7 +330,8 @@ Widget html = Html(
     tableMatcher(): CustomRender.widget(widget: (context, child) {
       return SingleChildScrollView(
         scrollDirection: Axis.horizontal,
-        child: (context.tree as TableLayoutElement).toWidget(context),
+        // this calls the table CustomRender to render a table as normal (it uses a widget so we know widget is not null)
+        child: tableRender.call().widget!.call(context, buildChildren),
       );
     }),
   },
