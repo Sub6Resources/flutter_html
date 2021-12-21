@@ -1,3 +1,11 @@
+## [3.0.0-alpha.1] - December 21, 2021:
+* **BREAKING** Reworked custom renders pending full modularation in 3.0.0
+* Extended support custom render when using SelectableHtml
+* Updated flutter_svg to 1.0.0
+* Support flutter_webview 3.x
+* Automatic disposal of video and audio controllers
+* Fix block elements bottom spacing in table cells
+
 ## [2.2.1] - December 8, 2021:
 * Allow styling on ruby tags
 * Allow width/height/alignment styling on table/tr/td tags
