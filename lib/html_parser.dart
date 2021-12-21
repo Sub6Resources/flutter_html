@@ -18,11 +18,6 @@ typedef OnTap = void Function(
     Map<String, String> attributes,
     dom.Element? element,
 );
-typedef OnMathError = Widget Function(
-    String parsedTex,
-    String exception,
-    String exceptionWithType,
-);
 typedef OnCssParseError = String? Function(
   String css,
   List<cssparser.Message> errors,
@@ -36,15 +31,12 @@ class HtmlParser extends StatelessWidget {
   final OnTap? onImageTap;
   final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
-  final OnMathError? onMathError;
   final bool shrinkWrap;
   final bool selectable;
 
   final Map<String, Style> style;
   final Map<CustomRenderMatcher, CustomRender> customRenders;
-  final Map<ImageSourceMatcher, ImageRender> imageRenders;
   final List<String> tagsList;
-  final NavigationDelegate? navigationDelegateForIframe;
   final OnTap? internalOnAnchorTap;
   final Html? root;
   final TextSelectionControls? selectionControls;
@@ -60,14 +52,11 @@ class HtmlParser extends StatelessWidget {
     required this.onImageTap,
     required this.onCssParseError,
     required this.onImageError,
-    required this.onMathError,
     required this.shrinkWrap,
     required this.selectable,
     required this.style,
     required this.customRenders,
-    required this.imageRenders,
     required this.tagsList,
-    required this.navigationDelegateForIframe,
     this.root,
     this.selectionControls,
     this.scrollPhysics,
@@ -85,7 +74,6 @@ class HtmlParser extends StatelessWidget {
       htmlData,
       customRenders.keys.toList(),
       tagsList,
-      navigationDelegateForIframe,
       context,
       this,
     );
@@ -154,7 +142,6 @@ class HtmlParser extends StatelessWidget {
     dom.Document html,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
-    NavigationDelegate? navigationDelegateForIframe,
     BuildContext context,
     HtmlParser parser,
   ) {
@@ -170,7 +157,6 @@ class HtmlParser extends StatelessWidget {
         node,
         customRenderMatchers,
         tagsList,
-        navigationDelegateForIframe,
         context,
         parser,
       ));
@@ -187,7 +173,6 @@ class HtmlParser extends StatelessWidget {
     dom.Node node,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
-    NavigationDelegate? navigationDelegateForIframe,
     BuildContext context,
     HtmlParser parser,
   ) {
@@ -198,7 +183,6 @@ class HtmlParser extends StatelessWidget {
         childNode,
         customRenderMatchers,
         tagsList,
-        navigationDelegateForIframe,
         context,
         parser,
       ));
@@ -214,7 +198,7 @@ class HtmlParser extends StatelessWidget {
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
         return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, children, navigationDelegateForIframe);
+        return parseReplacedElement(node, children);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
         return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {

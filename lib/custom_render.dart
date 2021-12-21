@@ -1,4 +1,8 @@
 import 'package:collection/collection.dart';
+
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -11,9 +15,9 @@ CustomRenderMatcher tagMatcher(String tag) => (context) {
 };
 
 CustomRenderMatcher blockElementMatcher() => (context) {
-      return context.tree.style.display == Display.BLOCK &&
-          (context.tree.children.isNotEmpty || context.tree.element?.localName == "hr");
-    };
+  return context.tree.style.display == Display.BLOCK &&
+      (context.tree.children.isNotEmpty || context.tree.element?.localName == "hr");
+};
 
 CustomRenderMatcher listElementMatcher() => (context) {
   return context.tree.style.display == Display.LIST_ITEM;
@@ -22,6 +26,39 @@ CustomRenderMatcher listElementMatcher() => (context) {
 CustomRenderMatcher replacedElementMatcher() => (context) {
   return context.tree is ReplacedElement;
 };
+
+CustomRenderMatcher dataUriMatcher({String? encoding = 'base64', String? mime}) => (context) {
+  if (context.tree.element?.attributes == null
+      || _src(context.tree.element!.attributes.cast()) == null) return false;
+  final dataUri = _dataUriFormat.firstMatch(_src(context.tree.element!.attributes.cast())!);
+  return dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml" &&
+      (mime == null || dataUri.namedGroup('mime') == mime) &&
+      (encoding == null || dataUri.namedGroup('encoding') == ';$encoding');
+};
+
+CustomRenderMatcher networkSourceMatcher({
+  List<String> schemas: const ["https", "http"],
+  List<String>? domains,
+  String? extension,
+}) =>
+        (context) {
+      if (context.tree.element?.attributes.cast() == null
+          || _src(context.tree.element!.attributes.cast()) == null) return false;
+      try {
+        final src = Uri.parse(_src(context.tree.element!.attributes.cast())!);
+        return schemas.contains(src.scheme) &&
+            (domains == null || domains.contains(src.host)) &&
+            (extension == null || src.path.endsWith(".$extension"));
+      } catch (e) {
+        return false;
+      }
+    };
+
+CustomRenderMatcher assetUriMatcher() => (context) =>
+    context.tree.element?.attributes.cast() != null
+    && _src(context.tree.element!.attributes.cast()) != null
+    && _src(context.tree.element!.attributes.cast())!.startsWith("asset:")
+    && !_src(context.tree.element!.attributes.cast())!.endsWith(".svg");
 
 CustomRenderMatcher textContentElementMatcher() => (context) {
   return context.tree is TextContentElement;
@@ -67,8 +104,7 @@ class SelectableCustomRender extends CustomRender {
 
 CustomRender blockElementRender({
   Style? style,
-  Widget? child,
-  List<InlineSpan>? children,}) =>
+  List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) {
         if (context.parser.selectable) {
           return TextSpan(
@@ -173,6 +209,185 @@ CustomRender textContentElementRender({String? text}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) =>
       TextSpan(text: (text ?? (context.tree as TextContentElement).text).transformed(context.tree.style.textTransform)));
 
+CustomRender base64ImageRender() => CustomRender.widget(widget: (context, buildChildren) {
+  final decodedImage = base64.decode(_src(context.tree.element!.attributes.cast())!.split("base64,")[1].trim());
+  precacheImage(
+    MemoryImage(decodedImage),
+    context.buildContext,
+    onError: (exception, StackTrace? stackTrace) {
+      context.parser.onImageError?.call(exception, stackTrace);
+    },
+  );
+  final widget = Image.memory(
+    decodedImage,
+    frameBuilder: (ctx, child, frame, _) {
+      if (frame == null) {
+        return Text(_alt(context.tree.element!.attributes.cast()) ?? "", style: context.style.generateTextStyle());
+      }
+      return child;
+    },
+  );
+  return Builder(
+      key: context.key,
+      builder: (buildContext) {
+        return GestureDetector(
+          child: widget,
+          onTap: () {
+            if (MultipleTapGestureDetector.of(buildContext) != null) {
+              MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+            }
+            context.parser.onImageTap?.call(
+                _src(context.tree.element!.attributes.cast())!.split("base64,")[1].trim(),
+                context,
+                context.tree.element!.attributes.cast(),
+                context.tree.element
+            );
+          },
+        );
+      }
+  );
+});
+
+CustomRender assetImageRender({
+  double? width,
+  double? height,
+}) => CustomRender.widget(widget: (context, buildChildren) {
+  final assetPath = _src(context.tree.element!.attributes.cast())!.replaceFirst('asset:', '');
+  final widget = Image.asset(
+    assetPath,
+    width: width ?? _width(context.tree.element!.attributes.cast()),
+    height: height ?? _height(context.tree.element!.attributes.cast()),
+    frameBuilder: (ctx, child, frame, _) {
+      if (frame == null) {
+        return Text(_alt(context.tree.element!.attributes.cast()) ?? "", style: context.style.generateTextStyle());
+      }
+      return child;
+    },
+  );
+  return Builder(
+      key: context.key,
+      builder: (buildContext) {
+        return GestureDetector(
+          child: widget,
+          onTap: () {
+            if (MultipleTapGestureDetector.of(buildContext) != null) {
+              MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+            }
+            context.parser.onImageTap?.call(
+                assetPath,
+                context,
+                context.tree.element!.attributes.cast(),
+                context.tree.element
+            );
+          },
+        );
+      }
+  );
+});
+
+CustomRender networkImageRender({
+  Map<String, String>? headers,
+  String Function(String?)? mapUrl,
+  double? width,
+  double? height,
+  Widget Function(String?)? altWidget,
+  Widget Function()? loadingWidget,
+}) => CustomRender.widget(widget: (context, buildChildren) {
+  final src = mapUrl?.call(_src(context.tree.element!.attributes.cast()))
+      ?? _src(context.tree.element!.attributes.cast())!;
+  Completer<Size> completer = Completer();
+  if (context.parser.cachedImageSizes[src] != null) {
+    completer.complete(context.parser.cachedImageSizes[src]);
+  } else {
+    Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+      if (frame == null) {
+        if (!completer.isCompleted) {
+          completer.completeError("error");
+        }
+        return child;
+      } else {
+        return child;
+      }
+    });
+
+    ImageStreamListener? listener;
+    listener = ImageStreamListener((ImageInfo imageInfo, bool synchronousCall) {
+      var myImage = imageInfo.image;
+      Size size = Size(myImage.width.toDouble(), myImage.height.toDouble());
+      if (!completer.isCompleted) {
+        context.parser.cachedImageSizes[src] = size;
+        completer.complete(size);
+        image.image.resolve(ImageConfiguration()).removeListener(listener!);
+      }
+    }, onError: (object, stacktrace) {
+      if (!completer.isCompleted) {
+        completer.completeError(object);
+        image.image.resolve(ImageConfiguration()).removeListener(listener!);
+      }
+    });
+
+    image.image.resolve(ImageConfiguration()).addListener(listener);
+  }
+  final attributes = context.tree.element!.attributes.cast<String, String>();
+  final widget = FutureBuilder<Size>(
+    future: completer.future,
+    initialData: context.parser.cachedImageSizes[src],
+    builder: (BuildContext buildContext, AsyncSnapshot<Size> snapshot) {
+      if (snapshot.hasData) {
+        return Container(
+          constraints: BoxConstraints(
+              maxWidth: width ?? _width(attributes) ?? snapshot.data!.width,
+              maxHeight:
+              (width ?? _width(attributes) ?? snapshot.data!.width) /
+                  _aspectRatio(attributes, snapshot)),
+          child: AspectRatio(
+            aspectRatio: _aspectRatio(attributes, snapshot),
+            child: Image.network(
+              src,
+              headers: headers,
+              width: width ?? _width(attributes) ?? snapshot.data!.width,
+              height: height ?? _height(attributes),
+              frameBuilder: (ctx, child, frame, _) {
+                if (frame == null) {
+                  return altWidget?.call(_alt(attributes)) ??
+                      Text(_alt(attributes) ?? "",
+                          style: context.style.generateTextStyle());
+                }
+                return child;
+              },
+            ),
+          ),
+        );
+      } else if (snapshot.hasError) {
+        return altWidget?.call(_alt(context.tree.element!.attributes.cast())) ??
+            Text(_alt(context.tree.element!.attributes.cast())
+                ?? "", style: context.style.generateTextStyle());
+      } else {
+        return loadingWidget?.call() ?? const CircularProgressIndicator();
+      }
+    },
+  );
+  return Builder(
+      key: context.key,
+      builder: (buildContext) {
+        return GestureDetector(
+          child: widget,
+          onTap: () {
+            if (MultipleTapGestureDetector.of(buildContext) != null) {
+              MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
+            }
+            context.parser.onImageTap?.call(
+                src,
+                context,
+                context.tree.element!.attributes.cast(),
+                context.tree.element
+            );
+          },
+        );
+      }
+  );
+});
+
 CustomRender interactableElementRender({List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(
   children: children ?? (context.tree as InteractableElement).children
@@ -227,6 +442,9 @@ final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
   blockElementMatcher(): blockElementRender(),
   listElementMatcher(): listElementRender(),
   textContentElementMatcher(): textContentElementRender(),
+  dataUriMatcher(): base64ImageRender(),
+  assetUriMatcher(): assetImageRender(),
+  networkSourceMatcher(): networkImageRender(),
   replacedElementMatcher(): replacedElementRender(),
   interactableElementMatcher(): interactableElementRender(),
   layoutElementMatcher(): layoutElementRender(),
@@ -281,6 +499,8 @@ InlineSpan _getInteractableChildren(RenderContext context, InteractableElement t
   }
 }
 
+final _dataUriFormat = RegExp("^(?<scheme>data):(?<mime>image\/[\\w\+\-\.]+)(?<encoding>;base64)?\,(?<data>.*)");
+
 double _getVerticalOffset(StyledElement tree) {
   switch (tree.style.verticalAlign) {
     case VerticalAlign.SUB:
@@ -290,4 +510,40 @@ double _getVerticalOffset(StyledElement tree) {
     default:
       return 0;
   }
+}
+
+String? _src(Map<String, String> attributes) {
+  return attributes["src"];
+}
+
+String? _alt(Map<String, String> attributes) {
+  return attributes["alt"];
+}
+
+double? _height(Map<String, String> attributes) {
+  final heightString = attributes["height"];
+  return heightString == null ? heightString as double? : double.tryParse(heightString);
+}
+
+double? _width(Map<String, String> attributes) {
+  final widthString = attributes["width"];
+  return widthString == null ? widthString as double? : double.tryParse(widthString);
+}
+
+double _aspectRatio(
+    Map<String, String> attributes, AsyncSnapshot<Size> calculated) {
+  final heightString = attributes["height"];
+  final widthString = attributes["width"];
+  if (heightString != null && widthString != null) {
+    final height = double.tryParse(heightString);
+    final width = double.tryParse(widthString);
+    return height == null || width == null
+        ? calculated.data!.aspectRatio
+        : width / height;
+  }
+  return calculated.data!.aspectRatio;
+}
+
+extension ClampedEdgeInsets on EdgeInsetsGeometry {
+  EdgeInsetsGeometry get nonNegative => this.clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity));
 }

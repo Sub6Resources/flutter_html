@@ -742,6 +742,8 @@ class ExpressionMapping {
         return ListStyleType.UPPER_LATIN;
       case 'upper-roman':
         return ListStyleType.UPPER_ROMAN;
+      case 'none':
+        return ListStyleType.NONE;
     }
     return null;
   }

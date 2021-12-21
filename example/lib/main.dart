@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_all/flutter_html_all.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
 void main() => runApp(new MyApp());
@@ -268,18 +269,14 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
           },
-          tagsList: Html.tags..addAll(["tex", "bird", "flutter"]),
+          tagsList: Html.tags..addAll(['tex', 'bird', 'flutter']),
           customRenders: {
             tagMatcher("tex"): CustomRender.widget(widget: (context, buildChildren) => Math.tex(
               context.tree.element?.innerHtml ?? '',
               mathStyle: MathStyle.display,
               textStyle: context.style.generateTextStyle(),
               onErrorFallback: (FlutterMathException e) {
-                if (context.parser.onMathError != null) {
-                  return context.parser.onMathError!.call(context.tree.element?.innerHtml ?? '', e.message, e.messageWithType);
-                } else {
-                  return Text(e.message);
-                }
+                return Text(e.message);
               },
             )),
             tagMatcher("bird"): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
@@ -292,28 +289,34 @@ class _MyHomePageState extends State<MyHomePage> {
             )),
             tagMatcher("table"): CustomRender.widget(widget: (context, buildChildren) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,
-              child: (context.tree as TableLayoutElement).toWidget(context),
+              child: tableRender.call().widget!.call(context, buildChildren),
             )),
-          },
-          customImageRenders: {
-            networkSourceMatcher(domains: ["flutter.dev"]):
-                (context, attributes, element) {
-              return FlutterLogo(size: 36);
-            },
-            networkSourceMatcher(domains: ["mydomain.com"]):
-                networkImageRender(
+            audioMatcher(): audioRender(),
+            iframeMatcher(): iframeRender(),
+            mathMatcher(): mathRender(onMathError: (error, exception, exceptionWithType) {
+              print(exception);
+              return Text(exception);
+            }),
+            svgTagMatcher(): svgTagRender(),
+            svgDataUriMatcher(): svgDataImageRender(),
+            svgAssetUriMatcher(): svgAssetImageRender(),
+            svgNetworkSourceMatcher(): svgNetworkImageRender(),
+            networkSourceMatcher(domains: ["flutter.dev"]): CustomRender.widget(
+                widget: (context, buildChildren) {
+                  return FlutterLogo(size: 36);
+                }),
+            networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt ?? ""),
               loadingWidget: () => Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url
-            (attr, _) =>
-                    attr["src"] != null && attr["src"]!.startsWith("/wiki"):
-                networkImageRender(
-                    mapUrl: (url) => "https://upload.wikimedia.org" + url!),
+                (context) => context.tree.element?.attributes["src"] != null
+                && context.tree.element!.attributes["src"]!.startsWith("/wiki"):
+            networkImageRender(mapUrl: (url) => "https://upload.wikimedia.org" + url!),
             // Custom placeholder image for broken links
-            networkSourceMatcher():
-                networkImageRender(altWidget: (_) => FlutterLogo()),
+            networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
+            videoMatcher(): videoRender(),
           },
           onLinkTap: (url, _, __, ___) {
             print("Opening $url...");
@@ -336,3 +339,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 }
+
+CustomRenderMatcher texMatcher() => (context) => context.tree.element?.localName == 'tex';
+
+CustomRenderMatcher birdMatcher() => (context) => context.tree.element?.localName == 'bird';
+
+CustomRenderMatcher flutterMatcher() => (context) => context.tree.element?.localName == 'flutter';
