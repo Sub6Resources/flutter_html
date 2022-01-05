@@ -1,3 +1,6 @@
+## [3.0.0-alpha.2] - January 5, 2022:
+* **BREAKING** Full modularization using split packages; see our upgrade guide or use flutter_html_all 
+
 ## [3.0.0-alpha.1] - December 21, 2021:
 * **BREAKING** Reworked custom renders pending full modularation in 3.0.0
 * Extended support custom render when using SelectableHtml
