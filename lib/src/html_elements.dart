@@ -110,22 +110,15 @@ const INTERACTABLE_ELEMENTS = [
 ];
 
 const REPLACED_ELEMENTS = [
-  "audio",
   "br",
-  "iframe",
-  "img",
-  "svg",
   "template",
-  "video",
   "rp",
   "rt",
   "ruby",
-  "math",
 ];
 
 const LAYOUT_ELEMENTS = [
   "details",
-  "table",
   "tr",
   "tbody",
   "tfoot",
@@ -135,6 +128,8 @@ const LAYOUT_ELEMENTS = [
 const TABLE_CELL_ELEMENTS = ["th", "td"];
 
 const TABLE_DEFINITION_ELEMENTS = ["col", "colgroup"];
+
+const EXTERNAL_ELEMENTS = ["audio", "iframe", "img", "math", "svg", "table", "video"];
 
 const SELECTABLE_ELEMENTS = [
   "br",
