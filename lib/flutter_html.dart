@@ -95,7 +95,7 @@ class Html extends StatelessWidget {
   Html.fromElement({
     Key? key,
     GlobalKey? anchorKey,
-    this.document,
+    @required this.document,
     this.onLinkTap,
     this.onAnchorTap,
     this.customRender = const {},
@@ -174,7 +174,7 @@ class Html extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final dom.Element doc = data != null ? HtmlParser.parseHTML(data!): document!;
+    final dom.Element doc = data != null ? HtmlParser.parseHTML(data!) : document!;
     final double? width = shrinkWrap ? null : MediaQuery.of(context).size.width;
 
     return Container(
@@ -192,7 +192,9 @@ class Html extends StatelessWidget {
         selectable: false,
         style: style,
         customRender: customRender,
-        imageRenders: {}..addAll(customImageRenders)..addAll(defaultImageRenders),
+        imageRenders: {}
+          ..addAll(customImageRenders)
+          ..addAll(defaultImageRenders),
         tagsList: tagsList.isEmpty ? Html.tags : tagsList,
         navigationDelegateForIframe: navigationDelegateForIframe,
       ),
