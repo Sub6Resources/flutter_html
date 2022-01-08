@@ -1,3 +1,47 @@
+## [3.0.0-alpha.2] - January 5, 2022:
+* **BREAKING** Full modularization using split packages; see our upgrade guide or use flutter_html_all 
+
+## [3.0.0-alpha.1] - December 21, 2021:
+* **BREAKING** Reworked custom renders pending full modularation in 3.0.0
+* Extended support custom render when using SelectableHtml
+* Updated flutter_svg to 1.0.0
+* Support flutter_webview 3.x
+* Automatic disposal of video and audio controllers
+* Fix block elements bottom spacing in table cells
+
+## [2.2.1] - December 8, 2021:
+* Allow styling on ruby tags
+* Allow width/height/alignment styling on table/tr/td tags
+* Prevent images causing rebuilding and leaking memory
+* Fixes display of list items on iOS with font weights below 400
+* Prevent crash on negative margins or paddings
+
+## [2.2.0] - November 29, 2021:
+* Explicitly declare multiplatform support
+* Extended and fixed list-style (marker) support
+* Basic support for height/width css properties
+* Support changing scroll physics of SelectableText.rich
+* Support text transform css property
+* Bumped minimum flutter_math_fork version for Flutter 2.5 compatibility
+* Fix styling of iframes
+* Fix nested font tag application
+* Fix whitespace rendering between list items
+* Prevent crash on empty <table> tag and tables with both colspan/rowspan
+* Prevent crash on use of negative margins in css
+
+## [2.1.5] - October 7, 2021:
+* Ignore unsupported custom style selectors when using fromCss
+* Fix SVG tag usage inside tables
+* Properly fix regression in usage of line breaks
+
+## [2.1.4] - October 3, 2021:
+* Fix regression in usage of line breaks in body being stripped
+
+## [2.1.3] - October 1, 2021:
+* Update minimum versions of dependencies for Flutter 2.5 compatibility
+* Extended and fixed support for css shadow
+* Fix block tags with explicit whitespace from being stripped
+
 ## [2.1.2] - September 2, 2021:
 * Allow setting selectionControls with SelectableHtml
 * Fix onLinkTap not working with SelectableHtml

@@ -3,11 +3,9 @@ import 'dart:ui';
 import 'package:collection/collection.dart';
 import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
-import 'package:flutter_html/style.dart';
 
 Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   Style style = new Style();
@@ -150,7 +148,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           List<String> possibleBorderValues = ["dotted", "dashed", "solid", "double", "groove", "ridge", "inset", "outset", "none", "hidden"];
           /// List<css.LiteralTerm> might include other values than the ones we want for [BorderSide.style], so make sure to remove those before passing it to [ExpressionMapping]
           potentialStyles.removeWhere((element) => element == null || !possibleBorderValues.contains(element.text));
-          css.LiteralTerm borderStyle = potentialStyles.first!;
+          css.LiteralTerm? borderStyle = potentialStyles.firstOrNull;
           Border newBorder = Border(
             left: style.border?.left ?? BorderSide.none,
             right: style.border?.right ?? BorderSide.none,
@@ -193,6 +191,46 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           break;
         case 'font-weight':
           style.fontWeight = ExpressionMapping.expressionToFontWeight(value.first);
+          break;
+        case 'list-style':
+          css.LiteralTerm? position = value.firstWhereOrNull((e) => e is css.LiteralTerm && (e.text == "outside" || e.text == "inside")) as css.LiteralTerm?;
+          css.UriTerm? image = value.firstWhereOrNull((e) => e is css.UriTerm) as css.UriTerm?;
+          css.LiteralTerm? type = value.firstWhereOrNull((e) => e is css.LiteralTerm && e.text != "outside" && e.text != "inside") as css.LiteralTerm?;
+          if (position != null) {
+            switch (position.text) {
+              case 'outside':
+                style.listStylePosition = ListStylePosition.OUTSIDE;
+                break;
+              case 'inside':
+                style.listStylePosition = ListStylePosition.INSIDE;
+                break;
+            }
+          }
+          if (image != null) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(image) ?? style.listStyleType;
+          } else if (type != null) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(type) ?? style.listStyleType;
+          }
+          break;
+        case 'list-style-image':
+          if (value.first is css.UriTerm) {
+            style.listStyleType = ExpressionMapping.expressionToListStyleType(value.first as css.UriTerm) ?? style.listStyleType;
+          }
+          break;
+        case 'list-style-position':
+          if (value.first is css.LiteralTerm) {
+            switch ((value.first as css.LiteralTerm).text) {
+              case 'outside':
+                style.listStylePosition = ListStylePosition.OUTSIDE;
+                break;
+              case 'inside':
+                style.listStylePosition = ListStylePosition.INSIDE;
+                break;
+            }
+          }
+          break;
+        case 'height':
+          style.height = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.height;
           break;
         case 'list-style-type':
           if (value.first is css.LiteralTerm) {
@@ -297,6 +335,21 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           break;
         case 'text-shadow':
           style.textShadow = ExpressionMapping.expressionToTextShadow(value);
+          break;
+        case 'text-transform':
+          final val = (value.first as css.LiteralTerm).text;
+          if (val == 'uppercase') {
+            style.textTransform = TextTransform.uppercase;
+          } else if (val == 'lowercase') {
+            style.textTransform = TextTransform.lowercase;
+          } else if (val == 'capitalize') {
+            style.textTransform = TextTransform.capitalize;
+          } else {
+            style.textTransform = TextTransform.none;
+          }
+          break;
+        case 'width':
+          style.width = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.width;
           break;
       }
     }
@@ -665,6 +718,9 @@ class ExpressionMapping {
   }
 
   static ListStyleType? expressionToListStyleType(css.LiteralTerm value) {
+    if (value is css.UriTerm) {
+      return ListStyleType.fromImage(value.text);
+    }
     switch (value.text) {
       case 'disc':
         return ListStyleType.DISC;
@@ -686,6 +742,8 @@ class ExpressionMapping {
         return ListStyleType.UPPER_LATIN;
       case 'upper-roman':
         return ListStyleType.UPPER_ROMAN;
+      case 'none':
+        return ListStyleType.NONE;
     }
     return null;
   }
@@ -809,33 +867,40 @@ class ExpressionMapping {
       previousIndex = i + 1;
     }
     for (List<css.Expression> list in valueList) {
-      css.Expression exp = list[0];
-      css.Expression exp2 = list[1];
-      css.LiteralTerm? exp3 = list.length > 2 ? list[2] as css.LiteralTerm? : null;
-      css.LiteralTerm? exp4 = list.length > 3 ? list[3] as css.LiteralTerm? : null;
+      css.Expression? offsetX;
+      css.Expression? offsetY;
+      css.Expression? blurRadius;
+      css.HexColorTerm? color;
+      int expressionIndex = 0;
+      list.forEach((element) {
+        if (element is css.HexColorTerm) {
+          color = element;
+        } else if (expressionIndex == 0) {
+          offsetX = element;
+          expressionIndex++;
+        } else if (expressionIndex++ == 1) {
+          offsetY = element;
+          expressionIndex++;
+        } else {
+          blurRadius = element;
+        }
+      });
       RegExp nonNumberRegex = RegExp(r'\s+(\d+\.\d+)\s+');
-      if (exp is css.LiteralTerm && exp2 is css.LiteralTerm) {
-        if (exp3 != null && ExpressionMapping.expressionToColor(exp3) != null) {
+      if (offsetX is css.LiteralTerm && offsetY is css.LiteralTerm) {
+        if (color != null && ExpressionMapping.expressionToColor(color) != null) {
           shadow.add(Shadow(
-              color: expressionToColor(exp3)!,
-              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!)
+              color: expressionToColor(color)!,
+              offset: Offset(
+                  double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
+                  double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
+              blurRadius: (blurRadius is css.LiteralTerm) ? double.tryParse((blurRadius as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))! : 0.0,
           ));
-        } else if (exp3 != null && exp3 is css.LiteralTerm) {
-          if (exp4 != null && ExpressionMapping.expressionToColor(exp4) != null) {
-            shadow.add(Shadow(
-                color: expressionToColor(exp4)!,
-                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!),
-                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))!
-            ));
-          } else {
-            shadow.add(Shadow(
-                offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!),
-                blurRadius: double.tryParse(exp3.text.replaceAll(nonNumberRegex, ''))!
-            ));
-          }
         } else {
           shadow.add(Shadow(
-              offset: Offset(double.tryParse(exp.text.replaceAll(nonNumberRegex, ''))!, double.tryParse(exp2.text.replaceAll(nonNumberRegex, ''))!)
+              offset: Offset(
+                  double.tryParse((offsetX as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!,
+                  double.tryParse((offsetY as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))!),
+              blurRadius: (blurRadius is css.LiteralTerm) ? double.tryParse((blurRadius as css.LiteralTerm).text.replaceAll(nonNumberRegex, ''))! : 0.0,
           ));
         }
       }

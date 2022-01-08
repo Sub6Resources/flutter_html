@@ -1,6 +1,6 @@
 name: example
 description: flutter_html example app.
-
+publish_to: none
 version: 1.0.0+1
 
 environment:
@@ -9,6 +9,8 @@ environment:
 dependencies:
   flutter_html:
     path: ..
+  flutter_html_all:
+    path: ../packages/flutter_html_all
   flutter:
     sdk: flutter
 
