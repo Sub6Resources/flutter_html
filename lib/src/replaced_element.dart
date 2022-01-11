@@ -127,15 +127,18 @@ class RubyElement extends ReplacedElement {
         node = c;
       }
     });
-    return Wrap(
-      key: AnchorKey.of(context.parser.key, this),
-      runSpacing: rubySize,
-      children: widgets.map((e) => Row(
-        crossAxisAlignment: CrossAxisAlignment.end,
-        textBaseline: TextBaseline.alphabetic,
-        mainAxisSize: MainAxisSize.min,
-        children: [e],
-      )).toList(),
+    return Padding(
+      padding: EdgeInsets.only(top: rubySize),
+      child: Wrap(
+        key: AnchorKey.of(context.parser.key, this),
+        runSpacing: rubySize,
+        children: widgets.map((e) => Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          textBaseline: TextBaseline.alphabetic,
+          mainAxisSize: MainAxisSize.min,
+          children: [e],
+        )).toList(),
+      ),
     );
   }
 }
