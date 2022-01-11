@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
@@ -74,47 +75,56 @@ class RubyElement extends ReplacedElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    String? textNode;
+    StyledElement? node;
     List<Widget> widgets = <Widget>[];
     final rubySize = max(9.0, context.style.fontSize!.size! / 2);
     final rubyYPos = rubySize + rubySize / 2;
-    context.tree.children.forEach((c) {
-      if (c is TextContentElement) {
-        textNode = c.text;
+    List<StyledElement> children = [];
+    context.tree.children.forEachIndexed((index, element) {
+      if (!((element is TextContentElement)
+          && (element.text ?? "").trim().isEmpty
+          && index > 0
+          && index + 1 < context.tree.children.length
+          && !(context.tree.children[index - 1] is TextContentElement)
+          && !(context.tree.children[index + 1] is TextContentElement))) {
+        children.add(element);
       }
-      if (!(c is TextContentElement)) {
-        if (c.name == "rt" && textNode != null) {
-          final widget = Stack(
-            alignment: Alignment.center,
-            children: <Widget>[
-              Container(
-                  alignment: Alignment.bottomCenter,
-                  child: Center(
-                      child: Transform(
-                          transform:
-                              Matrix4.translationValues(0, -(rubyYPos), 0),
-                          child: ContainerSpan(
-                            newContext: RenderContext(
-                              buildContext: context.buildContext,
-                              parser: context.parser,
-                              style: c.style,
-                              tree: c,
-                            ),
+    });
+    children.forEach((c) {
+      if (c.name == "rt" && node != null) {
+        final widget = Stack(
+          alignment: Alignment.center,
+          children: <Widget>[
+            Container(
+                alignment: Alignment.bottomCenter,
+                child: Center(
+                    child: Transform(
+                        transform:
+                        Matrix4.translationValues(0, -(rubyYPos), 0),
+                        child: ContainerSpan(
+                          newContext: RenderContext(
+                            buildContext: context.buildContext,
+                            parser: context.parser,
                             style: c.style,
-                            child: Text(c.element!.innerHtml,
-                                style: c.style
-                                    .generateTextStyle()
-                                    .copyWith(fontSize: rubySize)),
-                          )))),
-              ContainerSpan(
-                  newContext: context,
-                  style: context.style,
-                  child: Text(textNode!.trim(),
-                      style: context.style.generateTextStyle())),
-            ],
-          );
-          widgets.add(widget);
-        }
+                            tree: c,
+                          ),
+                          style: c.style,
+                          child: Text(c.element!.innerHtml,
+                              style: c.style
+                                  .generateTextStyle()
+                                  .copyWith(fontSize: rubySize)),
+                        )))),
+            ContainerSpan(
+                newContext: context,
+                style: context.style,
+                child: node is TextContentElement ? Text((node as TextContentElement).text?.trim() ?? "",
+                    style: context.style.generateTextStyle()) : null,
+                children: node is TextContentElement ? null : [context.parser.parseTree(context, node!)]),
+          ],
+        );
+        widgets.add(widget);
+      } else {
+        node = c;
       }
     });
     return Row(
