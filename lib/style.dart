@@ -473,8 +473,8 @@ class FontSize {
   const FontSize(this.size, {this.units = ""});
 
   /// A percentage of the parent style's font size.
-  factory FontSize.percent(int percent) {
-    return FontSize(percent.toDouble() / -100.0, units: "%");
+  factory FontSize.percent(double percent) {
+    return FontSize(percent / -100.0, units: "%");
   }
 
   factory FontSize.em(double? em) {
