@@ -36,7 +36,7 @@ class _AudioWidgetState extends State<AudioWidget> {
 
   @override
   void initState() {
-    final sources = <String?>[
+    sources = <String?>[
       if (widget.context.tree.element?.attributes['src'] != null)
         widget.context.tree.element!.attributes['src'],
       ...ReplacedElement.parseMediaSources(widget.context.tree.element!.children),

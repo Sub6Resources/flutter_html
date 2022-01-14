@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
@@ -438,7 +439,7 @@ class HtmlParser extends StatelessWidget {
           && tree.text!.startsWith(' ')
           && tree.element?.localName != "br"
           && (!keepLeadingSpace.data
-              || BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""))
+              || tree.style.display == Display.BLOCK)
           && (elementIndex < 1
               || (elementIndex >= 1
                   && parentNodes?[elementIndex - 1] is dom.Text
@@ -747,11 +748,16 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _removeEmptyElements(StyledElement tree) {
     List<StyledElement> toRemove = <StyledElement>[];
     bool lastChildBlock = true;
-    tree.children.forEach((child) {
+    tree.children.forEachIndexed((index, child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
       } else if (child is TextContentElement
-          && (tree.name == "body" || tree.name == "ul")
+          && ((tree.name == "body"
+              && (index == 0
+                  || index + 1 == tree.children.length
+                  || tree.children[index - 1].style.display == Display.BLOCK
+                  || tree.children[index + 1].style.display == Display.BLOCK))
+              || tree.name == "ul")
           && child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);
       } else if (child is TextContentElement

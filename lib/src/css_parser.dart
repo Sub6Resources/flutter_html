@@ -621,7 +621,7 @@ class ExpressionMapping {
     if (value is css.NumberTerm) {
       return FontSize(double.tryParse(value.text));
     } else if (value is css.PercentageTerm) {
-      return FontSize.percent(int.tryParse(value.text)!);
+      return FontSize.percent(double.tryParse(value.text)!);
     } else if (value is css.EmTerm) {
       return FontSize.em(double.tryParse(value.text));
     } else if (value is css.RemTerm) {
