@@ -173,7 +173,7 @@ CustomRender listElementRender({
                           right: (style?.direction ?? context.tree.style.direction) == TextDirection.rtl ? 10.0 : 0.0),
                   child: style?.markerContent ?? context.style.markerContent
                 ) : Container(height: 0, width: 0),
-                Text("\t", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
+                Text("\u0020", textAlign: TextAlign.right, style: TextStyle(fontWeight: FontWeight.w400)),
                 Expanded(
                     child: Padding(
                         padding: (style?.listStylePosition ?? context.tree.style.listStylePosition) == ListStylePosition.INSIDE ?
