@@ -90,7 +90,7 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^3.0.0-alpha.2
+      flutter_html: ^3.0.0-alpha.3
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |

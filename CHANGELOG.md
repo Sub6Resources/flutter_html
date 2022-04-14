@@ -1,3 +1,7 @@
+## [3.0.0-alpha.3] - April 14, 2022:
+* Fixed styling not being applied to list item markers
+* [video] Fixed crash when iframe or video tags used unsupported/incorrect height or width
+
 ## [3.0.0-alpha.2] - January 5, 2022:
 * **BREAKING** Full modularization using split packages; see our upgrade guide or use flutter_html_all 
 
