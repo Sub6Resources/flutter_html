@@ -10,11 +10,11 @@ import 'dart:html' as html;
 import 'package:webview_flutter/webview_flutter.dart';
 
 CustomRender iframeRender({NavigationDelegate? navigationDelegate}) => CustomRender.widget(widget: (context, buildChildren) {
+  final givenWidth = double.tryParse(context.tree.element?.attributes['width'] ?? "");
+  final givenHeight = double.tryParse(context.tree.element?.attributes['height'] ?? "");
   final html.IFrameElement iframe = html.IFrameElement()
-    ..width = (double.tryParse(context.tree.element?.attributes['width'] ?? "")
-        ?? (double.tryParse(context.tree.element?.attributes['height'] ?? "") ?? 150) * 2).toString()
-    ..height = (double.tryParse(context.tree.element?.attributes['height'] ?? "")
-        ?? (double.tryParse(context.tree.element?.attributes['width'] ?? "") ?? 300) / 2).toString()
+    ..width = (givenWidth ?? (givenHeight ?? 150) * 2).toString()
+    ..height = (givenHeight ?? (givenWidth ?? 300) / 2).toString()
     ..src = context.tree.element?.attributes['src']
     ..style.border = 'none';
   final String createdViewId = getRandString(10);
