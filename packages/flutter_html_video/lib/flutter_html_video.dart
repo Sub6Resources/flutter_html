@@ -34,6 +34,7 @@ class _VideoWidgetState extends State<VideoWidget> {
   VideoPlayerController? _videoController;
   double? _width;
   double? _height;
+  late final List<String?> sources;
 
   @override
   void initState() {
