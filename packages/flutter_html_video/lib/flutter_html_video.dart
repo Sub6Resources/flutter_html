@@ -38,7 +38,7 @@ class _VideoWidgetState extends State<VideoWidget> {
   @override
   void initState() {
     final attributes = widget.context.tree.element?.attributes ?? {};
-    sources = <String?>[
+    final sources = <String?>[
       if (attributes['src'] != null)
         attributes['src'],
       ...ReplacedElement.parseMediaSources(widget.context.tree.element!.children),

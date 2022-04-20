@@ -1,3 +1,6 @@
+## [3.0.0-alpha.4] - April 20, 2022:
+* Fixed compilation issue
+
 ## [3.0.0-alpha.3] - April 14, 2022:
 * Fixed crash when iframe or video tags used unsupported/incorrect height or width
 
