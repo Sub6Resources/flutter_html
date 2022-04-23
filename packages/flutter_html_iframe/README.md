@@ -12,7 +12,7 @@ Sandbox controls the JavaScript mode of the webview - a value of `null` or `allo
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     iframeMatcher(): iframeRender(),
   }
 );
@@ -23,7 +23,7 @@ You can set the `navigationDelegate` of the webview with the `navigationDelegate
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     iframeMatcher(): iframeRender(navigationDelegate: (NavigationRequest request) {
       if (request.url.contains("google.com/images")) {
         return NavigationDecision.prevent;

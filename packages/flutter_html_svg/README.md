@@ -12,7 +12,7 @@ The package also exposes a few ways to render SVGs within an `<img>` tag, specif
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     svgTagMatcher(): svgTagRender(),
     svgDataUriMatcher(): svgDataImageRender(),
     svgAssetUriMatcher(): svgAssetImageRender(),

@@ -12,7 +12,7 @@ Because this package is parsing MathML to Tex, it may not support some functiona
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     mathMatcher(): mathRender(),
   }
 );
@@ -28,7 +28,7 @@ You can analyze the error and the parsed string, and finally return a new instan
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     mathMatcher(): mathRender(onMathError: (tex, exception, exceptionWithType) {
       print(exception);
       //optionally try and correct the Tex string here
