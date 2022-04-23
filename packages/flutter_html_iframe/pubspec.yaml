@@ -12,7 +12,7 @@ dependencies:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
   flutter_html: '>=3.0.0-alpha.3 <4.0.0'
-#  flutter_ht
+#  flutter_html:
 #    path: ../..
 
   webview_flutter: '>=2.0.4 <4.0.0'
