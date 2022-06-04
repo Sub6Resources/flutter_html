@@ -870,10 +870,10 @@ class ExpressionMapping {
       css.Expression? offsetX;
       css.Expression? offsetY;
       css.Expression? blurRadius;
-      css.HexColorTerm? color;
+      css.Expression? color;
       int expressionIndex = 0;
       list.forEach((element) {
-        if (element is css.HexColorTerm) {
+        if (element is css.HexColorTerm || element is css.FunctionTerm) {
           color = element;
         } else if (expressionIndex == 0) {
           offsetX = element;
