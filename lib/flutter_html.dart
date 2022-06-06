@@ -7,11 +7,11 @@ import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
-//export render context api
-export 'package:flutter_html/html_parser.dart';
-//export render context api
-export 'package:flutter_html/html_parser.dart';
 export 'package:flutter_html/custom_render.dart';
+//export render context api
+export 'package:flutter_html/html_parser.dart';
+//export render context api
+export 'package:flutter_html/html_parser.dart';
 //export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/interactable_element.dart';
@@ -60,8 +60,8 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  }) : documentElement = null,
-        assert (data != null),
+  })  : documentElement = null,
+        assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
@@ -78,7 +78,7 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  }) : data = null,
+  })  : data = null,
         assert(document != null),
         this.documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -97,7 +97,7 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  }) : data = null,
+  })  : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -154,13 +154,20 @@ class Html extends StatefulWidget {
 }
 
 class _HtmlState extends State<Html> {
-  late final dom.Element documentElement;
+  late dom.Element documentElement;
 
   @override
   void initState() {
     super.initState();
-    documentElement =
-    widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.documentElement!;
+    documentElement = widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.documentElement!;
+  }
+
+  @override
+  void didUpdateWidget(Html oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if ((widget.data != null && oldWidget.data != widget.data) || oldWidget.documentElement != widget.documentElement) {
+      documentElement = widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.documentElement!;
+    }
   }
 
   @override
@@ -232,7 +239,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  }) : documentElement = null,
+  })  : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -250,7 +257,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  }) : data = null,
+  })  : data = null,
         assert(document != null),
         this.documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -269,7 +276,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  }) : data = null,
+  })  : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
