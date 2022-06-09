@@ -65,7 +65,7 @@ class HtmlParser extends StatelessWidget {
           ? onAnchorTap
           : key != null
               ? _handleAnchorTap(key, onLinkTap)
-              : null,
+              : onLinkTap,
         super(key: key);
 
   @override
