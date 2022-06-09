@@ -90,7 +90,8 @@ A Flutter widget for rendering HTML and CSS as Flutter widgets.
 Add the following to your `pubspec.yaml` file:
 
     dependencies:
-      flutter_html: ^3.0.0-alpha.3
+      flutter_html: ^3.0.0-alpha.5
+      // Or flutter_html_all: ^3.0.0-alpha.5 to include table, video, audio, iframe...
 
 ## Currently Supported HTML Tags:
 |            |           |       |             |         |         |       |      |        |        |        |
@@ -566,6 +567,11 @@ The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `wid
 
 #### Registering the `CustomRender`:
 
+Add the dependency to your pubspec.yaml:
+
+    dependencies:
+      flutter_html_audio: ^3.0.0-alpha.3
+
 ```dart
 Widget html = Html(
   customRenders: {
@@ -583,6 +589,11 @@ When rendering iframes, the package considers the width, height, and sandbox att
 Sandbox controls the JavaScript mode of the webview - a value of `null` or `allow-scripts` will set `javascriptMode: JavascriptMode.unrestricted`, otherwise it will set `javascriptMode: JavascriptMode.disabled`.
 
 #### Registering the `CustomRender`:
+
+Add the dependency to your pubspec.yaml:
+
+    dependencies:
+      flutter_html_iframe: ^3.0.0-alpha.3
 
 ```dart
 Widget html = Html(
@@ -619,6 +630,11 @@ When rendering MathML, the package takes the MathML data within the `<math>` tag
 Because this package is parsing MathML to Tex, it may not support some functionalities. The current list of supported tags can be found [above](#currently-supported-html-tags), but some of these only have partial support at the moment.
 
 #### Registering the `CustomRender`:
+
+Add the dependency to your pubspec.yaml:
+
+    dependencies:
+      flutter_html_math: ^3.0.0-alpha.3
 
 ```dart
 Widget html = Html(
@@ -688,6 +704,11 @@ The package also exposes a few ways to render SVGs within an `<img>` tag, specif
 
 #### Registering the `CustomRender`:
 
+Add the dependency to your pubspec.yaml:
+
+    dependencies:
+      flutter_html_svg: ^3.0.0-alpha.3
+
 ```dart
 Widget html = Html(
   customRenders: {
@@ -707,6 +728,11 @@ When rendering table elements, the package tries to calculate the best fit for e
 
 #### Registering the `CustomRender`:
 
+Add the dependency to your pubspec.yaml:
+
+    dependencies:
+      flutter_html_table: ^3.0.0-alpha.3
+
 ```dart
 Widget html = Html(
   customRenders: {
@@ -722,6 +748,11 @@ This package renders video elements using the [`chewie`](https://pub.dev/package
 The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `poster`, `width`, `height`, and `muted` when rendering the video widget.
 
 #### Registering the `CustomRender`:
+
+Add the dependency to your pubspec.yaml:
+
+    dependencies:
+      flutter_html_video: ^3.0.0-alpha.3
 
 ```dart
 Widget html = Html(
@@ -750,7 +781,8 @@ Widget row = Row(
 ```
 
 ## Migration Guides
-- For Version 1.0 - [Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide)
+- For Version 1.0/2.0 - [Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide)
+- For Version 3.0 - **TODO**
 
 ## Contribution Guide
 > Coming soon!

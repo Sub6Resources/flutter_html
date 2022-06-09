@@ -241,6 +241,8 @@ const htmlData = r"""
       <p id='bottom'><a href='#top'>Scroll to top</a></p>
 """;
 
+final staticAnchorKey = GlobalKey();
+
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
@@ -249,8 +251,18 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('flutter_html Example'),
         centerTitle: true,
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.arrow_downward),
+        onPressed: () {
+          final anchorContext = AnchorKey.forId(staticAnchorKey, "bottom")?.currentContext;
+          if (anchorContext != null) {
+            Scrollable.ensureVisible(anchorContext);
+          }
+        },
+      ),
       body: SingleChildScrollView(
         child: Html(
+          anchorKey: staticAnchorKey,
           data: htmlData,
           style: {
             "table": Style(
