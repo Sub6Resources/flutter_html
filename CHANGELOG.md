@@ -1,3 +1,8 @@
+## [3.0.0-alpha.5] - June 9, 2022:
+* Fixed hot reloads, thanks @arjenmels
+* Fixed link taps not working
+* Improvements in README
+
 ## [3.0.0-alpha.3] - April 14, 2022:
 * Fixed styling not being applied to list item markers
 * [video] Fixed crash when iframe or video tags used unsupported/incorrect height or width
