@@ -1,5 +1,5 @@
 name: flutter_html_video
-description: Video widget for flutter_html.
+description: This extension package allows the <video> tag to be rendered using the flutter_html package
 version: 3.0.0-alpha.4
 homepage: https://github.com/Sub6Resources/flutter_html
 
