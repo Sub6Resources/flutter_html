@@ -159,14 +159,19 @@ class _HtmlState extends State<Html> {
   @override
   void initState() {
     super.initState();
-    documentElement = widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.documentElement!;
+    documentElement = widget.data != null
+        ? HtmlParser.parseHTML(widget.data!)
+        : widget.documentElement!;
   }
 
   @override
   void didUpdateWidget(Html oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if ((widget.data != null && oldWidget.data != widget.data) || oldWidget.documentElement != widget.documentElement) {
-      documentElement = widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.documentElement!;
+    if ((widget.data != null && oldWidget.data != widget.data) ||
+        oldWidget.documentElement != widget.documentElement) {
+      documentElement = widget.data != null
+          ? HtmlParser.parseHTML(widget.data!)
+          : widget.documentElement!;
     }
   }
 
@@ -333,7 +338,9 @@ class _SelectableHtmlState extends State<SelectableHtml> {
   @override
   void initState() {
     super.initState();
-    documentElement = widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.documentElement!;
+    documentElement = widget.data != null
+        ? HtmlParser.parseHTML(widget.data!)
+        : widget.documentElement!;
   }
 
   @override
@@ -354,7 +361,8 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         customRenders: {}
           ..addAll(widget.customRenders)
           ..addAll(defaultRenders),
-        tagsList: widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
+        tagsList:
+            widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,
         scrollPhysics: widget.scrollPhysics,
       ),

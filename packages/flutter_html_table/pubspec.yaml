@@ -1,5 +1,6 @@
 name: flutter_html_table
-description: Table widget for flutter_html.
+description: This extension package allows the <table> tag to be rendered using the flutter_html package
+
 version: 3.0.0-alpha.3
 homepage: https://github.com/Sub6Resources/flutter_html
 
