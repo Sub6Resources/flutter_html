@@ -71,8 +71,12 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       parsed = _parseMathRecursive(nodeList[0], parsed);
       parsed = _parseMathRecursive(nodeList[2], parsed + r"\overline{)") + "}";
     }
-    if (node.localName == "msqrt" && nodeList.length == 1) {
-      parsed = _parseMathRecursive(nodeList[0], parsed + r"\sqrt{") + "}";
+    if (node.localName == "msqrt") {
+      parsed = parsed + r"\sqrt{";
+      nodeList.forEach((element) {
+        parsed = _parseMathRecursive(element, parsed);
+      });
+      parsed = parsed + "}";
     }
     if (node.localName == "mroot" && nodeList.length == 2) {
       parsed = _parseMathRecursive(nodeList[1], parsed + r"\sqrt[") + "]";
