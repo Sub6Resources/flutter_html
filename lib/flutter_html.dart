@@ -7,11 +7,11 @@ import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
 
-//export render context api
-export 'package:flutter_html/html_parser.dart';
-//export render context api
-export 'package:flutter_html/html_parser.dart';
 export 'package:flutter_html/custom_render.dart';
+//export render context api
+export 'package:flutter_html/html_parser.dart';
+//export render context api
+export 'package:flutter_html/html_parser.dart';
 //export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/interactable_element.dart';
@@ -60,15 +60,15 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  }) : document = null,
-        assert (data != null),
+  })  : documentElement = null,
+        assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
   Html.fromDom({
     Key? key,
     GlobalKey? anchorKey,
-    @required this.document,
+    @required dom.Document? document,
     this.onLinkTap,
     this.onAnchorTap,
     this.customRenders = const {},
@@ -78,8 +78,27 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  }) : data = null,
+  })  : data = null,
         assert(document != null),
+        this.documentElement = document!.documentElement,
+        _anchorKey = anchorKey ?? GlobalKey(),
+        super(key: key);
+
+  Html.fromElement({
+    Key? key,
+    GlobalKey? anchorKey,
+    @required this.documentElement,
+    this.onLinkTap,
+    this.onAnchorTap,
+    this.customRenders = const {},
+    this.onCssParseError,
+    this.onImageError,
+    this.shrinkWrap = false,
+    this.onImageTap,
+    this.tagsList = const [],
+    this.style = const {},
+  })  : data = null,
+        assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
@@ -89,8 +108,8 @@ class Html extends StatefulWidget {
   /// The HTML data passed to the widget as a String
   final String? data;
 
-  /// The HTML data passed to the widget as a pre-processed [dom.Document]
-  final dom.Document? document;
+  /// The HTML data passed to the widget as a pre-processed [dom.Element]
+  final dom.Element? documentElement;
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
@@ -135,13 +154,25 @@ class Html extends StatefulWidget {
 }
 
 class _HtmlState extends State<Html> {
-  late final dom.Document doc;
+  late dom.Element documentElement;
 
   @override
   void initState() {
     super.initState();
-    doc =
-    widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.document!;
+    documentElement = widget.data != null
+        ? HtmlParser.parseHTML(widget.data!)
+        : widget.documentElement!;
+  }
+
+  @override
+  void didUpdateWidget(Html oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if ((widget.data != null && oldWidget.data != widget.data) ||
+        oldWidget.documentElement != widget.documentElement) {
+      documentElement = widget.data != null
+          ? HtmlParser.parseHTML(widget.data!)
+          : widget.documentElement!;
+    }
   }
 
   @override
@@ -150,7 +181,7 @@ class _HtmlState extends State<Html> {
       width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
       child: HtmlParser(
         key: widget._anchorKey,
-        htmlData: doc,
+        htmlData: documentElement,
         onLinkTap: widget.onLinkTap,
         onAnchorTap: widget.onAnchorTap,
         onImageTap: widget.onImageTap,
@@ -174,7 +205,7 @@ class SelectableHtml extends StatefulWidget {
   ///
   /// **Attributes**
   /// **data** *required* takes in a String of HTML data (required only for `Html` constructor).
-  /// **document** *required* takes in a Document of HTML data (required only for `Html.fromDom` constructor).
+  /// **documentElement** *required* takes in a Element of HTML data (required only for `Html.fromDom` and `Html.fromElement` constructor).
   ///
   /// **onLinkTap** This function is called whenever a link (`<a href>`)
   /// is tapped.
@@ -213,7 +244,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  }) : document = null,
+  })  : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -221,7 +252,7 @@ class SelectableHtml extends StatefulWidget {
   SelectableHtml.fromDom({
     Key? key,
     GlobalKey? anchorKey,
-    required this.document,
+    @required dom.Document? document,
     this.onLinkTap,
     this.onAnchorTap,
     this.onCssParseError,
@@ -231,8 +262,27 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  }) : data = null,
+  })  : data = null,
         assert(document != null),
+        this.documentElement = document!.documentElement,
+        _anchorKey = anchorKey ?? GlobalKey(),
+        super(key: key);
+
+  SelectableHtml.fromElement({
+    Key? key,
+    GlobalKey? anchorKey,
+    @required this.documentElement,
+    this.onLinkTap,
+    this.onAnchorTap,
+    this.onCssParseError,
+    this.shrinkWrap = false,
+    this.style = const {},
+    this.customRenders = const {},
+    this.tagsList = const [],
+    this.selectionControls,
+    this.scrollPhysics,
+  })  : data = null,
+        assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
@@ -242,8 +292,8 @@ class SelectableHtml extends StatefulWidget {
   /// The HTML data passed to the widget as a String
   final String? data;
 
-  /// The HTML data passed to the widget as a pre-processed [dom.Document]
-  final dom.Document? document;
+  /// The HTML data passed to the widget as a pre-processed [dom.Element]
+  final dom.Element? documentElement;
 
   /// A function that defines what to do when a link is tapped
   final OnTap? onLinkTap;
@@ -283,13 +333,14 @@ class SelectableHtml extends StatefulWidget {
 }
 
 class _SelectableHtmlState extends State<SelectableHtml> {
-  late final dom.Document doc;
+  late final dom.Element documentElement;
 
   @override
   void initState() {
     super.initState();
-    doc =
-    widget.data != null ? HtmlParser.parseHTML(widget.data!) : widget.document!;
+    documentElement = widget.data != null
+        ? HtmlParser.parseHTML(widget.data!)
+        : widget.documentElement!;
   }
 
   @override
@@ -298,7 +349,7 @@ class _SelectableHtmlState extends State<SelectableHtml> {
       width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
       child: HtmlParser(
         key: widget._anchorKey,
-        htmlData: doc,
+        htmlData: documentElement,
         onLinkTap: widget.onLinkTap,
         onAnchorTap: widget.onAnchorTap,
         onImageTap: null,
@@ -310,7 +361,8 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         customRenders: {}
           ..addAll(widget.customRenders)
           ..addAll(defaultRenders),
-        tagsList: widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
+        tagsList:
+            widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,
         scrollPhysics: widget.scrollPhysics,
       ),

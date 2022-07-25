@@ -6,16 +6,21 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:video_player/video_player.dart';
 import 'package:html/dom.dart' as dom;
 
-typedef VideoControllerCallback = void Function(dom.Element?, ChewieController, VideoPlayerController);
+typedef VideoControllerCallback = void Function(
+    dom.Element?, ChewieController, VideoPlayerController);
 
-CustomRender videoRender({VideoControllerCallback? onControllerCreated})
-  => CustomRender.widget(widget: (context, buildChildren)
-    => VideoWidget(context: context, callback: onControllerCreated));
+/// A CustomRender function for rendering the <video> HTML tag.
+CustomRender videoRender({VideoControllerCallback? onControllerCreated}) =>
+    CustomRender.widget(
+        widget: (context, buildChildren) =>
+            VideoWidget(context: context, callback: onControllerCreated));
 
+/// A CustomRenderMatcher for the <video> HTML tag
 CustomRenderMatcher videoMatcher() => (context) {
-  return context.tree.element?.localName == "video";
-};
+      return context.tree.element?.localName == "video";
+    };
 
+/// A VideoWidget for displaying within the HTML tree.
 class VideoWidget extends StatefulWidget {
   final RenderContext context;
   final VideoControllerCallback? callback;
@@ -30,61 +35,62 @@ class VideoWidget extends StatefulWidget {
 }
 
 class _VideoWidgetState extends State<VideoWidget> {
-  ChewieController? chewieController;
-  VideoPlayerController? videoController;
+  ChewieController? _chewieController;
+  VideoPlayerController? _videoController;
   double? _width;
   double? _height;
-  late final List<String?> sources;
 
   @override
   void initState() {
     final attributes = widget.context.tree.element?.attributes ?? {};
     final sources = <String?>[
-      if (attributes['src'] != null)
-        attributes['src'],
-      ...ReplacedElement.parseMediaSources(widget.context.tree.element!.children),
+      if (attributes['src'] != null) attributes['src'],
+      ...ReplacedElement.parseMediaSources(
+          widget.context.tree.element!.children),
     ];
+    final givenWidth = double.tryParse(attributes['width'] ?? "");
+    final givenHeight = double.tryParse(attributes['height'] ?? "");
     if (sources.isNotEmpty && sources.first != null) {
-      _width = double.tryParse(attributes['width'] ?? (attributes['height'] ?? 150) * 2);
-      _height = double.tryParse(attributes['height'] ?? (attributes['width'] ?? 300) / 2);
-      videoController = VideoPlayerController.network(sources.first!);
-      chewieController = ChewieController(
-        videoPlayerController: videoController!,
-        placeholder: attributes['poster'] != null && attributes['poster']!.isNotEmpty
-            ? Image.network(attributes['poster']!)
-            : Container(color: Colors.black),
+      _width = givenWidth ?? (givenHeight ?? 150) * 2;
+      _height = givenHeight ?? (givenWidth ?? 300) / 2;
+      _videoController = VideoPlayerController.network(sources.first!);
+      _chewieController = ChewieController(
+        videoPlayerController: _videoController!,
+        placeholder:
+            attributes['poster'] != null && attributes['poster']!.isNotEmpty
+                ? Image.network(attributes['poster']!)
+                : Container(color: Colors.black),
         autoPlay: attributes['autoplay'] != null,
         looping: attributes['loop'] != null,
         showControls: attributes['controls'] != null,
         autoInitialize: true,
-        aspectRatio: _width == null || _height == null ? null : _width! / _height!,
+        aspectRatio:
+            _width == null || _height == null ? null : _width! / _height!,
       );
-      widget.callback?.call(widget.context.tree.element, chewieController!, videoController!);
+      widget.callback?.call(
+          widget.context.tree.element, _chewieController!, _videoController!);
     }
     super.initState();
   }
 
   @override
   void dispose() {
-    chewieController?.dispose();
-    videoController?.dispose();
+    _chewieController?.dispose();
+    _videoController?.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext bContext) {
-    if (sources.isEmpty || sources.first == null) {
+    if (_chewieController == null) {
       return Container(height: 0, width: 0);
     }
     final child = Container(
       key: widget.context.key,
       child: Chewie(
-        controller: chewieController!,
+        controller: _chewieController!,
       ),
     );
-    if (_width == null || _height == null) {
-      return child;
-    }
     return AspectRatio(
       aspectRatio: _width! / _height!,
       child: child,

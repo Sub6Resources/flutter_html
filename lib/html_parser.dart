@@ -1,6 +1,7 @@
 import 'dart:collection';
 import 'dart:math';
 
+import 'package:collection/collection.dart';
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
@@ -25,7 +26,7 @@ typedef OnCssParseError = String? Function(
 
 class HtmlParser extends StatelessWidget {
   final Key? key;
-  final dom.Document htmlData;
+  final dom.Element htmlData;
   final OnTap? onLinkTap;
   final OnTap? onAnchorTap;
   final OnTap? onImageTap;
@@ -64,7 +65,7 @@ class HtmlParser extends StatelessWidget {
           ? onAnchorTap
           : key != null
               ? _handleAnchorTap(key, onLinkTap)
-              : null,
+              : onLinkTap,
         super(key: key);
 
   @override
@@ -127,9 +128,9 @@ class HtmlParser extends StatelessWidget {
     );
   }
 
-  /// [parseHTML] converts a string of HTML to a DOM document using the dart `html` library.
-  static dom.Document parseHTML(String data) {
-    return htmlparser.parse(data);
+  /// [parseHTML] converts a string of HTML to a DOM element using the dart `html` library.
+  static dom.Element parseHTML(String data) {
+    return htmlparser.parse(data).documentElement!;
   }
 
   /// [parseCss] converts a string of CSS to a CSS stylesheet using the dart `csslib` library.
@@ -139,7 +140,7 @@ class HtmlParser extends StatelessWidget {
 
   /// [lexDomTree] converts a DOM document to a simplified tree of [StyledElement]s.
   static StyledElement lexDomTree(
-    dom.Document html,
+    dom.Element html,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
     BuildContext context,
@@ -148,7 +149,7 @@ class HtmlParser extends StatelessWidget {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: <StyledElement>[],
-      node: html.documentElement,
+      node: html,
       style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
     );
 
@@ -438,7 +439,7 @@ class HtmlParser extends StatelessWidget {
           && tree.text!.startsWith(' ')
           && tree.element?.localName != "br"
           && (!keepLeadingSpace.data
-              || BLOCK_ELEMENTS.contains(tree.element?.localName ?? ""))
+              || tree.style.display == Display.BLOCK)
           && (elementIndex < 1
               || (elementIndex >= 1
                   && parentNodes?[elementIndex - 1] is dom.Text
@@ -605,6 +606,7 @@ class HtmlParser extends StatelessWidget {
       tree.style.markerContent = Text(
           marker,
           textAlign: TextAlign.right,
+          style: tree.style.generateTextStyle(),
       );
     }
 
@@ -747,11 +749,16 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _removeEmptyElements(StyledElement tree) {
     List<StyledElement> toRemove = <StyledElement>[];
     bool lastChildBlock = true;
-    tree.children.forEach((child) {
+    tree.children.forEachIndexed((index, child) {
       if (child is EmptyContentElement || child is EmptyLayoutElement) {
         toRemove.add(child);
       } else if (child is TextContentElement
-          && (tree.name == "body" || tree.name == "ul")
+          && ((tree.name == "body"
+              && (index == 0
+                  || index + 1 == tree.children.length
+                  || tree.children[index - 1].style.display == Display.BLOCK
+                  || tree.children[index + 1].style.display == Display.BLOCK))
+              || tree.name == "ul")
           && child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);
       } else if (child is TextContentElement

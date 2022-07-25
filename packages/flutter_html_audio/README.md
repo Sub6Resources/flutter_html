@@ -10,7 +10,7 @@ The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `wid
 
 ```dart
 Widget html = Html(
-  customRender: {
+  customRenders: {
     audioMatcher(): audioRender(),
   }
 );

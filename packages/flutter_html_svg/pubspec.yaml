@@ -1,6 +1,6 @@
 name: flutter_html_svg
-description: SVG widget for flutter_html
-version: 3.0.0-alpha.2
+description: This extension package allows the <svg> tag and svg-based img sources to be rendered using the flutter_html package
+version: 3.0.0-alpha.3
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
-  flutter_html: '>=3.0.0-alpha.2 <4.0.0'
+  flutter_html: '>=3.0.0-alpha.3 <4.0.0'
 #  flutter_html:
 #    path: ../..
 

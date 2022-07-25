@@ -83,7 +83,7 @@ const htmlData = r"""
       </thead>
       <tbody>
       <tr>
-        <td rowspan='2'>Rowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan\nRowspan</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
         <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
@@ -251,6 +251,8 @@ const htmlData = r"""
       <p id='bottom'><a href='#top'>Scroll to top</a></p>
 """;
 
+final staticAnchorKey = GlobalKey();
+
 class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
@@ -259,8 +261,18 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text('flutter_html Example'),
         centerTitle: true,
       ),
+      floatingActionButton: FloatingActionButton(
+        child: Icon(Icons.arrow_downward),
+        onPressed: () {
+          final anchorContext = AnchorKey.forId(staticAnchorKey, "bottom")?.currentContext;
+          if (anchorContext != null) {
+            Scrollable.ensureVisible(anchorContext);
+          }
+        },
+      ),
       body: SingleChildScrollView(
         child: Html(
+          anchorKey: staticAnchorKey,
           data: htmlData,
           style: {
             "table": Style(
