@@ -14,7 +14,6 @@ class TestApp extends StatelessWidget {
     return MaterialApp(
       home: Scaffold(
         body: body,
-        appBar: AppBar(title: Text('flutter_html')),
       ),
     );
   }
@@ -60,6 +59,17 @@ void main() {
           """),
       ),
     );
-//    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/whitespace.png'));
+    //    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/whitespace.png'));
+  });
+
+  testWidgets('whitespace between inline elements golden test', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      TestApp(
+        Html(
+          data:"""<b>Harry</b> <b>Potter</b>""",
+        ),
+      ),
+    );
+    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/whitespace_btwn_inline.png'));
   });
 }
