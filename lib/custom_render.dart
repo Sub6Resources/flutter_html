@@ -145,8 +145,7 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
                           context.tree.children[i - 1] is ReplacedElement)
                         TextSpan(text: "\n"),
                       context.parser.parseTree(context, childTree),
-                      if (context.parser.shrinkWrap &&
-                          i != context.tree.children.length - 1 &&
+                      if (i != context.tree.children.length - 1 &&
                           childTree.style.display == Display.BLOCK &&
                           childTree.element?.localName != "html" &&
                           childTree.element?.localName != "body")
@@ -260,8 +259,10 @@ CustomRender replacedElementRender(
 CustomRender textContentElementRender({String? text}) =>
     CustomRender.inlineSpan(
         inlineSpan: (context, buildChildren) => TextSpan(
-            text: (text ?? (context.tree as TextContentElement).text)
-                .transformed(context.tree.style.textTransform)));
+              style: context.style.generateTextStyle(),
+              text: (text ?? (context.tree as TextContentElement).text)
+                  .transformed(context.tree.style.textTransform),
+            ));
 
 CustomRender base64ImageRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
