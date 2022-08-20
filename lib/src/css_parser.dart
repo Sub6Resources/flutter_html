@@ -244,30 +244,31 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               && !(element is css.EmTerm)
               && !(element is css.RemTerm)
               && !(element is css.NumberTerm)
+              && !(element.text == 'auto')
           );
-          List<double?> margin = ExpressionMapping.expressionToPadding(marginLengths);
-          style.margin = (style.margin ?? EdgeInsets.zero).copyWith(
-            left: margin[0],
-            right: margin[1],
-            top: margin[2],
-            bottom: margin[3],
+          Margins margin = ExpressionMapping.expressionToMargins(marginLengths);
+          style.margin = (style.margin ?? Margins.all(0)).copyWith(
+            left: margin.left,
+            right: margin.right,
+            top: margin.top,
+            bottom: margin.bottom,
           );
           break;
         case 'margin-left':
-          style.margin = (style.margin ?? EdgeInsets.zero).copyWith(
-              left: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.margin = (style.margin ?? Margins.zero).copyWith(
+              left: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'margin-right':
-          style.margin = (style.margin ?? EdgeInsets.zero).copyWith(
-              right: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.margin = (style.margin ?? Margins.zero).copyWith(
+              right: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'margin-top':
-          style.margin = (style.margin ?? EdgeInsets.zero).copyWith(
-              top: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.margin = (style.margin ?? Margins.zero).copyWith(
+              top: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'margin-bottom':
-          style.margin = (style.margin ?? EdgeInsets.zero).copyWith(
-              bottom: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.margin = (style.margin ?? Margins.zero).copyWith(
+              bottom: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'padding':
           List<css.LiteralTerm>? paddingLengths = value.whereType<css.LiteralTerm>().toList();
@@ -746,6 +747,45 @@ class ExpressionMapping {
         return ListStyleType.NONE;
     }
     return null;
+  }
+
+  static Margin? expressionToMargin(css.Expression value) {
+    if ((value is css.LiteralTerm) && value.text == 'auto') {
+      return AutoMargin();
+    } else {
+      return InsetMargin(expressionToPaddingLength(value) ?? 0);
+    }
+  }
+
+  static Margins expressionToMargins(List<css.Expression>? lengths) {
+    Margin? left;
+    Margin? right;
+    Margin? top;
+    Margin? bottom;
+    if (lengths != null && lengths.isNotEmpty) {
+      top = expressionToMargin(lengths.first);
+      if (lengths.length == 4) {
+        right = expressionToMargin(lengths[1]);
+        bottom = expressionToMargin(lengths[2]);
+        left = expressionToMargin(lengths.last);
+      }
+      if (lengths.length == 3) {
+        left = expressionToMargin(lengths[1]);
+        right = expressionToMargin(lengths[1]);
+        bottom = expressionToMargin(lengths.last);
+      }
+      if (lengths.length == 2) {
+        bottom = expressionToMargin(lengths.first);
+        left = expressionToMargin(lengths.last);
+        right = expressionToMargin(lengths.last);
+      }
+      if (lengths.length == 1) {
+        bottom = expressionToMargin(lengths.first);
+        left = expressionToMargin(lengths.first);
+        right = expressionToMargin(lengths.first);
+      }
+    }
+    return Margins(left: left, right: right, top: top, bottom: bottom);
   }
 
   static List<double?> expressionToPadding(List<css.Expression>? lengths) {

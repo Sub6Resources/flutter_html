@@ -55,10 +55,20 @@ const htmlData = r"""
       <p>The should be <span style='color: rgba(0, 0, 0, 0.10);'>BLACK with 10% alpha style='color: rgba(0, 0, 0, 0.10);</span></p>
       <p>The should be <span style='color: rgb(0, 97, 0);'>GREEN style='color: rgb(0, 97, 0);</span></p>
       <p>The should be <span style='background-color: red; color: rgb(0, 97, 0);'>GREEN style='color: rgb(0, 97, 0);</span></p>
-      <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
-      <p style="text-align: right;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
-      <p style="text-align: justify;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
-      <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">blasdafjklasdlkjfkl</span></p>
+      <h3>Text Alignment</h3>
+      <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">Center Aligned Text</span></p>
+      <p style="text-align: right;"><span style="color: rgba(0, 0, 0, 0.95);">Right Aligned Text</span></p>
+      <p style="text-align: justify;"><span style="color: rgba(0, 0, 0, 0.95);">Justified Text</span></p>
+      <p style="text-align: center;"><span style="color: rgba(0, 0, 0, 0.95);">Center Aligned Text</span></p>
+      <h3>Auto Margins</h3>
+      <div style="width: 150px; height: 20px; background-color: #ff9999;">Default Div</div>
+      <div style="width: 150px; height: 20px; background-color: #99ff99; margin: auto;">margin: auto</div>
+      <div style="width: 150px; height: 20px; background-color: #ff99ff; margin: 15px auto;">margin: 15px auto</div>
+      <div style="width: 150px; height: 20px; background-color: #9999ff; margin-left: auto;">margin-left: auto</div>
+      <p>With an image - non-block (should not center):</p>
+      <img style="margin: auto;" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
+      <p>block image (should center):</p>
+      <img style="display: block; margin: auto;" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
       <h3>Table support (with custom styling!):</h3>
       <p>
       <q>Famous quote...</q>

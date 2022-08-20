@@ -103,7 +103,7 @@ class Style {
   ///
   /// Inherited: no,
   /// Default: EdgeInsets.zero
-  EdgeInsets? margin;
+  Margins? margin;
 
   /// CSS attribute "`text-align`"
   ///
@@ -391,7 +391,7 @@ class Style {
     ListStyleType? listStyleType,
     ListStylePosition? listStylePosition,
     EdgeInsets? padding,
-    EdgeInsets? margin,
+    Margins? margin,
     TextAlign? textAlign,
     TextDecoration? textDecoration,
     Color? textDecorationColor,
@@ -479,6 +479,97 @@ enum Display {
   INLINE_BLOCK,
   LIST_ITEM,
   NONE,
+}
+
+abstract class Margin {
+  const Margin();
+
+  double get value => this is InsetMargin ? this.value : 0;
+  }
+
+class AutoMargin extends Margin {
+  const AutoMargin();
+}
+
+class InsetMargin extends Margin {
+  final double value;
+  const InsetMargin(this.value);
+}
+
+class Margins {
+  final Margin? left;
+  final Margin? right;
+  final Margin? top;
+  final Margin? bottom;
+
+  const Margins({ this.left, this.right, this.top, this.bottom });
+
+  /// Auto margins already have a "value" of zero so can be considered collapsed.
+  Margins collapse() => Margins(
+    left: left is AutoMargin ? left : InsetMargin(0),
+    right: right is AutoMargin ? right : InsetMargin(0),
+    top: top is AutoMargin ? top : InsetMargin(0),
+    bottom: bottom is AutoMargin ? bottom : InsetMargin(0),
+  );
+
+  Margins copyWith({ Margin? left, Margin? right, Margin? top, Margin? bottom }) => Margins(
+    left: left ?? this.left,
+    right: right ?? this.right,
+    top: top ?? this.top,
+    bottom: bottom ?? this.bottom,
+  );
+
+  Margins copyWithEdge({ double? left, double? right, double? top, double? bottom  }) => Margins(
+    left: left != null ? InsetMargin(left) : this.left,
+    right: right != null ? InsetMargin(right) : this.right,
+    top: top != null ? InsetMargin(top) : this.top,
+    bottom: bottom != null ? InsetMargin(bottom) : this.bottom,
+  );
+
+  bool get isAutoHorizontal => (left is AutoMargin) || (right is AutoMargin);
+
+  Alignment? get alignment {
+    if((left is AutoMargin) && (right is AutoMargin)) {
+      return Alignment.center;
+    } else if(left is AutoMargin) {
+      return Alignment.topRight;
+    }
+  }
+
+  /// Analogous to [EdgeInsets.zero] 
+  static Margins get zero => Margins.all(0);
+
+  /// Analogous to [EdgeInsets.all] 
+  static Margins all(double value) => Margins(
+    left: InsetMargin(value),
+    right: InsetMargin(value),
+    top: InsetMargin(value),
+    bottom: InsetMargin(value),
+  );
+
+  /// Analogous to [EdgeInsets.only] 
+  static Margins only({ double? left, double? right, double? top, double? bottom }) => Margins(
+    left: InsetMargin(left ?? 0),
+    right: InsetMargin(right ?? 0),
+    top: InsetMargin(top ?? 0),
+    bottom: InsetMargin(bottom ?? 0),
+  );
+
+
+  /// Analogous to [EdgeInsets.symmetric] 
+  static Margins symmetric({double? horizontal, double? vertical}) => Margins(
+    left: InsetMargin(horizontal ?? 0),
+    right: InsetMargin(horizontal ?? 0),
+    top: InsetMargin(vertical ?? 0),
+    bottom: InsetMargin(vertical ?? 0),
+  );
+
+  EdgeInsets get asInsets => EdgeInsets.zero.copyWith(
+    left: left?.value ?? 0,
+    right: right?.value ?? 0,
+    top: top?.value ?? 0,
+    bottom: bottom?.value ?? 0,
+  );
 }
 
 class FontSize {

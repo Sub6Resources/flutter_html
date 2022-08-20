@@ -11,7 +11,7 @@ CustomRender tableRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
       return Container(
         key: context.key,
-        margin: context.style.margin?.nonNegative,
+        margin: context.style.margin?.asInsets.nonNegative,
         padding: context.style.padding?.nonNegative,
         alignment: context.style.alignment,
         decoration: BoxDecoration(
