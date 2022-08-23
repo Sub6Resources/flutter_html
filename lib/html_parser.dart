@@ -8,6 +8,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/src/style/length.dart';
+import 'package:flutter_html/src/style/margin.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
@@ -850,8 +852,12 @@ class ContainerSpan extends StatelessWidget {
 
     // Elements that are inline should ignore margin: auto for alignment.
     var alignment = shrinkWrap ? null : style.alignment;
+    // TODO(Sub6Resources): This needs to follow the CSS spec for computing auto values!
     if(style.display == Display.BLOCK) {
-      alignment = style.margin?.alignment ?? alignment;
+      if(style.margin?.left?.unit == Unit.auto && style.margin?.right?.unit == Unit.auto)
+        alignment = Alignment.bottomCenter;
+      else if(style.margin?.left?.unit == Unit.auto)
+        alignment = Alignment.bottomRight;
     }
 
     Widget container = Container(
@@ -862,7 +868,13 @@ class ContainerSpan extends StatelessWidget {
       height: style.height,
       width: style.width,
       padding: style.padding?.nonNegative,
-      margin: style.margin?.asInsets.nonNegative,
+      // TODO(Sub6Resources): These need to be computed!!
+      margin: EdgeInsets.only(
+        left: style.margin?.left?.value.abs() ?? 0,
+        right: style.margin?.right?.value.abs() ?? 0,
+        bottom: style.margin?.bottom?.value.abs() ?? 0,
+        top: style.margin?.bottom?.value.abs() ?? 0,
+      ),
       alignment: alignment,
       child: child ??
           StyledText(

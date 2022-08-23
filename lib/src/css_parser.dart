@@ -5,6 +5,8 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/style/length.dart';
+import 'package:flutter_html/src/style/margin.dart';
 import 'package:flutter_html/src/utils.dart';
 
 Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
@@ -751,9 +753,9 @@ class ExpressionMapping {
 
   static Margin? expressionToMargin(css.Expression value) {
     if ((value is css.LiteralTerm) && value.text == 'auto') {
-      return AutoMargin();
+      return Margin.auto();
     } else {
-      return InsetMargin(expressionToPaddingLength(value) ?? 0);
+      return Margin(expressionToPaddingLength(value) ?? 0);
     }
   }
 
@@ -830,6 +832,31 @@ class ExpressionMapping {
       return double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), ''));
     }
     return null;
+  }
+
+  static LengthOrPercent expressionToLengthOrPercent(css.Expression value) {
+    if (value is css.NumberTerm) {
+      return LengthOrPercent(double.parse(value.text));
+    } else if (value is css.EmTerm) {
+      return LengthOrPercent(double.parse(value.text), Unit.em);
+    // } else if (value is css.RemTerm) {
+    //   return LengthOrPercent(double.parse(value.text), Unit.rem);
+    // TODO there are several other available terms processed by the CSS parser
+    } else if (value is css.LengthTerm) {
+      double number = double.parse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+      Unit unit = _unitMap(value.unit);
+      return LengthOrPercent(number, unit);
+    }
+
+    //Ignore unparsable input
+    return LengthOrPercent(0);
+  }
+
+  static Unit _unitMap(int cssParserUnitToken) {
+    switch(cssParserUnitToken) {
+
+      default: return Unit.px;
+    }
   }
 
   static TextAlign expressionToTextAlign(css.Expression value) {

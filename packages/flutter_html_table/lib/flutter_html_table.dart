@@ -11,7 +11,13 @@ CustomRender tableRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
       return Container(
         key: context.key,
-        margin: context.style.margin?.asInsets.nonNegative,
+        //TODO(Sub6Resources): This needs to be computed with Units!!
+        margin: EdgeInsets.only(
+          left: context.style.margin?.left?.value.abs() ?? 0,
+          right: context.style.margin?.right?.value.abs() ?? 0,
+          bottom: context.style.margin?.bottom?.value.abs() ?? 0,
+          top: context.style.margin?.bottom?.value.abs() ?? 0,
+        ),
         padding: context.style.padding?.nonNegative,
         alignment: context.style.alignment,
         decoration: BoxDecoration(
