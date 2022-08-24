@@ -9,7 +9,7 @@ enum Unit {
   //ch,
   em(_length),
   //ex,
-  percent(_percent),
+  //percent(_percent),
   px(_length),
   //rem,
   //Q,
@@ -50,6 +50,8 @@ class Margin extends Dimension {
   Margin(double value, [Unit? unit = Unit.px]): super(value, unit ?? Unit.px);
 
   Margin.auto(): super(0, Unit.auto);
+
+  Margin.zero(): super(0, Unit.px);
 
   @override
   int get _unitType => _margin;

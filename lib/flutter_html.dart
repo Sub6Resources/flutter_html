@@ -179,21 +179,26 @@ class _HtmlState extends State<Html> {
   Widget build(BuildContext context) {
     return Container(
       width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
-      child: HtmlParser(
-        key: widget._anchorKey,
-        htmlData: documentElement,
-        onLinkTap: widget.onLinkTap,
-        onAnchorTap: widget.onAnchorTap,
-        onImageTap: widget.onImageTap,
-        onCssParseError: widget.onCssParseError,
-        onImageError: widget.onImageError,
-        shrinkWrap: widget.shrinkWrap,
-        selectable: false,
-        style: widget.style,
-        customRenders: {}
-          ..addAll(widget.customRenders)
-          ..addAll(defaultRenders),
-        tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return HtmlParser(
+            key: widget._anchorKey,
+            htmlData: documentElement,
+            onLinkTap: widget.onLinkTap,
+            onAnchorTap: widget.onAnchorTap,
+            onImageTap: widget.onImageTap,
+            onCssParseError: widget.onCssParseError,
+            onImageError: widget.onImageError,
+            shrinkWrap: widget.shrinkWrap,
+            selectable: false,
+            style: widget.style,
+            customRenders: {}
+              ..addAll(widget.customRenders)
+              ..addAll(defaultRenders),
+            tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
+            constraints: constraints,
+          );
+        }
       ),
     );
   }
@@ -347,24 +352,29 @@ class _SelectableHtmlState extends State<SelectableHtml> {
   Widget build(BuildContext context) {
     return Container(
       width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
-      child: HtmlParser(
-        key: widget._anchorKey,
-        htmlData: documentElement,
-        onLinkTap: widget.onLinkTap,
-        onAnchorTap: widget.onAnchorTap,
-        onImageTap: null,
-        onCssParseError: widget.onCssParseError,
-        onImageError: null,
-        shrinkWrap: widget.shrinkWrap,
-        selectable: true,
-        style: widget.style,
-        customRenders: {}
-          ..addAll(widget.customRenders)
-          ..addAll(defaultRenders),
-        tagsList:
-            widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
-        selectionControls: widget.selectionControls,
-        scrollPhysics: widget.scrollPhysics,
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          return HtmlParser(
+            key: widget._anchorKey,
+            htmlData: documentElement,
+            onLinkTap: widget.onLinkTap,
+            onAnchorTap: widget.onAnchorTap,
+            onImageTap: null,
+            onCssParseError: widget.onCssParseError,
+            onImageError: null,
+            shrinkWrap: widget.shrinkWrap,
+            selectable: true,
+            style: widget.style,
+            customRenders: {}
+              ..addAll(widget.customRenders)
+              ..addAll(defaultRenders),
+            tagsList:
+                widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
+            selectionControls: widget.selectionControls,
+            scrollPhysics: widget.scrollPhysics,
+            constraints: constraints,
+          );
+        }
       ),
     );
   }

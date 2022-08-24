@@ -116,10 +116,6 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
           children: (children as List<TextSpan>?) ??
               context.tree.children
                   .expandIndexed((i, childTree) => [
-                        if (childTree.style.display == Display.BLOCK &&
-                            i > 0 &&
-                            context.tree.children[i - 1] is ReplacedElement)
-                          TextSpan(text: "\n"),
                         context.parser.parseTree(context, childTree),
                         if (i != context.tree.children.length - 1 &&
                             childTree.style.display == Display.BLOCK &&
@@ -133,17 +129,12 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
       return WidgetSpan(
           child: ContainerSpan(
         key: context.key,
-        newContext: context,
+        renderContext: context,
         style: style ?? context.tree.style,
         shrinkWrap: context.parser.shrinkWrap,
         children: children ??
             context.tree.children
                 .expandIndexed((i, childTree) => [
-                      if (context.parser.shrinkWrap &&
-                          childTree.style.display == Display.BLOCK &&
-                          i > 0 &&
-                          context.tree.children[i - 1] is ReplacedElement)
-                        TextSpan(text: "\n"),
                       context.parser.parseTree(context, childTree),
                       if (i != context.tree.children.length - 1 &&
                           childTree.style.display == Display.BLOCK &&
@@ -161,7 +152,7 @@ CustomRender listElementRender(
         inlineSpan: (context, buildChildren) => WidgetSpan(
               child: ContainerSpan(
                 key: context.key,
-                newContext: context,
+                renderContext: context,
                 style: style ?? context.tree.style,
                 shrinkWrap: context.parser.shrinkWrap,
                 child: Row(

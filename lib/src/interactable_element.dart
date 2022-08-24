@@ -8,13 +8,14 @@ class InteractableElement extends StyledElement {
   String? href;
 
   InteractableElement({
-    required String name,
-    required List<StyledElement> children,
-    required Style style,
+    required super.name,
+    required super.children,
+    required super.style,
     required this.href,
     required dom.Node node,
-    required String elementId,
-  }) : super(name: name, children: children, style: style, node: node as dom.Element?, elementId: elementId);
+    required super.elementId,
+    required super.containingBlockSize,
+  }) : super(node: node as dom.Element?);
 }
 
 /// A [Gesture] indicates the type of interaction by a user.
@@ -23,7 +24,10 @@ enum Gesture {
 }
 
 StyledElement parseInteractableElement(
-    dom.Element element, List<StyledElement> children) {
+    dom.Element element,
+    List<StyledElement> children,
+    Size containingBlockSize,
+    ) {
   switch (element.localName) {
     case "a":
       if (element.attributes.containsKey('href')) {
@@ -36,7 +40,8 @@ StyledElement parseInteractableElement(
               textDecoration: TextDecoration.underline,
             ),
             node: element,
-            elementId: element.id
+            elementId: element.id,
+          containingBlockSize: containingBlockSize,
         );
       }
       // When <a> tag have no href, it must be non clickable and without decoration.
@@ -46,6 +51,7 @@ StyledElement parseInteractableElement(
         style: Style(),
         node: element,
         elementId: element.id,
+        containingBlockSize: containingBlockSize,
       );
     /// will never be called, just to suppress missing return warning
     default:
@@ -55,7 +61,8 @@ StyledElement parseInteractableElement(
         node: element,
         href: '',
         style: Style(),
-        elementId: "[[No ID]]"
+        elementId: "[[No ID]]",
+        containingBlockSize: containingBlockSize,
       );
   }
 }

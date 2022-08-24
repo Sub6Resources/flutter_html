@@ -11,10 +11,11 @@ import 'package:html/dom.dart' as dom;
 abstract class LayoutElement extends StyledElement {
   LayoutElement({
     String name = "[[No Name]]",
-    required List<StyledElement> children,
+    required super.children,
     String? elementId,
-    dom.Element? node,
-  }) : super(name: name, children: children, style: Style(), node: node, elementId: elementId ?? "[[No ID]]");
+    super.node,
+    required super.containingBlockSize,
+  }) : super(name: name, style: Style(), elementId: elementId ?? "[[No ID]]");
 
   Widget? toWidget(RenderContext context);
 }
@@ -23,6 +24,7 @@ class TableSectionLayoutElement extends LayoutElement {
   TableSectionLayoutElement({
     required String name,
     required List<StyledElement> children,
+    required super.containingBlockSize,
   }) : super(name: name, children: children);
 
   @override
@@ -34,10 +36,11 @@ class TableSectionLayoutElement extends LayoutElement {
 
 class TableRowLayoutElement extends LayoutElement {
   TableRowLayoutElement({
-    required String name,
-    required List<StyledElement> children,
-    required dom.Element node,
-  }) : super(name: name, children: children, node: node);
+    required super.name,
+    required super.children,
+    required super.node,
+    required super.containingBlockSize,
+  });
 
   @override
   Widget toWidget(RenderContext context) {
@@ -51,13 +54,14 @@ class TableCellElement extends StyledElement {
   int rowspan = 1;
 
   TableCellElement({
-    required String name,
-    required String elementId,
-    required List<String> elementClasses,
-    required List<StyledElement> children,
-    required Style style,
-    required dom.Element node,
-  }) : super(name: name, elementId: elementId, elementClasses: elementClasses, children: children, style: style, node: node) {
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required super.children,
+    required super.style,
+    required super.node,
+    required super.containingBlockSize,
+  }) {
     colspan = _parseSpan(this, "colspan");
     rowspan = _parseSpan(this, "rowspan");
   }
@@ -71,6 +75,7 @@ class TableCellElement extends StyledElement {
 TableCellElement parseTableCellElement(
   dom.Element element,
   List<StyledElement> children,
+  Size containingBlockSize,
 ) {
   final cell = TableCellElement(
     name: element.localName!,
@@ -79,6 +84,7 @@ TableCellElement parseTableCellElement(
     children: children,
     node: element,
     style: Style(),
+    containingBlockSize: containingBlockSize,
   );
   if (element.localName == "th") {
     cell.style = Style(
@@ -90,16 +96,18 @@ TableCellElement parseTableCellElement(
 
 class TableStyleElement extends StyledElement {
   TableStyleElement({
-    required String name,
-    required List<StyledElement> children,
-    required Style style,
-    required dom.Element node,
-  }) : super(name: name, children: children, style: style, node: node);
+    required super.name,
+    required super.children,
+    required super.style,
+    required super.node,
+    required super.containingBlockSize,
+  });
 }
 
 TableStyleElement parseTableDefinitionElement(
   dom.Element element,
   List<StyledElement> children,
+  Size containingBlockSize,
 ) {
   switch (element.localName) {
     case "colgroup":
@@ -109,6 +117,7 @@ TableStyleElement parseTableDefinitionElement(
         children: children,
         node: element,
         style: Style(),
+        containingBlockSize: containingBlockSize,
       );
     default:
       return TableStyleElement(
@@ -116,6 +125,7 @@ TableStyleElement parseTableDefinitionElement(
         children: children,
         node: element,
         style: Style(),
+        containingBlockSize: containingBlockSize,
       );
   }
 }
@@ -124,11 +134,12 @@ class DetailsContentElement extends LayoutElement {
   List<dom.Element> elementList;
 
   DetailsContentElement({
-    required String name,
-    required List<StyledElement> children,
+    required super.name,
+    required super.children,
     required dom.Element node,
     required this.elementList,
-  }) : super(name: name, node: node, children: children, elementId: node.id);
+    required super.containingBlockSize,
+  }) : super(node: node, elementId: node.id);
 
   @override
   Widget toWidget(RenderContext context) {
@@ -174,7 +185,7 @@ class DetailsContentElement extends LayoutElement {
 }
 
 class EmptyLayoutElement extends LayoutElement {
-  EmptyLayoutElement({required String name}) : super(name: name, children: []);
+  EmptyLayoutElement({required String name}) : super(name: name, children: [], containingBlockSize: Size.zero);
 
   @override
   Widget? toWidget(_) => null;
@@ -183,6 +194,7 @@ class EmptyLayoutElement extends LayoutElement {
 LayoutElement parseLayoutElement(
     dom.Element element,
     List<StyledElement> children,
+    Size containingBlockSize,
 ) {
   switch (element.localName) {
     case "details":
@@ -193,7 +205,8 @@ LayoutElement parseLayoutElement(
           node: element,
           name: element.localName!,
           children: children,
-          elementList: element.children
+          elementList: element.children,
+          containingBlockSize: containingBlockSize,
       );
     case "thead":
     case "tbody":
@@ -201,12 +214,14 @@ LayoutElement parseLayoutElement(
       return TableSectionLayoutElement(
         name: element.localName!,
         children: children,
+        containingBlockSize: containingBlockSize,
       );
     case "tr":
       return TableRowLayoutElement(
         name: element.localName!,
         children: children,
         node: element,
+        containingBlockSize: containingBlockSize,
       );
     default:
       return EmptyLayoutElement(name: "[[No Name]]");

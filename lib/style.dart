@@ -3,7 +3,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
-import 'package:flutter_html/src/style/margin.dart';
+
+//Export Margin API
+export 'package:flutter_html/src/style/margin.dart';
+export 'package:flutter_html/src/style/length.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package.
@@ -312,7 +315,7 @@ class Style {
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
-      //TODO merge EdgeInsets
+      //TODO merge Margins
       textAlign: other.textAlign,
       textDecoration: other.textDecoration,
       textDecorationColor: other.textDecorationColor,

@@ -8,8 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
-import 'package:flutter_html/src/style/length.dart';
-import 'package:flutter_html/src/style/margin.dart';
+import 'package:flutter_html/src/style/compute_style.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
@@ -44,6 +43,7 @@ class HtmlParser extends StatelessWidget {
   final Html? root;
   final TextSelectionControls? selectionControls;
   final ScrollPhysics? scrollPhysics;
+  final BoxConstraints constraints;
 
   final Map<String, Size> cachedImageSizes = {};
 
@@ -60,6 +60,7 @@ class HtmlParser extends StatelessWidget {
     required this.style,
     required this.customRenders,
     required this.tagsList,
+    required this.constraints,
     this.root,
     this.selectionControls,
     this.scrollPhysics,
@@ -70,32 +71,37 @@ class HtmlParser extends StatelessWidget {
               : onLinkTap,
         super(key: key);
 
+  /// As the widget [build]s, the HTML data is processed into a tree of [StyledElement]s,
+  /// which are then parsed into an [InlineSpan] tree that is then rendered to the screen by Flutter
+  //TODO Lazy processing of data. We don't need the processing steps done every build phase unless the data has changed.
   @override
   Widget build(BuildContext context) {
-    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCssDeclarations(htmlData.getElementsByTagName("style"), onCssParseError);
+
+    // Lexing Step
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRenders.keys.toList(),
       tagsList,
       context,
       this,
+      constraints,
     );
-    StyledElement? externalCssStyledTree;
-    if (declarations.isNotEmpty) {
-      externalCssStyledTree = _applyExternalCss(declarations, lexedTree);
-    }
-    StyledElement inlineStyledTree = _applyInlineStyles(externalCssStyledTree ?? lexedTree, onCssParseError);
-    StyledElement customStyledTree = _applyCustomStyles(style, inlineStyledTree);
-    StyledElement cascadedStyledTree = _cascadeStyles(style, customStyledTree);
-    StyledElement cleanedTree = cleanTree(cascadedStyledTree);
+
+    // Styling Step
+    StyledElement styledTree = styleTree(lexedTree, htmlData, style, onCssParseError);
+
+    // Processing Step
+    StyledElement processedTree = processTree(styledTree);
+
+    // Parsing Step
     InlineSpan parsedTree = parseTree(
       RenderContext(
         buildContext: context,
         parser: this,
-        tree: cleanedTree,
-        style: cleanedTree.style,
+        tree: processedTree,
+        style: processedTree.style,
       ),
-      cleanedTree,
+      processedTree,
     );
 
     // This is the final scaling that assumes any other StyledText instances are
@@ -105,13 +111,13 @@ class HtmlParser extends StatelessWidget {
     if (selectable) {
       return StyledText.selectable(
         textSpan: parsedTree as TextSpan,
-        style: cleanedTree.style,
+        style: processedTree.style,
         textScaleFactor: MediaQuery.of(context).textScaleFactor,
         renderContext: RenderContext(
           buildContext: context,
           parser: this,
-          tree: cleanedTree,
-          style: cleanedTree.style,
+          tree: processedTree,
+          style: processedTree.style,
         ),
         selectionControls: selectionControls,
         scrollPhysics: scrollPhysics,
@@ -119,13 +125,13 @@ class HtmlParser extends StatelessWidget {
     }
     return StyledText(
       textSpan: parsedTree,
-      style: cleanedTree.style,
+      style: processedTree.style,
       textScaleFactor: MediaQuery.of(context).textScaleFactor,
       renderContext: RenderContext(
         buildContext: context,
         parser: this,
-        tree: cleanedTree,
-        style: cleanedTree.style,
+        tree: processedTree,
+        style: processedTree.style,
       ),
     );
   }
@@ -147,12 +153,16 @@ class HtmlParser extends StatelessWidget {
     List<String> tagsList,
     BuildContext context,
     HtmlParser parser,
+    BoxConstraints constraints,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
       children: <StyledElement>[],
       node: html,
+      //TODO(Sub6Resources): This seems  difficult to customize
       style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+      //TODO(Sub6Resources): Okay, how about shrinkWrap?
+      containingBlockSize: Size(constraints.maxWidth, constraints.maxHeight),
     );
 
     html.nodes.forEach((node) {
@@ -162,6 +172,7 @@ class HtmlParser extends StatelessWidget {
         tagsList,
         context,
         parser,
+        constraints,
       ));
     });
 
@@ -178,6 +189,7 @@ class HtmlParser extends StatelessWidget {
     List<String> tagsList,
     BuildContext context,
     HtmlParser parser,
+    BoxConstraints constraints,
   ) {
     List<StyledElement> children = <StyledElement>[];
 
@@ -188,8 +200,12 @@ class HtmlParser extends StatelessWidget {
         tagsList,
         context,
         parser,
+        constraints,
       ));
     });
+
+    //TODO(Sub6Resources): Okay, how about shrinkWrap? How to calculate this for children?
+    final maxSize = Size(constraints.maxWidth, constraints.maxHeight);
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
     if (node is dom.Element) {
@@ -197,19 +213,19 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
       if (STYLED_ELEMENTS.contains(node.localName)) {
-        return parseStyledElement(node, children);
+        return parseStyledElement(node, children, maxSize);
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
-        return parseInteractableElement(node, children);
+        return parseInteractableElement(node, children, maxSize);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, children);
+        return parseReplacedElement(node, children, maxSize);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
-        return parseLayoutElement(node, children);
+        return parseLayoutElement(node, children, maxSize);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
-        return parseTableCellElement(node, children);
+        return parseTableCellElement(node, children, maxSize);
       } else if (TABLE_DEFINITION_ELEMENTS.contains(node.localName)) {
-        return parseTableDefinitionElement(node, children);
+        return parseTableDefinitionElement(node, children, maxSize);
       } else {
-        final StyledElement tree = parseStyledElement(node, children);
+        final StyledElement tree = parseStyledElement(node, children, maxSize);
         for (final entry in customRenderMatchers) {
           if (entry.call(
               RenderContext(
@@ -225,7 +241,7 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
-      return TextContentElement(text: node.text, style: Style(), element: node.parent, node: node);
+      return TextContentElement(text: node.text, style: Style(), element: node.parent, node: node, containingBlockSize: maxSize);
     } else {
       return EmptyContentElement();
     }
@@ -296,10 +312,25 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  /// [cleanTree] optimizes the [StyledElement] tree so all [BlockElement]s are
+  /// [styleTree] takes the lexed [StyleElement] tree and applies external,
+  /// inline, and custom CSS/Flutter styles, and then cascades the styles down the tree.
+  static StyledElement styleTree(StyledElement tree, dom.Element htmlData, Map<String, Style> style, OnCssParseError? onCssParseError) {
+    Map<String, Map<String, List<css.Expression>>> declarations = _getExternalCssDeclarations(htmlData.getElementsByTagName("style"), onCssParseError);
+
+    StyledElement? externalCssStyledTree;
+    if (declarations.isNotEmpty) {
+      externalCssStyledTree = _applyExternalCss(declarations, tree);
+    }
+    tree = _applyInlineStyles(externalCssStyledTree ?? tree, onCssParseError);
+    tree = _applyCustomStyles(style, tree);
+    tree = _cascadeStyles(style, tree);
+    return tree;
+  }
+
+  /// [processTree] optimizes the [StyledElement] tree so all [BlockElement]s are
   /// on the first level, redundant levels are collapsed, empty elements are
   /// removed, and specialty elements are processed.
-  static StyledElement cleanTree(StyledElement tree) {
+  static StyledElement processTree(StyledElement tree) {
     tree = _processInternalWhitespace(tree);
     tree = _processInlineWhitespace(tree);
     tree = _removeEmptyElements(tree);
@@ -340,7 +371,7 @@ class HtmlParser extends StatelessWidget {
         }
         return WidgetSpan(
           child: ContainerSpan(
-            newContext: newContext,
+            renderContext: newContext,
             style: tree.style,
             shrinkWrap: newContext.parser.shrinkWrap,
             child: customRenders[entry]!.widget!.call(newContext, buildChildren),
@@ -627,11 +658,20 @@ class HtmlParser extends StatelessWidget {
   static StyledElement _processBeforesAndAfters(StyledElement tree) {
     if (tree.style.before != null) {
       tree.children.insert(
-          0, TextContentElement(text: tree.style.before, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
+        0,
+        TextContentElement(
+          text: tree.style.before,
+          style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE),
+          containingBlockSize: Size.infinite, //TODO(Sub6Resources): This can't be right...
+        ),
+      );
     }
     if (tree.style.after != null) {
-      tree.children
-          .add(TextContentElement(text: tree.style.after, style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE)));
+      tree.children.add(TextContentElement(
+          text: tree.style.after,
+          style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE),
+        containingBlockSize: Size.infinite, //TODO(Sub6Resources): This can't be right...
+      ));
     }
 
     tree.children.forEach(_processBeforesAndAfters);
@@ -835,7 +875,7 @@ class ContainerSpan extends StatelessWidget {
   final Widget? child;
   final List<InlineSpan>? children;
   final Style style;
-  final RenderContext newContext;
+  final RenderContext renderContext;
   final bool shrinkWrap;
 
   ContainerSpan({
@@ -843,15 +883,16 @@ class ContainerSpan extends StatelessWidget {
     this.child,
     this.children,
     required this.style,
-    required this.newContext,
+    required this.renderContext,
     this.shrinkWrap = false,
   }): super(key: key);
 
   @override
-  Widget build(BuildContext _) {
+  Widget build(BuildContext context) {
 
     // Elements that are inline should ignore margin: auto for alignment.
     var alignment = shrinkWrap ? null : style.alignment;
+
     // TODO(Sub6Resources): This needs to follow the CSS spec for computing auto values!
     if(style.display == Display.BLOCK) {
       if(style.margin?.left?.unit == Unit.auto && style.margin?.right?.unit == Unit.auto)
@@ -859,6 +900,11 @@ class ContainerSpan extends StatelessWidget {
       else if(style.margin?.left?.unit == Unit.auto)
         alignment = Alignment.bottomRight;
     }
+
+    //TODO(Sub6Resources): Is there a better value?
+    double emValue = (style.fontSize?.size ?? 16) *
+        MediaQuery.of(context).devicePixelRatio *
+        MediaQuery.of(context).textScaleFactor;
 
     Widget container = Container(
       decoration: BoxDecoration(
@@ -868,22 +914,22 @@ class ContainerSpan extends StatelessWidget {
       height: style.height,
       width: style.width,
       padding: style.padding?.nonNegative,
-      // TODO(Sub6Resources): These need to be computed!!
+      //TODO GIVE A VALID AUTO VALUE, maybe move this all to a new method?
       margin: EdgeInsets.only(
-        left: style.margin?.left?.value.abs() ?? 0,
-        right: style.margin?.right?.value.abs() ?? 0,
-        bottom: style.margin?.bottom?.value.abs() ?? 0,
-        top: style.margin?.bottom?.value.abs() ?? 0,
+        left: computeDimensionValue(style.margin?.left ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
+        right: computeDimensionValue(style.margin?.right ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
+        bottom: computeDimensionValue(style.margin?.bottom ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
+        top: computeDimensionValue(style.margin?.top ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
       ),
       alignment: alignment,
       child: child ??
           StyledText(
             textSpan: TextSpan(
-              style: newContext.style.generateTextStyle(),
+              style: renderContext.style.generateTextStyle(),
               children: children,
             ),
-            style: newContext.style,
-            renderContext: newContext,
+            style: renderContext.style,
+            renderContext: renderContext,
           ),
     );
 

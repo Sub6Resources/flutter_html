@@ -17,7 +17,7 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
         height: givenHeight ?? (givenWidth ?? 300) / 2,
         child: ContainerSpan(
           style: context.style,
-          newContext: context,
+          renderContext: context,
           child: WebView(
             initialUrl: context.tree.element?.attributes['src'],
             key: key,
