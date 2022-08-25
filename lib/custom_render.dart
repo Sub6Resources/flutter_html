@@ -108,7 +108,7 @@ class SelectableCustomRender extends CustomRender {
   }) : super.inlineSpan(inlineSpan: null);
 }
 
-CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
+CustomRender blockElementRender({Style? style, List<InlineSpan>? children, required Size containingBlockSize}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) {
       if (context.parser.selectable) {
         return TextSpan(
@@ -132,6 +132,7 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
         renderContext: context,
         style: style ?? context.tree.style,
         shrinkWrap: context.parser.shrinkWrap,
+        containingBlockSize: containingBlockSize,
         children: children ??
             context.tree.children
                 .expandIndexed((i, childTree) => [
@@ -147,7 +148,7 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
     });
 
 CustomRender listElementRender(
-        {Style? style, Widget? child, List<InlineSpan>? children}) =>
+        {Style? style, Widget? child, List<InlineSpan>? children, required Size containingBlockSize}) =>
     CustomRender.inlineSpan(
         inlineSpan: (context, buildChildren) => WidgetSpan(
               child: ContainerSpan(
@@ -155,6 +156,7 @@ CustomRender listElementRender(
                 renderContext: context,
                 style: style ?? context.tree.style,
                 shrinkWrap: context.parser.shrinkWrap,
+                containingBlockSize: containingBlockSize,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -503,19 +505,21 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
                   .toList(),
             ));
 
-final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
-  blockElementMatcher(): blockElementRender(),
-  listElementMatcher(): listElementRender(),
-  textContentElementMatcher(): textContentElementRender(),
-  dataUriMatcher(): base64ImageRender(),
-  assetUriMatcher(): assetImageRender(),
-  networkSourceMatcher(): networkImageRender(),
-  replacedElementMatcher(): replacedElementRender(),
-  interactableElementMatcher(): interactableElementRender(),
-  layoutElementMatcher(): layoutElementRender(),
-  verticalAlignMatcher(): verticalAlignRender(),
-  fallbackMatcher(): fallbackRender(),
-};
+Map<CustomRenderMatcher, CustomRender> generateDefaultRenders(Size containingBlockSize) {
+  return {
+    blockElementMatcher(): blockElementRender(containingBlockSize: containingBlockSize),
+    listElementMatcher(): listElementRender(containingBlockSize: containingBlockSize),
+    textContentElementMatcher(): textContentElementRender(),
+    dataUriMatcher(): base64ImageRender(),
+    assetUriMatcher(): assetImageRender(),
+    networkSourceMatcher(): networkImageRender(),
+    replacedElementMatcher(): replacedElementRender(),
+    interactableElementMatcher(): interactableElementRender(),
+    layoutElementMatcher(): layoutElementRender(),
+    verticalAlignMatcher(): verticalAlignRender(),
+    fallbackMatcher(): fallbackRender(),
+  };
+}
 
 List<InlineSpan> _getListElementChildren(
     ListStylePosition? position, Function() buildChildren) {

@@ -18,6 +18,7 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
         child: ContainerSpan(
           style: context.style,
           renderContext: context,
+          containingBlockSize: Size.zero, //TODO this is incorrect
           child: WebView(
             initialUrl: context.tree.element?.attributes['src'],
             key: key,

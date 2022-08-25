@@ -194,7 +194,7 @@ class _HtmlState extends State<Html> {
             style: widget.style,
             customRenders: {}
               ..addAll(widget.customRenders)
-              ..addAll(defaultRenders),
+              ..addAll(generateDefaultRenders(MediaQuery.of(context).size)),
             tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
             constraints: constraints,
           );
@@ -367,7 +367,7 @@ class _SelectableHtmlState extends State<SelectableHtml> {
             style: widget.style,
             customRenders: {}
               ..addAll(widget.customRenders)
-              ..addAll(defaultRenders),
+              ..addAll(generateDefaultRenders(MediaQuery.of(context).size)),
             tagsList:
                 widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
             selectionControls: widget.selectionControls,

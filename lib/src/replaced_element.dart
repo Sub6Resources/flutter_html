@@ -112,6 +112,7 @@ class RubyElement extends ReplacedElement {
                             tree: c,
                           ),
                           style: c.style,
+                          containingBlockSize: containingBlockSize,
                           child: Text(c.element!.innerHtml,
                               style: c.style
                                   .generateTextStyle()
@@ -120,6 +121,7 @@ class RubyElement extends ReplacedElement {
             ContainerSpan(
                 renderContext: context,
                 style: context.style,
+                containingBlockSize: containingBlockSize,
                 child: node is TextContentElement ? Text((node as TextContentElement).text?.trim() ?? "",
                     style: context.style.generateTextStyle()) : null,
                 children: node is TextContentElement ? null : [context.parser.parseTree(context, node!)]),

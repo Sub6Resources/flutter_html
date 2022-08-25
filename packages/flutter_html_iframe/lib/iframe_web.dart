@@ -39,6 +39,7 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
           child: ContainerSpan(
             style: context.style,
             renderContext: context,
+            containingBlockSize: Size.zero, //TODO this is incorrect
             child: Directionality(
                 textDirection: TextDirection.ltr,
                 child: HtmlElementView(

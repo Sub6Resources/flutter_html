@@ -375,6 +375,7 @@ class HtmlParser extends StatelessWidget {
             style: tree.style,
             shrinkWrap: newContext.parser.shrinkWrap,
             child: customRenders[entry]!.widget!.call(newContext, buildChildren),
+            containingBlockSize: tree.containingBlockSize,
           ),
         );
       }
@@ -877,6 +878,7 @@ class ContainerSpan extends StatelessWidget {
   final Style style;
   final RenderContext renderContext;
   final bool shrinkWrap;
+  final Size containingBlockSize;
 
   ContainerSpan({
     this.key,
@@ -885,26 +887,14 @@ class ContainerSpan extends StatelessWidget {
     required this.style,
     required this.renderContext,
     this.shrinkWrap = false,
+    required this.containingBlockSize,
   }): super(key: key);
 
   @override
   Widget build(BuildContext context) {
 
-    // Elements that are inline should ignore margin: auto for alignment.
-    var alignment = shrinkWrap ? null : style.alignment;
-
-    // TODO(Sub6Resources): This needs to follow the CSS spec for computing auto values!
-    if(style.display == Display.BLOCK) {
-      if(style.margin?.left?.unit == Unit.auto && style.margin?.right?.unit == Unit.auto)
-        alignment = Alignment.bottomCenter;
-      else if(style.margin?.left?.unit == Unit.auto)
-        alignment = Alignment.bottomRight;
-    }
-
-    //TODO(Sub6Resources): Is there a better value?
-    double emValue = (style.fontSize?.size ?? 16) *
-        MediaQuery.of(context).devicePixelRatio *
-        MediaQuery.of(context).textScaleFactor;
+    //Calculate auto widths and margins:
+    final widthsAndMargins = WidthAndMargins.calculate(style, containingBlockSize, context);
 
     Widget container = Container(
       decoration: BoxDecoration(
@@ -912,16 +902,10 @@ class ContainerSpan extends StatelessWidget {
         color: style.backgroundColor,
       ),
       height: style.height,
-      width: style.width,
+      width: style.width, //widthsAndMargins.width,
       padding: style.padding?.nonNegative,
-      //TODO GIVE A VALID AUTO VALUE, maybe move this all to a new method?
-      margin: EdgeInsets.only(
-        left: computeDimensionValue(style.margin?.left ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
-        right: computeDimensionValue(style.margin?.right ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
-        bottom: computeDimensionValue(style.margin?.bottom ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
-        top: computeDimensionValue(style.margin?.top ?? Margin.zero(), DimensionComputeContext(emValue: emValue, autoValue: 0)),
-      ),
-      alignment: alignment,
+      margin: widthsAndMargins.margins,
+      alignment: shrinkWrap ? null : style.alignment,
       child: child ??
           StyledText(
             textSpan: TextSpan(
