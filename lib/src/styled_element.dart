@@ -251,9 +251,8 @@ StyledElement parseStyledElement(
       break;
     case "hr":
       styledElement.style = Style(
-        margin: Margins.symmetric(vertical: 7.0),
-        width: double.infinity,
-        height: 1,
+        margin: Margins.symmetric(vertical: 0.5, unit: Unit.em),
+        height: Height(1),
         backgroundColor: Colors.black,
         display: Display.BLOCK,
       );

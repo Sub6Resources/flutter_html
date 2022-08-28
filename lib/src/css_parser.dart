@@ -5,8 +5,6 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/style/length.dart';
-import 'package:flutter_html/src/style/margin.dart';
 import 'package:flutter_html/src/utils.dart';
 
 Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
@@ -232,7 +230,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           }
           break;
         case 'height':
-          style.height = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.height;
+          style.height = ExpressionMapping.expressionToHeight(value.first) ?? style.height;
           break;
         case 'list-style-type':
           if (value.first is css.LiteralTerm) {
@@ -352,7 +350,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           }
           break;
         case 'width':
-          style.width = ExpressionMapping.expressionToPaddingLength(value.first) ?? style.width;
+          style.width = ExpressionMapping.expressionToWidth(value.first) ?? style.width;
           break;
       }
     }
@@ -751,11 +749,30 @@ class ExpressionMapping {
     return null;
   }
 
+  static Width? expressionToWidth(css.Expression value) {
+    if ((value is css.LiteralTerm) && value.text == 'auto') {
+      return Width.auto();
+    } else {
+      final computedValue = expressionToLengthOrPercent(value);
+      return Width(computedValue.value, computedValue.unit);
+    }
+  }
+
+  static Height? expressionToHeight(css.Expression value) {
+    if ((value is css.LiteralTerm) && value.text == 'auto') {
+      return Height.auto();
+    } else {
+      final computedValue = expressionToLengthOrPercent(value);
+      return Height(computedValue.value, computedValue.unit);
+    }
+  }
+
   static Margin? expressionToMargin(css.Expression value) {
     if ((value is css.LiteralTerm) && value.text == 'auto') {
       return Margin.auto();
     } else {
-      return Margin(expressionToPaddingLength(value) ?? 0);
+      final computedValue = expressionToLengthOrPercent(value);
+      return Margin(computedValue.value, computedValue.unit);
     }
   }
 

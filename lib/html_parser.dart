@@ -893,16 +893,18 @@ class ContainerSpan extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
 
+    final bool isReplaced = REPLACED_EXTERNAL_ELEMENTS.contains(renderContext.tree.name);
+
     //Calculate auto widths and margins:
-    final widthsAndMargins = WidthAndMargins.calculate(style, containingBlockSize, context);
+    final widthsAndMargins = WidthAndMargins.calculate(style, containingBlockSize, isReplaced, context);
 
     Widget container = Container(
       decoration: BoxDecoration(
         border: style.border,
         color: style.backgroundColor,
       ),
-      height: style.height,
-      width: style.width, //widthsAndMargins.width,
+      height: style.height?.value, //TODO
+      width: widthsAndMargins.width,
       padding: style.padding?.nonNegative,
       margin: widthsAndMargins.margins,
       alignment: shrinkWrap ? null : style.alignment,
@@ -917,7 +919,9 @@ class ContainerSpan extends StatelessWidget {
           ),
     );
 
-    return container;
+    return LayoutBuilder(builder: (context, constraints) {
+      return container;
+    });
   }
 }
 

@@ -4,9 +4,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 
-//Export Margin API
+//Export Style value-unit APIs
 export 'package:flutter_html/src/style/margin.dart';
 export 'package:flutter_html/src/style/length.dart';
+export 'package:flutter_html/src/style/size.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package.
@@ -76,8 +77,8 @@ class Style {
   /// CSS attribute "`height`"
   ///
   /// Inherited: no,
-  /// Default: Unspecified (null),
-  double? height;
+  /// Default: Height.auto(),
+  Height? height;
 
   /// CSS attribute "`letter-spacing`"
   ///
@@ -163,8 +164,8 @@ class Style {
   /// CSS attribute "`width`"
   ///
   /// Inherited: no,
-  /// Default: unspecified (null)
-  double? width;
+  /// Default: Width.auto()
+  Width? width;
 
   /// CSS attribute "`word-spacing`"
   ///
@@ -389,7 +390,7 @@ class Style {
     FontSize? fontSize,
     FontStyle? fontStyle,
     FontWeight? fontWeight,
-    double? height,
+    Height? height,
     LineHeight? lineHeight,
     double? letterSpacing,
     ListStyleType? listStyleType,
@@ -404,7 +405,7 @@ class Style {
     List<Shadow>? textShadow,
     VerticalAlign? verticalAlign,
     WhiteSpace? whiteSpace,
-    double? width,
+    Width? width,
     double? wordSpacing,
     String? before,
     String? after,

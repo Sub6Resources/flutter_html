@@ -131,6 +131,8 @@ const TABLE_DEFINITION_ELEMENTS = ["col", "colgroup"];
 
 const EXTERNAL_ELEMENTS = ["audio", "iframe", "img", "math", "svg", "table", "video"];
 
+const REPLACED_EXTERNAL_ELEMENTS = ["iframe", "img", "video", "audio"];
+
 const SELECTABLE_ELEMENTS = [
   "br",
   "a",

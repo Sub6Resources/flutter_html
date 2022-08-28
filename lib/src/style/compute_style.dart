@@ -33,28 +33,39 @@ class WidthAndMargins {
   /// [WidthsAndMargins.calculate] calculates any auto values ans resolves any
   /// overconstraint for various elements..
   /// See https://drafts.csswg.org/css2/#Computing_widths_and_margins
-  static WidthAndMargins calculate(Style style, Size containingBlockSize, BuildContext buildContext) {
+  static WidthAndMargins calculate(
+      Style style,
+      Size containingBlockSize,
+      bool isReplaced,
+      BuildContext buildContext,
+      ) {
 
     final emValue = _calculateEmValue(style, buildContext);
 
-    double? width;
+    double? width = _computeDimensionValue(style.width ?? Width.auto(), emValue, 0);
     double marginLeft = _computeDimensionValue(style.margin?.left ?? Margin.zero(), emValue, 0);
     double marginRight = _computeDimensionValue(style.margin?.right ?? Margin.zero(), emValue, 0);
+
+    bool autoWidth = style.width?.unit == Unit.auto || style.width == null;
+    bool autoMarginLeft = style.margin?.left?.unit == Unit.auto;
+    bool autoMarginRight = style.margin?.right?.unit == Unit.auto;
 
     switch(style.display ?? Display.BLOCK) {
       case Display.BLOCK:
 
-        // TODO: Handle the case of determining the width of replaced block elements in normal flow
-        // See https://drafts.csswg.org/css2/#block-replaced-width
-
-        bool autoWidth = style.width == null;
-        bool autoMarginLeft = style.margin?.left?.unit == Unit.auto;
-        bool autoMarginRight = style.margin?.right?.unit == Unit.auto;
+        if(isReplaced && autoWidth) {
+          //TODO calculate width as for inline replaced element
+          // See https://drafts.csswg.org/css2/#block-replaced-width
+          //For now, just let the element calculate its own width
+          width = null;
+        }
 
         double? overrideMarginLeft;
         double? overrideMarginRight;
+
         double? autoLeftMarginValue;
         double? autoRightMarginValue;
+
         final borderWidth = (style.border?.left.width ?? 0) + (style.border?.right.width ?? 0);
         final paddingWidth = (style.padding?.left ?? 0) + (style.padding?.right ?? 0);
         final nonAutoWidths = borderWidth + paddingWidth;
@@ -62,7 +73,7 @@ class WidthAndMargins {
 
         //If width is not auto, check the total width of the containing block:
         if(!autoWidth) {
-          if(nonAutoWidths + style.width! + nonAutoMarginWidth > containingBlockSize.width) {
+          if(nonAutoWidths + (width ?? 0) + nonAutoMarginWidth > containingBlockSize.width) {
             autoLeftMarginValue = 0;
             autoRightMarginValue = 0;
             autoMarginLeft = false;
@@ -75,8 +86,8 @@ class WidthAndMargins {
         //element has a rtl directionality, and right if the overconstrained
         //element has a ltr directionality). Margins must be non-negative in
         //Flutter, so we set them to 0 if they go below that.
-        if(!autoWidth && !autoMarginLeft && !autoMarginRight) {
-          final difference = containingBlockSize.width - (nonAutoWidths + style.width! + nonAutoMarginWidth);
+        if(!autoWidth && !autoMarginLeft && !autoMarginRight && width != null) {
+          final difference = containingBlockSize.width - (nonAutoWidths + width + nonAutoMarginWidth);
           switch(style.direction) {
             case TextDirection.rtl:
               overrideMarginLeft = max(marginLeft + difference, 0);
@@ -102,28 +113,28 @@ class WidthAndMargins {
         }
 
         //If exactly one unit is auto, calculate it from the equality.
-        if(autoWidth && !autoMarginLeft && !autoMarginRight) {
+        if(autoWidth && !autoMarginLeft && !autoMarginRight && width != null) {
           width = containingBlockSize.width - (nonAutoWidths + nonAutoMarginWidth);
-        } else if(!autoWidth && autoMarginLeft && !autoMarginRight) {
-          overrideMarginLeft = containingBlockSize.width - (nonAutoWidths + style.width! + marginRight);
-        } else if(!autoWidth && !autoMarginLeft && autoMarginRight) {
-          overrideMarginRight = containingBlockSize.width - (nonAutoWidths + style.width! + marginLeft);
+        } else if((!autoWidth || width==null) && autoMarginLeft && !autoMarginRight) {
+          overrideMarginLeft = containingBlockSize.width - (nonAutoWidths + (width ?? 0) + marginRight);
+        } else if((!autoWidth || width == null) && !autoMarginLeft && autoMarginRight) {
+          overrideMarginRight = containingBlockSize.width - (nonAutoWidths + (width ?? 0) + marginLeft);
         }
 
         //If width is auto, set all other auto values to 0, and the width is
         //calculated from the equality
-        if(style.width == null) {
+        if(autoWidth && width != null) {
           autoLeftMarginValue = 0;
           autoRightMarginValue = 0;
           autoMarginLeft = false;
           autoMarginRight = false;
-          width = containingBlockSize.width - (nonAutoMarginWidth + nonAutoWidths);
+          width = containingBlockSize.width - (nonAutoWidths + nonAutoMarginWidth);
         }
 
         //If margin-left and margin-right are both auto, their values are equal,
         // and the element is centered.
         if(autoMarginLeft && autoMarginRight) {
-          final marginWidth = containingBlockSize.width - (nonAutoWidths + style.width!);
+          final marginWidth = containingBlockSize.width - (nonAutoWidths + (width ?? 0));
           overrideMarginLeft = marginWidth / 2;
           overrideMarginRight = marginWidth / 2;
         }
@@ -132,13 +143,41 @@ class WidthAndMargins {
         marginRight = overrideMarginRight ?? _computeDimensionValue(style.margin?.right ?? Margin.zero(), emValue, autoRightMarginValue ?? 0);
         break;
       case Display.INLINE:
+        //All inline elements have a computed auto value for margin of 0.
+        if(autoMarginLeft) {
+          marginLeft = 0;
+        }
+        if(autoMarginRight) {
+          marginRight = 0;
+        }
+        if(isReplaced) {
+          //TODO calculate intrinsic width
+          //For now, we can just let the element calculate its own width!
+          width = null;
+        }
+        else {
+          width = null;
+        }
+        break;
       case Display.INLINE_BLOCK:
+        //All inline elements have a computed auto value for margin of 0.
+        if(autoMarginLeft) {
+          marginLeft = 0;
+        }
+        if(autoMarginRight) {
+          marginRight = 0;
+        }
+        if(isReplaced) {
+          //TODO calculate intrinsic width
+          //For now, we can just let the element calculate its own width!
+          width = null;
+        } else {
+          //TODO calculate shrink-to-fit width for auto widths.
+          //For now, we can just let the element calculate its own width!
+          width = null;
+        }
 
-        //All inline elements have a computed auto value for margin-left and right of 0.
-        marginLeft = _computeDimensionValue(style.margin?.left ?? Margin.zero(), emValue, 0);
-        marginRight = _computeDimensionValue(style.margin?.right ?? Margin.zero(), emValue, 0);
 
-        // TODO: Handle the case of replaced inline elements and intrinsic ratio
         // (See https://drafts.csswg.org/css2/#inline-replaced-width)
         break;
       case Display.LIST_ITEM:

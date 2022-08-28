@@ -1,6 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/src/style/length.dart';
 
+class Margin extends AutoOrLengthOrPercent {
+  Margin(double value, [Unit? unit = Unit.px]): super(value, unit ?? Unit.px);
+
+  Margin.auto(): super(0, Unit.auto);
+
+  Margin.zero(): super(0, Unit.px);
+}
+
 class Margins {
   final Margin? left;
   final Margin? right;
