@@ -14,7 +14,6 @@ class StyledElement {
   final List<String> elementClasses;
   List<StyledElement> children;
   Style style;
-  Size containingBlockSize;
   final dom.Element? _node;
 
   StyledElement({
@@ -24,7 +23,6 @@ class StyledElement {
     required this.children,
     required this.style,
     required dom.Element? node,
-    required this.containingBlockSize,
   }) : this._node = node;
 
   bool matchesSelector(String selector) =>
@@ -51,7 +49,9 @@ class StyledElement {
 }
 
 StyledElement parseStyledElement(
-    dom.Element element, List<StyledElement> children, Size containingBlockSize) {
+    dom.Element element,
+    List<StyledElement> children,
+    ) {
   StyledElement styledElement = StyledElement(
     name: element.localName!,
     elementId: element.id,
@@ -59,7 +59,6 @@ StyledElement parseStyledElement(
     children: children,
     node: element,
     style: Style(),
-    containingBlockSize: containingBlockSize,
   );
 
   switch (element.localName) {
@@ -251,9 +250,13 @@ StyledElement parseStyledElement(
       break;
     case "hr":
       styledElement.style = Style(
-        margin: Margins.symmetric(vertical: 0.5, unit: Unit.em),
-        height: Height(1),
-        backgroundColor: Colors.black,
+        margin: Margins(
+          top: Margin(0.5, Unit.em),
+          bottom: Margin(0.5, Unit.em),
+          left: Margin.auto(),
+          right: Margin.auto(),
+        ),
+        border: Border.all(),
         display: Display.BLOCK,
       );
       break;

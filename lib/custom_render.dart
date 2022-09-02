@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/css_box_widget.dart';
+import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
@@ -15,7 +17,8 @@ CustomRenderMatcher tagMatcher(String tag) => (context) {
     };
 
 CustomRenderMatcher blockElementMatcher() => (context) {
-      return context.tree.style.display == Display.BLOCK &&
+      return (context.tree.style.display == Display.BLOCK ||
+          context.tree.style.display == Display.INLINE_BLOCK) &&
           (context.tree.children.isNotEmpty ||
               context.tree.element?.localName == "hr");
     };
@@ -108,7 +111,7 @@ class SelectableCustomRender extends CustomRender {
   }) : super.inlineSpan(inlineSpan: null);
 }
 
-CustomRender blockElementRender({Style? style, List<InlineSpan>? children, required Size containingBlockSize}) =>
+CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) {
       if (context.parser.selectable) {
         return TextSpan(
@@ -127,36 +130,36 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children, requi
         );
       }
       return WidgetSpan(
-          child: ContainerSpan(
-        key: context.key,
-        renderContext: context,
-        style: style ?? context.tree.style,
-        shrinkWrap: context.parser.shrinkWrap,
-        containingBlockSize: containingBlockSize,
-        children: children ??
-            context.tree.children
-                .expandIndexed((i, childTree) => [
-                      context.parser.parseTree(context, childTree),
-                      if (i != context.tree.children.length - 1 &&
-                          childTree.style.display == Display.BLOCK &&
-                          childTree.element?.localName != "html" &&
-                          childTree.element?.localName != "body")
-                        TextSpan(text: "\n"),
-                    ])
-                .toList(),
-      ));
+        alignment: PlaceholderAlignment.baseline,
+        baseline: TextBaseline.alphabetic,
+        child: CSSBoxWidget.withInlineSpanChildren(
+            key: context.key,
+            style: style ?? context.tree.style,
+            shrinkWrap: context.parser.shrinkWrap,
+            childIsReplaced: REPLACED_EXTERNAL_ELEMENTS.contains(context.tree.name),
+            children: children ??
+                context.tree.children
+                    .expandIndexed((i, childTree) => [
+                          context.parser.parseTree(context, childTree),
+                          //TODO can this newline be added in a different step?
+                          if (i != context.tree.children.length - 1 &&
+                              childTree.style.display == Display.BLOCK &&
+                              childTree.element?.localName != "html" &&
+                              childTree.element?.localName != "body")
+                            TextSpan(text: "\n"),
+                        ]).toList(),
+        ),
+      );
     });
 
 CustomRender listElementRender(
-        {Style? style, Widget? child, List<InlineSpan>? children, required Size containingBlockSize}) =>
+        {Style? style, Widget? child, List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(
         inlineSpan: (context, buildChildren) => WidgetSpan(
-              child: ContainerSpan(
+              child: CSSBoxWidget(
                 key: context.key,
-                renderContext: context,
                 style: style ?? context.tree.style,
                 shrinkWrap: context.parser.shrinkWrap,
-                containingBlockSize: containingBlockSize,
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -203,9 +206,8 @@ CustomRender listElementRender(
                                         ? 10.0
                                         : 0.0)
                                 : EdgeInsets.zero,
-                            child: StyledText(
-                              textSpan: TextSpan(
-                                children: _getListElementChildren(
+                            child: CSSBoxWidget.withInlineSpanChildren(
+                              children: _getListElementChildren(
                                     style?.listStylePosition ??
                                         context.tree.style.listStylePosition,
                                     buildChildren)
@@ -225,16 +227,15 @@ CustomRender listElementRender(
                                                           height: 0, width: 0))
                                             ]
                                           : []),
-                                style: style?.generateTextStyle() ??
-                                    context.style.generateTextStyle(),
-                              ),
                               style: style ?? context.style,
-                              renderContext: context,
-                            )))
+                            ),
+                        ),
+                    ),
                   ],
                 ),
               ),
-            ));
+            ),
+    );
 
 CustomRender replacedElementRender(
         {PlaceholderAlignment? alignment,
@@ -475,14 +476,9 @@ CustomRender verticalAlignRender(
                 key: context.key,
                 offset: Offset(
                     0, verticalOffset ?? _getVerticalOffset(context.tree)),
-                child: StyledText(
-                  textSpan: TextSpan(
-                    style: style?.generateTextStyle() ??
-                        context.style.generateTextStyle(),
-                    children: children ?? buildChildren.call(),
-                  ),
+                child: CSSBoxWidget.withInlineSpanChildren(
+                  children: children ?? buildChildren.call(),
                   style: context.style,
-                  renderContext: context,
                 ),
               ),
             ));
@@ -505,10 +501,10 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
                   .toList(),
             ));
 
-Map<CustomRenderMatcher, CustomRender> generateDefaultRenders(Size containingBlockSize) {
+Map<CustomRenderMatcher, CustomRender> generateDefaultRenders() {
   return {
-    blockElementMatcher(): blockElementRender(containingBlockSize: containingBlockSize),
-    listElementMatcher(): listElementRender(containingBlockSize: containingBlockSize),
+    blockElementMatcher(): blockElementRender(),
+    listElementMatcher(): listElementRender(),
     textContentElementMatcher(): textContentElementRender(),
     dataUriMatcher(): base64ImageRender(),
     assetUriMatcher(): assetImageRender(),

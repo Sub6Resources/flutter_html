@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/anchor.dart';
+import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/styled_element.dart';
 import 'package:flutter_html/style.dart';
@@ -14,7 +15,6 @@ abstract class LayoutElement extends StyledElement {
     required super.children,
     String? elementId,
     super.node,
-    required super.containingBlockSize,
   }) : super(name: name, style: Style(), elementId: elementId ?? "[[No ID]]");
 
   Widget? toWidget(RenderContext context);
@@ -24,7 +24,6 @@ class TableSectionLayoutElement extends LayoutElement {
   TableSectionLayoutElement({
     required String name,
     required List<StyledElement> children,
-    required super.containingBlockSize,
   }) : super(name: name, children: children);
 
   @override
@@ -39,7 +38,6 @@ class TableRowLayoutElement extends LayoutElement {
     required super.name,
     required super.children,
     required super.node,
-    required super.containingBlockSize,
   });
 
   @override
@@ -60,7 +58,6 @@ class TableCellElement extends StyledElement {
     required super.children,
     required super.style,
     required super.node,
-    required super.containingBlockSize,
   }) {
     colspan = _parseSpan(this, "colspan");
     rowspan = _parseSpan(this, "rowspan");
@@ -75,7 +72,6 @@ class TableCellElement extends StyledElement {
 TableCellElement parseTableCellElement(
   dom.Element element,
   List<StyledElement> children,
-  Size containingBlockSize,
 ) {
   final cell = TableCellElement(
     name: element.localName!,
@@ -84,7 +80,6 @@ TableCellElement parseTableCellElement(
     children: children,
     node: element,
     style: Style(),
-    containingBlockSize: containingBlockSize,
   );
   if (element.localName == "th") {
     cell.style = Style(
@@ -100,14 +95,12 @@ class TableStyleElement extends StyledElement {
     required super.children,
     required super.style,
     required super.node,
-    required super.containingBlockSize,
   });
 }
 
 TableStyleElement parseTableDefinitionElement(
   dom.Element element,
   List<StyledElement> children,
-  Size containingBlockSize,
 ) {
   switch (element.localName) {
     case "colgroup":
@@ -117,7 +110,6 @@ TableStyleElement parseTableDefinitionElement(
         children: children,
         node: element,
         style: Style(),
-        containingBlockSize: containingBlockSize,
       );
     default:
       return TableStyleElement(
@@ -125,7 +117,6 @@ TableStyleElement parseTableDefinitionElement(
         children: children,
         node: element,
         style: Style(),
-        containingBlockSize: containingBlockSize,
       );
   }
 }
@@ -138,7 +129,6 @@ class DetailsContentElement extends LayoutElement {
     required super.children,
     required dom.Element node,
     required this.elementList,
-    required super.containingBlockSize,
   }) : super(node: node, elementId: node.id);
 
   @override
@@ -157,22 +147,15 @@ class DetailsContentElement extends LayoutElement {
     return ExpansionTile(
         key: AnchorKey.of(context.parser.key, this),
         expandedAlignment: Alignment.centerLeft,
-        title: elementList.isNotEmpty == true && elementList.first.localName == "summary" ? StyledText(
-          textSpan: TextSpan(
-            style: style.generateTextStyle(),
-            children: firstChild == null ? [] : [firstChild],
-          ),
+        title: elementList.isNotEmpty == true && elementList.first.localName == "summary"
+            ? CSSBoxWidget.withInlineSpanChildren(
+          children: firstChild == null ? [] : [firstChild],
           style: style,
-          renderContext: context,
         ) : Text("Details"),
         children: [
-          StyledText(
-            textSpan: TextSpan(
-              style: style.generateTextStyle(),
-              children: getChildren(childrenList, context, elementList.isNotEmpty == true && elementList.first.localName == "summary" ? firstChild : null)
-            ),
+          CSSBoxWidget.withInlineSpanChildren(
+            children: getChildren(childrenList, context, elementList.isNotEmpty == true && elementList.first.localName == "summary" ? firstChild : null),
             style: style,
-            renderContext: context,
           ),
         ]
     );
@@ -185,7 +168,11 @@ class DetailsContentElement extends LayoutElement {
 }
 
 class EmptyLayoutElement extends LayoutElement {
-  EmptyLayoutElement({required String name}) : super(name: name, children: [], containingBlockSize: Size.zero);
+  EmptyLayoutElement({required String name})
+      : super(
+          name: name,
+          children: [],
+        );
 
   @override
   Widget? toWidget(_) => null;
@@ -194,7 +181,6 @@ class EmptyLayoutElement extends LayoutElement {
 LayoutElement parseLayoutElement(
     dom.Element element,
     List<StyledElement> children,
-    Size containingBlockSize,
 ) {
   switch (element.localName) {
     case "details":
@@ -206,7 +192,6 @@ LayoutElement parseLayoutElement(
           name: element.localName!,
           children: children,
           elementList: element.children,
-          containingBlockSize: containingBlockSize,
       );
     case "thead":
     case "tbody":
@@ -214,14 +199,12 @@ LayoutElement parseLayoutElement(
       return TableSectionLayoutElement(
         name: element.localName!,
         children: children,
-        containingBlockSize: containingBlockSize,
       );
     case "tr":
       return TableRowLayoutElement(
         name: element.localName!,
         children: children,
         node: element,
-        containingBlockSize: containingBlockSize,
       );
     default:
       return EmptyLayoutElement(name: "[[No Name]]");

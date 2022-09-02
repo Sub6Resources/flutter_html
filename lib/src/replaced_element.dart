@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/html_parser.dart';
 import 'package:flutter_html/src/anchor.dart';
+import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/style.dart';
 import 'package:html/dom.dart' as dom;
@@ -20,7 +21,6 @@ abstract class ReplacedElement extends StyledElement {
     required super.name,
     required super.style,
     required super.elementId,
-    required super.containingBlockSize,
     List<StyledElement>? children,
     super.node,
     this.alignment = PlaceholderAlignment.aboveBaseline,
@@ -47,7 +47,6 @@ class TextContentElement extends ReplacedElement {
     required this.text,
     this.node,
     dom.Element? element,
-    required super.containingBlockSize,
   }) : super(name: "[text]", style: style, node: element, elementId: "[[No ID]]");
 
   @override
@@ -60,7 +59,7 @@ class TextContentElement extends ReplacedElement {
 }
 
 class EmptyContentElement extends ReplacedElement {
-  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style(), elementId: "[[No ID]]", containingBlockSize: Size.zero);
+  EmptyContentElement({String name = "empty"}) : super(name: name, style: Style(), elementId: "[[No ID]]");
 
   @override
   Widget? toWidget(_) => null;
@@ -73,7 +72,6 @@ class RubyElement extends ReplacedElement {
     required this.element,
     required List<StyledElement> children,
     String name = "ruby",
-    required super.containingBlockSize,
   }) : super(name: name, alignment: PlaceholderAlignment.middle, style: Style(), elementId: element.id, children: children);
 
   @override
@@ -104,27 +102,29 @@ class RubyElement extends ReplacedElement {
                     child: Transform(
                         transform:
                         Matrix4.translationValues(0, -(rubyYPos), 0),
-                        child: ContainerSpan(
-                          renderContext: RenderContext(
-                            buildContext: context.buildContext,
-                            parser: context.parser,
-                            style: c.style,
-                            tree: c,
-                          ),
+                        child: CSSBoxWidget(
                           style: c.style,
-                          containingBlockSize: containingBlockSize,
-                          child: Text(c.element!.innerHtml,
-                              style: c.style
-                                  .generateTextStyle()
-                                  .copyWith(fontSize: rubySize)),
-                        )))),
-            ContainerSpan(
-                renderContext: context,
-                style: context.style,
-                containingBlockSize: containingBlockSize,
-                child: node is TextContentElement ? Text((node as TextContentElement).text?.trim() ?? "",
-                    style: context.style.generateTextStyle()) : null,
-                children: node is TextContentElement ? null : [context.parser.parseTree(context, node!)]),
+                          //TODO do any other attributes apply?
+                          child: Text(
+                            c.element!.innerHtml,
+                            style: c.style
+                                .generateTextStyle()
+                                .copyWith(fontSize: rubySize),
+                          ),
+                        ),
+                    ),
+                ),
+            ),
+            CSSBoxWidget(
+              //TODO do any other styles apply? Does ruby still work?
+              style: context.style,
+              child: node is TextContentElement
+                  ? Text(
+                      (node as TextContentElement).text?.trim() ?? "",
+                      style: context.style.generateTextStyle(),
+                    )
+                  : RichText(text: context.parser.parseTree(context, node!)),
+            ),
           ],
         );
         widgets.add(widget);
@@ -151,7 +151,6 @@ class RubyElement extends ReplacedElement {
 ReplacedElement parseReplacedElement(
   dom.Element element,
   List<StyledElement> children,
-  Size containingBlockSize,
 ) {
   switch (element.localName) {
     case "br":
@@ -160,13 +159,11 @@ ReplacedElement parseReplacedElement(
         style: Style(whiteSpace: WhiteSpace.PRE),
         element: element,
         node: element,
-        containingBlockSize: containingBlockSize,
       );
     case "ruby":
       return RubyElement(
         element: element,
         children: children,
-        containingBlockSize: containingBlockSize,
       );
     default:
       return EmptyContentElement(name: element.localName == null ? "[[No Name]]" : element.localName!);

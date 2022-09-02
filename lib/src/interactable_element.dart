@@ -14,7 +14,6 @@ class InteractableElement extends StyledElement {
     required this.href,
     required dom.Node node,
     required super.elementId,
-    required super.containingBlockSize,
   }) : super(node: node as dom.Element?);
 }
 
@@ -26,7 +25,6 @@ enum Gesture {
 StyledElement parseInteractableElement(
     dom.Element element,
     List<StyledElement> children,
-    Size containingBlockSize,
     ) {
   switch (element.localName) {
     case "a":
@@ -41,7 +39,6 @@ StyledElement parseInteractableElement(
             ),
             node: element,
             elementId: element.id,
-          containingBlockSize: containingBlockSize,
         );
       }
       // When <a> tag have no href, it must be non clickable and without decoration.
@@ -51,7 +48,6 @@ StyledElement parseInteractableElement(
         style: Style(),
         node: element,
         elementId: element.id,
-        containingBlockSize: containingBlockSize,
       );
     /// will never be called, just to suppress missing return warning
     default:
@@ -62,7 +58,6 @@ StyledElement parseInteractableElement(
         href: '',
         style: Style(),
         elementId: "[[No ID]]",
-        containingBlockSize: containingBlockSize,
       );
   }
 }

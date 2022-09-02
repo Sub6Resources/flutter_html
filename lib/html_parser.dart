@@ -6,9 +6,9 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
-import 'package:flutter_html/src/style/compute_style.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
@@ -43,7 +43,6 @@ class HtmlParser extends StatelessWidget {
   final Html? root;
   final TextSelectionControls? selectionControls;
   final ScrollPhysics? scrollPhysics;
-  final BoxConstraints constraints;
 
   final Map<String, Size> cachedImageSizes = {};
 
@@ -60,7 +59,6 @@ class HtmlParser extends StatelessWidget {
     required this.style,
     required this.customRenders,
     required this.tagsList,
-    required this.constraints,
     this.root,
     this.selectionControls,
     this.scrollPhysics,
@@ -84,7 +82,6 @@ class HtmlParser extends StatelessWidget {
       tagsList,
       context,
       this,
-      constraints,
     );
 
     // Styling Step
@@ -104,35 +101,13 @@ class HtmlParser extends StatelessWidget {
       processedTree,
     );
 
-    // This is the final scaling that assumes any other StyledText instances are
-    // using textScaleFactor = 1.0 (which is the default). This ensures the correct
-    // scaling is used, but relies on https://github.com/flutter/flutter/pull/59711
-    // to wrap everything when larger accessibility fonts are used.
-    if (selectable) {
-      return StyledText.selectable(
-        textSpan: parsedTree as TextSpan,
-        style: processedTree.style,
-        textScaleFactor: MediaQuery.of(context).textScaleFactor,
-        renderContext: RenderContext(
-          buildContext: context,
-          parser: this,
-          tree: processedTree,
-          style: processedTree.style,
-        ),
-        selectionControls: selectionControls,
-        scrollPhysics: scrollPhysics,
-      );
-    }
-    return StyledText(
-      textSpan: parsedTree,
+    return CSSBoxWidget.withInlineSpanChildren(
       style: processedTree.style,
-      textScaleFactor: MediaQuery.of(context).textScaleFactor,
-      renderContext: RenderContext(
-        buildContext: context,
-        parser: this,
-        tree: processedTree,
-        style: processedTree.style,
-      ),
+      children: [parsedTree],
+      selectable: selectable,
+      scrollPhysics: scrollPhysics,
+      selectionControls: selectionControls,
+      shrinkWrap: shrinkWrap,
     );
   }
 
@@ -153,7 +128,6 @@ class HtmlParser extends StatelessWidget {
     List<String> tagsList,
     BuildContext context,
     HtmlParser parser,
-    BoxConstraints constraints,
   ) {
     StyledElement tree = StyledElement(
       name: "[Tree Root]",
@@ -161,8 +135,6 @@ class HtmlParser extends StatelessWidget {
       node: html,
       //TODO(Sub6Resources): This seems  difficult to customize
       style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
-      //TODO(Sub6Resources): Okay, how about shrinkWrap?
-      containingBlockSize: Size(constraints.maxWidth, constraints.maxHeight),
     );
 
     html.nodes.forEach((node) {
@@ -172,7 +144,6 @@ class HtmlParser extends StatelessWidget {
         tagsList,
         context,
         parser,
-        constraints,
       ));
     });
 
@@ -189,7 +160,6 @@ class HtmlParser extends StatelessWidget {
     List<String> tagsList,
     BuildContext context,
     HtmlParser parser,
-    BoxConstraints constraints,
   ) {
     List<StyledElement> children = <StyledElement>[];
 
@@ -200,12 +170,8 @@ class HtmlParser extends StatelessWidget {
         tagsList,
         context,
         parser,
-        constraints,
       ));
     });
-
-    //TODO(Sub6Resources): Okay, how about shrinkWrap? How to calculate this for children?
-    final maxSize = Size(constraints.maxWidth, constraints.maxHeight);
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
     if (node is dom.Element) {
@@ -213,19 +179,19 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
       if (STYLED_ELEMENTS.contains(node.localName)) {
-        return parseStyledElement(node, children, maxSize);
+        return parseStyledElement(node, children);
       } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
-        return parseInteractableElement(node, children, maxSize);
+        return parseInteractableElement(node, children);
       } else if (REPLACED_ELEMENTS.contains(node.localName)) {
-        return parseReplacedElement(node, children, maxSize);
+        return parseReplacedElement(node, children);
       } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
-        return parseLayoutElement(node, children, maxSize);
+        return parseLayoutElement(node, children);
       } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
-        return parseTableCellElement(node, children, maxSize);
+        return parseTableCellElement(node, children);
       } else if (TABLE_DEFINITION_ELEMENTS.contains(node.localName)) {
-        return parseTableDefinitionElement(node, children, maxSize);
+        return parseTableDefinitionElement(node, children);
       } else {
-        final StyledElement tree = parseStyledElement(node, children, maxSize);
+        final StyledElement tree = parseStyledElement(node, children);
         for (final entry in customRenderMatchers) {
           if (entry.call(
               RenderContext(
@@ -241,7 +207,12 @@ class HtmlParser extends StatelessWidget {
         return EmptyContentElement();
       }
     } else if (node is dom.Text) {
-      return TextContentElement(text: node.text, style: Style(), element: node.parent, node: node, containingBlockSize: maxSize);
+      return TextContentElement(
+        text: node.text,
+        style: Style(),
+        element: node.parent,
+        node: node,
+      );
     } else {
       return EmptyContentElement();
     }
@@ -370,12 +341,11 @@ class HtmlParser extends StatelessWidget {
           return customRenders[entry]!.inlineSpan!.call(newContext, buildChildren);
         }
         return WidgetSpan(
-          child: ContainerSpan(
-            renderContext: newContext,
+          child: CSSBoxWidget(
             style: tree.style,
             shrinkWrap: newContext.parser.shrinkWrap,
             child: customRenders[entry]!.widget!.call(newContext, buildChildren),
-            containingBlockSize: tree.containingBlockSize,
+            childIsReplaced: true, //TODO is this true?
           ),
         );
       }
@@ -663,7 +633,6 @@ class HtmlParser extends StatelessWidget {
         TextContentElement(
           text: tree.style.before,
           style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE),
-          containingBlockSize: Size.infinite, //TODO(Sub6Resources): This can't be right...
         ),
       );
     }
@@ -671,7 +640,6 @@ class HtmlParser extends StatelessWidget {
       tree.children.add(TextContentElement(
           text: tree.style.after,
           style: tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE),
-        containingBlockSize: Size.infinite, //TODO(Sub6Resources): This can't be right...
       ));
     }
 
@@ -865,133 +833,6 @@ class RenderContext {
     required this.style,
     this.key,
   });
-}
-
-/// A [ContainerSpan] is a widget with an [InlineSpan] child or children.
-///
-/// A [ContainerSpan] can have a border, background color, height, width, padding, and margin
-/// and can represent either an INLINE or BLOCK-level element.
-class ContainerSpan extends StatelessWidget {
-  final AnchorKey? key;
-  final Widget? child;
-  final List<InlineSpan>? children;
-  final Style style;
-  final RenderContext renderContext;
-  final bool shrinkWrap;
-  final Size containingBlockSize;
-
-  ContainerSpan({
-    this.key,
-    this.child,
-    this.children,
-    required this.style,
-    required this.renderContext,
-    this.shrinkWrap = false,
-    required this.containingBlockSize,
-  }): super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-
-    final bool isReplaced = REPLACED_EXTERNAL_ELEMENTS.contains(renderContext.tree.name);
-
-    //Calculate auto widths and margins:
-    final widthsAndMargins = WidthAndMargins.calculate(style, containingBlockSize, isReplaced, context);
-
-    Widget container = Container(
-      decoration: BoxDecoration(
-        border: style.border,
-        color: style.backgroundColor,
-      ),
-      height: style.height?.value, //TODO
-      width: widthsAndMargins.width,
-      padding: style.padding?.nonNegative,
-      margin: widthsAndMargins.margins,
-      alignment: shrinkWrap ? null : style.alignment,
-      child: child ??
-          StyledText(
-            textSpan: TextSpan(
-              style: renderContext.style.generateTextStyle(),
-              children: children,
-            ),
-            style: renderContext.style,
-            renderContext: renderContext,
-          ),
-    );
-
-    return LayoutBuilder(builder: (context, constraints) {
-      return container;
-    });
-  }
-}
-
-class StyledText extends StatelessWidget {
-  final InlineSpan textSpan;
-  final Style style;
-  final double textScaleFactor;
-  final RenderContext renderContext;
-  final AnchorKey? key;
-  final bool _selectable;
-  final TextSelectionControls? selectionControls;
-  final ScrollPhysics? scrollPhysics;
-
-  const StyledText({
-    required this.textSpan,
-    required this.style,
-    this.textScaleFactor = 1.0,
-    required this.renderContext,
-    this.key,
-    this.selectionControls,
-    this.scrollPhysics,
-  }) : _selectable = false,
-        super(key: key);
-
-  const StyledText.selectable({
-    required TextSpan textSpan,
-    required this.style,
-    this.textScaleFactor = 1.0,
-    required this.renderContext,
-    this.key,
-    this.selectionControls,
-    this.scrollPhysics,
-  }) : textSpan = textSpan,
-        _selectable = true,
-        super(key: key);
-
-  @override
-  Widget build(BuildContext context) {
-    if (_selectable) {
-      return SelectableText.rich(
-        textSpan as TextSpan,
-        style: style.generateTextStyle(),
-        textAlign: style.textAlign,
-        textDirection: style.direction,
-        textScaleFactor: textScaleFactor,
-        maxLines: style.maxLines,
-        selectionControls: selectionControls,
-        scrollPhysics: scrollPhysics,
-      );
-    }
-    return SizedBox(
-      width: consumeExpandedBlock(style.display, renderContext),
-      child: Text.rich(
-        textSpan,
-        style: style.generateTextStyle(),
-        textAlign: style.textAlign,
-        textDirection: style.direction,
-        textScaleFactor: textScaleFactor,
-        maxLines: style.maxLines,
-        overflow: style.textOverflow,
-      ),
-    );
-  }
-
-  double? consumeExpandedBlock(Display? display, RenderContext context) {
-    if ((display == Display.BLOCK || display == Display.LIST_ITEM) && !renderContext.parser.shrinkWrap) {
-      return double.infinity;
-    }
-    return null;
-  }
 }
 
 extension IterateLetters on String {

@@ -1,7 +1,7 @@
 import 'dart:math' as math;
 
+import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 class CSSBoxWidget extends StatelessWidget {
@@ -12,6 +12,26 @@ class CSSBoxWidget extends StatelessWidget {
     this.childIsReplaced = false,
     this.shrinkWrap = false,
   }): super(key: key);
+
+  /// Generates a CSSBoxWidget that contains a list of InlineSpan children.
+  CSSBoxWidget.withInlineSpanChildren({
+    this.key,
+    required List<InlineSpan> children,
+    required this.style,
+    this.childIsReplaced = false,
+    this.shrinkWrap = false,
+    bool selectable = false,
+    TextSelectionControls? selectionControls,
+    ScrollPhysics? scrollPhysics,
+  })  : this.child = selectable
+            ? _generateSelectableWidgetChild(
+                children,
+                style,
+                selectionControls,
+                scrollPhysics,
+              )
+            : _generateWidgetChild(children, style),
+        super(key: key);
 
   /// An optional anchor key to use in finding this box
   final AnchorKey? key;
@@ -28,35 +48,86 @@ class CSSBoxWidget extends StatelessWidget {
   /// (e.g. img, video, iframe, audio, etc.)
   final bool childIsReplaced;
 
-  /// Whether or not the content should take its minimum possible width
-  /// TODO TODO TODO
+  /// Whether or not the content should ignore auto horizontal margins and not
+  /// necessarily take up the full available width unless necessary
   final bool shrinkWrap;
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: _CSSBoxRenderer(
-        width: style.width ?? Width.auto(),
-        height: style.height ?? Height.auto(),
-        paddingSize: style.padding?.collapsedSize ?? Size.zero,
-        borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
-        margins: style.margin ?? Margins.zero,
-        display: style.display ?? Display.BLOCK,
-        childIsReplaced: childIsReplaced,
-        emValue: _calculateEmValue(style, context),
-        child: Container(
-          decoration: BoxDecoration(
-            border: style.border,
-            color: style.backgroundColor, //Colors the padding and content boxes
-          ),
-          width: ((style.display == Display.BLOCK || style.display == Display.LIST_ITEM) && !childIsReplaced && !shrinkWrap)
-              ? double.infinity
-              : null,
-          padding: style.padding ?? EdgeInsets.zero,
-          child: child,
+    return _CSSBoxRenderer(
+      width: style.width ?? Width.auto(),
+      height: style.height ?? Height.auto(),
+      paddingSize: style.padding?.collapsedSize ?? Size.zero,
+      borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
+      margins: style.margin ?? Margins.zero,
+      display: style.display ?? Display.BLOCK,
+      childIsReplaced: childIsReplaced,
+      emValue: _calculateEmValue(style, context),
+      shrinkWrap: shrinkWrap,
+      child: Container(
+        decoration: BoxDecoration(
+          border: style.border,
+          color: style.backgroundColor, //Colors the padding and content boxes
         ),
+        width: _shouldExpandToFillBlock() ? double.infinity : null,
+        padding: style.padding ?? EdgeInsets.zero,
+        child: child,
       ),
     );
+  }
+
+  /// Takes a list of InlineSpan children and generates a Text.rich Widget
+  /// containing those children.
+  static Widget _generateWidgetChild(List<InlineSpan> children, Style style) {
+    if(children.isEmpty) {
+      return Container();
+    }
+
+    return Text.rich(
+      TextSpan(
+        style: style.generateTextStyle(),
+        children: children,
+      ),
+      style: style.generateTextStyle(),
+      textAlign: style.textAlign,
+      textDirection: style.direction,
+      maxLines: style.maxLines,
+      overflow: style.textOverflow,
+    );
+  }
+
+  static Widget _generateSelectableWidgetChild(
+    List<InlineSpan> children,
+    Style style,
+    TextSelectionControls? selectionControls,
+    ScrollPhysics? scrollPhysics,
+  ) {
+    if(children.isEmpty) {
+      return Container();
+    }
+
+    return SelectableText.rich(
+      TextSpan(
+        style: style.generateTextStyle(),
+        children: children,
+      ),
+      style: style.generateTextStyle(),
+      textAlign: style.textAlign,
+      textDirection: style.direction,
+      maxLines: style.maxLines,
+      selectionControls: selectionControls,
+      scrollPhysics: scrollPhysics,
+    );
+  }
+
+  /// Whether or not the content-box should expand its width to fill the
+  /// width available to it or if it should just let its inner content
+  /// determine the content-box's width.
+  bool _shouldExpandToFillBlock() {
+    return (style.display == Display.BLOCK ||
+            style.display == Display.LIST_ITEM) &&
+        !childIsReplaced &&
+        !shrinkWrap;
   }
 }
 
@@ -72,6 +143,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
     required this.paddingSize,
     required this.childIsReplaced,
     required this.emValue,
+    required this.shrinkWrap,
   }) : super(key: key, children: [child]);
 
   /// The Display type of the element
@@ -99,16 +171,21 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
   /// The calculated size of 1em in pixels
   final double emValue;
 
+  /// Whether or not this container should shrinkWrap its contents.
+  /// (see definition on [CSSBoxWidget])
+  final bool shrinkWrap;
+
   @override
   _RenderCSSBox createRenderObject(BuildContext context) {
     return _RenderCSSBox(
       display: display,
       width: width..normalize(emValue),
       height: height..normalize(emValue),
-      margins: _preProcessMargins(margins),
+      margins: _preProcessMargins(margins, shrinkWrap),
       borderSize: borderSize,
       paddingSize: paddingSize,
       childIsReplaced: childIsReplaced,
+      shrinkWrap: shrinkWrap,
     );
   }
 
@@ -118,13 +195,14 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
       ..display = display
       ..width = (width..normalize(emValue))
       ..height = (height..normalize(emValue))
-      ..margins = _preProcessMargins(margins)
+      ..margins = _preProcessMargins(margins, shrinkWrap)
       ..borderSize = borderSize
       ..paddingSize = paddingSize
-      ..childIsReplaced = childIsReplaced;
+      ..childIsReplaced = childIsReplaced
+      ..shrinkWrap = shrinkWrap;
   }
 
-  Margins _preProcessMargins(Margins margins) {
+  Margins _preProcessMargins(Margins margins, bool shrinkWrap) {
     Margin leftMargin = margins.left ?? Margin.zero();
     Margin rightMargin = margins.right ?? Margin.zero();
     Margin topMargin = margins.top ?? Margin.zero();
@@ -149,6 +227,15 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
       }
     }
 
+    //Shrink-wrap margins if applicable
+    if (shrinkWrap && leftMargin.unit == Unit.auto) {
+      leftMargin = Margin.zero();
+    }
+
+    if (shrinkWrap && rightMargin.unit == Unit.auto) {
+      rightMargin = Margin.zero();
+    }
+
     return Margins(
       top: topMargin,
       right: rightMargin,
@@ -171,13 +258,15 @@ class _RenderCSSBox extends RenderBox
     required Size borderSize,
     required Size paddingSize,
     required bool childIsReplaced,
+    required bool shrinkWrap,
   })  : _display = display,
         _width = width,
         _height = height,
         _margins = margins,
         _borderSize = borderSize,
         _paddingSize = paddingSize,
-        _childIsReplaced = childIsReplaced;
+        _childIsReplaced = childIsReplaced,
+        _shrinkWrap = shrinkWrap;
 
   Display _display;
 
@@ -242,6 +331,15 @@ class _RenderCSSBox extends RenderBox
     markNeedsLayout();
   }
 
+  bool _shrinkWrap;
+
+  bool get shrinkWrap => _shrinkWrap;
+
+  set shrinkWrap(bool shrinkWrap) {
+    _shrinkWrap = shrinkWrap;
+    markNeedsLayout();
+  }
+
   @override
   void setupParentData(RenderBox child) {
     if (child.parentData is! CSSBoxParentData)
@@ -288,7 +386,9 @@ class _RenderCSSBox extends RenderBox
 
   @override
   double? computeDistanceToActualBaseline(TextBaseline baseline) {
+    return firstChild?.getDistanceToActualBaseline(baseline);
     return defaultComputeDistanceToHighestActualBaseline(baseline);
+    //TODO TODO TODO
   }
 
   @override
@@ -317,10 +417,10 @@ class _RenderCSSBox extends RenderBox
     final childConstraints = constraints.copyWith(
       maxWidth: (this.width.unit != Unit.auto)
           ? this.width.value
-          : constraints.maxWidth -
+          : containingBlockSize.width -
               (this.margins.left?.value ?? 0) -
               (this.margins.right?.value ?? 0),
-      maxHeight: constraints.maxHeight -
+      maxHeight: containingBlockSize.height -
           (this.margins.top?.value ?? 0) -
           (this.margins.bottom?.value ?? 0),
       minWidth: 0,
@@ -339,7 +439,9 @@ class _RenderCSSBox extends RenderBox
     height = childSize.height;
     switch (display) {
       case Display.BLOCK:
-        width = containingBlockSize.width;
+        width = (shrinkWrap || childIsReplaced)
+            ? childSize.width + horizontalMargins
+            : containingBlockSize.width;
         height = childSize.height + verticalMargins;
         break;
       case Display.INLINE:
@@ -351,7 +453,9 @@ class _RenderCSSBox extends RenderBox
         height = childSize.height + verticalMargins;
         break;
       case Display.LIST_ITEM:
-        width = containingBlockSize.width;
+        width = shrinkWrap
+            ? childSize.width + horizontalMargins
+            : containingBlockSize.width;
         height = childSize.height + verticalMargins;
         break;
       case Display.NONE:
@@ -432,6 +536,10 @@ class _RenderCSSBox extends RenderBox
         widthIsAuto = false;
       }
 
+      if (shrinkWrap) {
+        widthIsAuto = false;
+      }
+
       //If width is not auto and the width of the margin box is larger than the
       // width of the containing block, then consider left and right margins to
       // have a 0 value.
@@ -447,8 +555,9 @@ class _RenderCSSBox extends RenderBox
       }
 
       // If all values are non-auto, the box is overconstrained.
-      // One of the margins will need to be ignored.
-      if (!widthIsAuto && !marginLeftIsAuto && !marginRightIsAuto) {
+      // One of the margins will need to be adjusted so that the
+      // entire width is taken
+      if (!widthIsAuto && !marginLeftIsAuto && !marginRightIsAuto && !shrinkWrap && !childIsReplaced) {
         //TODO ignore either left or right margin based on directionality of parent widgets.
         //For now, assume ltr, and just ignore the right margin.
         final difference =
