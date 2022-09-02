@@ -9,6 +9,7 @@ class CSSBoxWidget extends StatelessWidget {
     this.key,
     required this.child,
     required this.style,
+    this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
   }): super(key: key);
@@ -18,6 +19,7 @@ class CSSBoxWidget extends StatelessWidget {
     this.key,
     required List<InlineSpan> children,
     required this.style,
+    this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
     bool selectable = false,
@@ -44,6 +46,11 @@ class CSSBoxWidget extends StatelessWidget {
   /// Note that this style will only apply to this box, and will not cascade to its child.
   final Style style;
 
+  /// Sets the direction the text of this widget should flow. If unset or null,
+  /// the nearest Directionality ancestor is used as a default. If that cannot
+  /// be found, this Widget's renderer will raise an assertion.
+  final TextDirection? textDirection;
+
   /// Indicates whether this child is a replaced element that manages its own width
   /// (e.g. img, video, iframe, audio, etc.)
   final bool childIsReplaced;
@@ -63,6 +70,7 @@ class CSSBoxWidget extends StatelessWidget {
       display: style.display ?? Display.BLOCK,
       childIsReplaced: childIsReplaced,
       emValue: _calculateEmValue(style, context),
+      textDirection: _checkTextDirection(context, textDirection),
       shrinkWrap: shrinkWrap,
       child: Container(
         decoration: BoxDecoration(
@@ -129,6 +137,16 @@ class CSSBoxWidget extends StatelessWidget {
         !childIsReplaced &&
         !shrinkWrap;
   }
+
+  TextDirection _checkTextDirection(BuildContext context, TextDirection? direction) {
+    final textDirection = direction ?? Directionality.maybeOf(context);
+
+    assert(textDirection != null,
+    "CSSBoxWidget needs either a Directionality ancestor or a provided textDirection",
+    );
+
+    return textDirection!;
+  }
 }
 
 class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
@@ -141,6 +159,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
     required this.height,
     required this.borderSize,
     required this.paddingSize,
+    required this.textDirection,
     required this.childIsReplaced,
     required this.emValue,
     required this.shrinkWrap,
@@ -164,6 +183,9 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
   /// The collapsed size of the element's padding
   final Size paddingSize;
 
+  /// The direction for this widget's text to flow.
+  final TextDirection textDirection;
+
   /// Whether or not the child being rendered is a replaced element
   /// (this changes the rules for rendering)
   final bool childIsReplaced;
@@ -184,6 +206,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
       margins: _preProcessMargins(margins, shrinkWrap),
       borderSize: borderSize,
       paddingSize: paddingSize,
+      textDirection: textDirection,
       childIsReplaced: childIsReplaced,
       shrinkWrap: shrinkWrap,
     );
@@ -198,6 +221,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
       ..margins = _preProcessMargins(margins, shrinkWrap)
       ..borderSize = borderSize
       ..paddingSize = paddingSize
+      ..textDirection = textDirection
       ..childIsReplaced = childIsReplaced
       ..shrinkWrap = shrinkWrap;
   }
@@ -257,6 +281,7 @@ class _RenderCSSBox extends RenderBox
     required Margins margins,
     required Size borderSize,
     required Size paddingSize,
+    required TextDirection textDirection,
     required bool childIsReplaced,
     required bool shrinkWrap,
   })  : _display = display,
@@ -265,6 +290,7 @@ class _RenderCSSBox extends RenderBox
         _margins = margins,
         _borderSize = borderSize,
         _paddingSize = paddingSize,
+        _textDirection = textDirection,
         _childIsReplaced = childIsReplaced,
         _shrinkWrap = shrinkWrap;
 
@@ -319,6 +345,15 @@ class _RenderCSSBox extends RenderBox
 
   set paddingSize(Size size) {
     _paddingSize = size;
+    markNeedsLayout();
+  }
+
+  TextDirection _textDirection;
+
+  TextDirection get textDirection => _textDirection;
+
+  set textDirection(TextDirection textDirection) {
+    _textDirection = textDirection;
     markNeedsLayout();
   }
 
@@ -387,8 +422,6 @@ class _RenderCSSBox extends RenderBox
   @override
   double? computeDistanceToActualBaseline(TextBaseline baseline) {
     return firstChild?.getDistanceToActualBaseline(baseline);
-    return defaultComputeDistanceToHighestActualBaseline(baseline);
-    //TODO TODO TODO
   }
 
   @override
@@ -556,13 +589,26 @@ class _RenderCSSBox extends RenderBox
 
       // If all values are non-auto, the box is overconstrained.
       // One of the margins will need to be adjusted so that the
-      // entire width is taken
+      // entire width of the containing block is used.
       if (!widthIsAuto && !marginLeftIsAuto && !marginRightIsAuto && !shrinkWrap && !childIsReplaced) {
-        //TODO ignore either left or right margin based on directionality of parent widgets.
-        //For now, assume ltr, and just ignore the right margin.
-        final difference =
-            containingBlockSize.width - childSize.width - marginLeft.value;
-        marginRight = Margin(difference);
+        //Ignore either left or right margin based on textDirection.
+
+        switch(textDirection) {
+          case TextDirection.rtl:
+            final difference = containingBlockSize.width
+                - childSize.width
+                - marginRight.value;
+            marginLeft = Margin(difference);
+            break;
+          case TextDirection.ltr:
+            final difference = containingBlockSize.width
+                - childSize.width
+                - marginLeft.value;
+            marginRight = Margin(difference);
+            break;
+        }
+
+
       }
 
       // If there is exactly one value specified as auto, compute it value from the equality (our widths are already set)
