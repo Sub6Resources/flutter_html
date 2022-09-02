@@ -453,11 +453,17 @@ class _RenderCSSBox extends RenderBox
           : containingBlockSize.width -
               (this.margins.left?.value ?? 0) -
               (this.margins.right?.value ?? 0),
-      maxHeight: containingBlockSize.height -
-          (this.margins.top?.value ?? 0) -
-          (this.margins.bottom?.value ?? 0),
-      minWidth: 0,
-      minHeight: 0,
+      maxHeight: (this.height.unit != Unit.auto)
+        ? this.height.value
+        : containingBlockSize.height -
+            (this.margins.top?.value ?? 0) -
+            (this.margins.bottom?.value ?? 0),
+      minWidth: (this.width.unit != Unit.auto)
+          ? this.width.value
+          : 0,
+      minHeight: (this.height.unit != Unit.auto)
+          ? this.height.value
+          : 0,
     );
     final Size childSize = layoutChild(child!, childConstraints);
 
