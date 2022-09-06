@@ -1,3 +1,8 @@
+## 3.0.0-alpha.7
+
+ - **FIX**: Add meta as a dev dependency.
+ - **DOCS**: Update CHANGELOG.md for 3.0.0-alpha.6.
+
 ## 3.0.0-alpha.6
 
  - **FIX** #731 Resolve newline `<br>` issue
