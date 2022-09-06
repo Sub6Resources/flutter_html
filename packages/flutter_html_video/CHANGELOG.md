@@ -1,3 +1,7 @@
+## 3.0.0-alpha.5
+
+ - Update a dependency to the latest release.
+
 ## [3.0.0-alpha.4] - April 20, 2022:
 * Fixed compilation issue
 

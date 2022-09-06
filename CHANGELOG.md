@@ -1,3 +1,10 @@
+## 3.0.0-alpha.6
+
+ - **FIX**: fix textShadow color declaration handler.
+ - **FIX**: ol use default style.
+ - **FIX**: Crash when a tr tag includes text node.
+ - **FEAT**: exposes fontFamilyFallback parameter.
+
 ## [3.0.0-alpha.5] - June 9, 2022:
 * Fixed hot reloads, thanks @arjenmels
 * Fixed link taps not working
