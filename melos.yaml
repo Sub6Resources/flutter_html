@@ -1,0 +1,14 @@
+name: flutter_html
+repository: https://github.com/sub6resources/flutter_html
+
+packages:
+  - '*'
+  - packages/**
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+
+scripts:
+  analyze:
+    exec: dart analyze .
