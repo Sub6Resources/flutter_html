@@ -1,3 +1,7 @@
+## 3.0.0-alpha.4
+
+ - Update a dependency to the latest release.
+
 ## [3.0.0-alpha.3] - April 14, 2022:
 * Fixed crash when iframe or video tags used unsupported/incorrect height or width
 
