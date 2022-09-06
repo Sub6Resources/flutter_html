@@ -17,7 +17,7 @@ CustomRenderMatcher tagMatcher(String tag) => (context) {
 
 CustomRenderMatcher blockElementMatcher() => (context) {
       return (context.tree.style.display == Display.BLOCK ||
-          context.tree.style.display == Display.INLINE_BLOCK) &&
+              context.tree.style.display == Display.INLINE_BLOCK) &&
           (context.tree.children.isNotEmpty ||
               context.tree.element?.localName == "hr");
     };
@@ -132,21 +132,23 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
         alignment: PlaceholderAlignment.baseline,
         baseline: TextBaseline.alphabetic,
         child: CSSBoxWidget.withInlineSpanChildren(
-            key: context.key,
-            style: style ?? context.tree.style,
-            shrinkWrap: context.parser.shrinkWrap,
-            childIsReplaced: REPLACED_EXTERNAL_ELEMENTS.contains(context.tree.name),
-            children: children ??
-                context.tree.children
-                    .expandIndexed((i, childTree) => [
-                          context.parser.parseTree(context, childTree),
-                          //TODO can this newline be added in a different step?
-                          if (i != context.tree.children.length - 1 &&
-                              childTree.style.display == Display.BLOCK &&
-                              childTree.element?.localName != "html" &&
-                              childTree.element?.localName != "body")
-                            TextSpan(text: "\n"),
-                        ]).toList(),
+          key: context.key,
+          style: style ?? context.tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
+          childIsReplaced:
+              REPLACED_EXTERNAL_ELEMENTS.contains(context.tree.name),
+          children: children ??
+              context.tree.children
+                  .expandIndexed((i, childTree) => [
+                        context.parser.parseTree(context, childTree),
+                        //TODO can this newline be added in a different step?
+                        if (i != context.tree.children.length - 1 &&
+                            childTree.style.display == Display.BLOCK &&
+                            childTree.element?.localName != "html" &&
+                            childTree.element?.localName != "body")
+                          TextSpan(text: "\n"),
+                      ])
+                  .toList(),
         ),
       );
     });
@@ -154,86 +156,81 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
 CustomRender listElementRender(
         {Style? style, Widget? child, List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(
-        inlineSpan: (context, buildChildren) => WidgetSpan(
-              child: CSSBoxWidget(
-                key: context.key,
-                style: style ?? context.tree.style,
-                shrinkWrap: context.parser.shrinkWrap,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  textDirection:
-                      style?.direction ?? context.tree.style.direction,
-                  children: [
-                    (style?.listStylePosition ??
-                                context.tree.style.listStylePosition) ==
-                            ListStylePosition.OUTSIDE
-                        ? Padding(
-                            padding: style?.padding?.nonNegative ??
-                                context.tree.style.padding?.nonNegative ??
-                                EdgeInsets.only(
-                                    left: (style?.direction ??
-                                                context.tree.style.direction) !=
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0,
-                                    right: (style?.direction ??
-                                                context.tree.style.direction) ==
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0),
-                            child: style?.markerContent ??
-                                context.style.markerContent)
-                        : Container(height: 0, width: 0),
-                    Text("\u0020",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(fontWeight: FontWeight.w400)),
-                    Expanded(
-                        child: Padding(
-                            padding: (style?.listStylePosition ??
-                                        context.tree.style.listStylePosition) ==
-                                    ListStylePosition.INSIDE
-                                ? EdgeInsets.only(
-                                    left: (style?.direction ??
-                                                context.tree.style.direction) !=
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0,
-                                    right: (style?.direction ??
-                                                context.tree.style.direction) ==
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0)
-                                : EdgeInsets.zero,
-                            child: CSSBoxWidget.withInlineSpanChildren(
-                              children: _getListElementChildren(
-                                    style?.listStylePosition ??
-                                        context.tree.style.listStylePosition,
-                                    buildChildren)
-                                  ..insertAll(
-                                      0,
-                                      context.tree.style.listStylePosition ==
-                                              ListStylePosition.INSIDE
-                                          ? [
-                                              WidgetSpan(
-                                                  alignment:
-                                                      PlaceholderAlignment
-                                                          .middle,
-                                                  child: style?.markerContent ??
-                                                      context.style
-                                                          .markerContent ??
-                                                      Container(
-                                                          height: 0, width: 0))
-                                            ]
-                                          : []),
-                              style: style ?? context.style,
-                            ),
-                        ),
-                    ),
-                  ],
+      inlineSpan: (context, buildChildren) => WidgetSpan(
+        child: CSSBoxWidget(
+          key: context.key,
+          style: style ?? context.tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            textDirection: style?.direction ?? context.tree.style.direction,
+            children: [
+              (style?.listStylePosition ??
+                          context.tree.style.listStylePosition) ==
+                      ListStylePosition.OUTSIDE
+                  ? Padding(
+                      padding: style?.padding?.nonNegative ??
+                          context.tree.style.padding?.nonNegative ??
+                          EdgeInsets.only(
+                              left: (style?.direction ??
+                                          context.tree.style.direction) !=
+                                      TextDirection.rtl
+                                  ? 10.0
+                                  : 0.0,
+                              right: (style?.direction ??
+                                          context.tree.style.direction) ==
+                                      TextDirection.rtl
+                                  ? 10.0
+                                  : 0.0),
+                      child:
+                          style?.markerContent ?? context.style.markerContent)
+                  : Container(height: 0, width: 0),
+              Text("\u0020",
+                  textAlign: TextAlign.right,
+                  style: TextStyle(fontWeight: FontWeight.w400)),
+              Expanded(
+                child: Padding(
+                  padding: (style?.listStylePosition ??
+                              context.tree.style.listStylePosition) ==
+                          ListStylePosition.INSIDE
+                      ? EdgeInsets.only(
+                          left: (style?.direction ??
+                                      context.tree.style.direction) !=
+                                  TextDirection.rtl
+                              ? 10.0
+                              : 0.0,
+                          right: (style?.direction ??
+                                      context.tree.style.direction) ==
+                                  TextDirection.rtl
+                              ? 10.0
+                              : 0.0)
+                      : EdgeInsets.zero,
+                  child: CSSBoxWidget.withInlineSpanChildren(
+                    children: _getListElementChildren(
+                        style?.listStylePosition ??
+                            context.tree.style.listStylePosition,
+                        buildChildren)
+                      ..insertAll(
+                          0,
+                          context.tree.style.listStylePosition ==
+                                  ListStylePosition.INSIDE
+                              ? [
+                                  WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: style?.markerContent ??
+                                          context.style.markerContent ??
+                                          Container(height: 0, width: 0))
+                                ]
+                              : []),
+                    style: style ?? context.style,
+                  ),
                 ),
               ),
-            ),
+            ],
+          ),
+        ),
+      ),
     );
 
 CustomRender replacedElementRender(

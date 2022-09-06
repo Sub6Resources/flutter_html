@@ -117,7 +117,8 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
         }
         cells.add(GridPlacement(
           child: CSSBoxWidget(
-            style: child.style.merge(row.style), //TODO padding/decoration(color/border)
+            style: child.style
+                .merge(row.style), //TODO padding/decoration(color/border)
             child: SizedBox.expand(
               child: Container(
                 alignment: child.style.alignment ??

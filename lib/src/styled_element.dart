@@ -49,9 +49,9 @@ class StyledElement {
 }
 
 StyledElement parseStyledElement(
-    dom.Element element,
-    List<StyledElement> children,
-    ) {
+  dom.Element element,
+  List<StyledElement> children,
+) {
   StyledElement styledElement = StyledElement(
     name: element.localName!,
     elementId: element.id,
@@ -186,13 +186,16 @@ StyledElement parseStyledElement(
       break;
     case "font":
       styledElement.style = Style(
-        color: element.attributes['color'] != null ?
-          element.attributes['color']!.startsWith("#") ?
-            ExpressionMapping.stringToColor(element.attributes['color']!) :
-            ExpressionMapping.namedColorToColor(element.attributes['color']!) :
-          null,
+        color: element.attributes['color'] != null
+            ? element.attributes['color']!.startsWith("#")
+                ? ExpressionMapping.stringToColor(element.attributes['color']!)
+                : ExpressionMapping.namedColorToColor(
+                    element.attributes['color']!)
+            : null,
         fontFamily: element.attributes['face']?.split(",").first,
-        fontSize: element.attributes['size'] != null ? numberToFontSize(element.attributes['size']!) : null,
+        fontSize: element.attributes['size'] != null
+            ? numberToFontSize(element.attributes['size']!)
+            : null,
       );
       break;
     case "h1":

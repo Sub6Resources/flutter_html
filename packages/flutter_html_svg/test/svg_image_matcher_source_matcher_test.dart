@@ -6,19 +6,20 @@ import 'package:meta/meta.dart';
 
 void main() {
   group("custom image data uri matcher", () {
-    CustomRenderMatcher matcher = svgDataUriMatcher(encoding: null, mime: 'image/svg+xml');
+    CustomRenderMatcher matcher =
+        svgDataUriMatcher(encoding: null, mime: 'image/svg+xml');
     testImgSrcMatcher(
       "matches an svg data uri with base64 encoding",
       matcher,
       imgSrc:
-      'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMzAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjE1IiBjeT0iMTAiIHI9IjEwIiBmaWxsPSJncmVlbiIvPgo8L3N2Zz4=',
+          'data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMzAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjE1IiBjeT0iMTAiIHI9IjEwIiBmaWxsPSJncmVlbiIvPgo8L3N2Zz4=',
       shouldMatch: true,
     );
     testImgSrcMatcher(
       "matches an svg data uri without specified encoding",
       matcher,
       imgSrc:
-      'data:image/svg+xml,%3C?xml version="1.0" encoding="UTF-8"?%3E%3Csvg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="10" r="10" fill="green"/%3E%3C/svg%3E',
+          'data:image/svg+xml,%3C?xml version="1.0" encoding="UTF-8"?%3E%3Csvg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="10" r="10" fill="green"/%3E%3C/svg%3E',
       shouldMatch: true,
     );
     testImgSrcMatcher(
@@ -31,7 +32,7 @@ void main() {
       "doesn't match non-base64 image data uri",
       matcher,
       imgSrc:
-      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
+          'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==',
       shouldMatch: false,
     );
     testImgSrcMatcher(
@@ -69,11 +70,11 @@ String _fakeElement(String? src) {
 
 @isTest
 void testImgSrcMatcher(
-    String name,
-    CustomRenderMatcher matcher, {
-      required String? imgSrc,
-      required bool shouldMatch,
-    }) {
+  String name,
+  CustomRenderMatcher matcher, {
+  required String? imgSrc,
+  required bool shouldMatch,
+}) {
   testWidgets(name, (WidgetTester tester) async {
     await tester.pumpWidget(
       TestApp(
@@ -89,7 +90,8 @@ void testImgSrcMatcher(
         ),
       ),
     );
-    await expectLater(find.text("Success"), shouldMatch ? findsOneWidget : findsNothing);
+    await expectLater(
+        find.text("Success"), shouldMatch ? findsOneWidget : findsNothing);
   });
 }
 

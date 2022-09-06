@@ -12,7 +12,7 @@ class CSSBoxWidget extends StatelessWidget {
     this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
-  }): super(key: key);
+  }) : super(key: key);
 
   /// Generates a CSSBoxWidget that contains a list of InlineSpan children.
   CSSBoxWidget.withInlineSpanChildren({
@@ -87,7 +87,7 @@ class CSSBoxWidget extends StatelessWidget {
   /// Takes a list of InlineSpan children and generates a Text.rich Widget
   /// containing those children.
   static Widget _generateWidgetChild(List<InlineSpan> children, Style style) {
-    if(children.isEmpty) {
+    if (children.isEmpty) {
       return Container();
     }
 
@@ -110,7 +110,7 @@ class CSSBoxWidget extends StatelessWidget {
     TextSelectionControls? selectionControls,
     ScrollPhysics? scrollPhysics,
   ) {
-    if(children.isEmpty) {
+    if (children.isEmpty) {
       return Container();
     }
 
@@ -138,11 +138,13 @@ class CSSBoxWidget extends StatelessWidget {
         !shrinkWrap;
   }
 
-  TextDirection _checkTextDirection(BuildContext context, TextDirection? direction) {
+  TextDirection _checkTextDirection(
+      BuildContext context, TextDirection? direction) {
     final textDirection = direction ?? Directionality.maybeOf(context);
 
-    assert(textDirection != null,
-    "CSSBoxWidget needs either a Directionality ancestor or a provided textDirection",
+    assert(
+      textDirection != null,
+      "CSSBoxWidget needs either a Directionality ancestor or a provided textDirection",
     );
 
     return textDirection!;
@@ -454,16 +456,12 @@ class _RenderCSSBox extends RenderBox
               (this.margins.left?.value ?? 0) -
               (this.margins.right?.value ?? 0),
       maxHeight: (this.height.unit != Unit.auto)
-        ? this.height.value
-        : containingBlockSize.height -
-            (this.margins.top?.value ?? 0) -
-            (this.margins.bottom?.value ?? 0),
-      minWidth: (this.width.unit != Unit.auto)
-          ? this.width.value
-          : 0,
-      minHeight: (this.height.unit != Unit.auto)
           ? this.height.value
-          : 0,
+          : containingBlockSize.height -
+              (this.margins.top?.value ?? 0) -
+              (this.margins.bottom?.value ?? 0),
+      minWidth: (this.width.unit != Unit.auto) ? this.width.value : 0,
+      minHeight: (this.height.unit != Unit.auto) ? this.height.value : 0,
     );
     final Size childSize = layoutChild(child!, childConstraints);
 
@@ -596,25 +594,25 @@ class _RenderCSSBox extends RenderBox
       // If all values are non-auto, the box is overconstrained.
       // One of the margins will need to be adjusted so that the
       // entire width of the containing block is used.
-      if (!widthIsAuto && !marginLeftIsAuto && !marginRightIsAuto && !shrinkWrap && !childIsReplaced) {
+      if (!widthIsAuto &&
+          !marginLeftIsAuto &&
+          !marginRightIsAuto &&
+          !shrinkWrap &&
+          !childIsReplaced) {
         //Ignore either left or right margin based on textDirection.
 
-        switch(textDirection) {
+        switch (textDirection) {
           case TextDirection.rtl:
-            final difference = containingBlockSize.width
-                - childSize.width
-                - marginRight.value;
+            final difference =
+                containingBlockSize.width - childSize.width - marginRight.value;
             marginLeft = Margin(difference);
             break;
           case TextDirection.ltr:
-            final difference = containingBlockSize.width
-                - childSize.width
-                - marginLeft.value;
+            final difference =
+                containingBlockSize.width - childSize.width - marginLeft.value;
             marginRight = Margin(difference);
             break;
         }
-
-
       }
 
       // If there is exactly one value specified as auto, compute it value from the equality (our widths are already set)

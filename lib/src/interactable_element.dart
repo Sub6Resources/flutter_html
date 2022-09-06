@@ -23,22 +23,22 @@ enum Gesture {
 }
 
 StyledElement parseInteractableElement(
-    dom.Element element,
-    List<StyledElement> children,
-    ) {
+  dom.Element element,
+  List<StyledElement> children,
+) {
   switch (element.localName) {
     case "a":
       if (element.attributes.containsKey('href')) {
         return InteractableElement(
-            name: element.localName!,
-            children: children,
-            href: element.attributes['href'],
-            style: Style(
-              color: Colors.blue,
-              textDecoration: TextDecoration.underline,
-            ),
-            node: element,
-            elementId: element.id,
+          name: element.localName!,
+          children: children,
+          href: element.attributes['href'],
+          style: Style(
+            color: Colors.blue,
+            textDecoration: TextDecoration.underline,
+          ),
+          node: element,
+          elementId: element.id,
         );
       }
       // When <a> tag have no href, it must be non clickable and without decoration.
@@ -49,6 +49,7 @@ StyledElement parseInteractableElement(
         node: element,
         elementId: element.id,
       );
+
     /// will never be called, just to suppress missing return warning
     default:
       return InteractableElement(

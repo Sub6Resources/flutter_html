@@ -19,6 +19,7 @@ enum Unit {
   //vh,
   //vw,
   auto(_auto);
+
   const Unit(this.unitType);
   final int unitType;
 }
@@ -29,26 +30,26 @@ abstract class Dimension {
   Unit unit;
 
   Dimension(this.value, this.unit, int _dimensionUnitType)
-      : assert(identical((unit.unitType | _dimensionUnitType), _dimensionUnitType),
+      : assert(
+            identical((unit.unitType | _dimensionUnitType), _dimensionUnitType),
             "This dimension was given a Unit that isn't specified.");
 }
 
 /// This dimension takes a value with a length unit such as px or em. Note that
 /// these can be fixed or relative (but they must not be a percent)
 class Length extends Dimension {
-  Length(double value, [Unit unit = Unit.px]):
-        super(value, unit, _length);
+  Length(double value, [Unit unit = Unit.px]) : super(value, unit, _length);
 }
 
 /// This dimension takes a value with a length-percent unit such as px or em
 /// or %. Note that these can be fixed or relative (but they must not be a
 /// percent)
 class LengthOrPercent extends Dimension {
-  LengthOrPercent(double value, [Unit unit = Unit.px]):
-        super(value, unit, _lengthPercent);
+  LengthOrPercent(double value, [Unit unit = Unit.px])
+      : super(value, unit, _lengthPercent);
 }
 
 class AutoOrLengthOrPercent extends Dimension {
-  AutoOrLengthOrPercent(double value, [Unit unit = Unit.px]):
-        super(value, unit, _lengthPercentAuto);
+  AutoOrLengthOrPercent(double value, [Unit unit = Unit.px])
+      : super(value, unit, _lengthPercentAuto);
 }

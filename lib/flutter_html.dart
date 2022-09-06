@@ -362,7 +362,8 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         customRenders: {}
           ..addAll(widget.customRenders)
           ..addAll(generateDefaultRenders()),
-        tagsList: widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
+        tagsList:
+            widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,
         scrollPhysics: widget.scrollPhysics,
       ),

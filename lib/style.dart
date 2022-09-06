@@ -44,13 +44,11 @@ class Style {
   /// Default: Theme.of(context).style.textTheme.body1.fontFamily
   String? fontFamily;
 
-
   /// The list of font families to fall back on when a glyph cannot be found in default font family.
   ///
   /// Inherited: yes,
   /// Default: null
   List<String>? fontFamilyFallback;
-
 
   /// CSS attribute "`font-feature-settings`"
   ///
@@ -251,8 +249,7 @@ class Style {
     }
   }
 
-  static Map<String, Style> fromThemeData(ThemeData theme) =>
-      {
+  static Map<String, Style> fromThemeData(ThemeData theme) => {
         'h1': Style.fromTextStyle(theme.textTheme.headline1!),
         'h2': Style.fromTextStyle(theme.textTheme.headline2!),
         'h3': Style.fromTextStyle(theme.textTheme.headline3!),
@@ -262,8 +259,8 @@ class Style {
         'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
       };
 
-  static Map<String, Style> fromCss(String css,
-      OnCssParseError? onCssParseError) {
+  static Map<String, Style> fromCss(
+      String css, OnCssParseError? onCssParseError) {
     final declarations = parseExternalCss(css, onCssParseError);
     Map<String, Style> styleMap = {};
     declarations.forEach((key, value) {
@@ -345,13 +342,14 @@ class Style {
   }
 
   Style copyOnlyInherited(Style child) {
-
     FontSize? finalFontSize = FontSize.inherit(fontSize, child.fontSize);
 
     LineHeight? finalLineHeight = child.lineHeight != null
         ? child.lineHeight?.units == "length"
-          ? LineHeight(child.lineHeight!.size! / (finalFontSize == null ? 14 : finalFontSize.value) * 1.2)
-          : child.lineHeight
+            ? LineHeight(child.lineHeight!.size! /
+                (finalFontSize == null ? 14 : finalFontSize.value) *
+                1.2)
+            : child.lineHeight
         : lineHeight;
 
     return child.copyWith(
@@ -446,7 +444,7 @@ class Style {
       textDecorationColor: textDecorationColor ?? this.textDecorationColor,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
       textDecorationThickness:
-      textDecorationThickness ?? this.textDecorationThickness,
+          textDecorationThickness ?? this.textDecorationThickness,
       textShadow: textShadow ?? this.textShadow,
       verticalAlign: verticalAlign ?? this.verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
@@ -473,9 +471,8 @@ class Style {
     this.fontFamily = textStyle.fontFamily;
     this.fontFamilyFallback = textStyle.fontFamilyFallback;
     this.fontFeatureSettings = textStyle.fontFeatures;
-    this.fontSize = textStyle.fontSize != null
-        ? FontSize(textStyle.fontSize!)
-        : null;
+    this.fontSize =
+        textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null;
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
     this.letterSpacing = textStyle.letterSpacing;
@@ -487,21 +484,21 @@ class Style {
 
   /// Sets any dimensions set to rem or em to the computed size
   void setRelativeValues(double remValue, double emValue) {
-    if(width?.unit == Unit.rem) {
+    if (width?.unit == Unit.rem) {
       width = Width(width!.value * remValue);
-    } else if(width?.unit == Unit.em) {
+    } else if (width?.unit == Unit.em) {
       width = Width(width!.value * emValue);
     }
 
-    if(height?.unit == Unit.rem) {
+    if (height?.unit == Unit.rem) {
       height = Height(height!.value * remValue);
-    } else if(height?.unit == Unit.em) {
+    } else if (height?.unit == Unit.em) {
       height = Height(height!.value * emValue);
     }
 
-    if(fontSize?.unit == Unit.rem) {
+    if (fontSize?.unit == Unit.rem) {
       fontSize = FontSize(fontSize!.value * remValue);
-    } else if(fontSize?.unit == Unit.em) {
+    } else if (fontSize?.unit == Unit.em) {
       fontSize = FontSize(fontSize!.value * emValue);
     }
 
@@ -510,27 +507,27 @@ class Style {
     Margin? marginRight;
     Margin? marginBottom;
 
-    if(margin?.left?.unit == Unit.rem) {
+    if (margin?.left?.unit == Unit.rem) {
       marginLeft = Margin(margin!.left!.value * remValue);
-    } else if(margin?.left?.unit == Unit.em) {
+    } else if (margin?.left?.unit == Unit.em) {
       marginLeft = Margin(margin!.left!.value * emValue);
     }
 
-    if(margin?.top?.unit == Unit.rem) {
+    if (margin?.top?.unit == Unit.rem) {
       marginTop = Margin(margin!.top!.value * remValue);
-    } else if(margin?.top?.unit == Unit.em) {
+    } else if (margin?.top?.unit == Unit.em) {
       marginTop = Margin(margin!.top!.value * emValue);
     }
 
-    if(margin?.right?.unit == Unit.rem) {
+    if (margin?.right?.unit == Unit.rem) {
       marginRight = Margin(margin!.right!.value * remValue);
-    } else if(margin?.right?.unit == Unit.em) {
+    } else if (margin?.right?.unit == Unit.em) {
       marginRight = Margin(margin!.right!.value * emValue);
     }
 
-    if(margin?.bottom?.unit == Unit.rem) {
+    if (margin?.bottom?.unit == Unit.rem) {
       marginBottom = Margin(margin!.bottom!.value * remValue);
-    } else if(margin?.bottom?.unit == Unit.em) {
+    } else if (margin?.bottom?.unit == Unit.em) {
       marginBottom = Margin(margin!.bottom!.value * emValue);
     }
 
@@ -558,9 +555,11 @@ class ListStyleType {
 
   const ListStyleType(this.text, {this.type = "marker", this.widget});
 
-  factory ListStyleType.fromImage(String url) => ListStyleType(url, type: "image");
+  factory ListStyleType.fromImage(String url) =>
+      ListStyleType(url, type: "image");
 
-  factory ListStyleType.fromWidget(Widget widget) => ListStyleType("", widget: widget, type: "widget");
+  factory ListStyleType.fromWidget(Widget widget) =>
+      ListStyleType("", widget: widget, type: "widget");
 
   static const LOWER_ALPHA = ListStyleType("LOWER_ALPHA");
   static const UPPER_ALPHA = ListStyleType("UPPER_ALPHA");

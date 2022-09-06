@@ -38,7 +38,8 @@ class MultipleTapGestureDetector extends InheritedWidget {
   }) : super(key: key, child: child);
 
   static MultipleTapGestureDetector? of(BuildContext context) {
-    return context.dependOnInheritedWidgetOfExactType<MultipleTapGestureDetector>();
+    return context
+        .dependOnInheritedWidgetOfExactType<MultipleTapGestureDetector>();
   }
 
   @override

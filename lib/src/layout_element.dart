@@ -133,35 +133,48 @@ class DetailsContentElement extends LayoutElement {
 
   @override
   Widget toWidget(RenderContext context) {
-    List<InlineSpan>? childrenList = children.map((tree) => context.parser.parseTree(context, tree)).toList();
+    List<InlineSpan>? childrenList = children
+        .map((tree) => context.parser.parseTree(context, tree))
+        .toList();
     List<InlineSpan> toRemove = [];
     for (InlineSpan child in childrenList) {
-      if (child is TextSpan && child.text != null && child.text!.trim().isEmpty) {
+      if (child is TextSpan &&
+          child.text != null &&
+          child.text!.trim().isEmpty) {
         toRemove.add(child);
       }
     }
     for (InlineSpan child in toRemove) {
       childrenList.remove(child);
     }
-    InlineSpan? firstChild = childrenList.isNotEmpty == true ? childrenList.first : null;
+    InlineSpan? firstChild =
+        childrenList.isNotEmpty == true ? childrenList.first : null;
     return ExpansionTile(
         key: AnchorKey.of(context.parser.key, this),
         expandedAlignment: Alignment.centerLeft,
-        title: elementList.isNotEmpty == true && elementList.first.localName == "summary"
+        title: elementList.isNotEmpty == true &&
+                elementList.first.localName == "summary"
             ? CSSBoxWidget.withInlineSpanChildren(
-          children: firstChild == null ? [] : [firstChild],
-          style: style,
-        ) : Text("Details"),
+                children: firstChild == null ? [] : [firstChild],
+                style: style,
+              )
+            : Text("Details"),
         children: [
           CSSBoxWidget.withInlineSpanChildren(
-            children: getChildren(childrenList, context, elementList.isNotEmpty == true && elementList.first.localName == "summary" ? firstChild : null),
+            children: getChildren(
+                childrenList,
+                context,
+                elementList.isNotEmpty == true &&
+                        elementList.first.localName == "summary"
+                    ? firstChild
+                    : null),
             style: style,
           ),
-        ]
-    );
+        ]);
   }
 
-  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context, InlineSpan? firstChild) {
+  List<InlineSpan> getChildren(List<InlineSpan> children, RenderContext context,
+      InlineSpan? firstChild) {
     if (firstChild != null) children.removeAt(0);
     return children;
   }
@@ -179,8 +192,8 @@ class EmptyLayoutElement extends LayoutElement {
 }
 
 LayoutElement parseLayoutElement(
-    dom.Element element,
-    List<StyledElement> children,
+  dom.Element element,
+  List<StyledElement> children,
 ) {
   switch (element.localName) {
     case "details":
@@ -188,10 +201,10 @@ LayoutElement parseLayoutElement(
         return EmptyLayoutElement(name: "empty");
       }
       return DetailsContentElement(
-          node: element,
-          name: element.localName!,
-          children: children,
-          elementList: element.children,
+        node: element,
+        name: element.localName!,
+        children: children,
+        elementList: element.children,
       );
     case "thead":
     case "tbody":

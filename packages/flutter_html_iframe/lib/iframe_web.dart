@@ -24,28 +24,27 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
       ui.platformViewRegistry
           .registerViewFactory(createdViewId, (int viewId) => iframe);
       return Container(
-          width: double.tryParse(
-                  context.tree.element?.attributes['width'] ?? "") ??
-              (double.tryParse(
-                          context.tree.element?.attributes['height'] ?? "") ??
-                      150) *
-                  2,
-          height: double.tryParse(
-                  context.tree.element?.attributes['height'] ?? "") ??
-              (double.tryParse(
-                          context.tree.element?.attributes['width'] ?? "") ??
-                      300) /
-                  2,
-          child: CSSBoxWidget(
-            style: context.style,
-            childIsReplaced: true,
-            child: Directionality(
-                textDirection: TextDirection.ltr,
-                child: HtmlElementView(
-                  viewType: createdViewId,
-                ),
+        width:
+            double.tryParse(context.tree.element?.attributes['width'] ?? "") ??
+                (double.tryParse(
+                            context.tree.element?.attributes['height'] ?? "") ??
+                        150) *
+                    2,
+        height: double.tryParse(
+                context.tree.element?.attributes['height'] ?? "") ??
+            (double.tryParse(context.tree.element?.attributes['width'] ?? "") ??
+                    300) /
+                2,
+        child: CSSBoxWidget(
+          style: context.style,
+          childIsReplaced: true,
+          child: Directionality(
+            textDirection: TextDirection.ltr,
+            child: HtmlElementView(
+              viewType: createdViewId,
             ),
           ),
+        ),
       );
     });
 
