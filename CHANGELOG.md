@@ -1,23 +1,29 @@
 ## 3.0.0-alpha.6
 
- - **FIX**: fix textShadow color declaration handler.
- - **FIX**: ol use default style.
- - **FIX**: Crash when a tr tag includes text node.
- - **FEAT**: exposes fontFamilyFallback parameter.
+ - **FIX** #731 Resolve newline `<br>` issue
+ - **FIX** Align the baseline of inline content with the baseline of its parent flow, even if it has padding or borders
+ - **FIX** Improved fontSize inheritance when cascading styles
+ - **FIX** `auto` margins now work for any `Display.BLOCK` element.
+ - **FIX** `auto` width and height is now the default, rather than `null`
+ - **FIX** New CSSBoxWidget that handles calculations of child sizes for a more accurate HTML/CSS layout
+ - **BREAKING** New `Margin`, `Height`, and `Width` classes that allow `em`, `rem`, `px`, `auto`, and `%` values to be given
+ - **FEAT** Negative margins are now allowed
+ - **FIX** Updated default `p` and `h1-6` styles to use `em` for better font scaling
+ - **BREAKING** Package now requires Dart sdk >= Dart 2.17
 
-## [3.0.0-alpha.5] - June 9, 2022:
+## 3.0.0-alpha.5 - June 9, 2022:
 * Fixed hot reloads, thanks @arjenmels
 * Fixed link taps not working
 * Improvements in README
 
-## [3.0.0-alpha.3] - April 14, 2022:
+## 3.0.0-alpha.3 - April 14, 2022:
 * Fixed styling not being applied to list item markers
 * [video] Fixed crash when iframe or video tags used unsupported/incorrect height or width
 
-## [3.0.0-alpha.2] - January 5, 2022:
+## 3.0.0-alpha.2 - January 5, 2022:
 * **BREAKING** Full modularization using split packages; see our upgrade guide or use flutter_html_all 
 
-## [3.0.0-alpha.1] - December 21, 2021:
+## 3.0.0-alpha.1 - December 21, 2021:
 * **BREAKING** Reworked custom renders pending full modularation in 3.0.0
 * Extended support custom render when using SelectableHtml
 * Updated flutter_svg to 1.0.0
@@ -25,14 +31,14 @@
 * Automatic disposal of video and audio controllers
 * Fix block elements bottom spacing in table cells
 
-## [2.2.1] - December 8, 2021:
+## 2.2.1 - December 8, 2021:
 * Allow styling on ruby tags
 * Allow width/height/alignment styling on table/tr/td tags
 * Prevent images causing rebuilding and leaking memory
 * Fixes display of list items on iOS with font weights below 400
 * Prevent crash on negative margins or paddings
 
-## [2.2.0] - November 29, 2021:
+## 2.2.0 - November 29, 2021:
 * Explicitly declare multiplatform support
 * Extended and fixed list-style (marker) support
 * Basic support for height/width css properties
@@ -45,34 +51,34 @@
 * Prevent crash on empty <table> tag and tables with both colspan/rowspan
 * Prevent crash on use of negative margins in css
 
-## [2.1.5] - October 7, 2021:
+## 2.1.5 - October 7, 2021:
 * Ignore unsupported custom style selectors when using fromCss
 * Fix SVG tag usage inside tables
 * Properly fix regression in usage of line breaks
 
-## [2.1.4] - October 3, 2021:
+## 2.1.4 - October 3, 2021:
 * Fix regression in usage of line breaks in body being stripped
 
-## [2.1.3] - October 1, 2021:
+## 2.1.3 - October 1, 2021:
 * Update minimum versions of dependencies for Flutter 2.5 compatibility
 * Extended and fixed support for css shadow
 * Fix block tags with explicit whitespace from being stripped
 
-## [2.1.2] - September 2, 2021:
+## 2.1.2 - September 2, 2021:
 * Allow setting selectionControls with SelectableHtml
 * Fix onLinkTap not working with SelectableHtml
 * Don't crash when parsing unsupported :hover
 * Prevent endless loading when using animated images
 
-## [2.1.1] - July 28, 2021:
+## 2.1.1 - July 28, 2021:
 * Stable release with all 2.1.1-preview.X changes
 
-## [2.1.1-preview.0] - July 27, 2021:
+## 2.1.1-preview.0 - July 27, 2021:
 * Improves hr tag support
 * Fixes a leading whitespace issue
 * Fixes some crashes with CSS parsing
 
-## [2.1.0] - June 3, 2021:
+## 2.1.0 - June 3, 2021:
 * SelectableHtml widget (supporting a subset of tags) which allow text selection
 * Fixed shrinkWrap to actually shrink the horizontal space
 * Support style tags to apply styling from inline css
@@ -88,10 +94,10 @@
 * Updates external dependencies
 * Raised minimum Flutter version to 2.2.0
 
-## [2.0.0] - April 29, 2021:
+## 2.0.0 - April 29, 2021:
 * Stable release with all 2.0.0-nullsafety.X changes
 
-## [2.0.0-nullsafety.1] - April 29, 2021:
+## 2.0.0-nullsafety.1 - April 29, 2021:
 * Support basic MathML
 * Support inner links
 * Supply full context tree to custom render
@@ -105,7 +111,7 @@
 *  Fixed `failed assertion` error when tap-scrolling on any link
 * Updated dependencies
 
-## [2.0.0-nullsafety.0] - March 5, 2021:
+## 2.0.0-nullsafety.0 - March 5, 2021:
 * Nullsafety support
 * Official Flutter Web support
 * New features & fixes for lists:
@@ -118,7 +124,7 @@
 * Fixed `<audio>` on iOS ("_duration called on null" exception)
 * Updated dependencies
 
-## [1.3.0] - February 16, 2021:
+## 1.3.0 - February 16, 2021:
 * New image loading API
 * Image loading with request headers, from relative paths and custom loading widget
 * SVG image support from network or local assets
@@ -133,25 +139,25 @@
 * Fixed issue where iframes would not update when their `src`s changed in the HTML data
 * Updated dependencies for Flutter 1.26+
 
-## [1.2.0] - January 14, 2021:
+## 1.2.0 - January 14, 2021:
 * Support irregular table sizes
 * Allow for returning `null` from a customRender function to disable the widget
 
-## [1.1.1] - November 22, 2020:
+## 1.1.1 - November 22, 2020:
 * Update dependencies
 
-## [1.1.0] - November 22, 2020:
+## 1.1.0 - November 22, 2020:
 * Add support for inline styles
 * Update dependencies
 
-## [1.0.2] - August 8, 2020:
+## 1.0.2 - August 8, 2020:
 * Fix text scaling issues
 * Update dependencies
 
-## [1.0.1] - August 8, 2020:
+## 1.0.1 - August 8, 2020:
 * Fixed flutter_svg: ^0.18.0
 
-# [1.0.0]
+# 1.0.0
 * BREAKING CHANGES (see the [Migration Guide](https://github.com/Sub6Resources/flutter_html/wiki/1.0.0-Migration-Guide) for a full overview of breaking changes.):
   * The default parser has been completely rewritten and the RichText parser has been removed.
   * `useRichText` no longer is necessary (The new parser uses RichText under the hood)
