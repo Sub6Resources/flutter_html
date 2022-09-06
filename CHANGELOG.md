@@ -1,3 +1,7 @@
+## 3.0.0-alpha.8
+
+ - **FIX**: Add meta as dev dependency for flutter_html_svg.
+
 ## 3.0.0-alpha.7
 
  - **FIX**: Add meta as a dev dependency.
