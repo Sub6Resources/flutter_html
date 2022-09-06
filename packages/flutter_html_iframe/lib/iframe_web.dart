@@ -36,16 +36,17 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
                           context.tree.element?.attributes['width'] ?? "") ??
                       300) /
                   2,
-          child: ContainerSpan(
+          child: CSSBoxWidget(
             style: context.style,
-            renderContext: context,
-            containingBlockSize: Size.zero, //TODO this is incorrect
+            childIsReplaced: true,
             child: Directionality(
                 textDirection: TextDirection.ltr,
                 child: HtmlElementView(
                   viewType: createdViewId,
-                )),
-          ));
+                ),
+            ),
+          ),
+      );
     });
 
 String getRandString(int len) {

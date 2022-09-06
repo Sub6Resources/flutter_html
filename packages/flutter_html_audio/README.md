@@ -1,6 +1,6 @@
 # flutter_html_audio
 
-Audio widget for flutter_html.
+Audio extension for flutter_html.
 
 This package renders audio elements using the [`chewie_audio`](https://pub.dev/packages/chewie_audio) and the [`video_player`](https://pub.dev/packages/video_player) plugin.
 

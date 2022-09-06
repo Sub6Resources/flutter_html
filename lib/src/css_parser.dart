@@ -620,15 +620,15 @@ class ExpressionMapping {
 
   static FontSize? expressionToFontSize(css.Expression value) {
     if (value is css.NumberTerm) {
-      return FontSize(double.tryParse(value.text));
+      return FontSize(double.tryParse(value.text) ?? 16, Unit.px);
     } else if (value is css.PercentageTerm) {
-      return FontSize.percent(double.tryParse(value.text)!);
+      return FontSize(double.tryParse(value.text) ?? 100, Unit.percent);
     } else if (value is css.EmTerm) {
-      return FontSize.em(double.tryParse(value.text));
-    } else if (value is css.RemTerm) {
-      return FontSize.rem(double.tryParse(value.text)!);
+      return FontSize(double.tryParse(value.text) ?? 1, Unit.em);
+    // } else if (value is css.RemTerm) { TODO
+    //   return FontSize.rem(double.tryParse(value.text) ?? 1, Unit.em);
     } else if (value is css.LengthTerm) {
-      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')));
+      return FontSize(double.tryParse(value.text.replaceAll(new RegExp(r'\s+(\d+\.\d+)\s+'), '')) ?? 16);
     } else if (value is css.LiteralTerm) {
       switch (value.text) {
         case "xx-small":

@@ -1,6 +1,6 @@
 # flutter_html_video
 
-Video widget for flutter_html.
+Video extension for flutter_html.
 
 This package renders video elements using the [`chewie`](https://pub.dev/packages/chewie) and the [`video_player`](https://pub.dev/packages/video_player) plugin. 
 

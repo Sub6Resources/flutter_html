@@ -6,7 +6,6 @@ import 'package:csslib/parser.dart' as cssparser;
 import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
@@ -88,7 +87,7 @@ class HtmlParser extends StatelessWidget {
     StyledElement styledTree = styleTree(lexedTree, htmlData, style, onCssParseError);
 
     // Processing Step
-    StyledElement processedTree = processTree(styledTree);
+    StyledElement processedTree = processTree(styledTree, MediaQuery.of(context).devicePixelRatio);
 
     // Parsing Step
     InlineSpan parsedTree = parseTree(
@@ -301,14 +300,15 @@ class HtmlParser extends StatelessWidget {
   /// [processTree] optimizes the [StyledElement] tree so all [BlockElement]s are
   /// on the first level, redundant levels are collapsed, empty elements are
   /// removed, and specialty elements are processed.
-  static StyledElement processTree(StyledElement tree) {
+  static StyledElement processTree(StyledElement tree, double devicePixelRatio) {
     tree = _processInternalWhitespace(tree);
     tree = _processInlineWhitespace(tree);
     tree = _removeEmptyElements(tree);
+
+    tree = _calculateRelativeValues(tree, devicePixelRatio);
     tree = _processListCharacters(tree);
     tree = _processBeforesAndAfters(tree);
     tree = _collapseMargins(tree);
-    tree = _processFontSize(tree);
     return tree;
   }
 
@@ -648,7 +648,7 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  /// [collapseMargins] follows the specifications at https://www.w3.org/TR/CSS21/box.html#collapsing-margins
+  /// [collapseMargins] follows the specifications at https://www.w3.org/TR/CSS22/box.html#collapsing-margins
   /// for collapsing margins of block-level boxes. This prevents the doubling of margins between
   /// boxes, and makes for a more correct rendering of the html content.
   ///
@@ -662,7 +662,7 @@ class HtmlParser extends StatelessWidget {
     //Short circuit if we've reached a leaf of the tree
     if (tree.children.isEmpty) {
       // Handle case (4) from above.
-      if ((tree.style.height ?? 0) == 0) {
+      if (tree.style.height?.value == 0 && tree.style.height?.unit != Unit.auto) {
         tree.style.margin = tree.style.margin?.collapse() ?? Margins.zero;
       }
       return tree;
@@ -729,7 +729,7 @@ class HtmlParser extends StatelessWidget {
         final previousSiblingBottom =
             tree.children[i - 1].style.margin?.bottom?.value ?? 0;
         final thisTop = tree.children[i].style.margin?.top?.value ?? 0;
-        final newInternalMargin = max(previousSiblingBottom, thisTop) / 2;
+        final newInternalMargin = max(previousSiblingBottom, thisTop);
 
         if (tree.children[i - 1].style.margin == null) {
           tree.children[i - 1].style.margin =
@@ -798,21 +798,64 @@ class HtmlParser extends StatelessWidget {
     return tree;
   }
 
-  /// [_processFontSize] changes percent-based font sizes (negative numbers in this implementation)
-  /// to pixel-based font sizes.
-  static StyledElement _processFontSize(StyledElement tree) {
-    double? parentFontSize = tree.style.fontSize?.size ?? FontSize.medium.size;
+  /// [_calculateRelativeValues] converts rem values to px sizes and then
+  /// applies relative calculations
+  static StyledElement _calculateRelativeValues(StyledElement tree, double devicePixelRatio) {
+    double remSize = (tree.style.fontSize?.value ?? FontSize.medium.value);
 
-    tree.children.forEach((child) {
-      if ((child.style.fontSize?.size ?? parentFontSize)! < 0) {
-        child.style.fontSize =
-            FontSize(parentFontSize! * -child.style.fontSize!.size!);
-      }
+    //If the root element has a rem-based fontSize, then give it the default
+    // font size times the set rem value.
+    if(tree.style.fontSize?.unit == Unit.rem) {
+      tree.style.fontSize = FontSize(FontSize.medium.value * remSize);
+    }
 
-      _processFontSize(child);
-    });
+    _applyRelativeValuesRecursive(tree, remSize, devicePixelRatio);
+    tree.style.setRelativeValues(remSize, remSize / devicePixelRatio);
+
     return tree;
   }
+
+  /// This is the recursive worker function for [_calculateRelativeValues]
+  static void _applyRelativeValuesRecursive(StyledElement tree, double remFontSize, double devicePixelRatio) {
+    //When we get to this point, there should be a valid fontSize at every level.
+    assert(tree.style.fontSize != null);
+
+    final parentFontSize = tree.style.fontSize!.value;
+
+    tree.children.forEach((child) {
+
+      if(child.style.fontSize == null) {
+        child.style.fontSize = FontSize(parentFontSize);
+      } else {
+        switch(child.style.fontSize!.unit) {
+          case Unit.em:
+            child.style.fontSize = FontSize(parentFontSize * child.style.fontSize!.value);
+            break;
+          case Unit.percent:
+            child.style.fontSize = FontSize(parentFontSize * (child.style.fontSize!.value / 100.0));
+            break;
+          case Unit.rem:
+            child.style.fontSize = FontSize(remFontSize * child.style.fontSize!.value);
+            break;
+          case Unit.px:
+          case Unit.auto:
+            //Ignore
+            break;
+        }
+      }
+
+      // Note: it is necessary to scale down the emSize by the factor of
+      // devicePixelRatio since Flutter seems to calculates font sizes using
+      // physical pixels, but margins/padding using logical pixels.
+      final emSize = child.style.fontSize!.value / devicePixelRatio;
+
+      tree.style.setRelativeValues(remFontSize, emSize);
+
+      _applyRelativeValuesRecursive(child, remFontSize, devicePixelRatio);
+    });
+  }
+
+
 }
 
 /// The [RenderContext] is available when parsing the tree. It contains information

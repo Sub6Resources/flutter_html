@@ -197,49 +197,48 @@ StyledElement parseStyledElement(
       break;
     case "h1":
       styledElement.style = Style(
-        fontSize: FontSize.xxLarge,
+        fontSize: FontSize(2, Unit.em),
         fontWeight: FontWeight.bold,
-        margin: Margins.symmetric(vertical: 18.67),
+        margin: Margins.symmetric(vertical: 0.67, unit: Unit.em),
         display: Display.BLOCK,
       );
       break;
     case "h2":
       styledElement.style = Style(
-        fontSize: FontSize.xLarge,
+        fontSize: FontSize(1.5, Unit.em),
         fontWeight: FontWeight.bold,
-        margin: Margins.symmetric(vertical: 17.5),
+        margin: Margins.symmetric(vertical: 0.83, unit: Unit.em),
         display: Display.BLOCK,
       );
       break;
     case "h3":
       styledElement.style = Style(
-        fontSize: FontSize(16.38),
+        fontSize: FontSize(1.17, Unit.em),
         fontWeight: FontWeight.bold,
-        margin: Margins.symmetric(vertical: 16.5),
+        margin: Margins.symmetric(vertical: 1, unit: Unit.em),
         display: Display.BLOCK,
       );
       break;
     case "h4":
       styledElement.style = Style(
-        fontSize: FontSize.medium,
         fontWeight: FontWeight.bold,
-        margin: Margins.symmetric(vertical: 18.5),
+        margin: Margins.symmetric(vertical: 1.33, unit: Unit.em),
         display: Display.BLOCK,
       );
       break;
     case "h5":
       styledElement.style = Style(
-        fontSize: FontSize(11.62),
+        fontSize: FontSize(0.83, Unit.em),
         fontWeight: FontWeight.bold,
-        margin: Margins.symmetric(vertical: 19.25),
+        margin: Margins.symmetric(vertical: 1.67, unit: Unit.em),
         display: Display.BLOCK,
       );
       break;
     case "h6":
       styledElement.style = Style(
-        fontSize: FontSize(9.38),
+        fontSize: FontSize(0.67, Unit.em),
         fontWeight: FontWeight.bold,
-        margin: Margins.symmetric(vertical: 22),
+        margin: Margins.symmetric(vertical: 2.33, unit: Unit.em),
         display: Display.BLOCK,
       );
       break;

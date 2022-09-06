@@ -18,6 +18,8 @@ export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
+//export css_box_widget for use in custom render.
+export 'package:flutter_html/src/css_box_widget.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 

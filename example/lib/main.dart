@@ -307,7 +307,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   ? FlutterLogoStyle.horizontal
                   : FlutterLogoStyle.markOnly,
               textColor: context.style.color!,
-              size: context.style.fontSize!.size! * 5,
+              size: context.style.fontSize!.value * 5,
             )),
             tagMatcher("table"): CustomRender.widget(widget: (context, buildChildren) => SingleChildScrollView(
               scrollDirection: Axis.horizontal,

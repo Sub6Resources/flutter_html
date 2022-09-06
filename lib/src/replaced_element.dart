@@ -78,7 +78,7 @@ class RubyElement extends ReplacedElement {
   Widget toWidget(RenderContext context) {
     StyledElement? node;
     List<Widget> widgets = <Widget>[];
-    final rubySize = context.parser.style['rt']?.fontSize?.size ?? max(9.0, context.style.fontSize!.size! / 2);
+    final rubySize = context.parser.style['rt']?.fontSize?.value ?? max(9.0, context.style.fontSize!.value / 2);
     final rubyYPos = rubySize + rubySize / 2;
     List<StyledElement> children = [];
     context.tree.children.forEachIndexed((index, element) {

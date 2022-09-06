@@ -54,9 +54,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-      constraints: BoxConstraints(),
     ),
-    BoxConstraints(),
   );
   print(tree.toString());
 
@@ -82,9 +80,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-      constraints: BoxConstraints(),
     ),
-    BoxConstraints()
   );
   print(tree.toString());
 
@@ -108,9 +104,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-      constraints: BoxConstraints(),
     ),
-    BoxConstraints()
   );
   print(tree.toString());
 
@@ -136,9 +130,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-      constraints: BoxConstraints(),
     ),
-    BoxConstraints(),
   );
   print(tree.toString());
 

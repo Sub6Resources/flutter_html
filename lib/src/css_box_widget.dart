@@ -67,7 +67,7 @@ class CSSBoxWidget extends StatelessWidget {
       paddingSize: style.padding?.collapsedSize ?? Size.zero,
       borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
       margins: style.margin ?? Margins.zero,
-      display: style.display ?? Display.BLOCK,
+      display: style.display ?? Display.INLINE,
       childIsReplaced: childIsReplaced,
       emValue: _calculateEmValue(style, context),
       textDirection: _checkTextDirection(context, textDirection),
@@ -691,6 +691,7 @@ extension Normalize on Dimension {
         return;
       case Unit.px:
       case Unit.auto:
+      case Unit.percent:
         return;
     }
   }
@@ -698,7 +699,7 @@ extension Normalize on Dimension {
 
 double _calculateEmValue(Style style, BuildContext buildContext) {
   //TODO is there a better value for this?
-  return (style.fontSize?.size ?? 16) *
+  return (style.fontSize?.emValue ?? 16) *
       MediaQuery.textScaleFactorOf(buildContext) *
       MediaQuery.of(buildContext).devicePixelRatio;
 }

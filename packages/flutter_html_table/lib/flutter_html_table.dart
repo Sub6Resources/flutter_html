@@ -24,8 +24,8 @@ CustomRender tableRender() =>
           color: context.style.backgroundColor,
           border: context.style.border,
         ),
-        width: context.style.width,
-        height: context.style.height,
+        width: context.style.width?.value, //TODO calculate actual value
+        height: context.style.height?.value, //TODO calculate actual value
         child: LayoutBuilder(
             builder: (_, constraints) => _layoutCells(context, constraints)),
       );
@@ -116,24 +116,16 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
               columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
         }
         cells.add(GridPlacement(
-          child: Container(
-            width: child.style.width ?? double.infinity,
-            height: child.style.height,
-            padding: child.style.padding?.nonNegative ??
-                row.style.padding?.nonNegative,
-            decoration: BoxDecoration(
-              color: child.style.backgroundColor ?? row.style.backgroundColor,
-              border: child.style.border ?? row.style.border,
-            ),
+          child: CSSBoxWidget(
+            style: child.style.merge(row.style), //TODO padding/decoration(color/border)
             child: SizedBox.expand(
               child: Container(
                 alignment: child.style.alignment ??
                     context.style.alignment ??
                     Alignment.centerLeft,
-                child: StyledText(
-                  textSpan: context.parser.parseTree(context, child),
-                  style: child.style,
-                  renderContext: context,
+                child: CSSBoxWidget.withInlineSpanChildren(
+                  children: [context.parser.parseTree(context, child)],
+                  style: child.style, //TODO updated this. Does it work?
                 ),
               ),
             ),

@@ -6,7 +6,6 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 
@@ -576,9 +575,9 @@ final _dataUriFormat = RegExp(
 double _getVerticalOffset(StyledElement tree) {
   switch (tree.style.verticalAlign) {
     case VerticalAlign.SUB:
-      return tree.style.fontSize!.size! / 2.5;
+      return tree.style.fontSize!.value / 2.5;
     case VerticalAlign.SUPER:
-      return tree.style.fontSize!.size! / -2.5;
+      return tree.style.fontSize!.value / -2.5;
     default:
       return 0;
   }
