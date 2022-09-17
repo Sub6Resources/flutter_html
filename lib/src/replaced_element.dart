@@ -112,9 +112,8 @@ class RubyElement extends ReplacedElement {
               child: Center(
                 child: Transform(
                   transform: Matrix4.translationValues(0, -(rubyYPos), 0),
-                  child: CSSBoxWidget(
+                  child: CssBoxWidget(
                     style: c.style,
-                    //TODO do any other attributes apply?
                     child: Text(
                       c.element!.innerHtml,
                       style: c.style
@@ -125,8 +124,7 @@ class RubyElement extends ReplacedElement {
                 ),
               ),
             ),
-            CSSBoxWidget(
-              //TODO do any other styles apply? Does ruby still work?
+            CssBoxWidget(
               style: context.style,
               child: node is TextContentElement
                   ? Text(

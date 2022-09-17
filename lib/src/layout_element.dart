@@ -154,13 +154,13 @@ class DetailsContentElement extends LayoutElement {
         expandedAlignment: Alignment.centerLeft,
         title: elementList.isNotEmpty == true &&
                 elementList.first.localName == "summary"
-            ? CSSBoxWidget.withInlineSpanChildren(
+            ? CssBoxWidget.withInlineSpanChildren(
                 children: firstChild == null ? [] : [firstChild],
                 style: style,
               )
             : Text("Details"),
         children: [
-          CSSBoxWidget.withInlineSpanChildren(
+          CssBoxWidget.withInlineSpanChildren(
             children: getChildren(
                 childrenList,
                 context,

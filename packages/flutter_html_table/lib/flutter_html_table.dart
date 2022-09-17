@@ -116,7 +116,7 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
               columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
         }
         cells.add(GridPlacement(
-          child: CSSBoxWidget(
+          child: CssBoxWidget(
             style: child.style
                 .merge(row.style), //TODO padding/decoration(color/border)
             child: SizedBox.expand(
@@ -124,7 +124,7 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
                 alignment: child.style.alignment ??
                     context.style.alignment ??
                     Alignment.centerLeft,
-                child: CSSBoxWidget.withInlineSpanChildren(
+                child: CssBoxWidget.withInlineSpanChildren(
                   children: [context.parser.parseTree(context, child)],
                   style: child.style, //TODO updated this. Does it work?
                 ),

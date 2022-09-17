@@ -131,7 +131,7 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
       return WidgetSpan(
         alignment: PlaceholderAlignment.baseline,
         baseline: TextBaseline.alphabetic,
-        child: CSSBoxWidget.withInlineSpanChildren(
+        child: CssBoxWidget.withInlineSpanChildren(
           key: context.key,
           style: style ?? context.tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -157,7 +157,7 @@ CustomRender listElementRender(
         {Style? style, Widget? child, List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(
       inlineSpan: (context, buildChildren) => WidgetSpan(
-        child: CSSBoxWidget(
+        child: CssBoxWidget(
           key: context.key,
           style: style ?? context.tree.style,
           shrinkWrap: context.parser.shrinkWrap,
@@ -206,7 +206,7 @@ CustomRender listElementRender(
                               ? 10.0
                               : 0.0)
                       : EdgeInsets.zero,
-                  child: CSSBoxWidget.withInlineSpanChildren(
+                  child: CssBoxWidget.withInlineSpanChildren(
                     children: _getListElementChildren(
                         style?.listStylePosition ??
                             context.tree.style.listStylePosition,
@@ -472,7 +472,7 @@ CustomRender verticalAlignRender(
                 key: context.key,
                 offset: Offset(
                     0, verticalOffset ?? _getVerticalOffset(context.tree)),
-                child: CSSBoxWidget.withInlineSpanChildren(
+                child: CssBoxWidget.withInlineSpanChildren(
                   children: children ?? buildChildren.call(),
                   style: context.style,
                 ),

@@ -101,7 +101,7 @@ class HtmlParser extends StatelessWidget {
       processedTree,
     );
 
-    return CSSBoxWidget.withInlineSpanChildren(
+    return CssBoxWidget.withInlineSpanChildren(
       style: processedTree.style,
       children: [parsedTree],
       selectable: selectable,
@@ -364,7 +364,7 @@ class HtmlParser extends StatelessWidget {
               .call(newContext, buildChildren);
         }
         return WidgetSpan(
-          child: CSSBoxWidget(
+          child: CssBoxWidget(
             style: tree.style,
             shrinkWrap: newContext.parser.shrinkWrap,
             child:

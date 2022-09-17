@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
 
-class CSSBoxWidget extends StatelessWidget {
-  CSSBoxWidget({
+class CssBoxWidget extends StatelessWidget {
+  CssBoxWidget({
     this.key,
     required this.child,
     required this.style,
@@ -15,7 +15,7 @@ class CSSBoxWidget extends StatelessWidget {
   }) : super(key: key);
 
   /// Generates a CSSBoxWidget that contains a list of InlineSpan children.
-  CSSBoxWidget.withInlineSpanChildren({
+  CssBoxWidget.withInlineSpanChildren({
     this.key,
     required List<InlineSpan> children,
     required this.style,
@@ -696,7 +696,6 @@ extension Normalize on Dimension {
 }
 
 double _calculateEmValue(Style style, BuildContext buildContext) {
-  //TODO is there a better value for this?
   return (style.fontSize?.emValue ?? 16) *
       MediaQuery.textScaleFactorOf(buildContext) *
       MediaQuery.of(buildContext).devicePixelRatio;

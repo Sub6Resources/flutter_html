@@ -35,7 +35,7 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
             (double.tryParse(context.tree.element?.attributes['width'] ?? "") ??
                     300) /
                 2,
-        child: CSSBoxWidget(
+        child: CssBoxWidget(
           style: context.style,
           childIsReplaced: true,
           child: Directionality(
