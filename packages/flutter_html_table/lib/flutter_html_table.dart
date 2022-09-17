@@ -9,19 +9,12 @@ import 'package:flutter_html/flutter_html.dart';
 /// The CustomRender function that will render the <table> HTML tag
 CustomRender tableRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
-      return Container(
+      return CssBoxWidget(
         key: context.key,
-        margin: context.style.margin?.nonNegative,
-        padding: context.style.padding?.nonNegative,
-        alignment: context.style.alignment,
-        decoration: BoxDecoration(
-          color: context.style.backgroundColor,
-          border: context.style.border,
-        ),
-        width: context.style.width,
-        height: context.style.height,
+        style: context.style,
         child: LayoutBuilder(
-            builder: (_, constraints) => _layoutCells(context, constraints)),
+            builder: (_, constraints) => _layoutCells(context, constraints),
+        ),
       );
     });
 
@@ -110,24 +103,17 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
               columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
         }
         cells.add(GridPlacement(
-          child: Container(
-            width: child.style.width ?? double.infinity,
-            height: child.style.height,
-            padding: child.style.padding?.nonNegative ??
-                row.style.padding?.nonNegative,
-            decoration: BoxDecoration(
-              color: child.style.backgroundColor ?? row.style.backgroundColor,
-              border: child.style.border ?? row.style.border,
-            ),
+          child: CssBoxWidget(
+            style: child.style
+                .merge(row.style), //TODO padding/decoration(color/border)
             child: SizedBox.expand(
               child: Container(
                 alignment: child.style.alignment ??
                     context.style.alignment ??
                     Alignment.centerLeft,
-                child: StyledText(
-                  textSpan: context.parser.parseTree(context, child),
-                  style: child.style,
-                  renderContext: context,
+                child: CssBoxWidget.withInlineSpanChildren(
+                  children: [context.parser.parseTree(context, child)],
+                  style: child.style, //TODO updated this. Does it work?
                 ),
               ),
             ),

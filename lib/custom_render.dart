@@ -6,6 +6,7 @@ import 'dart:convert';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
@@ -15,7 +16,8 @@ CustomRenderMatcher tagMatcher(String tag) => (context) {
     };
 
 CustomRenderMatcher blockElementMatcher() => (context) {
-      return context.tree.style.display == Display.BLOCK &&
+      return (context.tree.style.display == Display.BLOCK ||
+              context.tree.style.display == Display.INLINE_BLOCK) &&
           (context.tree.children.isNotEmpty ||
               context.tree.element?.localName == "hr");
     };
@@ -116,10 +118,6 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
           children: (children as List<TextSpan>?) ??
               context.tree.children
                   .expandIndexed((i, childTree) => [
-                        if (childTree.style.display == Display.BLOCK &&
-                            i > 0 &&
-                            context.tree.children[i - 1] is ReplacedElement)
-                          TextSpan(text: "\n"),
                         context.parser.parseTree(context, childTree),
                         if (i != context.tree.children.length - 1 &&
                             childTree.style.display == Display.BLOCK &&
@@ -131,117 +129,109 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
         );
       }
       return WidgetSpan(
-          child: ContainerSpan(
-        key: context.key,
-        newContext: context,
-        style: style ?? context.tree.style,
-        shrinkWrap: context.parser.shrinkWrap,
-        children: children ??
-            context.tree.children
-                .expandIndexed((i, childTree) => [
-                      if (context.parser.shrinkWrap &&
-                          childTree.style.display == Display.BLOCK &&
-                          i > 0 &&
-                          context.tree.children[i - 1] is ReplacedElement)
-                        TextSpan(text: "\n"),
-                      context.parser.parseTree(context, childTree),
-                      if (i != context.tree.children.length - 1 &&
-                          childTree.style.display == Display.BLOCK &&
-                          childTree.element?.localName != "html" &&
-                          childTree.element?.localName != "body")
-                        TextSpan(text: "\n"),
-                    ])
-                .toList(),
-      ));
+        alignment: PlaceholderAlignment.baseline,
+        baseline: TextBaseline.alphabetic,
+        child: CssBoxWidget.withInlineSpanChildren(
+          key: context.key,
+          style: style ?? context.tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
+          childIsReplaced:
+              REPLACED_EXTERNAL_ELEMENTS.contains(context.tree.name),
+          children: children ??
+              context.tree.children
+                  .expandIndexed((i, childTree) => [
+                        context.parser.parseTree(context, childTree),
+                        //TODO can this newline be added in a different step?
+                        if (i != context.tree.children.length - 1 &&
+                            childTree.style.display == Display.BLOCK &&
+                            childTree.element?.localName != "html" &&
+                            childTree.element?.localName != "body")
+                          TextSpan(text: "\n"),
+                      ])
+                  .toList(),
+        ),
+      );
     });
 
 CustomRender listElementRender(
         {Style? style, Widget? child, List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(
-        inlineSpan: (context, buildChildren) => WidgetSpan(
-              child: ContainerSpan(
-                key: context.key,
-                newContext: context,
-                style: style ?? context.tree.style,
-                shrinkWrap: context.parser.shrinkWrap,
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  textDirection:
-                      style?.direction ?? context.tree.style.direction,
-                  children: [
-                    (style?.listStylePosition ??
-                                context.tree.style.listStylePosition) ==
-                            ListStylePosition.OUTSIDE
-                        ? Padding(
-                            padding: style?.padding?.nonNegative ??
-                                context.tree.style.padding?.nonNegative ??
-                                EdgeInsets.only(
-                                    left: (style?.direction ??
-                                                context.tree.style.direction) !=
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0,
-                                    right: (style?.direction ??
-                                                context.tree.style.direction) ==
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0),
-                            child: style?.markerContent ??
-                                context.style.markerContent)
-                        : Container(height: 0, width: 0),
-                    Text("\u0020",
-                        textAlign: TextAlign.right,
-                        style: TextStyle(fontWeight: FontWeight.w400)),
-                    Expanded(
-                        child: Padding(
-                            padding: (style?.listStylePosition ??
-                                        context.tree.style.listStylePosition) ==
-                                    ListStylePosition.INSIDE
-                                ? EdgeInsets.only(
-                                    left: (style?.direction ??
-                                                context.tree.style.direction) !=
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0,
-                                    right: (style?.direction ??
-                                                context.tree.style.direction) ==
-                                            TextDirection.rtl
-                                        ? 10.0
-                                        : 0.0)
-                                : EdgeInsets.zero,
-                            child: StyledText(
-                              textSpan: TextSpan(
-                                children: _getListElementChildren(
-                                    style?.listStylePosition ??
-                                        context.tree.style.listStylePosition,
-                                    buildChildren)
-                                  ..insertAll(
-                                      0,
-                                      context.tree.style.listStylePosition ==
-                                              ListStylePosition.INSIDE
-                                          ? [
-                                              WidgetSpan(
-                                                  alignment:
-                                                      PlaceholderAlignment
-                                                          .middle,
-                                                  child: style?.markerContent ??
-                                                      context.style
-                                                          .markerContent ??
-                                                      Container(
-                                                          height: 0, width: 0))
-                                            ]
-                                          : []),
-                                style: style?.generateTextStyle() ??
-                                    context.style.generateTextStyle(),
-                              ),
-                              style: style ?? context.style,
-                              renderContext: context,
-                            )))
-                  ],
+      inlineSpan: (context, buildChildren) => WidgetSpan(
+        child: CssBoxWidget(
+          key: context.key,
+          style: style ?? context.tree.style,
+          shrinkWrap: context.parser.shrinkWrap,
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            textDirection: style?.direction ?? context.tree.style.direction,
+            children: [
+              (style?.listStylePosition ??
+                          context.tree.style.listStylePosition) ==
+                      ListStylePosition.OUTSIDE
+                  ? Padding(
+                      padding: style?.padding?.nonNegative ??
+                          context.tree.style.padding?.nonNegative ??
+                          EdgeInsets.only(
+                              left: (style?.direction ??
+                                          context.tree.style.direction) !=
+                                      TextDirection.rtl
+                                  ? 10.0
+                                  : 0.0,
+                              right: (style?.direction ??
+                                          context.tree.style.direction) ==
+                                      TextDirection.rtl
+                                  ? 10.0
+                                  : 0.0),
+                      child:
+                          style?.markerContent ?? context.style.markerContent)
+                  : Container(height: 0, width: 0),
+              Text("\u0020",
+                  textAlign: TextAlign.right,
+                  style: TextStyle(fontWeight: FontWeight.w400)),
+              Expanded(
+                child: Padding(
+                  padding: (style?.listStylePosition ??
+                              context.tree.style.listStylePosition) ==
+                          ListStylePosition.INSIDE
+                      ? EdgeInsets.only(
+                          left: (style?.direction ??
+                                      context.tree.style.direction) !=
+                                  TextDirection.rtl
+                              ? 10.0
+                              : 0.0,
+                          right: (style?.direction ??
+                                      context.tree.style.direction) ==
+                                  TextDirection.rtl
+                              ? 10.0
+                              : 0.0)
+                      : EdgeInsets.zero,
+                  child: CssBoxWidget.withInlineSpanChildren(
+                    children: _getListElementChildren(
+                        style?.listStylePosition ??
+                            context.tree.style.listStylePosition,
+                        buildChildren)
+                      ..insertAll(
+                          0,
+                          context.tree.style.listStylePosition ==
+                                  ListStylePosition.INSIDE
+                              ? [
+                                  WidgetSpan(
+                                      alignment: PlaceholderAlignment.middle,
+                                      child: style?.markerContent ??
+                                          context.style.markerContent ??
+                                          Container(height: 0, width: 0))
+                                ]
+                              : []),
+                    style: style ?? context.style,
+                  ),
                 ),
               ),
-            ));
+            ],
+          ),
+        ),
+      ),
+    );
 
 CustomRender replacedElementRender(
         {PlaceholderAlignment? alignment,
@@ -482,14 +472,9 @@ CustomRender verticalAlignRender(
                 key: context.key,
                 offset: Offset(
                     0, verticalOffset ?? _getVerticalOffset(context.tree)),
-                child: StyledText(
-                  textSpan: TextSpan(
-                    style: style?.generateTextStyle() ??
-                        context.style.generateTextStyle(),
-                    children: children ?? buildChildren.call(),
-                  ),
+                child: CssBoxWidget.withInlineSpanChildren(
+                  children: children ?? buildChildren.call(),
                   style: context.style,
-                  renderContext: context,
                 ),
               ),
             ));
@@ -512,19 +497,21 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
                   .toList(),
             ));
 
-final Map<CustomRenderMatcher, CustomRender> defaultRenders = {
-  blockElementMatcher(): blockElementRender(),
-  listElementMatcher(): listElementRender(),
-  textContentElementMatcher(): textContentElementRender(),
-  dataUriMatcher(): base64ImageRender(),
-  assetUriMatcher(): assetImageRender(),
-  networkSourceMatcher(): networkImageRender(),
-  replacedElementMatcher(): replacedElementRender(),
-  interactableElementMatcher(): interactableElementRender(),
-  layoutElementMatcher(): layoutElementRender(),
-  verticalAlignMatcher(): verticalAlignRender(),
-  fallbackMatcher(): fallbackRender(),
-};
+Map<CustomRenderMatcher, CustomRender> generateDefaultRenders() {
+  return {
+    blockElementMatcher(): blockElementRender(),
+    listElementMatcher(): listElementRender(),
+    textContentElementMatcher(): textContentElementRender(),
+    dataUriMatcher(): base64ImageRender(),
+    assetUriMatcher(): assetImageRender(),
+    networkSourceMatcher(): networkImageRender(),
+    replacedElementMatcher(): replacedElementRender(),
+    interactableElementMatcher(): interactableElementRender(),
+    layoutElementMatcher(): layoutElementRender(),
+    verticalAlignMatcher(): verticalAlignRender(),
+    fallbackMatcher(): fallbackRender(),
+  };
+}
 
 List<InlineSpan> _getListElementChildren(
     ListStylePosition? position, Function() buildChildren) {
@@ -585,9 +572,9 @@ final _dataUriFormat = RegExp(
 double _getVerticalOffset(StyledElement tree) {
   switch (tree.style.verticalAlign) {
     case VerticalAlign.SUB:
-      return tree.style.fontSize!.size! / 2.5;
+      return tree.style.fontSize!.value / 2.5;
     case VerticalAlign.SUPER:
-      return tree.style.fontSize!.size! / -2.5;
+      return tree.style.fontSize!.value / -2.5;
     default:
       return 0;
   }

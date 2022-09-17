@@ -4,6 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 
+//Export Style value-unit APIs
+export 'package:flutter_html/src/style/margin.dart';
+export 'package:flutter_html/src/style/length.dart';
+export 'package:flutter_html/src/style/size.dart';
+export 'package:flutter_html/src/style/fontsize.dart';
+export 'package:flutter_html/src/style/lineheight.dart';
+
 ///This class represents all the available CSS attributes
 ///for this package.
 class Style {
@@ -37,13 +44,11 @@ class Style {
   /// Default: Theme.of(context).style.textTheme.body1.fontFamily
   String? fontFamily;
 
-
   /// The list of font families to fall back on when a glyph cannot be found in default font family.
   ///
   /// Inherited: yes,
   /// Default: null
   List<String>? fontFamilyFallback;
-
 
   /// CSS attribute "`font-feature-settings`"
   ///
@@ -72,8 +77,8 @@ class Style {
   /// CSS attribute "`height`"
   ///
   /// Inherited: no,
-  /// Default: Unspecified (null),
-  double? height;
+  /// Default: Height.auto(),
+  Height? height;
 
   /// CSS attribute "`letter-spacing`"
   ///
@@ -103,7 +108,7 @@ class Style {
   ///
   /// Inherited: no,
   /// Default: EdgeInsets.zero
-  EdgeInsets? margin;
+  Margins? margin;
 
   /// CSS attribute "`text-align`"
   ///
@@ -159,8 +164,8 @@ class Style {
   /// CSS attribute "`width`"
   ///
   /// Inherited: no,
-  /// Default: unspecified (null)
-  double? width;
+  /// Default: Width.auto()
+  Width? width;
 
   /// CSS attribute "`word-spacing`"
   ///
@@ -245,16 +250,17 @@ class Style {
   }
 
   static Map<String, Style> fromThemeData(ThemeData theme) => {
-    'h1': Style.fromTextStyle(theme.textTheme.headline1!),
-    'h2': Style.fromTextStyle(theme.textTheme.headline2!),
-    'h3': Style.fromTextStyle(theme.textTheme.headline3!),
-    'h4': Style.fromTextStyle(theme.textTheme.headline4!),
-    'h5': Style.fromTextStyle(theme.textTheme.headline5!),
-    'h6': Style.fromTextStyle(theme.textTheme.headline6!),
-    'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
-  };
+        'h1': Style.fromTextStyle(theme.textTheme.headline1!),
+        'h2': Style.fromTextStyle(theme.textTheme.headline2!),
+        'h3': Style.fromTextStyle(theme.textTheme.headline3!),
+        'h4': Style.fromTextStyle(theme.textTheme.headline4!),
+        'h5': Style.fromTextStyle(theme.textTheme.headline5!),
+        'h6': Style.fromTextStyle(theme.textTheme.headline6!),
+        'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
+      };
 
-  static Map<String, Style> fromCss(String css, OnCssParseError? onCssParseError) {
+  static Map<String, Style> fromCss(
+      String css, OnCssParseError? onCssParseError) {
     final declarations = parseExternalCss(css, onCssParseError);
     Map<String, Style> styleMap = {};
     declarations.forEach((key, value) {
@@ -274,7 +280,7 @@ class Style {
       fontFamily: fontFamily,
       fontFamilyFallback: fontFamilyFallback,
       fontFeatures: fontFeatureSettings,
-      fontSize: fontSize?.size,
+      fontSize: fontSize?.value,
       fontStyle: fontStyle,
       fontWeight: fontWeight,
       letterSpacing: letterSpacing,
@@ -311,7 +317,7 @@ class Style {
       padding: other.padding,
       //TODO merge EdgeInsets
       margin: other.margin,
-      //TODO merge EdgeInsets
+      //TODO merge Margins
       textAlign: other.textAlign,
       textDecoration: other.textDecoration,
       textDecorationColor: other.textDecorationColor,
@@ -336,18 +342,20 @@ class Style {
   }
 
   Style copyOnlyInherited(Style child) {
-    FontSize? finalFontSize = child.fontSize != null ?
-      fontSize != null && child.fontSize?.units == "em" ?
-        FontSize(child.fontSize!.size! * fontSize!.size!) : child.fontSize
-      : fontSize != null && fontSize!.size! < 0 ?
-        FontSize.percent(100) : fontSize;
-    LineHeight? finalLineHeight = child.lineHeight != null ?
-      child.lineHeight?.units == "length" ?
-        LineHeight(child.lineHeight!.size! / (finalFontSize == null ? 14 : finalFontSize.size!) * 1.2) : child.lineHeight
-      : lineHeight;
+    FontSize? finalFontSize = FontSize.inherit(fontSize, child.fontSize);
+
+    LineHeight? finalLineHeight = child.lineHeight != null
+        ? child.lineHeight?.units == "length"
+            ? LineHeight(child.lineHeight!.size! /
+                (finalFontSize == null ? 14 : finalFontSize.value) *
+                1.2)
+            : child.lineHeight
+        : lineHeight;
+
     return child.copyWith(
-      backgroundColor: child.backgroundColor != Colors.transparent ?
-        child.backgroundColor : backgroundColor,
+      backgroundColor: child.backgroundColor != Colors.transparent
+          ? child.backgroundColor
+          : backgroundColor,
       color: child.color ?? color,
       direction: child.direction ?? direction,
       display: display == Display.NONE ? display : child.display,
@@ -362,9 +370,10 @@ class Style {
       listStyleType: child.listStyleType ?? listStyleType,
       listStylePosition: child.listStylePosition ?? listStylePosition,
       textAlign: child.textAlign ?? textAlign,
-      textDecoration: TextDecoration.combine(
-          [child.textDecoration ?? TextDecoration.none,
-            textDecoration ?? TextDecoration.none]),
+      textDecoration: TextDecoration.combine([
+        child.textDecoration ?? TextDecoration.none,
+        textDecoration ?? TextDecoration.none,
+      ]),
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
@@ -385,13 +394,13 @@ class Style {
     FontSize? fontSize,
     FontStyle? fontStyle,
     FontWeight? fontWeight,
-    double? height,
+    Height? height,
     LineHeight? lineHeight,
     double? letterSpacing,
     ListStyleType? listStyleType,
     ListStylePosition? listStylePosition,
     EdgeInsets? padding,
-    EdgeInsets? margin,
+    Margins? margin,
     TextAlign? textAlign,
     TextDecoration? textDecoration,
     Color? textDecorationColor,
@@ -400,7 +409,7 @@ class Style {
     List<Shadow>? textShadow,
     VerticalAlign? verticalAlign,
     WhiteSpace? whiteSpace,
-    double? width,
+    Width? width,
     double? wordSpacing,
     String? before,
     String? after,
@@ -462,7 +471,8 @@ class Style {
     this.fontFamily = textStyle.fontFamily;
     this.fontFamilyFallback = textStyle.fontFamilyFallback;
     this.fontFeatureSettings = textStyle.fontFeatures;
-    this.fontSize = FontSize(textStyle.fontSize);
+    this.fontSize =
+        textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null;
     this.fontStyle = textStyle.fontStyle;
     this.fontWeight = textStyle.fontWeight;
     this.letterSpacing = textStyle.letterSpacing;
@@ -470,6 +480,63 @@ class Style {
     this.wordSpacing = textStyle.wordSpacing;
     this.lineHeight = LineHeight(textStyle.height ?? 1.2);
     this.textTransform = TextTransform.none;
+  }
+
+  /// Sets any dimensions set to rem or em to the computed size
+  void setRelativeValues(double remValue, double emValue) {
+    if (width?.unit == Unit.rem) {
+      width = Width(width!.value * remValue);
+    } else if (width?.unit == Unit.em) {
+      width = Width(width!.value * emValue);
+    }
+
+    if (height?.unit == Unit.rem) {
+      height = Height(height!.value * remValue);
+    } else if (height?.unit == Unit.em) {
+      height = Height(height!.value * emValue);
+    }
+
+    if (fontSize?.unit == Unit.rem) {
+      fontSize = FontSize(fontSize!.value * remValue);
+    } else if (fontSize?.unit == Unit.em) {
+      fontSize = FontSize(fontSize!.value * emValue);
+    }
+
+    Margin? marginLeft;
+    Margin? marginTop;
+    Margin? marginRight;
+    Margin? marginBottom;
+
+    if (margin?.left?.unit == Unit.rem) {
+      marginLeft = Margin(margin!.left!.value * remValue);
+    } else if (margin?.left?.unit == Unit.em) {
+      marginLeft = Margin(margin!.left!.value * emValue);
+    }
+
+    if (margin?.top?.unit == Unit.rem) {
+      marginTop = Margin(margin!.top!.value * remValue);
+    } else if (margin?.top?.unit == Unit.em) {
+      marginTop = Margin(margin!.top!.value * emValue);
+    }
+
+    if (margin?.right?.unit == Unit.rem) {
+      marginRight = Margin(margin!.right!.value * remValue);
+    } else if (margin?.right?.unit == Unit.em) {
+      marginRight = Margin(margin!.right!.value * emValue);
+    }
+
+    if (margin?.bottom?.unit == Unit.rem) {
+      marginBottom = Margin(margin!.bottom!.value * remValue);
+    } else if (margin?.bottom?.unit == Unit.em) {
+      marginBottom = Margin(margin!.bottom!.value * emValue);
+    }
+
+    margin = margin?.copyWith(
+      left: marginLeft,
+      top: marginTop,
+      right: marginRight,
+      bottom: marginBottom,
+    );
   }
 }
 
@@ -481,67 +548,6 @@ enum Display {
   NONE,
 }
 
-class FontSize {
-  final double? size;
-  final String units;
-
-  const FontSize(this.size, {this.units = ""});
-
-  /// A percentage of the parent style's font size.
-  factory FontSize.percent(double percent) {
-    return FontSize(percent / -100.0, units: "%");
-  }
-
-  factory FontSize.em(double? em) {
-    return FontSize(em, units: "em");
-  }
-
-  factory FontSize.rem(double rem) {
-    return FontSize(rem * 16 - 2, units: "rem");
-  }
-  // These values are calculated based off of the default (`medium`)
-  // being 14px.
-  //
-  // TODO(Sub6Resources): This seems to override Flutter's accessibility text scaling.
-  //
-  // Negative values are computed during parsing to be a percentage of
-  // the parent style's font size.
-  static const xxSmall = FontSize(7.875);
-  static const xSmall = FontSize(8.75);
-  static const small = FontSize(11.375);
-  static const medium = FontSize(14.0);
-  static const large = FontSize(15.75);
-  static const xLarge = FontSize(21.0);
-  static const xxLarge = FontSize(28.0);
-  static const smaller = FontSize(-0.83);
-  static const larger = FontSize(-1.2);
-}
-
-class LineHeight {
-  final double? size;
-  final String units;
-
-  const LineHeight(this.size, {this.units = ""});
-
-  factory LineHeight.percent(double percent) {
-    return LineHeight(percent / 100.0 * 1.2, units: "%");
-  }
-
-  factory LineHeight.em(double em) {
-    return LineHeight(em * 1.2, units: "em");
-  }
-
-  factory LineHeight.rem(double rem) {
-    return LineHeight(rem * 1.2, units: "rem");
-  }
-
-  factory LineHeight.number(double num) {
-    return LineHeight(num * 1.2, units: "number");
-  }
-
-  static const normal = LineHeight(1.2);
-}
-
 class ListStyleType {
   final String text;
   final String type;
@@ -549,9 +555,11 @@ class ListStyleType {
 
   const ListStyleType(this.text, {this.type = "marker", this.widget});
 
-  factory ListStyleType.fromImage(String url) => ListStyleType(url, type: "image");
+  factory ListStyleType.fromImage(String url) =>
+      ListStyleType(url, type: "image");
 
-  factory ListStyleType.fromWidget(Widget widget) => ListStyleType("", widget: widget, type: "widget");
+  factory ListStyleType.fromWidget(Widget widget) =>
+      ListStyleType("", widget: widget, type: "widget");
 
   static const LOWER_ALPHA = ListStyleType("LOWER_ALPHA");
   static const UPPER_ALPHA = ListStyleType("UPPER_ALPHA");

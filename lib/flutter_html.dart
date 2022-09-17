@@ -18,6 +18,8 @@ export 'package:flutter_html/src/interactable_element.dart';
 export 'package:flutter_html/src/layout_element.dart';
 export 'package:flutter_html/src/replaced_element.dart';
 export 'package:flutter_html/src/styled_element.dart';
+//export css_box_widget for use in custom render.
+export 'package:flutter_html/src/css_box_widget.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
@@ -177,24 +179,21 @@ class _HtmlState extends State<Html> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
-      child: HtmlParser(
-        key: widget._anchorKey,
-        htmlData: documentElement,
-        onLinkTap: widget.onLinkTap,
-        onAnchorTap: widget.onAnchorTap,
-        onImageTap: widget.onImageTap,
-        onCssParseError: widget.onCssParseError,
-        onImageError: widget.onImageError,
-        shrinkWrap: widget.shrinkWrap,
-        selectable: false,
-        style: widget.style,
-        customRenders: {}
-          ..addAll(widget.customRenders)
-          ..addAll(defaultRenders),
-        tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
-      ),
+    return HtmlParser(
+      key: widget._anchorKey,
+      htmlData: documentElement,
+      onLinkTap: widget.onLinkTap,
+      onAnchorTap: widget.onAnchorTap,
+      onImageTap: widget.onImageTap,
+      onCssParseError: widget.onCssParseError,
+      onImageError: widget.onImageError,
+      shrinkWrap: widget.shrinkWrap,
+      selectable: false,
+      style: widget.style,
+      customRenders: {}
+        ..addAll(widget.customRenders)
+        ..addAll(generateDefaultRenders()),
+      tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
     );
   }
 }
@@ -306,7 +305,9 @@ class SelectableHtml extends StatefulWidget {
   final OnCssParseError? onCssParseError;
 
   /// A parameter that should be set when the HTML widget is expected to be
-  /// flexible
+  /// have a flexible width, that doesn't always fill its maximum width
+  /// constraints. For example, auto horizontal margins are ignored, and
+  /// block-level elements only take up the width they need.
   final bool shrinkWrap;
 
   /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
@@ -360,7 +361,7 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         style: widget.style,
         customRenders: {}
           ..addAll(widget.customRenders)
-          ..addAll(defaultRenders),
+          ..addAll(generateDefaultRenders()),
         tagsList:
             widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,

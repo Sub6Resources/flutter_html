@@ -80,13 +80,14 @@ class _AudioWidgetState extends State<AudioWidget> {
     if (sources.isEmpty || sources.first == null) {
       return Container(height: 0, width: 0);
     }
-    return Container(
+
+    return CssBoxWidget(
       key: widget.context.key,
-      width: widget.context.style.width ?? 300,
-      height: Theme.of(bContext).platform == TargetPlatform.android ? 48 : 75,
+      style: widget.context.style,
       child: ChewieAudio(
         controller: chewieAudioController!,
       ),
+      childIsReplaced: true,
     );
   }
 }

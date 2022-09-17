@@ -50,11 +50,11 @@ void testNewParser(BuildContext context) {
       shrinkWrap: false,
       selectable: true,
       style: {},
-      customRenders: defaultRenders,
+      customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-    )
+    ),
   );
   print(tree.toString());
 
@@ -76,11 +76,11 @@ void testNewParser(BuildContext context) {
       shrinkWrap: false,
       selectable: true,
       style: {},
-      customRenders: defaultRenders,
+      customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-    )
+    ),
   );
   print(tree.toString());
 
@@ -100,11 +100,11 @@ void testNewParser(BuildContext context) {
       shrinkWrap: false,
       selectable: true,
       style: {},
-      customRenders: defaultRenders,
+      customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-    )
+    ),
   );
   print(tree.toString());
 
@@ -126,11 +126,11 @@ void testNewParser(BuildContext context) {
       shrinkWrap: false,
       selectable: true,
       style: {},
-      customRenders: defaultRenders,
+      customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
-    )
+    ),
   );
   print(tree.toString());
 
