@@ -9,25 +9,12 @@ import 'package:flutter_html/flutter_html.dart';
 /// The CustomRender function that will render the <table> HTML tag
 CustomRender tableRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
-      return Container(
+      return CssBoxWidget(
         key: context.key,
-        //TODO(Sub6Resources): This needs to be computed with Units!!
-        margin: EdgeInsets.only(
-          left: context.style.margin?.left?.value.abs() ?? 0,
-          right: context.style.margin?.right?.value.abs() ?? 0,
-          bottom: context.style.margin?.bottom?.value.abs() ?? 0,
-          top: context.style.margin?.bottom?.value.abs() ?? 0,
-        ),
-        padding: context.style.padding?.nonNegative,
-        alignment: context.style.alignment,
-        decoration: BoxDecoration(
-          color: context.style.backgroundColor,
-          border: context.style.border,
-        ),
-        width: context.style.width?.value, //TODO calculate actual value
-        height: context.style.height?.value, //TODO calculate actual value
+        style: context.style,
         child: LayoutBuilder(
-            builder: (_, constraints) => _layoutCells(context, constraints)),
+            builder: (_, constraints) => _layoutCells(context, constraints),
+        ),
       );
     });
 
