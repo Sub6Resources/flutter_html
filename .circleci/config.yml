@@ -1,18 +1,17 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.2
-  flutter: circleci/flutter@1.1.0
 executors:
-  mac-executor:
-    macos:
-      xcode: 14.0
+  default-executor:
+    docker:
+      - image: cirrusci/flutter:stable
     resource_class: large
+    shell: /bin/bash
 jobs:
   build:
-    executor: mac-executor
+    executor: default-executor
     steps:
     - checkout
-    - flutter/install_sdk_and_pub
     - run: flutter --version
     - run:
         name: Set up environment
