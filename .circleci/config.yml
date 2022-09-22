@@ -1,13 +1,34 @@
 version: 2.1
 orbs:
   codecov: codecov/codecov@1.0.2
+executors:
+  default-executor:
+    docker:
+      - image: cirrusci/flutter:stable
+    resource_class: large
+    shell: /bin/bash
 jobs:
   build:
-    docker:
-    - image: cirrusci/flutter
+    executor: default-executor
     steps:
     - checkout
     - run: flutter --version
-    - run: flutter test --coverage
+    - run:
+        name: Set up environment
+        command: |
+          echo 'export PATH=$HOME/.pub-cache/bin:$PATH' >> $BASH_ENV
+          source $BASH_ENV
+    - run:
+        name: Setup melos
+        command: |
+          flutter pub global activate melos
+          melos --version
+          melos bootstrap
+    - run:
+        name: Run Test Suite
+        command: melos run test
+    - run:
+        name: Generate Coverage Report
+        command: melos run gen_coverage
     - codecov/upload:
-        file: coverage/lcov.info
+        file: coverage_report/lcov.info

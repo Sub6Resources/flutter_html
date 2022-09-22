@@ -151,3 +151,5 @@ modules.xml
 **/flutter_export_environment.sh
 
 /example/ios/Flutter/Flutter.podspec
+
+**/pubspec_overrides.yaml
