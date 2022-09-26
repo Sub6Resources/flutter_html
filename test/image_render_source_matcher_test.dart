@@ -179,7 +179,7 @@ void main() {
 
 String _fakeElement(String? src) {
   return """
-      <img src="$src" />
+      <img alt ='' src="$src" />
     """;
 }
 
@@ -198,7 +198,7 @@ void testImgSrcMatcher(
           customRenders: {
             matcher: CustomRender.widget(
               widget: (RenderContext context, _) {
-                return Text("Success");
+                return const Text("Success");
               },
             ),
           },
