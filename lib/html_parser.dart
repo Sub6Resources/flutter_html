@@ -25,7 +25,6 @@ typedef OnCssParseError = String? Function(
 );
 
 class HtmlParser extends StatelessWidget {
-  final Key? key;
   final dom.Element htmlData;
   final OnTap? onLinkTap;
   final OnTap? onAnchorTap;
@@ -46,7 +45,7 @@ class HtmlParser extends StatelessWidget {
   final Map<String, Size> cachedImageSizes = {};
 
   HtmlParser({
-    required this.key,
+    required super.key,
     required this.htmlData,
     required this.onLinkTap,
     required this.onAnchorTap,
@@ -61,12 +60,9 @@ class HtmlParser extends StatelessWidget {
     this.root,
     this.selectionControls,
     this.scrollPhysics,
-  })  : this.internalOnAnchorTap = onAnchorTap != null
-            ? onAnchorTap
-            : key != null
+  })  : internalOnAnchorTap = onAnchorTap ?? (key != null
                 ? _handleAnchorTap(key, onLinkTap)
-                : onLinkTap,
-        super(key: key);
+                : onLinkTap);
 
   /// As the widget [build]s, the HTML data is processed into a tree of [StyledElement]s,
   /// which are then parsed into an [InlineSpan] tree that is then rendered to the screen by Flutter
@@ -137,7 +133,7 @@ class HtmlParser extends StatelessWidget {
       style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
     );
 
-    html.nodes.forEach((node) {
+    for (var node in html.nodes) {
       tree.children.add(_recursiveLexer(
         node,
         customRenderMatchers,
@@ -145,7 +141,7 @@ class HtmlParser extends StatelessWidget {
         context,
         parser,
       ));
-    });
+    }
 
     return tree;
   }
@@ -163,7 +159,7 @@ class HtmlParser extends StatelessWidget {
   ) {
     List<StyledElement> children = <StyledElement>[];
 
-    node.nodes.forEach((childNode) {
+    for (var childNode in node.nodes) {
       children.add(_recursiveLexer(
         childNode,
         customRenderMatchers,
@@ -171,24 +167,24 @@ class HtmlParser extends StatelessWidget {
         context,
         parser,
       ));
-    });
+    }
 
     //TODO(Sub6Resources): There's probably a more efficient way to look this up.
     if (node is dom.Element) {
       if (!tagsList.contains(node.localName)) {
         return EmptyContentElement();
       }
-      if (STYLED_ELEMENTS.contains(node.localName)) {
+      if (HtmlElements.styledElements.contains(node.localName)) {
         return parseStyledElement(node, children);
-      } else if (INTERACTABLE_ELEMENTS.contains(node.localName)) {
+      } else if (HtmlElements.interactableElements.contains(node.localName)) {
         return parseInteractableElement(node, children);
-      } else if (REPLACED_ELEMENTS.contains(node.localName)) {
+      } else if (HtmlElements.replacedElements.contains(node.localName)) {
         return parseReplacedElement(node, children);
-      } else if (LAYOUT_ELEMENTS.contains(node.localName)) {
+      } else if (HtmlElements.layoutElements.contains(node.localName)) {
         return parseLayoutElement(node, children);
-      } else if (TABLE_CELL_ELEMENTS.contains(node.localName)) {
+      } else if (HtmlElements.tableCellElements.contains(node.localName)) {
         return parseTableCellElement(node, children);
-      } else if (TABLE_DEFINITION_ELEMENTS.contains(node.localName)) {
+      } else if (HtmlElements.tableDefinitionElements.contains(node.localName)) {
         return parseTableDefinitionElement(node, children);
       } else {
         final StyledElement tree = parseStyledElement(node, children);
@@ -245,7 +241,9 @@ class HtmlParser extends StatelessWidget {
       } catch (_) {}
     });
 
-    tree.children.forEach((e) => _applyExternalCss(declarations, e));
+    for (var element in tree.children) {
+      _applyExternalCss(declarations, element);
+    }
 
     return tree;
   }
@@ -259,7 +257,9 @@ class HtmlParser extends StatelessWidget {
       }
     }
 
-    tree.children.forEach((e) => _applyInlineStyles(e, errorHandler));
+    for (var element in tree.children) {
+      _applyInlineStyles(element, errorHandler);
+    }
     return tree;
   }
 
@@ -274,7 +274,9 @@ class HtmlParser extends StatelessWidget {
         }
       } catch (_) {}
     });
-    tree.children.forEach((e) => _applyCustomStyles(style, e));
+    for (var element in tree.children) {
+      _applyCustomStyles(style, element);
+    }
 
     return tree;
   }
@@ -283,10 +285,11 @@ class HtmlParser extends StatelessWidget {
   /// child that doesn't specify a different style.
   static StyledElement _cascadeStyles(
       Map<String, Style> style, StyledElement tree) {
-    tree.children.forEach((child) {
+
+    for (var child in tree.children) {
       child.style = tree.style.copyOnlyInherited(child.style);
       _cascadeStyles(style, child);
-    });
+    }
 
     return tree;
   }
@@ -342,11 +345,11 @@ class HtmlParser extends StatelessWidget {
 
     for (final entry in customRenders.keys) {
       if (entry.call(newContext)) {
-        final buildChildren = () =>
+        buildChildren() =>
             tree.children.map((tree) => parseTree(newContext, tree)).toList();
         if (newContext.parser.selectable &&
             customRenders[entry] is SelectableCustomRender) {
-          final selectableBuildChildren = () => tree.children
+          selectableBuildChildren() => tree.children
               .map((tree) => parseTree(newContext, tree) as TextSpan)
               .toList();
           return (customRenders[entry] as SelectableCustomRender)
@@ -367,14 +370,14 @@ class HtmlParser extends StatelessWidget {
           child: CssBoxWidget(
             style: tree.style,
             shrinkWrap: newContext.parser.shrinkWrap,
-            child:
-                customRenders[entry]!.widget!.call(newContext, buildChildren),
             childIsReplaced: true, //TODO is this true?
+            child:
+            customRenders[entry]!.widget!.call(newContext, buildChildren),
           ),
         );
       }
     }
-    return WidgetSpan(child: Container(height: 0, width: 0));
+    return const WidgetSpan(child: SizedBox(height: 0, width: 0));
   }
 
   static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) => (String? url,
@@ -398,7 +401,7 @@ class HtmlParser extends StatelessWidget {
   /// at https://www.w3.org/TR/css-text-3/
   /// and summarized at https://medium.com/@patrickbrosset/when-does-white-space-matter-in-html-b90e8a7cdd33
   static StyledElement _processInternalWhitespace(StyledElement tree) {
-    if ((tree.style.whiteSpace ?? WhiteSpace.NORMAL) == WhiteSpace.PRE) {
+    if ((tree.style.whiteSpace ?? WhiteSpace.normal) == WhiteSpace.pre) {
       // Preserve this whitespace
     } else if (tree is TextContentElement) {
       tree.text = _removeUnnecessaryWhitespace(tree.text!);
@@ -479,7 +482,7 @@ class HtmlParser extends StatelessWidget {
       if (textIndex < 1 &&
           tree.text!.startsWith(' ') &&
           tree.element?.localName != "br" &&
-          (!keepLeadingSpace.data || tree.style.display == Display.BLOCK) &&
+          (!keepLeadingSpace.data || tree.style.display == Display.block) &&
           (elementIndex < 1 ||
               (elementIndex >= 1 &&
                   parentNodes?[elementIndex - 1] is dom.Text &&
@@ -505,8 +508,9 @@ class HtmlParser extends StatelessWidget {
       }
     }
 
-    tree.children
-        .forEach((e) => _processInlineWhitespaceRecursive(e, keepLeadingSpace));
+    for (var element in tree.children) {
+      _processInlineWhitespaceRecursive(element, keepLeadingSpace);
+    }
 
     return tree;
   }
@@ -520,8 +524,8 @@ class HtmlParser extends StatelessWidget {
   /// (4) Replace any instances of two or more spaces with a single space.
   static String _removeUnnecessaryWhitespace(String text) {
     return text
-        .replaceAll(RegExp("\ *(?=\n)"), "\n")
-        .replaceAll(RegExp("(?:\n)\ *"), "\n")
+        .replaceAll(RegExp("\\ *(?=\n)"), "\n")
+        .replaceAll(RegExp("(?:\n)\\ *"), "\n")
         .replaceAll("\n", " ")
         .replaceAll("\t", " ")
         .replaceAll(RegExp(" {2,}"), " ");
@@ -540,17 +544,15 @@ class HtmlParser extends StatelessWidget {
   /// bullet all list items according to the [ListStyleType] they have been given.
   static StyledElement _processListCharactersRecursive(
       StyledElement tree, ListQueue<Context> olStack) {
-    if (tree.style.listStylePosition == null) {
-      tree.style.listStylePosition = ListStylePosition.OUTSIDE;
-    }
+    tree.style.listStylePosition ??= ListStylePosition.outside;
     if (tree.name == 'ol' &&
         tree.style.listStyleType != null &&
         tree.style.listStyleType!.type == "marker") {
       switch (tree.style.listStyleType!) {
-        case ListStyleType.LOWER_LATIN:
-        case ListStyleType.LOWER_ALPHA:
-        case ListStyleType.UPPER_LATIN:
-        case ListStyleType.UPPER_ALPHA:
+        case ListStyleType.lowerLatin:
+        case ListStyleType.lowerAlpha:
+        case ListStyleType.upperLatin:
+        case ListStyleType.upperAlpha:
           olStack.add(Context<String>('a'));
           if ((tree.attributes['start'] != null
                   ? int.tryParse(tree.attributes['start']!)
@@ -571,30 +573,30 @@ class HtmlParser extends StatelessWidget {
               1));
           break;
       }
-    } else if (tree.style.display == Display.LIST_ITEM &&
+    } else if (tree.style.display == Display.listItem &&
         tree.style.listStyleType != null &&
         tree.style.listStyleType!.type == "widget") {
       tree.style.markerContent = tree.style.listStyleType!.widget!;
-    } else if (tree.style.display == Display.LIST_ITEM &&
+    } else if (tree.style.display == Display.listItem &&
         tree.style.listStyleType != null &&
         tree.style.listStyleType!.type == "image") {
       tree.style.markerContent = Image.network(tree.style.listStyleType!.text);
-    } else if (tree.style.display == Display.LIST_ITEM &&
+    } else if (tree.style.display == Display.listItem &&
         tree.style.listStyleType != null) {
       String marker = "";
       switch (tree.style.listStyleType!) {
-        case ListStyleType.NONE:
+        case ListStyleType.none:
           break;
-        case ListStyleType.CIRCLE:
+        case ListStyleType.circle:
           marker = '○';
           break;
-        case ListStyleType.SQUARE:
+        case ListStyleType.square:
           marker = '■';
           break;
-        case ListStyleType.DISC:
+        case ListStyleType.disc:
           marker = '•';
           break;
-        case ListStyleType.DECIMAL:
+        case ListStyleType.decimal:
           if (olStack.isEmpty) {
             olStack.add(Context<int>((tree.attributes['start'] != null
                     ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
@@ -604,8 +606,8 @@ class HtmlParser extends StatelessWidget {
           olStack.last.data += 1;
           marker = '${olStack.last.data}.';
           break;
-        case ListStyleType.LOWER_LATIN:
-        case ListStyleType.LOWER_ALPHA:
+        case ListStyleType.lowerLatin:
+        case ListStyleType.lowerAlpha:
           if (olStack.isEmpty) {
             olStack.add(Context<String>('a'));
             if ((tree.attributes['start'] != null
@@ -620,11 +622,11 @@ class HtmlParser extends StatelessWidget {
               }
             }
           }
-          marker = olStack.last.data.toString() + ".";
+          marker = "${olStack.last.data}.";
           olStack.last.data = olStack.last.data.toString().nextLetter();
           break;
-        case ListStyleType.UPPER_LATIN:
-        case ListStyleType.UPPER_ALPHA:
+        case ListStyleType.upperLatin:
+        case ListStyleType.upperAlpha:
           if (olStack.isEmpty) {
             olStack.add(Context<String>('a'));
             if ((tree.attributes['start'] != null
@@ -639,10 +641,10 @@ class HtmlParser extends StatelessWidget {
               }
             }
           }
-          marker = olStack.last.data.toString().toUpperCase() + ".";
+          marker = "${olStack.last.data.toString().toUpperCase()}.";
           olStack.last.data = olStack.last.data.toString().nextLetter();
           break;
-        case ListStyleType.LOWER_ROMAN:
+        case ListStyleType.lowerRoman:
           if (olStack.isEmpty) {
             olStack.add(Context<int>((tree.attributes['start'] != null
                     ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
@@ -653,13 +655,12 @@ class HtmlParser extends StatelessWidget {
           if (olStack.last.data <= 0) {
             marker = '${olStack.last.data}.';
           } else {
-            marker = (olStack.last.data as int)
+            marker = "${(olStack.last.data as int)
                     .toRomanNumeralString()!
-                    .toLowerCase() +
-                ".";
+                    .toLowerCase()}.";
           }
           break;
-        case ListStyleType.UPPER_ROMAN:
+        case ListStyleType.upperRoman:
           if (olStack.isEmpty) {
             olStack.add(Context<int>((tree.attributes['start'] != null
                     ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
@@ -670,7 +671,7 @@ class HtmlParser extends StatelessWidget {
           if (olStack.last.data <= 0) {
             marker = '${olStack.last.data}.';
           } else {
-            marker = (olStack.last.data as int).toRomanNumeralString()! + ".";
+            marker = "${(olStack.last.data as int).toRomanNumeralString()!}.";
           }
           break;
       }
@@ -681,7 +682,9 @@ class HtmlParser extends StatelessWidget {
       );
     }
 
-    tree.children.forEach((e) => _processListCharactersRecursive(e, olStack));
+    for (var element in tree.children) {
+      _processListCharactersRecursive(element, olStack);
+    }
 
     if (tree.name == 'ol') {
       olStack.removeLast();
@@ -700,7 +703,7 @@ class HtmlParser extends StatelessWidget {
         TextContentElement(
           text: tree.style.before,
           style: tree.style
-              .copyWith(beforeAfterNull: true, display: Display.INLINE),
+              .copyWith(beforeAfterNull: true, display: Display.inline),
         ),
       );
     }
@@ -708,7 +711,7 @@ class HtmlParser extends StatelessWidget {
       tree.children.add(TextContentElement(
         text: tree.style.after,
         style:
-            tree.style.copyWith(beforeAfterNull: true, display: Display.INLINE),
+            tree.style.copyWith(beforeAfterNull: true, display: Display.inline),
       ));
     }
 
@@ -838,31 +841,31 @@ class HtmlParser extends StatelessWidget {
           ((tree.name == "body" &&
                   (index == 0 ||
                       index + 1 == tree.children.length ||
-                      tree.children[index - 1].style.display == Display.BLOCK ||
+                      tree.children[index - 1].style.display == Display.block ||
                       tree.children[index + 1].style.display ==
-                          Display.BLOCK)) ||
+                          Display.block)) ||
               tree.name == "ul") &&
           child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           child.text!.isEmpty &&
-          child.style.whiteSpace != WhiteSpace.PRE) {
+          child.style.whiteSpace != WhiteSpace.pre) {
         toRemove.add(child);
       } else if (child is TextContentElement &&
-          child.style.whiteSpace != WhiteSpace.PRE &&
-          tree.style.display == Display.BLOCK &&
+          child.style.whiteSpace != WhiteSpace.pre &&
+          tree.style.display == Display.block &&
           child.text!.isEmpty &&
           lastChildBlock) {
         toRemove.add(child);
-      } else if (child.style.display == Display.NONE) {
+      } else if (child.style.display == Display.none) {
         toRemove.add(child);
       } else {
         _removeEmptyElements(child);
       }
 
       // This is used above to check if the previous element is a block element or a line break.
-      lastChildBlock = (child.style.display == Display.BLOCK ||
-          child.style.display == Display.LIST_ITEM ||
+      lastChildBlock = (child.style.display == Display.block ||
+          child.style.display == Display.listItem ||
           (child is TextContentElement && child.text == '\n'));
     });
     tree.children.removeWhere((element) => toRemove.contains(element));
@@ -896,7 +899,7 @@ class HtmlParser extends StatelessWidget {
 
     final parentFontSize = tree.style.fontSize!.value;
 
-    tree.children.forEach((child) {
+    for (var child in tree.children) {
       if (child.style.fontSize == null) {
         child.style.fontSize = FontSize(parentFontSize);
       } else {
@@ -928,7 +931,7 @@ class HtmlParser extends StatelessWidget {
       tree.style.setRelativeValues(remFontSize, emSize);
 
       _applyRelativeValuesRecursive(child, remFontSize, devicePixelRatio);
-    });
+    }
   }
 }
 
@@ -954,7 +957,7 @@ class RenderContext {
 
 extension IterateLetters on String {
   String nextLetter() {
-    String s = this.toLowerCase();
+    String s = toLowerCase();
     if (s == "z") {
       return String.fromCharCode(s.codeUnitAt(0) - 25) +
           String.fromCharCode(s.codeUnitAt(0) - 25); // AA or aa
@@ -965,7 +968,7 @@ extension IterateLetters on String {
         // If a string of length > 1 ends in Z/z,
         // increment the string (excluding the last Z/z) recursively,
         // and append A/a (depending on casing) to it
-        return sub.nextLetter() + 'a';
+        return '${sub.nextLetter()}a';
       } else {
         // (take till last char) append with (increment last char)
         return sub + String.fromCharCode(lastChar.codeUnitAt(0) + 1);

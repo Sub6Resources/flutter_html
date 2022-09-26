@@ -59,7 +59,7 @@ class TextContentElement extends ReplacedElement {
   }
 
   @override
-  Widget? toWidget(_) => null;
+  Widget? toWidget(context) => null;
 }
 
 class EmptyContentElement extends ReplacedElement {
@@ -67,10 +67,12 @@ class EmptyContentElement extends ReplacedElement {
       : super(name: name, style: Style(), elementId: "[[No ID]]");
 
   @override
-  Widget? toWidget(_) => null;
+  Widget? toWidget(context) => null;
 }
 
 class RubyElement extends ReplacedElement {
+
+  @override
   dom.Element element;
 
   RubyElement({
@@ -97,12 +99,12 @@ class RubyElement extends ReplacedElement {
           (element.text ?? "").trim().isEmpty &&
           index > 0 &&
           index + 1 < context.tree.children.length &&
-          !(context.tree.children[index - 1] is TextContentElement) &&
-          !(context.tree.children[index + 1] is TextContentElement))) {
+          context.tree.children[index - 1] is! TextContentElement &&
+          context.tree.children[index + 1] is! TextContentElement)) {
         children.add(element);
       }
     });
-    children.forEach((c) {
+    for (var c in children) {
       if (c.name == "rt" && node != null) {
         final widget = Stack(
           alignment: Alignment.center,
@@ -128,10 +130,10 @@ class RubyElement extends ReplacedElement {
               style: context.style,
               child: node is TextContentElement
                   ? Text(
-                      (node as TextContentElement).text?.trim() ?? "",
+                      node.text?.trim() ?? "",
                       style: context.style.generateTextStyle(),
                     )
-                  : RichText(text: context.parser.parseTree(context, node!)),
+                  : RichText(text: context.parser.parseTree(context, node)),
             ),
           ],
         );
@@ -139,7 +141,7 @@ class RubyElement extends ReplacedElement {
       } else {
         node = c;
       }
-    });
+    }
     return Padding(
       padding: EdgeInsets.only(top: rubySize),
       child: Wrap(
@@ -166,7 +168,7 @@ ReplacedElement parseReplacedElement(
     case "br":
       return TextContentElement(
         text: "\n",
-        style: Style(whiteSpace: WhiteSpace.PRE),
+        style: Style(whiteSpace: WhiteSpace.pre),
         element: element,
         node: element,
       );
