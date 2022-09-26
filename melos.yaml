@@ -8,6 +8,7 @@ packages:
 command:
   bootstrap:
     usePubspecOverrides: true
+    runPubGetInParallel: false
 
 scripts:
   analyze:
