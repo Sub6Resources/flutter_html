@@ -3,7 +3,6 @@ export 'interactable_element.dart';
 export 'replaced_element.dart';
 
 class HtmlElements {
-
   static const styledElements = [
     "abbr",
     "acronym",
@@ -205,5 +204,4 @@ class HtmlElements {
     "var",
     "wbr",
   ];
-
 }

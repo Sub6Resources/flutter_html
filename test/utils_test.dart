@@ -7,7 +7,8 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   test('Tests that namedColors returns a valid color', () {
-    expect(ExpressionMapping.namedColorToColor('red'), equals(ExpressionMapping.stringToColor(namedColors['Red']!)));
+    expect(ExpressionMapping.namedColorToColor('red'),
+        equals(ExpressionMapping.stringToColor(namedColors['Red']!)));
     expect(namedColors['Red'], equals('#FF0000'));
   });
 
@@ -26,17 +27,20 @@ void main() {
   });
 
   test('TextTransformUtil uppercase-s correctly', () {
-    expect(originalString.transformed(TextTransform.uppercase), equals(uppercaseString));
+    expect(originalString.transformed(TextTransform.uppercase),
+        equals(uppercaseString));
   });
 
   test('TextTransformUtil lowercase-s correctly', () {
-    expect(originalString.transformed(TextTransform.lowercase), equals(lowercaseString));
+    expect(originalString.transformed(TextTransform.lowercase),
+        equals(lowercaseString));
   });
 
   const originalLongString = 'Hello, world! pub.dev';
   const capitalizedLongString = 'Hello, World! Pub.Dev';
 
   test('TextTransformUtil capitalizes correctly', () {
-    expect(originalLongString.transformed(TextTransform.capitalize), equals(capitalizedLongString));
+    expect(originalLongString.transformed(TextTransform.capitalize),
+        equals(capitalizedLongString));
   });
 }

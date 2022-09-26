@@ -15,7 +15,8 @@ void main() {
       ),
     );
   });
-  testWidgets('Test new parser (hacky workaround to get BuildContext)', (WidgetTester tester) async {
+  testWidgets('Test new parser (hacky workaround to get BuildContext)',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       Builder(
         builder: (BuildContext context) {
@@ -33,8 +34,7 @@ void testNewParser(BuildContext context) {
   HtmlParser.parseHTML("<b>Hello, World!</b>");
 
   HtmlParser.lexDomTree(
-    HtmlParser.parseHTML(
-        "Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
+    HtmlParser.parseHTML("Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
     [],
     Html.tags,
     context,
@@ -89,7 +89,8 @@ void testNewParser(BuildContext context) {
     context,
     HtmlParser(
       key: null,
-      htmlData: HtmlParser.parseHTML("<img alt='' src='https://image.example.com' />"),
+      htmlData: HtmlParser.parseHTML(
+          "<img alt='' src='https://image.example.com' />"),
       onLinkTap: null,
       onAnchorTap: null,
       onImageTap: null,

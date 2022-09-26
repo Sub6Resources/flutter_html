@@ -327,7 +327,8 @@ class SelectableHtml extends StatefulWidget {
   /// fallback to the default rendering.
   final Map<CustomRenderMatcher, SelectableCustomRender> customRenders;
 
-  static List<String> get tags => List<String>.from(HtmlElements.selectableElements);
+  static List<String> get tags =>
+      List<String>.from(HtmlElements.selectableElements);
 
   @override
   State<StatefulWidget> createState() => _SelectableHtmlState();

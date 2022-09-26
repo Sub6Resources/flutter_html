@@ -25,7 +25,7 @@ class CssBoxWidget extends StatelessWidget {
     bool selectable = false,
     TextSelectionControls? selectionControls,
     ScrollPhysics? scrollPhysics,
-  })  : child = selectable
+  }) : child = selectable
             ? _generateSelectableWidgetChild(
                 children,
                 style,
@@ -676,9 +676,9 @@ extension Normalize on Dimension {
   void normalize(double emValue) {
     switch (unit) {
       case Unit.rem:
-        // Because CSSBoxWidget doesn't have any information about any
-        // sort of tree structure, treat rem the same as em. The HtmlParser
-        // widget handles rem/em values before they get to CSSBoxWidget.
+      // Because CSSBoxWidget doesn't have any information about any
+      // sort of tree structure, treat rem the same as em. The HtmlParser
+      // widget handles rem/em values before they get to CSSBoxWidget.
       case Unit.em:
         value *= emValue;
         unit = Unit.px;

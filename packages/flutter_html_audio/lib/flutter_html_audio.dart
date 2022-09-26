@@ -28,7 +28,8 @@ class AudioWidget extends StatefulWidget {
   final RenderContext context;
   final AudioControllerCallback? callback;
 
-  const AudioWidget({Key? key,
+  const AudioWidget({
+    Key? key,
     required this.context,
     this.callback,
   }) : super(key: key);

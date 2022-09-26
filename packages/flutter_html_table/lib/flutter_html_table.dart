@@ -13,7 +13,7 @@ CustomRender tableRender() =>
         key: context.key,
         style: context.style,
         child: LayoutBuilder(
-            builder: (_, constraints) => _layoutCells(context, constraints),
+          builder: (_, constraints) => _layoutCells(context, constraints),
         ),
       );
     });

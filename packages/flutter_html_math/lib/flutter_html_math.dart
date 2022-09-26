@@ -52,9 +52,8 @@ String _parseMathRecursive(dom.Node node, String parsed) {
             node.localName == "mover") &&
         nodeList.length == 2) {
       parsed = _parseMathRecursive(nodeList[0], parsed);
-      parsed = "${_parseMathRecursive(
-              nodeList[1],
-              "$parsed${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{")}}";
+      parsed =
+          "${_parseMathRecursive(nodeList[1], "$parsed${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{")}}";
     }
     if ((node.localName == "msubsup" || node.localName == "munderover") &&
         nodeList.length == 3) {

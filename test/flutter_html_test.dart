@@ -33,7 +33,7 @@ void main() {
 
   testWidgets(
     "Check that widget displays given text",
-        (tester) async {
+    (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Html(
@@ -56,7 +56,9 @@ void main() {
     expect(find.text('Text', findRichText: true), findsOneWidget);
   });
 
-  testWidgets('Check that a simple element is hidden when tagsList does not contain it', (tester) async {
+  testWidgets(
+      'Check that a simple element is hidden when tagsList does not contain it',
+      (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Html(
@@ -68,7 +70,9 @@ void main() {
     expect(find.text('Text', findRichText: true), findsNothing);
   });
 
-  testWidgets('Check that a simple element is displayed when it is included in tagsList', (tester) async {
+  testWidgets(
+      'Check that a simple element is displayed when it is included in tagsList',
+      (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Html(
