@@ -38,20 +38,20 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
               if (colWidth != null && colWidth.endsWith("%")) {
                 if (!constraints.hasBoundedWidth) {
                   // In a horizontally unbounded container; always wrap content instead of applying flex
-                  return IntrinsicContentTrackSize();
+                  return const IntrinsicContentTrackSize();
                 }
                 final percentageSize =
                     double.tryParse(colWidth.substring(0, colWidth.length - 1));
                 return percentageSize != null && !percentageSize.isNaN
                     ? FlexibleTrackSize(percentageSize * 0.01)
-                    : IntrinsicContentTrackSize();
+                    : const IntrinsicContentTrackSize();
               } else if (colWidth != null) {
                 final fixedPxSize = double.tryParse(colWidth);
                 return fixedPxSize != null
                     ? FixedTrackSize(fixedPxSize)
-                    : IntrinsicContentTrackSize();
+                    : const IntrinsicContentTrackSize();
               } else {
-                return IntrinsicContentTrackSize();
+                return const IntrinsicContentTrackSize();
               }
             });
           })
@@ -66,7 +66,7 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
 
   // All table rows have a height intrinsic to their (spanned) contents
   final rowSizes =
-      List.generate(rows.length, (_) => IntrinsicContentTrackSize());
+      List.generate(rows.length, (_) => const IntrinsicContentTrackSize());
 
   // Calculate column bounds
   int columnMax = 0;
@@ -103,6 +103,10 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
               columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
         }
         cells.add(GridPlacement(
+          columnStart: columni,
+          columnSpan: min(child.colspan, columnMax - columni),
+          rowStart: rowi,
+          rowSpan: min(child.rowspan, rows.length - rowi),
           child: CssBoxWidget(
             style: child.style
                 .merge(row.style), //TODO padding/decoration(color/border)
@@ -118,10 +122,6 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
               ),
             ),
           ),
-          columnStart: columni,
-          columnSpan: min(child.colspan, columnMax - columni),
-          rowStart: rowi,
-          rowSpan: min(child.rowspan, rows.length - rowi),
         ));
         columnRowOffset[columni] = child.rowspan - 1;
         columnColspanOffset[columni] = child.colspan;
@@ -138,11 +138,11 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
   // Create column tracks (insofar there were no colgroups that already defined them)
   List<TrackSize> finalColumnSizes = columnSizes.take(columnMax).toList();
   finalColumnSizes += List.generate(max(0, columnMax - finalColumnSizes.length),
-      (_) => IntrinsicContentTrackSize());
+      (_) => const IntrinsicContentTrackSize());
 
   if (finalColumnSizes.isEmpty || rowSizes.isEmpty) {
     // No actual cells to show
-    return SizedBox();
+    return const SizedBox();
   }
 
   return LayoutGrid(
