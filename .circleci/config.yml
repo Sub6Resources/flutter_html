@@ -4,7 +4,7 @@ orbs:
 executors:
   default-executor:
     docker:
-      - image: sub6resources/flutter-melos:1.0.0
+      - image: sub6resources/flutter-melos:1.0.1
     resource_class: large
     shell: /bin/bash
 jobs:
