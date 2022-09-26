@@ -13,7 +13,7 @@ CustomRender mathRender({OnMathError? onMathError}) =>
       String texStr = context.tree.element == null
           ? ''
           : _parseMathRecursive(context.tree.element!, r'');
-      return Container(
+      return SizedBox(
           width: context.parser.shrinkWrap
               ? null
               : MediaQuery.of(context.buildContext).size.width,
@@ -40,9 +40,9 @@ String _parseMathRecursive(dom.Node node, String parsed) {
   if (node is dom.Element) {
     List<dom.Element> nodeList = node.nodes.whereType<dom.Element>().toList();
     if (node.localName == "math" || node.localName == "mrow") {
-      nodeList.forEach((element) {
+      for (var element in nodeList) {
         parsed = _parseMathRecursive(element, parsed);
-      });
+      }
     }
     // note: munder, mover, and munderover do not support placing braces and other
     // markings above/below elements, instead they are treated as super/subscripts for now.
@@ -52,37 +52,35 @@ String _parseMathRecursive(dom.Node node, String parsed) {
             node.localName == "mover") &&
         nodeList.length == 2) {
       parsed = _parseMathRecursive(nodeList[0], parsed);
-      parsed = _parseMathRecursive(
+      parsed = "${_parseMathRecursive(
               nodeList[1],
-              parsed +
-                  "${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{") +
-          "}";
+              "$parsed${node.localName == "msup" || node.localName == "mover" ? "^" : "_"}{")}}";
     }
     if ((node.localName == "msubsup" || node.localName == "munderover") &&
         nodeList.length == 3) {
       parsed = _parseMathRecursive(nodeList[0], parsed);
-      parsed = _parseMathRecursive(nodeList[1], parsed + "_{") + "}";
-      parsed = _parseMathRecursive(nodeList[2], parsed + "^{") + "}";
+      parsed = "${_parseMathRecursive(nodeList[1], "${parsed}_{")}}";
+      parsed = "${_parseMathRecursive(nodeList[2], "$parsed^{")}}";
     }
     if (node.localName == "mfrac" && nodeList.length == 2) {
-      parsed = _parseMathRecursive(nodeList[0], parsed + r"\frac{") + "}";
-      parsed = _parseMathRecursive(nodeList[1], parsed + "{") + "}";
+      parsed = "${_parseMathRecursive(nodeList[0], parsed + r"\frac{")}}";
+      parsed = "${_parseMathRecursive(nodeList[1], "$parsed{")}}";
     }
     // note: doesn't support answer & intermediate steps
     if (node.localName == "mlongdiv" && nodeList.length == 4) {
       parsed = _parseMathRecursive(nodeList[0], parsed);
-      parsed = _parseMathRecursive(nodeList[2], parsed + r"\overline{)") + "}";
+      parsed = "${_parseMathRecursive(nodeList[2], parsed + r"\overline{)")}}";
     }
     if (node.localName == "msqrt") {
       parsed = parsed + r"\sqrt{";
-      nodeList.forEach((element) {
+      for (var element in nodeList) {
         parsed = _parseMathRecursive(element, parsed);
-      });
-      parsed = parsed + "}";
+      }
+      parsed = "$parsed}";
     }
     if (node.localName == "mroot" && nodeList.length == 2) {
-      parsed = _parseMathRecursive(nodeList[1], parsed + r"\sqrt[") + "]";
-      parsed = _parseMathRecursive(nodeList[0], parsed + "{") + "}";
+      parsed = "${_parseMathRecursive(nodeList[1], parsed + r"\sqrt[")}]";
+      parsed = "${_parseMathRecursive(nodeList[0], "$parsed{")}}";
     }
     if (node.localName == "mi" ||
         node.localName == "mn" ||
