@@ -1,0 +1,16 @@
+# melos_managed_dependency_overrides: flutter_html,flutter_html_audio,flutter_html_iframe,flutter_html_math,flutter_html_svg,flutter_html_table,flutter_html_video
+dependency_overrides:
+  flutter_html:
+    path: ../..
+  flutter_html_audio:
+    path: ../flutter_html_audio
+  flutter_html_iframe:
+    path: ../flutter_html_iframe
+  flutter_html_math:
+    path: ../flutter_html_math
+  flutter_html_svg:
+    path: ../flutter_html_svg
+  flutter_html_table:
+    path: ../flutter_html_table
+  flutter_html_video:
+    path: ../flutter_html_video

@@ -32,3 +32,9 @@ jobs:
           command: melos run gen_coverage
       - codecov/upload:
           file: coverage_report/lcov.info
+      - run:
+          name: Run flutter analyze
+          command: melos run analyze
+      - run:
+          name: Check That Flutter Code is Formatted Correctly
+          command: flutter format -o none --set-exit-if-changed .
