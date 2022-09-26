@@ -1083,8 +1083,8 @@ class ExpressionMapping {
       //   return LengthOrPercent(double.parse(value.text), Unit.rem);
       // TODO there are several other available terms processed by the CSS parser
     } else if (value is css.LengthTerm) {
-      double number = double.parse(
-          value.text.replaceAll(RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+      double number =
+          double.parse(value.text.replaceAll(RegExp(r'\s+(\d+\.\d+)\s+'), ''));
       Unit unit = _unitMap(value.unit);
       return LengthOrPercent(number, unit);
     }
@@ -1204,31 +1204,23 @@ class ExpressionMapping {
           shadow.add(Shadow(
             color: expressionToColor(color)!,
             offset: Offset(
-                double.tryParse((offsetX)
-                    .text
-                    .replaceAll(nonNumberRegex, ''))!,
-                double.tryParse((offsetY)
-                    .text
-                    .replaceAll(nonNumberRegex, ''))!),
+                double.tryParse((offsetX).text.replaceAll(nonNumberRegex, ''))!,
+                double.tryParse(
+                    (offsetY).text.replaceAll(nonNumberRegex, ''))!),
             blurRadius: (blurRadius is css.LiteralTerm)
-                ? double.tryParse((blurRadius)
-                    .text
-                    .replaceAll(nonNumberRegex, ''))!
+                ? double.tryParse(
+                    (blurRadius).text.replaceAll(nonNumberRegex, ''))!
                 : 0.0,
           ));
         } else {
           shadow.add(Shadow(
             offset: Offset(
-                double.tryParse((offsetX)
-                    .text
-                    .replaceAll(nonNumberRegex, ''))!,
-                double.tryParse((offsetY)
-                    .text
-                    .replaceAll(nonNumberRegex, ''))!),
+                double.tryParse((offsetX).text.replaceAll(nonNumberRegex, ''))!,
+                double.tryParse(
+                    (offsetY).text.replaceAll(nonNumberRegex, ''))!),
             blurRadius: (blurRadius is css.LiteralTerm)
-                ? double.tryParse((blurRadius)
-                    .text
-                    .replaceAll(nonNumberRegex, ''))!
+                ? double.tryParse(
+                    (blurRadius).text.replaceAll(nonNumberRegex, ''))!
                 : 0.0,
           ));
         }

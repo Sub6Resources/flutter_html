@@ -4,7 +4,8 @@ enum UnitType {
   length,
   auto,
   lengthPercent(children: [UnitType.length, UnitType.percent]),
-  lengthPercentAuto(children: [UnitType.length, UnitType.percent, UnitType.auto]);
+  lengthPercentAuto(
+      children: [UnitType.length, UnitType.percent, UnitType.auto]);
 
   final List<UnitType> children;
 
@@ -45,7 +46,8 @@ abstract class Dimension {
 /// This dimension takes a value with a length unit such as px or em. Note that
 /// these can be fixed or relative (but they must not be a percent)
 class Length extends Dimension {
-  Length(double value, [Unit unit = Unit.px]) : super(value, unit, UnitType.length);
+  Length(double value, [Unit unit = Unit.px])
+      : super(value, unit, UnitType.length);
 }
 
 /// This dimension takes a value with a length-percent unit such as px or em

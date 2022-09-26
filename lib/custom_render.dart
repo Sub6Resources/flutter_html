@@ -370,12 +370,16 @@ CustomRender networkImageRender({
           if (!completer.isCompleted) {
             context.parser.cachedImageSizes[src] = size;
             completer.complete(size);
-            image.image.resolve(const ImageConfiguration()).removeListener(listener!);
+            image.image
+                .resolve(const ImageConfiguration())
+                .removeListener(listener!);
           }
         }, onError: (object, stacktrace) {
           if (!completer.isCompleted) {
             completer.completeError(object);
-            image.image.resolve(const ImageConfiguration()).removeListener(listener!);
+            image.image
+                .resolve(const ImageConfiguration())
+                .removeListener(listener!);
           }
         });
 

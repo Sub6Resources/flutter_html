@@ -25,7 +25,8 @@ class VideoWidget extends StatefulWidget {
   final RenderContext context;
   final VideoControllerCallback? callback;
 
-  const VideoWidget({Key? key,
+  const VideoWidget({
+    Key? key,
     required this.context,
     this.callback,
   }) : super(key: key);

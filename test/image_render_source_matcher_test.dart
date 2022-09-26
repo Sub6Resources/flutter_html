@@ -87,25 +87,29 @@ void main() {
     testImgSrcMatcher(
       "matches schema, domain and extension",
       matcher,
-      imgSrc: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
+      imgSrc:
+          'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
       shouldMatch: true,
     );
     testImgSrcMatcher(
       "doesn't match if schema is different",
       matcher,
-      imgSrc: 'http://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
+      imgSrc:
+          'http://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
       shouldMatch: false,
     );
     testImgSrcMatcher(
       "doesn't match if domain is different",
       matcher,
-      imgSrc: 'https://google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
+      imgSrc:
+          'https://google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png',
       shouldMatch: false,
     );
     testImgSrcMatcher(
       "doesn't match if file extension is different",
       matcher,
-      imgSrc: 'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dppng',
+      imgSrc:
+          'https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dppng',
       shouldMatch: false,
     );
     testImgSrcMatcher(
@@ -205,6 +209,7 @@ void testImgSrcMatcher(
         ),
       ),
     );
-    await expectLater(find.text("Success"), shouldMatch ? findsOneWidget : findsNothing);
+    await expectLater(
+        find.text("Success"), shouldMatch ? findsOneWidget : findsNothing);
   });
 }

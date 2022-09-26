@@ -60,9 +60,8 @@ class HtmlParser extends StatelessWidget {
     this.root,
     this.selectionControls,
     this.scrollPhysics,
-  })  : internalOnAnchorTap = onAnchorTap ?? (key != null
-                ? _handleAnchorTap(key, onLinkTap)
-                : onLinkTap);
+  }) : internalOnAnchorTap = onAnchorTap ??
+            (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
 
   /// As the widget [build]s, the HTML data is processed into a tree of [StyledElement]s,
   /// which are then parsed into an [InlineSpan] tree that is then rendered to the screen by Flutter
@@ -184,7 +183,8 @@ class HtmlParser extends StatelessWidget {
         return parseLayoutElement(node, children);
       } else if (HtmlElements.tableCellElements.contains(node.localName)) {
         return parseTableCellElement(node, children);
-      } else if (HtmlElements.tableDefinitionElements.contains(node.localName)) {
+      } else if (HtmlElements.tableDefinitionElements
+          .contains(node.localName)) {
         return parseTableDefinitionElement(node, children);
       } else {
         final StyledElement tree = parseStyledElement(node, children);
@@ -285,7 +285,6 @@ class HtmlParser extends StatelessWidget {
   /// child that doesn't specify a different style.
   static StyledElement _cascadeStyles(
       Map<String, Style> style, StyledElement tree) {
-
     for (var child in tree.children) {
       child.style = tree.style.copyOnlyInherited(child.style);
       _cascadeStyles(style, child);
@@ -372,7 +371,7 @@ class HtmlParser extends StatelessWidget {
             shrinkWrap: newContext.parser.shrinkWrap,
             childIsReplaced: true, //TODO is this true?
             child:
-            customRenders[entry]!.widget!.call(newContext, buildChildren),
+                customRenders[entry]!.widget!.call(newContext, buildChildren),
           ),
         );
       }
@@ -655,9 +654,8 @@ class HtmlParser extends StatelessWidget {
           if (olStack.last.data <= 0) {
             marker = '${olStack.last.data}.';
           } else {
-            marker = "${(olStack.last.data as int)
-                    .toRomanNumeralString()!
-                    .toLowerCase()}.";
+            marker =
+                "${(olStack.last.data as int).toRomanNumeralString()!.toLowerCase()}.";
           }
           break;
         case ListStyleType.upperRoman:

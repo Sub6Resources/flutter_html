@@ -71,7 +71,6 @@ class EmptyContentElement extends ReplacedElement {
 }
 
 class RubyElement extends ReplacedElement {
-
   @override
   dom.Element element;
 

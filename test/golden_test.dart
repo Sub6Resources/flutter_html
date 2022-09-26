@@ -62,11 +62,12 @@ void main() {
     //    await expectLater(find.byType(Html), matchesGoldenFile('./goldens/whitespace.png'));
   });
 
-  testWidgets('whitespace between inline elements golden test', (WidgetTester tester) async {
+  testWidgets('whitespace between inline elements golden test',
+      (WidgetTester tester) async {
     await tester.pumpWidget(
       TestApp(
         Html(
-          data:"""<b>Harry</b> <b>Potter</b>""",
+          data: """<b>Harry</b> <b>Potter</b>""",
         ),
       ),
     );
