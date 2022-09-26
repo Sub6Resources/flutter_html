@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_math_fork/flutter_math.dart';
 
+export 'package:flutter_math_fork/flutter_math.dart';
+
 /// The CustomRender function for the <math> tag.
 CustomRender mathRender({OnMathError? onMathError}) =>
     CustomRender.widget(widget: (context, buildChildren) {
