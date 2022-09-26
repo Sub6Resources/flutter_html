@@ -4,7 +4,5 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
     CustomRender.widget(widget: (context, buildChildren) {
-      return Container(
-        child: Text("Iframes are currently not supported in this environment"),
-      );
+      return const Text("Iframes are currently not supported in this environment");
     });

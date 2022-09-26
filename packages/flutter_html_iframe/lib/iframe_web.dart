@@ -23,7 +23,7 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
       final String createdViewId = getRandString(10);
       ui.platformViewRegistry
           .registerViewFactory(createdViewId, (int viewId) => iframe);
-      return Container(
+      return SizedBox(
         width:
             double.tryParse(context.tree.element?.attributes['width'] ?? "") ??
                 (double.tryParse(

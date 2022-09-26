@@ -12,7 +12,7 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
           double.tryParse(context.tree.element?.attributes['width'] ?? "");
       final givenHeight =
           double.tryParse(context.tree.element?.attributes['height'] ?? "");
-      return Container(
+      return SizedBox(
         width: givenWidth ?? (givenHeight ?? 150) * 2,
         height: givenHeight ?? (givenWidth ?? 300) / 2,
         child: CssBoxWidget(
