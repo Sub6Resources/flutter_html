@@ -1,0 +1,31 @@
+name: flutter_html
+repository: https://github.com/sub6resources/flutter_html
+
+packages:
+  - packages/*
+  - .
+  - example
+
+command:
+  bootstrap:
+    usePubspecOverrides: true
+    runPubGetInParallel: false
+  version:
+    includeCommitId: true
+
+scripts:
+  analyze:
+    exec: flutter analyze . --fatal-infos
+
+  test:selective_unit_test:
+    run: melos exec --dir-exists="test" --fail-fast -- flutter test --no-pub --coverage
+    description: Run Flutter tests for a specific package in this project.
+    select-package:
+      flutter: true
+      dir-exists: test
+
+  test:
+    run: melos run test:selective_unit_test --no-select
+    description: Run all Flutter tests in this project.
+
+  gen_coverage: melos exec -- "\$MELOS_ROOT_PATH/combine_coverage.sh"
