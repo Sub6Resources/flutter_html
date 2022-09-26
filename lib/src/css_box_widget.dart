@@ -683,6 +683,10 @@ class _RenderCSSBox extends RenderBox
 extension Normalize on Dimension {
   void normalize(double emValue) {
     switch (this.unit) {
+      case Unit.rem:
+        // Because CSSBoxWidget doesn't have any information about any
+        // sort of tree structure, treat rem the same as em. The HtmlParser
+        // widget handles rem/em values before they get to CSSBoxWidget.
       case Unit.em:
         this.value *= emValue;
         this.unit = Unit.px;
