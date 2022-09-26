@@ -1,31 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html_all/flutter_html_all.dart';
-import 'package:flutter_math_fork/flutter_math.dart';
 
-void main() => runApp(new MyApp());
+void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return new MaterialApp(
+    return MaterialApp(
       title: 'Flutter Demo',
-      theme: new ThemeData(
+      theme: ThemeData(
         primarySwatch: Colors.deepPurple,
       ),
-      home: new MyHomePage(title: 'flutter_html Example'),
+      home: const MyHomePage(title: 'flutter_html Example'),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
 
   final String title;
 
   @override
-  _MyHomePageState createState() => new _MyHomePageState();
+  MyHomePageState createState() => MyHomePageState();
 }
 
 const htmlData = r"""
@@ -66,9 +67,9 @@ const htmlData = r"""
       <div style="width: 150px; height: 20px; background-color: #ff99ff; margin: 15px auto;">margin: 15px auto</div>
       <div style="width: 150px; height: 20px; background-color: #9999ff; margin-left: auto;">margin-left: auto</div>
       <p>With an image - non-block (should not center):</p>
-      <img style="margin: auto;" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
+      <img alt='' style="margin: auto;" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
       <p>block image (should center):</p>
-      <img style="display: block; margin: auto;" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
+      <img alt='' style="display: block; margin: auto;" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
       <h3>Table support (with custom styling!):</h3>
       <p>
       <q>Famous quote...</q>
@@ -253,16 +254,16 @@ const htmlData = r"""
 
 final staticAnchorKey = GlobalKey();
 
-class _MyHomePageState extends State<MyHomePage> {
+class MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
-    return new Scaffold(
+    return Scaffold(
       appBar: AppBar(
-        title: Text('flutter_html Example'),
+        title: const Text('flutter_html Example'),
         centerTitle: true,
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.arrow_downward),
+        child: const Icon(Icons.arrow_downward),
         onPressed: () {
           final anchorContext = AnchorKey.forId(staticAnchorKey, "bottom")?.currentContext;
           if (anchorContext != null) {
@@ -276,17 +277,17 @@ class _MyHomePageState extends State<MyHomePage> {
           data: htmlData,
           style: {
             "table": Style(
-              backgroundColor: Color.fromARGB(0x50, 0xee, 0xee, 0xee),
+              backgroundColor: const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
             ),
             "tr": Style(
-              border: Border(bottom: BorderSide(color: Colors.grey)),
+              border: const Border(bottom: BorderSide(color: Colors.grey)),
             ),
             "th": Style(
-              padding: EdgeInsets.all(6),
+              padding: const EdgeInsets.all(6),
               backgroundColor: Colors.grey,
             ),
             "td": Style(
-              padding: EdgeInsets.all(6),
+              padding: const EdgeInsets.all(6),
               alignment: Alignment.topLeft,
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
@@ -301,7 +302,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 return Text(e.message);
               },
             )),
-            tagMatcher("bird"): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => TextSpan(text: "🐦")),
+            tagMatcher("bird"): CustomRender.inlineSpan(inlineSpan: (context, buildChildren) => const TextSpan(text: "🐦")),
             tagMatcher("flutter"): CustomRender.widget(widget: (context, buildChildren) => FlutterLogo(
               style: (context.tree.element!.attributes['horizontal'] != null)
                   ? FlutterLogoStyle.horizontal
@@ -316,7 +317,7 @@ class _MyHomePageState extends State<MyHomePage> {
             audioMatcher(): audioRender(),
             iframeMatcher(): iframeRender(),
             mathMatcher(): mathRender(onMathError: (error, exception, exceptionWithType) {
-              print(exception);
+              debugPrint(exception);
               return Text(exception);
             }),
             svgTagMatcher(): svgTagRender(),
@@ -325,36 +326,37 @@ class _MyHomePageState extends State<MyHomePage> {
             svgNetworkSourceMatcher(): svgNetworkImageRender(),
             networkSourceMatcher(domains: ["flutter.dev"]): CustomRender.widget(
                 widget: (context, buildChildren) {
-                  return FlutterLogo(size: 36);
+                  return const FlutterLogo(size: 36);
                 }),
             networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
               headers: {"Custom-Header": "some-value"},
               altWidget: (alt) => Text(alt ?? ""),
-              loadingWidget: () => Text("Loading..."),
+              loadingWidget: () => const Text("Loading..."),
             ),
             // On relative paths starting with /wiki, prefix with a base url
                 (context) => context.tree.element?.attributes["src"] != null
                 && context.tree.element!.attributes["src"]!.startsWith("/wiki"):
-            networkImageRender(mapUrl: (url) => "https://upload.wikimedia.org" + url!),
+            networkImageRender(mapUrl: (url) => "https://upload.wikimedia.org${url!}"),
             // Custom placeholder image for broken links
-            networkSourceMatcher(): networkImageRender(altWidget: (_) => FlutterLogo()),
+            networkSourceMatcher(): networkImageRender(altWidget: (_) => const FlutterLogo()),
             videoMatcher(): videoRender(),
           },
           onLinkTap: (url, _, __, ___) {
-            print("Opening $url...");
+            debugPrint("Opening $url...");
           },
           onImageTap: (src, _, __, ___) {
-            print(src);
+            debugPrint(src);
           },
           onImageError: (exception, stackTrace) {
-            print(exception);
+            debugPrint(exception.toString());
           },
           onCssParseError: (css, messages) {
-            print("css that errored: $css");
-            print("error messages:");
-            messages.forEach((element) {
-              print(element);
-            });
+            debugPrint("css that errored: $css");
+            debugPrint("error messages:");
+            for (var element in messages) {
+              debugPrint(element.toString());
+            }
+            return '';
           },
         ),
       ),
