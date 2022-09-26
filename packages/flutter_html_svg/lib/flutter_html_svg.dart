@@ -42,7 +42,7 @@ CustomRender svgDataImageRender() =>
       final dataUri = _dataUriFormat.firstMatch(
           _src(context.tree.element?.attributes.cast() ?? <String, String>{})!);
       final data = dataUri?.namedGroup('data');
-      if (data == null) return Container(height: 0, width: 0);
+      if (data == null) return const SizedBox(height: 0, width: 0);
       return Builder(
           key: context.key,
           builder: (buildContext) {
@@ -74,7 +74,7 @@ CustomRender svgDataImageRender() =>
 CustomRender svgNetworkImageRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
       if (context.tree.element?.attributes["src"] == null) {
-        return Container(height: 0, width: 0);
+        return const SizedBox(height: 0, width: 0);
       }
       return Builder(
           key: context.key,
@@ -104,7 +104,7 @@ CustomRender svgAssetImageRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
       if (_src(context.tree.element?.attributes.cast() ?? <String, String>{}) ==
           null) {
-        return Container(height: 0, width: 0);
+        return const SizedBox(height: 0, width: 0);
       }
       final assetPath = _src(context.tree.element!.attributes.cast())!
           .replaceFirst('asset:', '');
@@ -148,7 +148,7 @@ CustomRenderMatcher svgDataUriMatcher(
 
 /// A CustomRenderMatcher for an <img> tag with an svg tag over the network
 CustomRenderMatcher svgNetworkSourceMatcher({
-  List<String> schemas: const ["https", "http"],
+  List<String> schemas = const ["https", "http"],
   List<String>? domains,
   String? extension = "svg",
 }) =>
@@ -178,7 +178,7 @@ CustomRenderMatcher svgAssetUriMatcher() => (context) =>
         .endsWith(".svg");
 
 final _dataUriFormat = RegExp(
-    "^(?<scheme>data):(?<mime>image\/[\\w\+\-\.]+)(?<encoding>;base64)?\,(?<data>.*)");
+    "^(?<scheme>data):(?<mime>image\\/[\\w\\+\\-\\.]+)(?<encoding>;base64)?\\,(?<data>.*)");
 
 String? _src(Map<String, String> attributes) {
   return attributes["src"];
