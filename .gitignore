@@ -152,4 +152,5 @@ modules.xml
 
 /example/ios/Flutter/Flutter.podspec
 
-**/pubspec_overrides.yaml
+packages/**/pubspec_overrides.yaml
+pubspec_overrides.yaml

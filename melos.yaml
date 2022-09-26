@@ -2,8 +2,12 @@ name: flutter_html
 repository: https://github.com/sub6resources/flutter_html
 
 packages:
-  - '*'
+  - .
   - packages/**
+
+ignore:
+  - './example'
+  - 'packages/**/example'
 
 command:
   bootstrap:
