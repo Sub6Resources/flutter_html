@@ -25,10 +25,10 @@ class VideoWidget extends StatefulWidget {
   final RenderContext context;
   final VideoControllerCallback? callback;
 
-  VideoWidget({
+  const VideoWidget({Key? key,
     required this.context,
     this.callback,
-  });
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _VideoWidgetState();
@@ -83,7 +83,7 @@ class _VideoWidgetState extends State<VideoWidget> {
   @override
   Widget build(BuildContext bContext) {
     if (_chewieController == null) {
-      return Container(height: 0, width: 0);
+      return const SizedBox(height: 0, width: 0);
     }
     final child = Container(
       key: widget.context.key,
