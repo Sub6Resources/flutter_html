@@ -28,10 +28,10 @@ class AudioWidget extends StatefulWidget {
   final RenderContext context;
   final AudioControllerCallback? callback;
 
-  AudioWidget({
+  const AudioWidget({Key? key,
     required this.context,
     this.callback,
-  });
+  }) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _AudioWidgetState();
@@ -78,16 +78,16 @@ class _AudioWidgetState extends State<AudioWidget> {
   @override
   Widget build(BuildContext bContext) {
     if (sources.isEmpty || sources.first == null) {
-      return Container(height: 0, width: 0);
+      return const SizedBox(height: 0, width: 0);
     }
 
     return CssBoxWidget(
       key: widget.context.key,
       style: widget.context.style,
+      childIsReplaced: true,
       child: ChewieAudio(
         controller: chewieAudioController!,
       ),
-      childIsReplaced: true,
     );
   }
 }
