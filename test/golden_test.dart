@@ -7,7 +7,7 @@ import 'test_data.dart';
 class TestApp extends StatelessWidget {
   final Widget body;
 
-  TestApp(this.body);
+  const TestApp(this.body, {super.key});
 
   @override
   Widget build(BuildContext context) {

@@ -61,7 +61,7 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<p>Text</p>",
-          tagsList: ['div'], //Anything but `p`
+          tagsList: const ['div'], //Anything but `p`
         ),
       ),
     );
@@ -73,7 +73,7 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<p>Text</p>",
-          tagsList: ['html', 'body', 'p'],
+          tagsList: const ['html', 'body', 'p'],
         ),
       ),
     );

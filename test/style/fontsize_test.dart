@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   test('Check basic FontSize inheritance', () {
     final FontSize parent = FontSize(16);
-    final FontSize? child = null;
+    const FontSize? child = null;
 
     final result = FontSize.inherit(parent, child);
 
@@ -13,8 +13,8 @@ void main() {
   });
 
   test('Check double null FontSize inheritance', () {
-    final FontSize? parent = null;
-    final FontSize? child = null;
+    const FontSize? parent = null;
+    const FontSize? child = null;
 
     final result = FontSize.inherit(parent, child);
 
@@ -22,8 +22,8 @@ void main() {
   });
 
   test('Check basic em inheritance', () {
-    final FontSize? parent = FontSize(16);
-    final FontSize? child = FontSize(1, Unit.em);
+    final FontSize parent = FontSize(16);
+    final FontSize child = FontSize(1, Unit.em);
 
     final result = FontSize.inherit(parent, child);
 
@@ -31,8 +31,8 @@ void main() {
   });
 
   test('Check factor em inheritance', () {
-    final FontSize? parent = FontSize(16);
-    final FontSize? child = FontSize(0.5, Unit.em);
+    final FontSize parent = FontSize(16);
+    final FontSize child = FontSize(0.5, Unit.em);
 
     final result = FontSize.inherit(parent, child);
 
@@ -40,8 +40,8 @@ void main() {
   });
 
   test('Check basic % inheritance', () {
-    final FontSize? parent = FontSize(16);
-    final FontSize? child = FontSize(100, Unit.percent);
+    final FontSize parent = FontSize(16);
+    final FontSize child = FontSize(100, Unit.percent);
 
     final result = FontSize.inherit(parent, child);
 
@@ -49,8 +49,8 @@ void main() {
   });
 
   test('Check scaled % inheritance', () {
-    final FontSize? parent = FontSize(16);
-    final FontSize? child = FontSize(50, Unit.percent);
+    final FontSize parent = FontSize(16);
+    final FontSize child = FontSize(50, Unit.percent);
 
     final result = FontSize.inherit(parent, child);
 

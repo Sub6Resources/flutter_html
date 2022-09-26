@@ -13,8 +13,8 @@ void main() {
 
   test('CustomBorderSide does not allow negative width', () {
     expect(() => CustomBorderSide(width: -5), throwsAssertionError);
-    expect(CustomBorderSide(width: 0), TypeMatcher<CustomBorderSide>());
-    expect(CustomBorderSide(width: 5), TypeMatcher<CustomBorderSide>());
+    expect(CustomBorderSide(width: 0), const TypeMatcher<CustomBorderSide>());
+    expect(CustomBorderSide(width: 5), const TypeMatcher<CustomBorderSide>());
   });
 
   const originalString = 'Hello';
@@ -25,18 +25,18 @@ void main() {
     expect(originalString.transformed(null), equals(originalString));
   });
 
-  test('TextTransformUtil uppercases correctly', () {
+  test('TextTransformUtil uppercase-s correctly', () {
     expect(originalString.transformed(TextTransform.uppercase), equals(uppercaseString));
   });
 
-  test('TextTransformUtil lowercases correctly', () {
+  test('TextTransformUtil lowercase-s correctly', () {
     expect(originalString.transformed(TextTransform.lowercase), equals(lowercaseString));
   });
 
   const originalLongString = 'Hello, world! pub.dev';
   const capitalizedLongString = 'Hello, World! Pub.Dev';
 
-  test('TextTransformUtil capitalizs correctly', () {
+  test('TextTransformUtil capitalizes correctly', () {
     expect(originalLongString.transformed(TextTransform.capitalize), equals(capitalizedLongString));
   });
 }
