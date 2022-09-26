@@ -29,7 +29,7 @@ class TableSectionLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     // Not rendered; TableLayoutElement will instead consume its children
-    return Container(child: Text("TABLE SECTION"));
+    return const Text("TABLE SECTION");
   }
 }
 
@@ -43,7 +43,7 @@ class TableRowLayoutElement extends LayoutElement {
   @override
   Widget toWidget(RenderContext context) {
     // Not rendered; TableLayoutElement will instead consume its children
-    return Container(child: Text("TABLE ROW"));
+    return const Text("TABLE ROW");
   }
 }
 
@@ -158,7 +158,7 @@ class DetailsContentElement extends LayoutElement {
                 children: firstChild == null ? [] : [firstChild],
                 style: style,
               )
-            : Text("Details"),
+            : const Text("Details"),
         children: [
           CssBoxWidget.withInlineSpanChildren(
             children: getChildren(
@@ -188,7 +188,7 @@ class EmptyLayoutElement extends LayoutElement {
         );
 
   @override
-  Widget? toWidget(_) => null;
+  Widget? toWidget(context) => null;
 }
 
 LayoutElement parseLayoutElement(

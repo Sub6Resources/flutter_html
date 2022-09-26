@@ -243,9 +243,9 @@ class Style {
     this.textOverflow,
     this.textTransform = TextTransform.none,
   }) {
-    if (this.alignment == null &&
-        (display == Display.BLOCK || display == Display.LIST_ITEM)) {
-      this.alignment = Alignment.centerLeft;
+    if (alignment == null &&
+        (display == Display.block || display == Display.listItem)) {
+      alignment = Alignment.centerLeft;
     }
   }
 
@@ -358,7 +358,7 @@ class Style {
           : backgroundColor,
       color: child.color ?? color,
       direction: child.direction ?? direction,
-      display: display == Display.NONE ? display : child.display,
+      display: display == Display.none ? display : child.display,
       fontFamily: child.fontFamily ?? fontFamily,
       fontFamilyFallback: child.fontFamilyFallback ?? fontFamilyFallback,
       fontFeatureSettings: child.fontFeatureSettings ?? fontFeatureSettings,
@@ -462,24 +462,24 @@ class Style {
   }
 
   Style.fromTextStyle(TextStyle textStyle) {
-    this.backgroundColor = textStyle.backgroundColor;
-    this.color = textStyle.color;
-    this.textDecoration = textStyle.decoration;
-    this.textDecorationColor = textStyle.decorationColor;
-    this.textDecorationStyle = textStyle.decorationStyle;
-    this.textDecorationThickness = textStyle.decorationThickness;
-    this.fontFamily = textStyle.fontFamily;
-    this.fontFamilyFallback = textStyle.fontFamilyFallback;
-    this.fontFeatureSettings = textStyle.fontFeatures;
-    this.fontSize =
+    backgroundColor = textStyle.backgroundColor;
+    color = textStyle.color;
+    textDecoration = textStyle.decoration;
+    textDecorationColor = textStyle.decorationColor;
+    textDecorationStyle = textStyle.decorationStyle;
+    textDecorationThickness = textStyle.decorationThickness;
+    fontFamily = textStyle.fontFamily;
+    fontFamilyFallback = textStyle.fontFamilyFallback;
+    fontFeatureSettings = textStyle.fontFeatures;
+    fontSize =
         textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null;
-    this.fontStyle = textStyle.fontStyle;
-    this.fontWeight = textStyle.fontWeight;
-    this.letterSpacing = textStyle.letterSpacing;
-    this.textShadow = textStyle.shadows;
-    this.wordSpacing = textStyle.wordSpacing;
-    this.lineHeight = LineHeight(textStyle.height ?? 1.2);
-    this.textTransform = TextTransform.none;
+    fontStyle = textStyle.fontStyle;
+    fontWeight = textStyle.fontWeight;
+    letterSpacing = textStyle.letterSpacing;
+    textShadow = textStyle.shadows;
+    wordSpacing = textStyle.wordSpacing;
+    lineHeight = LineHeight(textStyle.height ?? 1.2);
+    textTransform = TextTransform.none;
   }
 
   /// Sets any dimensions set to rem or em to the computed size
@@ -541,11 +541,11 @@ class Style {
 }
 
 enum Display {
-  BLOCK,
-  INLINE,
-  INLINE_BLOCK,
-  LIST_ITEM,
-  NONE,
+  block,
+  inline,
+  inlineBlock,
+  listItem,
+  none,
 }
 
 class ListStyleType {
@@ -561,22 +561,22 @@ class ListStyleType {
   factory ListStyleType.fromWidget(Widget widget) =>
       ListStyleType("", widget: widget, type: "widget");
 
-  static const LOWER_ALPHA = ListStyleType("LOWER_ALPHA");
-  static const UPPER_ALPHA = ListStyleType("UPPER_ALPHA");
-  static const LOWER_LATIN = ListStyleType("LOWER_LATIN");
-  static const UPPER_LATIN = ListStyleType("UPPER_LATIN");
-  static const CIRCLE = ListStyleType("CIRCLE");
-  static const DISC = ListStyleType("DISC");
-  static const DECIMAL = ListStyleType("DECIMAL");
-  static const LOWER_ROMAN = ListStyleType("LOWER_ROMAN");
-  static const UPPER_ROMAN = ListStyleType("UPPER_ROMAN");
-  static const SQUARE = ListStyleType("SQUARE");
-  static const NONE = ListStyleType("NONE");
+  static const lowerAlpha = ListStyleType("LOWER_ALPHA");
+  static const upperAlpha = ListStyleType("UPPER_ALPHA");
+  static const lowerLatin = ListStyleType("LOWER_LATIN");
+  static const upperLatin = ListStyleType("UPPER_LATIN");
+  static const circle = ListStyleType("CIRCLE");
+  static const disc = ListStyleType("DISC");
+  static const decimal = ListStyleType("DECIMAL");
+  static const lowerRoman = ListStyleType("LOWER_ROMAN");
+  static const upperRoman = ListStyleType("UPPER_ROMAN");
+  static const square = ListStyleType("SQUARE");
+  static const none = ListStyleType("NONE");
 }
 
 enum ListStylePosition {
-  OUTSIDE,
-  INSIDE,
+  outside,
+  inside,
 }
 
 enum TextTransform {
@@ -587,12 +587,12 @@ enum TextTransform {
 }
 
 enum VerticalAlign {
-  BASELINE,
-  SUB,
-  SUPER,
+  baseline,
+  sub,
+  sup,
 }
 
 enum WhiteSpace {
-  NORMAL,
-  PRE,
+  normal,
+  pre,
 }

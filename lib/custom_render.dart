@@ -16,14 +16,14 @@ CustomRenderMatcher tagMatcher(String tag) => (context) {
     };
 
 CustomRenderMatcher blockElementMatcher() => (context) {
-      return (context.tree.style.display == Display.BLOCK ||
-              context.tree.style.display == Display.INLINE_BLOCK) &&
+      return (context.tree.style.display == Display.block ||
+              context.tree.style.display == Display.inlineBlock) &&
           (context.tree.children.isNotEmpty ||
               context.tree.element?.localName == "hr");
     };
 
 CustomRenderMatcher listElementMatcher() => (context) {
-      return context.tree.style.display == Display.LIST_ITEM;
+      return context.tree.style.display == Display.listItem;
     };
 
 CustomRenderMatcher replacedElementMatcher() => (context) {
@@ -44,7 +44,7 @@ CustomRenderMatcher dataUriMatcher(
     };
 
 CustomRenderMatcher networkSourceMatcher({
-  List<String> schemas: const ["https", "http"],
+  List<String> schemas = const ["https", "http"],
   List<String>? domains,
   String? extension,
 }) =>
@@ -81,7 +81,7 @@ CustomRenderMatcher layoutElementMatcher() => (context) {
 
 CustomRenderMatcher verticalAlignMatcher() => (context) {
       return context.tree.style.verticalAlign != null &&
-          context.tree.style.verticalAlign != VerticalAlign.BASELINE;
+          context.tree.style.verticalAlign != VerticalAlign.baseline;
     };
 
 CustomRenderMatcher fallbackMatcher() => (context) {
@@ -120,10 +120,10 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
                   .expandIndexed((i, childTree) => [
                         context.parser.parseTree(context, childTree),
                         if (i != context.tree.children.length - 1 &&
-                            childTree.style.display == Display.BLOCK &&
+                            childTree.style.display == Display.block &&
                             childTree.element?.localName != "html" &&
                             childTree.element?.localName != "body")
-                          TextSpan(text: "\n"),
+                          const TextSpan(text: "\n"),
                       ])
                   .toList(),
         );
@@ -136,17 +136,17 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
           style: style ?? context.tree.style,
           shrinkWrap: context.parser.shrinkWrap,
           childIsReplaced:
-              REPLACED_EXTERNAL_ELEMENTS.contains(context.tree.name),
+              HtmlElements.replacedExternalElements.contains(context.tree.name),
           children: children ??
               context.tree.children
                   .expandIndexed((i, childTree) => [
                         context.parser.parseTree(context, childTree),
                         //TODO can this newline be added in a different step?
                         if (i != context.tree.children.length - 1 &&
-                            childTree.style.display == Display.BLOCK &&
+                            childTree.style.display == Display.block &&
                             childTree.element?.localName != "html" &&
                             childTree.element?.localName != "body")
-                          TextSpan(text: "\n"),
+                          const TextSpan(text: "\n"),
                       ])
                   .toList(),
         ),
@@ -168,7 +168,7 @@ CustomRender listElementRender(
             children: [
               (style?.listStylePosition ??
                           context.tree.style.listStylePosition) ==
-                      ListStylePosition.OUTSIDE
+                      ListStylePosition.outside
                   ? Padding(
                       padding: style?.padding?.nonNegative ??
                           context.tree.style.padding?.nonNegative ??
@@ -185,15 +185,15 @@ CustomRender listElementRender(
                                   : 0.0),
                       child:
                           style?.markerContent ?? context.style.markerContent)
-                  : Container(height: 0, width: 0),
-              Text("\u0020",
+                  : const SizedBox(height: 0, width: 0),
+              const Text("\u0020",
                   textAlign: TextAlign.right,
                   style: TextStyle(fontWeight: FontWeight.w400)),
               Expanded(
                 child: Padding(
                   padding: (style?.listStylePosition ??
                               context.tree.style.listStylePosition) ==
-                          ListStylePosition.INSIDE
+                          ListStylePosition.inside
                       ? EdgeInsets.only(
                           left: (style?.direction ??
                                       context.tree.style.direction) !=
@@ -214,13 +214,13 @@ CustomRender listElementRender(
                       ..insertAll(
                           0,
                           context.tree.style.listStylePosition ==
-                                  ListStylePosition.INSIDE
+                                  ListStylePosition.inside
                               ? [
                                   WidgetSpan(
                                       alignment: PlaceholderAlignment.middle,
                                       child: style?.markerContent ??
                                           context.style.markerContent ??
-                                          Container(height: 0, width: 0))
+                                          const SizedBox(height: 0, width: 0))
                                 ]
                               : []),
                     style: style ?? context.style,
@@ -370,16 +370,16 @@ CustomRender networkImageRender({
           if (!completer.isCompleted) {
             context.parser.cachedImageSizes[src] = size;
             completer.complete(size);
-            image.image.resolve(ImageConfiguration()).removeListener(listener!);
+            image.image.resolve(const ImageConfiguration()).removeListener(listener!);
           }
         }, onError: (object, stacktrace) {
           if (!completer.isCompleted) {
             completer.completeError(object);
-            image.image.resolve(ImageConfiguration()).removeListener(listener!);
+            image.image.resolve(const ImageConfiguration()).removeListener(listener!);
           }
         });
 
-        image.image.resolve(ImageConfiguration()).addListener(listener);
+        image.image.resolve(const ImageConfiguration()).addListener(listener);
       }
       final attributes =
           context.tree.element!.attributes.cast<String, String>();
@@ -487,12 +487,12 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
               children: context.tree.children
                   .expand((tree) => [
                         context.parser.parseTree(context, tree),
-                        if (tree.style.display == Display.BLOCK &&
+                        if (tree.style.display == Display.block &&
                             tree.element?.parent?.localName != "th" &&
                             tree.element?.parent?.localName != "td" &&
                             tree.element?.localName != "html" &&
                             tree.element?.localName != "body")
-                          TextSpan(text: "\n"),
+                          const TextSpan(text: "\n"),
                       ])
                   .toList(),
             ));
@@ -516,8 +516,8 @@ Map<CustomRenderMatcher, CustomRender> generateDefaultRenders() {
 List<InlineSpan> _getListElementChildren(
     ListStylePosition? position, Function() buildChildren) {
   List<InlineSpan> children = buildChildren.call();
-  if (position == ListStylePosition.INSIDE) {
-    final tabSpan = WidgetSpan(
+  if (position == ListStylePosition.inside) {
+    const tabSpan = WidgetSpan(
       child: Text("\t",
           textAlign: TextAlign.right,
           style: TextStyle(fontWeight: FontWeight.w400)),
@@ -567,13 +567,13 @@ InlineSpan _getInteractableChildren(RenderContext context,
 }
 
 final _dataUriFormat = RegExp(
-    "^(?<scheme>data):(?<mime>image\/[\\w\+\-\.]+)(?<encoding>;base64)?\,(?<data>.*)");
+    "^(?<scheme>data):(?<mime>image\\/[\\w\\+\\-\\.]+)(?<encoding>;base64)?\\,(?<data>.*)");
 
 double _getVerticalOffset(StyledElement tree) {
   switch (tree.style.verticalAlign) {
-    case VerticalAlign.SUB:
+    case VerticalAlign.sub:
       return tree.style.fontSize!.value / 2.5;
-    case VerticalAlign.SUPER:
+    case VerticalAlign.sup:
       return tree.style.fontSize!.value / -2.5;
     default:
       return 0;
@@ -618,5 +618,5 @@ double _aspectRatio(
 
 extension ClampedEdgeInsets on EdgeInsetsGeometry {
   EdgeInsetsGeometry get nonNegative =>
-      this.clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity));
+      clamp(EdgeInsets.zero, const EdgeInsets.all(double.infinity));
 }

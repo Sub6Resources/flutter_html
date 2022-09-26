@@ -1,5 +1,3 @@
-//TODO implement dimensionality
-
 import 'length.dart';
 
 class FontSize extends LengthOrPercent {
@@ -35,5 +33,5 @@ class FontSize extends LengthOrPercent {
     return parent;
   }
 
-  double get emValue => this.value;
+  double get emValue => value;
 }

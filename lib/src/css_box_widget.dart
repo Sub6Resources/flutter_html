@@ -5,18 +5,18 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
 
 class CssBoxWidget extends StatelessWidget {
-  CssBoxWidget({
-    this.key,
+  const CssBoxWidget({
+    super.key,
     required this.child,
     required this.style,
     this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
-  }) : super(key: key);
+  });
 
   /// Generates a CSSBoxWidget that contains a list of InlineSpan children.
   CssBoxWidget.withInlineSpanChildren({
-    this.key,
+    super.key,
     required List<InlineSpan> children,
     required this.style,
     this.textDirection,
@@ -25,18 +25,14 @@ class CssBoxWidget extends StatelessWidget {
     bool selectable = false,
     TextSelectionControls? selectionControls,
     ScrollPhysics? scrollPhysics,
-  })  : this.child = selectable
+  })  : child = selectable
             ? _generateSelectableWidgetChild(
                 children,
                 style,
                 selectionControls,
                 scrollPhysics,
               )
-            : _generateWidgetChild(children, style),
-        super(key: key);
-
-  /// An optional anchor key to use in finding this box
-  final AnchorKey? key;
+            : _generateWidgetChild(children, style);
 
   /// The child to be rendered within the CSS Box.
   final Widget child;
@@ -67,7 +63,7 @@ class CssBoxWidget extends StatelessWidget {
       paddingSize: style.padding?.collapsedSize ?? Size.zero,
       borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
       margins: style.margin ?? Margins.zero,
-      display: style.display ?? Display.INLINE,
+      display: style.display ?? Display.inline,
       childIsReplaced: childIsReplaced,
       emValue: _calculateEmValue(style, context),
       textDirection: _checkTextDirection(context, textDirection),
@@ -132,8 +128,8 @@ class CssBoxWidget extends StatelessWidget {
   /// width available to it or if it should just let its inner content
   /// determine the content-box's width.
   bool _shouldExpandToFillBlock() {
-    return (style.display == Display.BLOCK ||
-            style.display == Display.LIST_ITEM) &&
+    return (style.display == Display.block ||
+            style.display == Display.listItem) &&
         !childIsReplaced &&
         !shrinkWrap;
   }
@@ -244,7 +240,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
     // and https://drafts.csswg.org/css2/#inline-replaced-width
     // and https://drafts.csswg.org/css2/#inlineblock-width
     // and https://drafts.csswg.org/css2/#inlineblock-replaced-width
-    if (display == Display.INLINE || display == Display.INLINE_BLOCK) {
+    if (display == Display.inline || display == Display.inlineBlock) {
       if (margins.left?.unit == Unit.auto) {
         leftMargin = Margin.zero();
       }
@@ -379,8 +375,9 @@ class _RenderCSSBox extends RenderBox
 
   @override
   void setupParentData(RenderBox child) {
-    if (child.parentData is! CSSBoxParentData)
+    if (child.parentData is! CSSBoxParentData) {
       child.parentData = CSSBoxParentData();
+    }
   }
 
   static double getIntrinsicDimension(RenderBox? firstChild,
@@ -453,13 +450,13 @@ class _RenderCSSBox extends RenderBox
       maxWidth: (this.width.unit != Unit.auto)
           ? this.width.value
           : containingBlockSize.width -
-              (this.margins.left?.value ?? 0) -
-              (this.margins.right?.value ?? 0),
+              (margins.left?.value ?? 0) -
+              (margins.right?.value ?? 0),
       maxHeight: (this.height.unit != Unit.auto)
           ? this.height.value
           : containingBlockSize.height -
-              (this.margins.top?.value ?? 0) -
-              (this.margins.bottom?.value ?? 0),
+              (margins.top?.value ?? 0) -
+              (margins.bottom?.value ?? 0),
       minWidth: (this.width.unit != Unit.auto) ? this.width.value : 0,
       minHeight: (this.height.unit != Unit.auto) ? this.height.value : 0,
     );
@@ -475,27 +472,27 @@ class _RenderCSSBox extends RenderBox
     //Calculate Width and Height of CSS Box
     height = childSize.height;
     switch (display) {
-      case Display.BLOCK:
+      case Display.block:
         width = (shrinkWrap || childIsReplaced)
             ? childSize.width + horizontalMargins
             : containingBlockSize.width;
         height = childSize.height + verticalMargins;
         break;
-      case Display.INLINE:
+      case Display.inline:
         width = childSize.width + horizontalMargins;
         height = childSize.height;
         break;
-      case Display.INLINE_BLOCK:
+      case Display.inlineBlock:
         width = childSize.width + horizontalMargins;
         height = childSize.height + verticalMargins;
         break;
-      case Display.LIST_ITEM:
+      case Display.listItem:
         width = shrinkWrap
             ? childSize.width + horizontalMargins
             : containingBlockSize.width;
         height = childSize.height + verticalMargins;
         break;
-      case Display.NONE:
+      case Display.none:
         width = 0;
         height = 0;
         break;
@@ -528,22 +525,22 @@ class _RenderCSSBox extends RenderBox
       double leftOffset = 0;
       double topOffset = 0;
       switch (display) {
-        case Display.BLOCK:
+        case Display.block:
           leftOffset = leftMargin;
           topOffset = topMargin;
           break;
-        case Display.INLINE:
+        case Display.inline:
           leftOffset = leftMargin;
           break;
-        case Display.INLINE_BLOCK:
-          leftOffset = leftMargin;
-          topOffset = topMargin;
-          break;
-        case Display.LIST_ITEM:
+        case Display.inlineBlock:
           leftOffset = leftMargin;
           topOffset = topMargin;
           break;
-        case Display.NONE:
+        case Display.listItem:
+          leftOffset = leftMargin;
+          topOffset = topMargin;
+          break;
+        case Display.none:
           //No offset
           break;
       }
@@ -568,7 +565,7 @@ class _RenderCSSBox extends RenderBox
     bool marginLeftIsAuto = marginLeft.unit == Unit.auto;
     bool marginRightIsAuto = marginRight.unit == Unit.auto;
 
-    if (display == Display.BLOCK) {
+    if (display == Display.block) {
       if (childIsReplaced) {
         widthIsAuto = false;
       }
@@ -673,23 +670,18 @@ class _RenderCSSBox extends RenderBox
   void paint(PaintingContext context, Offset offset) {
     defaultPaint(context, offset);
   }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
 }
 
 extension Normalize on Dimension {
   void normalize(double emValue) {
-    switch (this.unit) {
+    switch (unit) {
       case Unit.rem:
         // Because CSSBoxWidget doesn't have any information about any
         // sort of tree structure, treat rem the same as em. The HtmlParser
         // widget handles rem/em values before they get to CSSBoxWidget.
       case Unit.em:
-        this.value *= emValue;
-        this.unit = Unit.px;
+        value *= emValue;
+        unit = Unit.px;
         return;
       case Unit.px:
       case Unit.auto:

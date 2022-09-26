@@ -19,7 +19,7 @@ class InteractableElement extends StyledElement {
 
 /// A [Gesture] indicates the type of interaction by a user.
 enum Gesture {
-  TAP,
+  tap,
 }
 
 StyledElement parseInteractableElement(
