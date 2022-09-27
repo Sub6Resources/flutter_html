@@ -1,3 +1,13 @@
+## 3.0.0-alpha.6
+
+ - **FIX**: Apply margins to <table> properly. (7581ea79)
+ - **FIX**: Use enum instead of const int internally in length.dart. (9dc7f08c)
+ - **FIX**: Change CSSBoxWidget to CssBoxWidget. (a62449a7)
+ - **FIX**: fix textShadow color declaration handler. (77ffe7cb)
+ - **FIX**: ol use default style. (1c2412a2)
+ - **FIX**: Crash when a tr tag includes text node. (ba8301c9)
+ - **FEAT**: exposes fontFamilyFallback parameter. (1d65aafd)
+
 ## [3.0.0-alpha.5] - June 9, 2022:
 * Fixed hot reloads, thanks @arjenmels
 * Fixed link taps not working
