@@ -1,5 +1,15 @@
-## 3.0.0-alpha.6
+## 3.0.0-alpha.6 - *September 2022*
 
+ - **FIX** #731 Resolve newline `<br>` issue
+ - **FIX** Align the baseline of inline content with the baseline of its parent flow, even if it has padding or borders
+ - **FIX** Improved fontSize inheritance when cascading styles
+ - **FIX** `auto` margins now work for any `Display.BLOCK` element.
+ - **FIX** `auto` width and height is now the default, rather than `null`
+ - **FIX** New CSSBoxWidget that handles calculations of child sizes for a more accurate HTML/CSS layout
+ - **BREAKING** New `Margin`, `Height`, and `Width` classes that allow `em`, `rem`, `px`, `auto`, and `%` values to be given
+ - **FEAT** Negative margins are now allowed
+ - **FIX** Updated default `p` and `h1-6` styles to use `em` for better font scaling
+ - **BREAKING** Package now requires Dart sdk >= Dart 2.17
  - **FIX**: Apply margins to <table> properly. (7581ea79)
  - **FIX**: Use enum instead of const int internally in length.dart. (9dc7f08c)
  - **FIX**: Change CSSBoxWidget to CssBoxWidget. (a62449a7)
