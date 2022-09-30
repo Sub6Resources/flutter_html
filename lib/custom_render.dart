@@ -102,6 +102,8 @@ class CustomRender {
   }) : inlineSpan = null;
 }
 
+@Deprecated(
+    "Please use a standard Html widget with CustomRender. Wrap the widget in SelectionArea")
 class SelectableCustomRender extends CustomRender {
   final TextSpan Function(RenderContext, List<TextSpan> Function()) textSpan;
 

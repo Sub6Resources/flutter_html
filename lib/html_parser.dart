@@ -53,12 +53,14 @@ class HtmlParser extends StatelessWidget {
     required this.onCssParseError,
     required this.onImageError,
     required this.shrinkWrap,
-    required this.selectable,
+    @Deprecated('Wrapping the Html widget in a SelectionArea widget is preferred')
+        this.selectable = false,
     required this.style,
     required this.customRenders,
     required this.tagsList,
     this.root,
-    this.selectionControls,
+    @Deprecated('Wrapping the Html widget in a SelectionArea widget is preferred')
+        this.selectionControls,
     this.scrollPhysics,
   }) : internalOnAnchorTap = onAnchorTap ??
             (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);

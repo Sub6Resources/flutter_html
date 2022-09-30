@@ -198,6 +198,8 @@ class _HtmlState extends State<Html> {
   }
 }
 
+@Deprecated(
+    "Please use Flutter's new SelectionArea widget. Upgrade from SelectableHtml to Html and wrap the widget in a SelectionArea widget.")
 class SelectableHtml extends StatefulWidget {
   /// The `SelectableHtml` widget takes HTML as input and displays a RichText
   /// tree of the parsed HTML content (which is selectable)
