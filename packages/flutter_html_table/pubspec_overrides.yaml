@@ -1,4 +1,0 @@
-# melos_managed_dependency_overrides: flutter_html
-dependency_overrides:
-  flutter_html:
-    path: ../..
