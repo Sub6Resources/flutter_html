@@ -110,17 +110,18 @@ class CssBoxWidget extends StatelessWidget {
       return Container();
     }
 
-    return SelectableText.rich(
-      TextSpan(
-        style: style.generateTextStyle(),
-        children: children,
-      ),
-      style: style.generateTextStyle(),
-      textAlign: style.textAlign,
-      textDirection: style.direction,
-      maxLines: style.maxLines,
+    return SelectionArea(
       selectionControls: selectionControls,
-      scrollPhysics: scrollPhysics,
+      child: Text.rich(
+        TextSpan(
+          style: style.generateTextStyle(),
+          children: children,
+        ),
+        style: style.generateTextStyle(),
+        textAlign: style.textAlign,
+        textDirection: style.direction,
+        maxLines: style.maxLines,
+      ),
     );
   }
 

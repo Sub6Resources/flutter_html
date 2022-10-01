@@ -148,19 +148,11 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 
 #### Selectable Text
 
-The package also has two constructors for selectable text support - `SelectableHtml()` and `SelectableHtml.fromDom()`.
+Note: These constructors are deprecated. It is preferred that you use Flutter's new `SelectionArea` instead (just wrap the `Html` widget in a `SelectionArea`).
 
-The difference between the two is the same as noted above.
-
-Please note: Due to Flutter [#38474](https://github.com/flutter/flutter/issues/38474), selectable text support is significantly watered down compared to the standard non-selectable version of the widget. The changes are as follows:
-
-1. The list of tags that can be rendered is significantly reduced. Key omissions include no support for images/video/audio, table, and ul/ol.
-
-2. No support for `customRender`, `customImageRender`, `onImageError`, `onImageTap`, `onMathError`, and `navigationDelegateForIframe`. (Support for `customRender` may be added in the future).
-
-3. Styling support is significantly reduced. Only text-related styling works (e.g. bold or italic), while container related styling (e.g. borders or padding/margin) do not work.
-
-Once the above issue is resolved, the aforementioned compromises will go away. Currently the `SelectableText.rich()` constructor does not support `WidgetSpan`s, resulting in the feature losses above.
+> The package also has two constructors for selectable text support - `SelectableHtml()` and `SelectableHtml.fromDom()`.
+> 
+> The difference between the two is the same as noted above.
 
 ### Parameters:
 

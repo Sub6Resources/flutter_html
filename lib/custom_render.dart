@@ -102,19 +102,10 @@ class CustomRender {
   }) : inlineSpan = null;
 }
 
-@Deprecated(
-    "Please use a standard Html widget with CustomRender. Wrap the widget in SelectionArea")
-class SelectableCustomRender extends CustomRender {
-  final TextSpan Function(RenderContext, List<TextSpan> Function()) textSpan;
-
-  SelectableCustomRender.fromTextSpan({
-    required this.textSpan,
-  }) : super.inlineSpan(inlineSpan: null);
-}
-
 CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
     CustomRender.inlineSpan(inlineSpan: (context, buildChildren) {
-      if (context.parser.selectable) {
+      if (context.parser.selectable &&
+          context.parser.selectableIgnoreBlockWidgets) {
         return TextSpan(
           style: context.style.generateTextStyle(),
           children: (children as List<TextSpan>?) ??

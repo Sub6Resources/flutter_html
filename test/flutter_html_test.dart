@@ -18,20 +18,6 @@ void main() {
   );
 
   testWidgets(
-    "Check that selectable widget does not fail on empty data",
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: SelectableHtml(
-            data: '',
-          ),
-        ),
-      );
-      expect(find.text('', findRichText: true), findsOneWidget);
-    },
-  );
-
-  testWidgets(
     "Check that widget displays given text",
     (tester) async {
       await tester.pumpWidget(

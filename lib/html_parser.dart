@@ -33,6 +33,7 @@ class HtmlParser extends StatelessWidget {
   final ImageErrorListener? onImageError;
   final bool shrinkWrap;
   final bool selectable;
+  final bool selectableIgnoreBlockWidgets;
 
   final Map<String, Style> style;
   final Map<CustomRenderMatcher, CustomRender> customRenders;
@@ -53,14 +54,13 @@ class HtmlParser extends StatelessWidget {
     required this.onCssParseError,
     required this.onImageError,
     required this.shrinkWrap,
-    @Deprecated('Wrapping the Html widget in a SelectionArea widget is preferred')
-        this.selectable = false,
+    required this.selectable,
+    required this.selectableIgnoreBlockWidgets,
     required this.style,
     required this.customRenders,
     required this.tagsList,
     this.root,
-    @Deprecated('Wrapping the Html widget in a SelectionArea widget is preferred')
-        this.selectionControls,
+    this.selectionControls,
     this.scrollPhysics,
   }) : internalOnAnchorTap = onAnchorTap ??
             (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
@@ -348,20 +348,6 @@ class HtmlParser extends StatelessWidget {
       if (entry.call(newContext)) {
         buildChildren() =>
             tree.children.map((tree) => parseTree(newContext, tree)).toList();
-        if (newContext.parser.selectable &&
-            customRenders[entry] is SelectableCustomRender) {
-          selectableBuildChildren() => tree.children
-              .map((tree) => parseTree(newContext, tree) as TextSpan)
-              .toList();
-          return (customRenders[entry] as SelectableCustomRender)
-              .textSpan
-              .call(newContext, selectableBuildChildren);
-        }
-        if (newContext.parser.selectable) {
-          return customRenders[entry]!
-              .inlineSpan!
-              .call(newContext, buildChildren) as TextSpan;
-        }
         if (customRenders[entry]?.inlineSpan != null) {
           return customRenders[entry]!
               .inlineSpan!

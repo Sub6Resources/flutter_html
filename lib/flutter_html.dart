@@ -189,6 +189,7 @@ class _HtmlState extends State<Html> {
       onImageError: widget.onImageError,
       shrinkWrap: widget.shrinkWrap,
       selectable: false,
+      selectableIgnoreBlockWidgets: false,
       style: widget.style,
       customRenders: {}
         ..addAll(widget.customRenders)
@@ -198,8 +199,6 @@ class _HtmlState extends State<Html> {
   }
 }
 
-@Deprecated(
-    "Please use Flutter's new SelectionArea widget. Upgrade from SelectableHtml to Html and wrap the widget in a SelectionArea widget.")
 class SelectableHtml extends StatefulWidget {
   /// The `SelectableHtml` widget takes HTML as input and displays a RichText
   /// tree of the parsed HTML content (which is selectable)
@@ -232,6 +231,8 @@ class SelectableHtml extends StatefulWidget {
   /// (e.g. bold or italic), while container related styling (e.g. borders or padding/margin)
   /// do not work because we can't use the `ContainerSpan` class (it needs an enclosing `WidgetSpan`).
 
+  @Deprecated(
+      "Please use Flutter's new SelectionArea widget. Upgrade from SelectableHtml to Html and wrap the widget in a SelectionArea widget.")
   SelectableHtml({
     Key? key,
     GlobalKey? anchorKey,
@@ -245,11 +246,14 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
+    this.ignoreBlockElements = false,
   })  : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
+  @Deprecated(
+      "Please use Flutter's new SelectionArea widget. Upgrade from SelectableHtml to Html and wrap the widget in a SelectionArea widget.")
   SelectableHtml.fromDom({
     Key? key,
     GlobalKey? anchorKey,
@@ -263,6 +267,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
+    this.ignoreBlockElements = false,
   })  : data = null,
         assert(document != null),
         documentElement = document!.documentElement,
@@ -282,6 +287,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
+    this.ignoreBlockElements = false,
   })  : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -327,10 +333,9 @@ class SelectableHtml extends StatefulWidget {
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
-  final Map<CustomRenderMatcher, SelectableCustomRender> customRenders;
+  final Map<CustomRenderMatcher, CustomRender> customRenders;
 
-  static List<String> get tags =>
-      List<String>.from(HtmlElements.selectableElements);
+  final bool ignoreBlockElements;
 
   @override
   State<StatefulWidget> createState() => _SelectableHtmlState();
@@ -361,12 +366,12 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         onImageError: null,
         shrinkWrap: widget.shrinkWrap,
         selectable: true,
+        selectableIgnoreBlockWidgets: widget.ignoreBlockElements,
         style: widget.style,
         customRenders: {}
           ..addAll(widget.customRenders)
           ..addAll(generateDefaultRenders()),
-        tagsList:
-            widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
+        tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
         selectionControls: widget.selectionControls,
         scrollPhysics: widget.scrollPhysics,
       ),
