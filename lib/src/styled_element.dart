@@ -1,3 +1,5 @@
+import 'dart:collection';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/style.dart';
@@ -5,6 +7,7 @@ import 'package:html/dom.dart' as dom;
 //TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
 //ignore: implementation_imports
 import 'package:html/src/query_selector.dart';
+import 'package:list_counter/list_counter.dart';
 
 /// A [StyledElement] applies a style to all of its children.
 class StyledElement {
@@ -14,6 +17,7 @@ class StyledElement {
   List<StyledElement> children;
   Style style;
   final dom.Element? _node;
+  final ListQueue<Counter> counters = ListQueue<Counter>();
 
   StyledElement({
     this.name = "[[No name]]",
@@ -304,24 +308,12 @@ StyledElement parseStyledElement(
       break;
     case "ol":
     case "ul":
-      //TODO(Sub6Resources): This is a workaround for collapsed margins. Remove.
-      if (element.parent!.localName == "li") {
-        styledElement.style = Style(
-//          margin: EdgeInsets.only(left: 30.0),
-          display: Display.block,
-          listStyleType: element.localName == "ol"
-              ? ListStyleType.decimal
-              : ListStyleType.disc,
-        );
-      } else {
-        styledElement.style = Style(
-//          margin: EdgeInsets.only(left: 30.0, top: 14.0, bottom: 14.0),
-          display: Display.block,
-          listStyleType: element.localName == "ol"
-              ? ListStyleType.decimal
-              : ListStyleType.disc,
-        );
-      }
+      styledElement.style = Style(
+        display: Display.block,
+        listStyleType: element.localName == "ol"
+            ? ListStyleType.decimal
+            : ListStyleType.disc,
+      );
       break;
     case "p":
       styledElement.style = Style(
@@ -416,4 +408,12 @@ FontSize numberToFontSize(String num) {
     return numberToFontSize((3 - relativeNum).toString());
   }
   return FontSize.medium;
+}
+
+extension DeepCopy on ListQueue<Counter> {
+  ListQueue<Counter> deepCopy() {
+    return ListQueue<Counter>.from(map((counter) {
+      return Counter(counter.name, counter.value);
+    }));
+  }
 }
