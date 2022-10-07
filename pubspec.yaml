@@ -17,8 +17,8 @@ dependencies:
   # Plugin for firstWhereOrNull extension on lists
   collection: '>=1.15.0 <2.0.0'
 
-  # plugin to convert integers to numerals
-  numerus: '>=2.0.0 <3.0.0'
+  # plugin to manage lists and counting in a variety of styles
+  list_counter: '>=1.0.2 <2.0.0'
 
   flutter:
     sdk: flutter
