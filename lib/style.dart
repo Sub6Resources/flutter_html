@@ -278,8 +278,7 @@ class Style {
     }
   }
 
-  static Map<String, Style> fromThemeData(ThemeData theme) =>
-      {
+  static Map<String, Style> fromThemeData(ThemeData theme) => {
         'h1': Style.fromTextStyle(theme.textTheme.headline1!),
         'h2': Style.fromTextStyle(theme.textTheme.headline2!),
         'h3': Style.fromTextStyle(theme.textTheme.headline3!),
@@ -289,8 +288,8 @@ class Style {
         'body': Style.fromTextStyle(theme.textTheme.bodyText2!),
       };
 
-  static Map<String, Style> fromCss(String css,
-      OnCssParseError? onCssParseError) {
+  static Map<String, Style> fromCss(
+      String css, OnCssParseError? onCssParseError) {
     final declarations = parseExternalCss(css, onCssParseError);
     Map<String, Style> styleMap = {};
     declarations.forEach((key, value) {
@@ -380,10 +379,10 @@ class Style {
 
     LineHeight? finalLineHeight = child.lineHeight != null
         ? child.lineHeight?.units == "length"
-        ? LineHeight(child.lineHeight!.size! /
-        (finalFontSize == null ? 14 : finalFontSize.value) *
-        1.2)
-        : child.lineHeight
+            ? LineHeight(child.lineHeight!.size! /
+                (finalFontSize == null ? 14 : finalFontSize.value) *
+                1.2)
+            : child.lineHeight
         : lineHeight;
 
     return child.copyWith(
@@ -487,7 +486,7 @@ class Style {
       textDecorationColor: textDecorationColor ?? this.textDecorationColor,
       textDecorationStyle: textDecorationStyle ?? this.textDecorationStyle,
       textDecorationThickness:
-      textDecorationThickness ?? this.textDecorationThickness,
+          textDecorationThickness ?? this.textDecorationThickness,
       textShadow: textShadow ?? this.textShadow,
       verticalAlign: verticalAlign ?? this.verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
@@ -515,7 +514,7 @@ class Style {
     fontFamilyFallback = textStyle.fontFamilyFallback;
     fontFeatureSettings = textStyle.fontFeatures;
     fontSize =
-    textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null;
+        textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null;
     fontStyle = textStyle.fontStyle;
     fontWeight = textStyle.fontWeight;
     letterSpacing = textStyle.letterSpacing;

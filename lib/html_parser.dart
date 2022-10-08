@@ -322,8 +322,9 @@ class HtmlParser extends StatelessWidget {
     tree = _removeEmptyElements(tree);
 
     tree = _calculateRelativeValues(tree, devicePixelRatio);
-    tree = _processListMarkers(tree);
+    tree = _preprocessListMarkers(tree);
     tree = _processCounters(tree);
+    tree = _processListMarkers(tree);
     tree = _processBeforesAndAfters(tree);
     tree = _collapseMargins(tree);
     return tree;
@@ -532,9 +533,9 @@ class HtmlParser extends StatelessWidget {
         .replaceAll(RegExp(" {2,}"), " ");
   }
 
-  /// [processListMarkers] adds marker pseudo elements to the front of all list
+  /// [preprocessListMarkers] adds marker pseudo elements to the front of all list
   /// items.
-  static StyledElement _processListMarkers(StyledElement tree) {
+  static StyledElement _preprocessListMarkers(StyledElement tree) {
     tree.style.listStylePosition ??= ListStylePosition.outside;
 
     if (tree.style.display == Display.listItem) {
@@ -543,6 +544,10 @@ class HtmlParser extends StatelessWidget {
         content: Content.normal,
         style: tree.style,
       );
+
+      // Inherit styles from originating widget
+      tree.style.marker!.style =
+          tree.style.copyOnlyInherited(tree.style.marker!.style ?? Style());
 
       // Add the implicit counter-increment on `list-item` if it isn't set
       // explicitly already
@@ -561,7 +566,7 @@ class HtmlParser extends StatelessWidget {
     }
 
     for (var child in tree.children) {
-      _processListMarkers(child);
+      _preprocessListMarkers(child);
     }
 
     return tree;
@@ -584,21 +589,56 @@ class HtmlParser extends StatelessWidget {
     // Increment any counters that are to be incremented
     if (tree.style.counterIncrement != null) {
       tree.style.counterIncrement!.forEach((counterName, increment) {
-        tree.counters.lastWhereOrNull(
-          (counter) => counter.name == counterName,
-        )?.increment(increment ?? 1);
+        tree.counters
+            .lastWhereOrNull(
+              (counter) => counter.name == counterName,
+            )
+            ?.increment(increment ?? 1);
 
         // If we didn't newly create the counter, increment the counter in the old copy as well.
-        if(tree.style.counterReset == null || !tree.style.counterReset!.containsKey(counterName)) {
-          counters?.lastWhereOrNull(
+        if (tree.style.counterReset == null ||
+            !tree.style.counterReset!.containsKey(counterName)) {
+          counters
+              ?.lastWhereOrNull(
                 (counter) => counter.name == counterName,
-          )?.increment(increment ?? 1);
+              )
+              ?.increment(increment ?? 1);
         }
       });
     }
 
     for (var element in tree.children) {
       _processCounters(element, tree.counters);
+    }
+
+    return tree;
+  }
+
+  static StyledElement _processListMarkers(StyledElement tree) {
+    if (tree.style.display == Display.listItem) {
+      final listStyleType = tree.style.listStyleType ?? ListStyleType.decimal;
+      final counterStyle = CounterStyleRegistry.lookup(
+        listStyleType.counterStyle,
+      );
+      String counterContent;
+      if (tree.style.marker?.content.isNormal ?? true) {
+        counterContent = counterStyle.generateMarkerContent(
+          tree.counters.lastOrNull?.value ?? 0,
+        );
+      } else if (!(tree.style.marker?.content.display ?? true)) {
+        counterContent = '';
+      } else {
+        counterContent = tree.style.marker?.content.replacementContent ??
+            counterStyle.generateMarkerContent(
+              tree.counters.lastOrNull?.value ?? 0,
+            );
+      }
+      tree.style.marker = Marker(
+          content: Content(counterContent), style: tree.style.marker?.style);
+    }
+
+    for (var child in tree.children) {
+      _processListMarkers(child);
     }
 
     return tree;
