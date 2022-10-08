@@ -155,112 +155,49 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
     });
 
 CustomRender listElementRender(
-        {Style? style, Widget? child, List<InlineSpan>? children}) =>
-    CustomRender.inlineSpan(
-      inlineSpan: (context, buildChildren) {
-        final listStyleType = style?.listStyleType ??
-            context.style.listStyleType ??
-            ListStyleType.decimal;
-        final counterStyle =
-            CounterStyleRegistry.lookup(listStyleType.counterStyle);
-        String counterContent;
-        if (style?.marker?.content.isNormal ??
-            context.style.marker?.content.isNormal ??
-            true) {
-          counterContent = counterStyle.generateMarkerContent(
-              context.tree.counters.lastOrNull?.value ?? 0);
-        } else if (!(style?.marker?.content.display ??
-            context.style.marker?.content.display ??
-            true)) {
-          counterContent = '';
-        } else {
-          counterContent = style?.marker?.content.replacementContent ??
-              context.style.marker?.content.replacementContent ??
-              counterStyle.generateMarkerContent(
-                  context.tree.counters.lastOrNull?.value ?? 0);
-        }
-        final markerWidget = counterContent.isNotEmpty
-            ? Text.rich(TextSpan(
-                text: counterContent,
-                style: context.tree.style.marker?.style?.generateTextStyle(),
-              ))
-            : const SizedBox(width: 0, height: 0); //TODO this is hardcoded
-
-        return WidgetSpan(
-          child: CssBoxWidget(
-            key: context.key,
-            style: style ?? context.tree.style,
-            shrinkWrap: context.parser.shrinkWrap,
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              textDirection: style?.direction ?? context.tree.style.direction,
-              children: [
-                (style?.listStylePosition ??
-                            context.tree.style.listStylePosition) ==
-                        ListStylePosition.outside
-                    ? Padding(
-                        padding: style?.padding?.nonNegative ??
-                            context.tree.style.padding?.nonNegative ??
-                            EdgeInsets.only(
-                                left: (style?.direction ??
-                                            context.tree.style.direction) !=
-                                        TextDirection.rtl
-                                    ? 10.0
-                                    : 0.0,
-                                right: (style?.direction ??
-                                            context.tree.style.direction) ==
-                                        TextDirection.rtl
-                                    ? 10.0
-                                    : 0.0),
-                        child: markerWidget,
-                      )
-                    : const SizedBox(height: 0, width: 0),
-                const Text("\u0020",
-                    textAlign: TextAlign.right,
-                    style: TextStyle(fontWeight: FontWeight.w400)),
-                Expanded(
-                  child: Padding(
-                    padding: (style?.listStylePosition ??
-                                context.tree.style.listStylePosition) ==
-                            ListStylePosition.inside
-                        ? EdgeInsets.only(
-                            left: (style?.direction ??
-                                        context.tree.style.direction) !=
-                                    TextDirection.rtl
-                                ? 10.0
-                                : 0.0,
-                            right: (style?.direction ??
-                                        context.tree.style.direction) ==
-                                    TextDirection.rtl
-                                ? 10.0
-                                : 0.0)
-                        : EdgeInsets.zero,
-                    child: CssBoxWidget.withInlineSpanChildren(
-                      children: _getListElementChildren(
-                          style?.listStylePosition ??
-                              context.tree.style.listStylePosition,
-                          buildChildren)
-                        ..insertAll(
-                            0,
-                            context.tree.style.listStylePosition ==
-                                    ListStylePosition.inside
-                                ? [
-                                    WidgetSpan(
-                                        alignment: PlaceholderAlignment.middle,
-                                        child: markerWidget)
-                                  ]
-                                : []),
-                      style: style ?? context.style,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+    {Style? style, Widget? child, List<InlineSpan>? children}) {
+  return CustomRender.inlineSpan(
+    inlineSpan: (context, buildChildren) {
+      final usedStyle = style ?? context.style;
+      final listStyleType = usedStyle.listStyleType ?? ListStyleType.decimal;
+      final counterStyle =
+          CounterStyleRegistry.lookup(listStyleType.counterStyle);
+      String counterContent;
+      if (usedStyle.marker?.content.isNormal ?? true) {
+        counterContent = counterStyle.generateMarkerContent(
+          context.tree.counters.lastOrNull?.value ?? 0,
         );
-      },
-    );
+      } else if (!(usedStyle.marker?.content.display ?? true)) {
+        counterContent = '';
+      } else {
+        counterContent = usedStyle.marker?.content.replacementContent ??
+            counterStyle.generateMarkerContent(
+              context.tree.counters.lastOrNull?.value ?? 0,
+            );
+      }
+      final listChildren = buildChildren()
+        ..insertAll(
+          0,
+          [
+            if (usedStyle.listStylePosition == ListStylePosition.inside)
+              TextSpan(
+                text: counterContent,
+                style: usedStyle.marker?.style?.generateTextStyle(),
+              ),
+          ],
+        );
+
+      return WidgetSpan(
+        child: CssBoxWidget.withInlineSpanChildren(
+          key: context.key,
+          style: usedStyle,
+          shrinkWrap: context.parser.shrinkWrap,
+          children: listChildren,
+        ),
+      );
+    },
+  );
+}
 
 CustomRender replacedElementRender(
         {PlaceholderAlignment? alignment,
@@ -544,20 +481,6 @@ Map<CustomRenderMatcher, CustomRender> generateDefaultRenders() {
     verticalAlignMatcher(): verticalAlignRender(),
     fallbackMatcher(): fallbackRender(),
   };
-}
-
-List<InlineSpan> _getListElementChildren(
-    ListStylePosition? position, Function() buildChildren) {
-  List<InlineSpan> children = buildChildren.call();
-  if (position == ListStylePosition.inside) {
-    const tabSpan = WidgetSpan(
-      child: Text("\t",
-          textAlign: TextAlign.right,
-          style: TextStyle(fontWeight: FontWeight.w400)),
-    );
-    children.insert(0, tabSpan);
-  }
-  return children;
 }
 
 InlineSpan _getInteractableChildren(RenderContext context,
