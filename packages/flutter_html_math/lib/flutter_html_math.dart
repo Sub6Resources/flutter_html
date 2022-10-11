@@ -117,6 +117,8 @@ Map<String, String> _mathML2Tex = {
   "coth": r"\coth",
   "log": r"\log",
   "ln": r"\ln",
+  "{": r"\{",
+  "}": r"\}",
 };
 
 typedef OnMathError = Widget Function(
