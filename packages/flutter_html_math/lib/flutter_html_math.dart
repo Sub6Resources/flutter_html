@@ -39,7 +39,9 @@ CustomRenderMatcher mathMatcher() => (context) {
 String _parseMathRecursive(dom.Node node, String parsed) {
   if (node is dom.Element) {
     List<dom.Element> nodeList = node.nodes.whereType<dom.Element>().toList();
-    if (node.localName == "math" || node.localName == "mrow" || node.localName == "mtr") {
+    if (node.localName == "math" ||
+        node.localName == "mrow" ||
+        node.localName == "mtr") {
       for (var element in nodeList) {
         parsed = _parseMathRecursive(element, parsed);
       }
@@ -99,7 +101,8 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       }
     }
     if (node.localName == 'mtable') {
-      String inner = nodeList.map((e) => _parseMathRecursive(e, '')).join(' \\\\');
+      String inner =
+          nodeList.map((e) => _parseMathRecursive(e, '')).join(' \\\\');
       parsed = '$parsed\\begin{matrix}$inner\\end{matrix}';
     }
     if (node.localName == "mtd") {
