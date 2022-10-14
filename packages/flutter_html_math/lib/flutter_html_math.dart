@@ -103,9 +103,9 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       parsed = '$parsed\\begin{matrix}$inner\\end{matrix}';
     }
     if (node.localName == "mtd") {
-      nodeList.forEach((element) {
+      for (var element in nodeList) {
         parsed = _parseMathRecursive(element, parsed);
-      });
+      }
       parsed = '$parsed & ';
     }
   }
