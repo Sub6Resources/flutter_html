@@ -99,14 +99,14 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       }
     }
     if (node.localName == 'mtable') {
-      String inner = nodeList.map((e) => parseMathRecursive(e, '')).join(' \\\\');
-      parsed = parsed + '\\begin{matrix}${inner}\\end{matrix}';
+      String inner = nodeList.map((e) => _parseMathRecursive(e, '')).join(' \\\\');
+      parsed = '$parsed\\begin{matrix}$inner\\end{matrix}';
     }
     if (node.localName == "mtd") {
       nodeList.forEach((element) {
-        parsed = parseMathRecursive(element, parsed);
+        parsed = _parseMathRecursive(element, parsed);
       });
-      parsed = parsed + ' & ';
+      parsed = '$parsed & ';
     }
   }
   return parsed;
