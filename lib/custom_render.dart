@@ -8,7 +8,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
-import 'package:list_counter/list_counter.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
 
@@ -158,41 +157,12 @@ CustomRender listElementRender(
     {Style? style, Widget? child, List<InlineSpan>? children}) {
   return CustomRender.inlineSpan(
     inlineSpan: (context, buildChildren) {
-      final usedStyle = style ?? context.style;
-      final listStyleType = usedStyle.listStyleType ?? ListStyleType.decimal;
-      final counterStyle =
-          CounterStyleRegistry.lookup(listStyleType.counterStyle);
-      String counterContent;
-      if (usedStyle.marker?.content.isNormal ?? true) {
-        counterContent = counterStyle.generateMarkerContent(
-          context.tree.counters.lastOrNull?.value ?? 0,
-        );
-      } else if (!(usedStyle.marker?.content.display ?? true)) {
-        counterContent = '';
-      } else {
-        counterContent = usedStyle.marker?.content.replacementContent ??
-            counterStyle.generateMarkerContent(
-              context.tree.counters.lastOrNull?.value ?? 0,
-            );
-      }
-      final listChildren = buildChildren()
-        ..insertAll(
-          0,
-          [
-            if (usedStyle.listStylePosition == ListStylePosition.inside)
-              TextSpan(
-                text: counterContent,
-                style: usedStyle.marker?.style?.generateTextStyle(),
-              ),
-          ],
-        );
-
       return WidgetSpan(
         child: CssBoxWidget.withInlineSpanChildren(
           key: context.key,
-          style: usedStyle,
+          style: style ?? context.style,
           shrinkWrap: context.parser.shrinkWrap,
-          children: listChildren,
+          children: buildChildren(),
         ),
       );
     },

@@ -57,7 +57,9 @@ class CssBoxWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final markerBox = _generateMarkerBox(style);
+    final markerBox = style.listStylePosition == ListStylePosition.outside
+        ? _generateMarkerBoxSpan(style)
+        : null;
 
     return _CSSBoxRenderer(
       width: style.width ?? Width.auto(),
@@ -80,7 +82,7 @@ class CssBoxWidget extends StatelessWidget {
           padding: style.padding ?? EdgeInsets.zero,
           child: child,
         ),
-        if (markerBox != null) markerBox,
+        if (markerBox != null) Text.rich(markerBox),
       ],
     );
   }
@@ -90,6 +92,15 @@ class CssBoxWidget extends StatelessWidget {
   static Widget _generateWidgetChild(List<InlineSpan> children, Style style) {
     if (children.isEmpty) {
       return Container();
+    }
+
+    // Generate an inline marker box if the list-style-position is set to
+    // inside. Otherwise the marker box will be added elsewhere.
+    if (style.listStylePosition == ListStylePosition.inside) {
+      final inlineMarkerBox = _generateMarkerBoxSpan(style);
+      if (inlineMarkerBox != null) {
+        children.insert(0, inlineMarkerBox);
+      }
     }
 
     return Text.rich(
@@ -129,15 +140,36 @@ class CssBoxWidget extends StatelessWidget {
     );
   }
 
-  static Widget? _generateMarkerBox(Style style) {
-    if (style.display == Display.listItem &&
-        style.listStylePosition == ListStylePosition.outside) {
-      if (style.marker?.content.replacementContent?.isNotEmpty ?? false) {
-        return Text.rich(
-          TextSpan(
-            text: style.marker!.content.replacementContent!,
-            style: style.marker!.style?.generateTextStyle(),
+  static InlineSpan? _generateMarkerBoxSpan(Style style) {
+    if (style.display == Display.listItem) {
+      // First handle listStyleImage
+      if (style.listStyleImage != null) {
+        return WidgetSpan(
+          alignment: PlaceholderAlignment.middle,
+          child: Image.network(
+            style.listStyleImage!.uriText,
+            errorBuilder: (_, __, ___) {
+              if (style.marker?.content.replacementContent?.isNotEmpty ??
+                  false) {
+                return Text.rich(
+                  TextSpan(
+                    text: style.marker!.content.replacementContent!,
+                    style: style.marker!.style?.generateTextStyle(),
+                  ),
+                );
+              }
+
+              return Container();
+            },
           ),
+        );
+      }
+
+      // Display list marker with given style
+      if (style.marker?.content.replacementContent?.isNotEmpty ?? false) {
+        return TextSpan(
+          text: style.marker!.content.replacementContent!,
+          style: style.marker!.style?.generateTextStyle(),
         );
       }
     }
