@@ -85,8 +85,8 @@ String _parseMathRecursive(dom.Node node, String parsed) {
     }
     if (node.localName == "mfenced") {
       String inner =
-          nodeList.map((e) => _parseMathRecursive(e, '')).join(',\ ');
-      parsed = parsed + "\\left($inner\\right)";
+          nodeList.map((e) => _parseMathRecursive(e, '')).join(', ');
+      parsed = "$parsed\\left($inner\\right)";
     }
     if (node.localName == "mi" ||
         node.localName == "mn" ||
