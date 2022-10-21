@@ -8,10 +8,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/src/style/marker.dart';
 import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as htmlparser;
-import 'package:numerus/numerus.dart';
+import 'package:list_counter/list_counter.dart';
 
 typedef OnTap = void Function(
   String? url,
@@ -321,7 +322,9 @@ class HtmlParser extends StatelessWidget {
     tree = _removeEmptyElements(tree);
 
     tree = _calculateRelativeValues(tree, devicePixelRatio);
-    tree = _processListCharacters(tree);
+    tree = _preprocessListMarkers(tree);
+    tree = _processCounters(tree);
+    tree = _processListMarkers(tree);
     tree = _processBeforesAndAfters(tree);
     tree = _collapseMargins(tree);
     return tree;
@@ -530,162 +533,112 @@ class HtmlParser extends StatelessWidget {
         .replaceAll(RegExp(" {2,}"), " ");
   }
 
-  /// [processListCharacters] adds list characters to the front of all list items.
-  ///
-  /// The function uses the [_processListCharactersRecursive] function to do most of its work.
-  static StyledElement _processListCharacters(StyledElement tree) {
-    final olStack = ListQueue<Context>();
-    tree = _processListCharactersRecursive(tree, olStack);
+  /// [preprocessListMarkers] adds marker pseudo elements to the front of all list
+  /// items.
+  static StyledElement _preprocessListMarkers(StyledElement tree) {
+    tree.style.listStylePosition ??= ListStylePosition.outside;
+
+    if (tree.style.display == Display.listItem) {
+      // Add the marker pseudo-element if it doesn't exist
+      tree.style.marker ??= Marker(
+        content: Content.normal,
+        style: tree.style,
+      );
+
+      // Inherit styles from originating widget
+      tree.style.marker!.style =
+          tree.style.copyOnlyInherited(tree.style.marker!.style ?? Style());
+
+      // Add the implicit counter-increment on `list-item` if it isn't set
+      // explicitly already
+      tree.style.counterIncrement ??= {};
+      if (!tree.style.counterIncrement!.containsKey('list-item')) {
+        tree.style.counterIncrement!['list-item'] = 1;
+      }
+    }
+
+    // Add the counters to ol and ul types.
+    if (tree.name == 'ol' || tree.name == 'ul') {
+      tree.style.counterReset ??= {};
+      if (!tree.style.counterReset!.containsKey('list-item')) {
+        tree.style.counterReset!['list-item'] = 0;
+      }
+    }
+
+    for (var child in tree.children) {
+      _preprocessListMarkers(child);
+    }
+
     return tree;
   }
 
-  /// [_processListCharactersRecursive] uses a Stack of integers to properly number and
-  /// bullet all list items according to the [ListStyleType] they have been given.
-  static StyledElement _processListCharactersRecursive(
-      StyledElement tree, ListQueue<Context> olStack) {
-    tree.style.listStylePosition ??= ListStylePosition.outside;
-    if (tree.name == 'ol' &&
-        tree.style.listStyleType != null &&
-        tree.style.listStyleType!.type == "marker") {
-      switch (tree.style.listStyleType!) {
-        case ListStyleType.lowerLatin:
-        case ListStyleType.lowerAlpha:
-        case ListStyleType.upperLatin:
-        case ListStyleType.upperAlpha:
-          olStack.add(Context<String>('a'));
-          if ((tree.attributes['start'] != null
-                  ? int.tryParse(tree.attributes['start']!)
-                  : null) !=
-              null) {
-            var start = int.tryParse(tree.attributes['start']!) ?? 1;
-            var x = 1;
-            while (x < start) {
-              olStack.last.data = olStack.last.data.toString().nextLetter();
-              x++;
-            }
-          }
-          break;
-        default:
-          olStack.add(Context<int>((tree.attributes['start'] != null
-                  ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
-                  : 1) -
-              1));
-          break;
-      }
-    } else if (tree.style.display == Display.listItem &&
-        tree.style.listStyleType != null &&
-        tree.style.listStyleType!.type == "widget") {
-      tree.style.markerContent = tree.style.listStyleType!.widget!;
-    } else if (tree.style.display == Display.listItem &&
-        tree.style.listStyleType != null &&
-        tree.style.listStyleType!.type == "image") {
-      tree.style.markerContent = Image.network(tree.style.listStyleType!.text);
-    } else if (tree.style.display == Display.listItem &&
-        tree.style.listStyleType != null) {
-      String marker = "";
-      switch (tree.style.listStyleType!) {
-        case ListStyleType.none:
-          break;
-        case ListStyleType.circle:
-          marker = '○';
-          break;
-        case ListStyleType.square:
-          marker = '■';
-          break;
-        case ListStyleType.disc:
-          marker = '•';
-          break;
-        case ListStyleType.decimal:
-          if (olStack.isEmpty) {
-            olStack.add(Context<int>((tree.attributes['start'] != null
-                    ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
-                    : 1) -
-                1));
-          }
-          olStack.last.data += 1;
-          marker = '${olStack.last.data}.';
-          break;
-        case ListStyleType.lowerLatin:
-        case ListStyleType.lowerAlpha:
-          if (olStack.isEmpty) {
-            olStack.add(Context<String>('a'));
-            if ((tree.attributes['start'] != null
-                    ? int.tryParse(tree.attributes['start']!)
-                    : null) !=
-                null) {
-              var start = int.tryParse(tree.attributes['start']!) ?? 1;
-              var x = 1;
-              while (x < start) {
-                olStack.last.data = olStack.last.data.toString().nextLetter();
-                x++;
-              }
-            }
-          }
-          marker = "${olStack.last.data}.";
-          olStack.last.data = olStack.last.data.toString().nextLetter();
-          break;
-        case ListStyleType.upperLatin:
-        case ListStyleType.upperAlpha:
-          if (olStack.isEmpty) {
-            olStack.add(Context<String>('a'));
-            if ((tree.attributes['start'] != null
-                    ? int.tryParse(tree.attributes['start']!)
-                    : null) !=
-                null) {
-              var start = int.tryParse(tree.attributes['start']!) ?? 1;
-              var x = 1;
-              while (x < start) {
-                olStack.last.data = olStack.last.data.toString().nextLetter();
-                x++;
-              }
-            }
-          }
-          marker = "${olStack.last.data.toString().toUpperCase()}.";
-          olStack.last.data = olStack.last.data.toString().nextLetter();
-          break;
-        case ListStyleType.lowerRoman:
-          if (olStack.isEmpty) {
-            olStack.add(Context<int>((tree.attributes['start'] != null
-                    ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
-                    : 1) -
-                1));
-          }
-          olStack.last.data += 1;
-          if (olStack.last.data <= 0) {
-            marker = '${olStack.last.data}.';
-          } else {
-            marker =
-                "${(olStack.last.data as int).toRomanNumeralString()!.toLowerCase()}.";
-          }
-          break;
-        case ListStyleType.upperRoman:
-          if (olStack.isEmpty) {
-            olStack.add(Context<int>((tree.attributes['start'] != null
-                    ? int.tryParse(tree.attributes['start'] ?? "") ?? 1
-                    : 1) -
-                1));
-          }
-          olStack.last.data += 1;
-          if (olStack.last.data <= 0) {
-            marker = '${olStack.last.data}.';
-          } else {
-            marker = "${(olStack.last.data as int).toRomanNumeralString()!}.";
-          }
-          break;
-      }
-      tree.style.markerContent = Text(
-        marker,
-        textAlign: TextAlign.right,
-        style: tree.style.generateTextStyle(),
-      );
+  /// [_processListCounters] adds the appropriate counter values to each
+  /// StyledElement on the tree.
+  static StyledElement _processCounters(StyledElement tree,
+      [ListQueue<Counter>? counters]) {
+    // Add the counters for the current scope.
+    tree.counters.addAll(counters?.deepCopy() ?? []);
+
+    // Create any new counters
+    if (tree.style.counterReset != null) {
+      tree.style.counterReset!.forEach((counterName, initialValue) {
+        tree.counters.add(Counter(counterName, initialValue ?? 0));
+      });
+    }
+
+    // Increment any counters that are to be incremented
+    if (tree.style.counterIncrement != null) {
+      tree.style.counterIncrement!.forEach((counterName, increment) {
+        tree.counters
+            .lastWhereOrNull(
+              (counter) => counter.name == counterName,
+            )
+            ?.increment(increment ?? 1);
+
+        // If we didn't newly create the counter, increment the counter in the old copy as well.
+        if (tree.style.counterReset == null ||
+            !tree.style.counterReset!.containsKey(counterName)) {
+          counters
+              ?.lastWhereOrNull(
+                (counter) => counter.name == counterName,
+              )
+              ?.increment(increment ?? 1);
+        }
+      });
     }
 
     for (var element in tree.children) {
-      _processListCharactersRecursive(element, olStack);
+      _processCounters(element, tree.counters);
     }
 
-    if (tree.name == 'ol') {
-      olStack.removeLast();
+    return tree;
+  }
+
+  static StyledElement _processListMarkers(StyledElement tree) {
+    if (tree.style.display == Display.listItem) {
+      final listStyleType = tree.style.listStyleType ?? ListStyleType.decimal;
+      final counterStyle = CounterStyleRegistry.lookup(
+        listStyleType.counterStyle,
+      );
+      String counterContent;
+      if (tree.style.marker?.content.isNormal ?? true) {
+        counterContent = counterStyle.generateMarkerContent(
+          tree.counters.lastOrNull?.value ?? 0,
+        );
+      } else if (!(tree.style.marker?.content.display ?? true)) {
+        counterContent = '';
+      } else {
+        counterContent = tree.style.marker?.content.replacementContent ??
+            counterStyle.generateMarkerContent(
+              tree.counters.lastOrNull?.value ?? 0,
+            );
+      }
+      tree.style.marker = Marker(
+          content: Content(counterContent), style: tree.style.marker?.style);
+    }
+
+    for (var child in tree.children) {
+      _processListMarkers(child);
     }
 
     return tree;
