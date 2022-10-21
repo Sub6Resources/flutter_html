@@ -153,7 +153,8 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       if (postSuperScripts.isNotEmpty) {
         postSuperScripts = "^$postSuperScripts";
       }
-      parsed = "$parsed\{\}$preSubScripts$preSuperScripts $base$postSubScripts$postSuperScripts ";
+      parsed =
+          "$parsed{}$preSubScripts$preSuperScripts $base$postSubScripts$postSuperScripts ";
     }
   }
   return parsed;
