@@ -32,16 +32,12 @@ class HtmlParser extends StatelessWidget {
   final OnCssParseError? onCssParseError;
   final ImageErrorListener? onImageError;
   final bool shrinkWrap;
-  final bool selectable;
-  final bool selectableIgnoreBlockWidgets;
 
   final Map<String, Style> style;
   final Map<CustomRenderMatcher, CustomRender> customRenders;
   final List<String> tagsList;
   final OnTap? internalOnAnchorTap;
   final Html? root;
-  final TextSelectionControls? selectionControls;
-  final ScrollPhysics? scrollPhysics;
 
   final Map<String, Size> cachedImageSizes = {};
 
@@ -54,14 +50,10 @@ class HtmlParser extends StatelessWidget {
     required this.onCssParseError,
     required this.onImageError,
     required this.shrinkWrap,
-    required this.selectable,
-    required this.selectableIgnoreBlockWidgets,
     required this.style,
     required this.customRenders,
     required this.tagsList,
     this.root,
-    this.selectionControls,
-    this.scrollPhysics,
   }) : internalOnAnchorTap = onAnchorTap ??
             (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
 
@@ -101,9 +93,6 @@ class HtmlParser extends StatelessWidget {
     return CssBoxWidget.withInlineSpanChildren(
       style: processedTree.style,
       children: [parsedTree],
-      selectable: selectable,
-      scrollPhysics: scrollPhysics,
-      selectionControls: selectionControls,
       shrinkWrap: shrinkWrap,
     );
   }

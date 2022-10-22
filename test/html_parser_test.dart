@@ -48,13 +48,9 @@ void testNewParser(BuildContext context) {
       onCssParseError: null,
       onImageError: null,
       shrinkWrap: false,
-      selectable: true,
-      selectableIgnoreBlockWidgets: true,
       style: const {},
       customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
-      selectionControls: null,
-      scrollPhysics: null,
     ),
   );
 
@@ -74,13 +70,9 @@ void testNewParser(BuildContext context) {
       onCssParseError: null,
       onImageError: null,
       shrinkWrap: false,
-      selectable: true,
-      selectableIgnoreBlockWidgets: true,
       style: const {},
       customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
-      selectionControls: null,
-      scrollPhysics: null,
     ),
   );
 
@@ -99,13 +91,9 @@ void testNewParser(BuildContext context) {
       onCssParseError: null,
       onImageError: null,
       shrinkWrap: false,
-      selectable: false,
-      selectableIgnoreBlockWidgets: false,
       style: const {},
       customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
-      selectionControls: null,
-      scrollPhysics: null,
     ),
   );
 
@@ -125,13 +113,9 @@ void testNewParser(BuildContext context) {
       onCssParseError: null,
       onImageError: null,
       shrinkWrap: false,
-      selectable: false,
-      selectableIgnoreBlockWidgets: false,
       style: const {},
       customRenders: generateDefaultRenders(),
       tagsList: Html.tags,
-      selectionControls: null,
-      scrollPhysics: null,
     ),
   );
 
