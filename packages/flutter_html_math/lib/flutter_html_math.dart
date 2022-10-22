@@ -39,7 +39,9 @@ CustomRenderMatcher mathMatcher() => (context) {
 String _parseMathRecursive(dom.Node node, String parsed) {
   if (node is dom.Element) {
     List<dom.Element> nodeList = node.nodes.whereType<dom.Element>().toList();
-    if (node.localName == "math" || node.localName == "mrow") {
+    if (node.localName == "math" ||
+        node.localName == "mrow" ||
+        node.localName == "mtr") {
       for (var element in nodeList) {
         parsed = _parseMathRecursive(element, parsed);
       }
@@ -98,6 +100,17 @@ String _parseMathRecursive(dom.Node node, String parsed) {
         parsed = parsed + node.text.trim();
       }
     }
+    if (node.localName == 'mtable') {
+      String inner =
+          nodeList.map((e) => _parseMathRecursive(e, '')).join(' \\\\');
+      parsed = '$parsed\\begin{matrix}$inner\\end{matrix}';
+    }
+    if (node.localName == "mtd") {
+      for (var element in nodeList) {
+        parsed = _parseMathRecursive(element, parsed);
+      }
+      parsed = '$parsed & ';
+    }
   }
   return parsed;
 }
@@ -117,6 +130,8 @@ Map<String, String> _mathML2Tex = {
   "coth": r"\coth",
   "log": r"\log",
   "ln": r"\ln",
+  "{": r"\{",
+  "}": r"\}",
 };
 
 typedef OnMathError = Widget Function(

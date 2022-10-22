@@ -130,84 +130,20 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
     });
 
 CustomRender listElementRender(
-        {Style? style, Widget? child, List<InlineSpan>? children}) =>
-    CustomRender.inlineSpan(
-      inlineSpan: (context, buildChildren) => WidgetSpan(
-        child: CssBoxWidget(
+    {Style? style, Widget? child, List<InlineSpan>? children}) {
+  return CustomRender.inlineSpan(
+    inlineSpan: (context, buildChildren) {
+      return WidgetSpan(
+        child: CssBoxWidget.withInlineSpanChildren(
           key: context.key,
-          style: style ?? context.tree.style,
+          style: style ?? context.style,
           shrinkWrap: context.parser.shrinkWrap,
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            textDirection: style?.direction ?? context.tree.style.direction,
-            children: [
-              (style?.listStylePosition ??
-                          context.tree.style.listStylePosition) ==
-                      ListStylePosition.outside
-                  ? Padding(
-                      padding: style?.padding?.nonNegative ??
-                          context.tree.style.padding?.nonNegative ??
-                          EdgeInsets.only(
-                              left: (style?.direction ??
-                                          context.tree.style.direction) !=
-                                      TextDirection.rtl
-                                  ? 10.0
-                                  : 0.0,
-                              right: (style?.direction ??
-                                          context.tree.style.direction) ==
-                                      TextDirection.rtl
-                                  ? 10.0
-                                  : 0.0),
-                      child:
-                          style?.markerContent ?? context.style.markerContent)
-                  : const SizedBox(height: 0, width: 0),
-              const Text("\u0020",
-                  textAlign: TextAlign.right,
-                  style: TextStyle(fontWeight: FontWeight.w400)),
-              Expanded(
-                child: Padding(
-                  padding: (style?.listStylePosition ??
-                              context.tree.style.listStylePosition) ==
-                          ListStylePosition.inside
-                      ? EdgeInsets.only(
-                          left: (style?.direction ??
-                                      context.tree.style.direction) !=
-                                  TextDirection.rtl
-                              ? 10.0
-                              : 0.0,
-                          right: (style?.direction ??
-                                      context.tree.style.direction) ==
-                                  TextDirection.rtl
-                              ? 10.0
-                              : 0.0)
-                      : EdgeInsets.zero,
-                  child: CssBoxWidget.withInlineSpanChildren(
-                    children: _getListElementChildren(
-                        style?.listStylePosition ??
-                            context.tree.style.listStylePosition,
-                        buildChildren)
-                      ..insertAll(
-                          0,
-                          context.tree.style.listStylePosition ==
-                                  ListStylePosition.inside
-                              ? [
-                                  WidgetSpan(
-                                      alignment: PlaceholderAlignment.middle,
-                                      child: style?.markerContent ??
-                                          context.style.markerContent ??
-                                          const SizedBox(height: 0, width: 0))
-                                ]
-                              : []),
-                    style: style ?? context.style,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          children: buildChildren(),
         ),
-      ),
-    );
+      );
+    },
+  );
+}
 
 CustomRender replacedElementRender(
         {PlaceholderAlignment? alignment,
@@ -491,20 +427,6 @@ Map<CustomRenderMatcher, CustomRender> generateDefaultRenders() {
     verticalAlignMatcher(): verticalAlignRender(),
     fallbackMatcher(): fallbackRender(),
   };
-}
-
-List<InlineSpan> _getListElementChildren(
-    ListStylePosition? position, Function() buildChildren) {
-  List<InlineSpan> children = buildChildren.call();
-  if (position == ListStylePosition.inside) {
-    const tabSpan = WidgetSpan(
-      child: Text("\t",
-          textAlign: TextAlign.right,
-          style: TextStyle(fontWeight: FontWeight.w400)),
-    );
-    children.insert(0, tabSpan);
-  }
-  return children;
 }
 
 InlineSpan _getInteractableChildren(RenderContext context,
