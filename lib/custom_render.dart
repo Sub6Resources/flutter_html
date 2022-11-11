@@ -129,7 +129,7 @@ CustomRender blockElementRender({Style? style, List<InlineSpan>? children}) =>
         );
       }
       return WidgetSpan(
-        alignment: PlaceholderAlignment.baseline,
+        alignment: style?.placeholderAlignment ?? PlaceholderAlignment.bottom,
         baseline: TextBaseline.alphabetic,
         child: CssBoxWidget.withInlineSpanChildren(
           key: context.key,

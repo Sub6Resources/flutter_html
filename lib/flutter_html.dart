@@ -62,6 +62,7 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
+    this.selectable = false,
   })  : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -80,6 +81,7 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
+    this.selectable = false,
   })  : data = null,
         assert(document != null),
         documentElement = document!.documentElement,
@@ -99,6 +101,7 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
+    this.selectable = false,
   })  : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -142,6 +145,9 @@ class Html extends StatefulWidget {
 
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
+
+  /// Makes the text in the widget selectable.
+  final bool selectable;
 
   static List<String> get tags => List<String>.from(HtmlElements.styledElements)
     ..addAll(HtmlElements.interactableElements)
@@ -188,7 +194,7 @@ class _HtmlState extends State<Html> {
       onCssParseError: widget.onCssParseError,
       onImageError: widget.onImageError,
       shrinkWrap: widget.shrinkWrap,
-      selectable: false,
+      selectable: widget.selectable,
       style: widget.style,
       customRenders: {}
         ..addAll(widget.customRenders)

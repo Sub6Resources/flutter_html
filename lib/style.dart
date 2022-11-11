@@ -215,6 +215,11 @@ class Style {
   Alignment? alignment;
   Widget? markerContent;
 
+  /// Where to vertically align the placeholder relative to the surrounding text.
+  ///
+  /// Default: [PlaceholderAlignment.bottom]
+  PlaceholderAlignment? placeholderAlignment;
+
   /// MaxLine
   ///
   ///
@@ -271,6 +276,7 @@ class Style {
     this.maxLines,
     this.textOverflow,
     this.textTransform = TextTransform.none,
+    this.placeholderAlignment = PlaceholderAlignment.bottom,
   }) {
     if (alignment == null &&
         (display == Display.block || display == Display.listItem)) {
