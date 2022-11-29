@@ -12,9 +12,11 @@ dependencies:
   flutter:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
-  flutter_html: ^3.0.0-alpha.6
-#  flutter_html:
-#    path: ../..
+  # flutter_html: ^3.0.0-alpha.6
+  flutter_html:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      ref: master
 
   flutter_layout_grid: '>=1.0.1 <2.0.0'
 

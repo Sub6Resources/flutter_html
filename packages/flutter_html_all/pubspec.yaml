@@ -11,25 +11,47 @@ dependencies:
   flutter:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
-  flutter_html: ^3.0.0-alpha.6
-  flutter_html_audio: ^3.0.0-alpha.4
-  flutter_html_iframe: ^3.0.0-alpha.4
-  flutter_html_math: ^3.0.0-alpha.4
-  flutter_html_svg: ^3.0.0-alpha.4
-  flutter_html_table: ^3.0.0-alpha.4
-  flutter_html_video: ^3.0.0-alpha.5
-#  flutter_html_audio:
-#    path: ../flutter_html_audio
-#  flutter_html_iframe:
-#    path: ../flutter_html_iframe
-#  flutter_html_math:
-#    path: ../flutter_html_math
-#  flutter_html_svg:
-#    path: ../flutter_html_svg
-#  flutter_html_table:
-#    path: ../flutter_html_table
-#  flutter_html_video:
-#    path: ../flutter_html_video
+  # flutter_html: ^3.0.0-alpha.6
+  # flutter_html_audio: ^3.0.0-alpha.4
+  # flutter_html_iframe: ^3.0.0-alpha.4
+  # flutter_html_math: ^3.0.0-alpha.4
+  # flutter_html_svg: ^3.0.0-alpha.4
+  # flutter_html_table: ^3.0.0-alpha.4
+  # flutter_html_video: ^3.0.0-alpha.5
+  flutter_html:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      ref: master
+  flutter_html_audio:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      path: packages/flutter_html_audio
+      ref: master
+  flutter_html_iframe:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      path: packages/flutter_html_iframe
+      ref: master
+  flutter_html_math:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      path: packages/flutter_html_math
+      ref: master
+  flutter_html_svg:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      path: packages/flutter_html_svg
+      ref: master
+  flutter_html_table:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      path: packages/flutter_html_table
+      ref: master
+  flutter_html_video:
+    git:
+      url: git@github.com:darkstarx/flutter_html.git
+      path: packages/flutter_html_video
+      ref: master
 
 dev_dependencies:
   flutter_test:
