@@ -23,6 +23,8 @@ export 'package:flutter_html/src/css_box_widget.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
+typedef ImageLoadingBuilder = Widget Function();
+
 class Html extends StatefulWidget {
   /// The `Html` widget takes HTML as input and displays a RichText
   /// tree of the parsed HTML content.
@@ -60,6 +62,7 @@ class Html extends StatefulWidget {
     this.onImageError,
     this.shrinkWrap = false,
     this.onImageTap,
+    this.loadingBuilder,
     this.tagsList = const [],
     this.style = const {},
   })  : documentElement = null,
@@ -76,6 +79,7 @@ class Html extends StatefulWidget {
     this.customRenders = const {},
     this.onCssParseError,
     this.onImageError,
+    this.loadingBuilder,
     this.shrinkWrap = false,
     this.onImageTap,
     this.tagsList = const [],
@@ -97,6 +101,7 @@ class Html extends StatefulWidget {
     this.onImageError,
     this.shrinkWrap = false,
     this.onImageTap,
+    this.loadingBuilder,
     this.tagsList = const [],
     this.style = const {},
   })  : data = null,
@@ -135,6 +140,12 @@ class Html extends StatefulWidget {
 
   /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
+
+  /// A builder that specifies the widget to display to the user while an image
+  /// is still loading.
+  /// If this is null, By default to show
+  /// a [CircularProgressIndicator] while an image loads over the network.
+  final ImageLoadingBuilder? loadingBuilder;
 
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
@@ -192,7 +203,7 @@ class _HtmlState extends State<Html> {
       style: widget.style,
       customRenders: {}
         ..addAll(widget.customRenders)
-        ..addAll(generateDefaultRenders()),
+        ..addAll(generateDefaultRenders(loadingWidget: widget.loadingBuilder)),
       tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
     );
   }
@@ -323,6 +334,12 @@ class SelectableHtml extends StatefulWidget {
   /// Allows you to override the default scrollPhysics for [SelectableText.rich]
   final ScrollPhysics? scrollPhysics;
 
+  /// A builder that specifies the widget to display to the user while an image
+  /// is still loading.
+  /// If this is null, By default to show
+  /// a [CircularProgressIndicator] while an image loads over the network.
+  final ImageLoadingBuilder? loadingBuilder;
+
   /// Either return a custom widget for specific node types or return null to
   /// fallback to the default rendering.
   final Map<CustomRenderMatcher, SelectableCustomRender> customRenders;
@@ -362,7 +379,7 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         style: widget.style,
         customRenders: {}
           ..addAll(widget.customRenders)
-          ..addAll(generateDefaultRenders()),
+          ..addAll(generateDefaultRenders(loadingWidget: widget.loadingBuilder)),
         tagsList:
             widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,

@@ -10,6 +10,7 @@ import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/utils.dart';
 
 typedef CustomRenderMatcher = bool Function(RenderContext context);
+typedef ImageLoadingBuilder = Widget Function();
 
 CustomRenderMatcher tagMatcher(String tag) => (context) {
       return context.tree.element?.localName == tag;
@@ -437,14 +438,14 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
                   .toList(),
             ));
 
-Map<CustomRenderMatcher, CustomRender> generateDefaultRenders() {
+Map<CustomRenderMatcher, CustomRender> generateDefaultRenders({ImageLoadingBuilder? loadingWidget}) {
   return {
     blockElementMatcher(): blockElementRender(),
     listElementMatcher(): listElementRender(),
     textContentElementMatcher(): textContentElementRender(),
     dataUriMatcher(): base64ImageRender(),
     assetUriMatcher(): assetImageRender(),
-    networkSourceMatcher(): networkImageRender(),
+    networkSourceMatcher(): networkImageRender(loadingWidget: loadingWidget),
     replacedElementMatcher(): replacedElementRender(),
     interactableElementMatcher(): interactableElementRender(),
     layoutElementMatcher(): layoutElementRender(),
