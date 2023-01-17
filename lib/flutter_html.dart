@@ -23,8 +23,6 @@ export 'package:flutter_html/src/css_box_widget.dart';
 //export style api
 export 'package:flutter_html/style.dart';
 
-typedef ImageLoadingBuilder = Widget Function();
-
 class Html extends StatefulWidget {
   /// The `Html` widget takes HTML as input and displays a RichText
   /// tree of the parsed HTML content.

@@ -438,7 +438,8 @@ CustomRender fallbackRender({Style? style, List<InlineSpan>? children}) =>
                   .toList(),
             ));
 
-Map<CustomRenderMatcher, CustomRender> generateDefaultRenders({ImageLoadingBuilder? loadingWidget}) {
+Map<CustomRenderMatcher, CustomRender> generateDefaultRenders(
+    {ImageLoadingBuilder? loadingWidget}) {
   return {
     blockElementMatcher(): blockElementRender(),
     listElementMatcher(): listElementRender(),
