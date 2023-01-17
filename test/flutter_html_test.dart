@@ -10,6 +10,9 @@ void main() {
         MaterialApp(
           home: Html(
             data: "",
+            loadingBuilder: (){
+              return Container();
+            },
           ),
         ),
       );
@@ -24,6 +27,9 @@ void main() {
         MaterialApp(
           home: SelectableHtml(
             data: '',
+            loadingBuilder: (){
+              return Container();
+            },
           ),
         ),
       );
@@ -38,6 +44,9 @@ void main() {
         MaterialApp(
           home: Html(
             data: "Text",
+            loadingBuilder: (){
+              return Container();
+            },
           ),
         ),
       );
@@ -101,6 +110,9 @@ void main() {
         home: Html(
           data: "<custom>Text</custom>",
           tagsList: Html.tags..add('custom'),
+          loadingBuilder: (){
+            return Container();
+          },
         ),
       ),
     );
