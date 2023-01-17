@@ -254,6 +254,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
+    this.loadingBuilder,
   })  : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -272,6 +273,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
+    this.loadingBuilder,
   })  : data = null,
         assert(document != null),
         documentElement = document!.documentElement,
@@ -291,6 +293,7 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
+    this.loadingBuilder,
   })  : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -379,7 +382,8 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         style: widget.style,
         customRenders: {}
           ..addAll(widget.customRenders)
-          ..addAll(generateDefaultRenders(loadingWidget: widget.loadingBuilder)),
+          ..addAll(
+              generateDefaultRenders(loadingWidget: widget.loadingBuilder)),
         tagsList:
             widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,
