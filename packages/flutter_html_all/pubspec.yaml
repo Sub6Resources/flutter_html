@@ -11,13 +11,15 @@ dependencies:
   flutter:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
-  flutter_html: ^3.0.0-alpha.6
+  flutter_html: ^3.0.0-alpha.7
   flutter_html_audio: ^3.0.0-alpha.4
   flutter_html_iframe: ^3.0.0-alpha.4
   flutter_html_math: ^3.0.0-alpha.4
   flutter_html_svg: ^3.0.0-alpha.4
   flutter_html_table: ^3.0.0-alpha.4
   flutter_html_video: ^3.0.0-alpha.5
+#  flutter_html:
+#    path: ../..
 #  flutter_html_audio:
 #    path: ../flutter_html_audio
 #  flutter_html_iframe:

@@ -12,23 +12,33 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
           double.tryParse(context.tree.element?.attributes['width'] ?? "");
       final givenHeight =
           double.tryParse(context.tree.element?.attributes['height'] ?? "");
+      final controller = WebViewController()
+        ..setJavaScriptMode(
+          sandboxMode == null || sandboxMode == "allow-scripts"
+              ? JavaScriptMode.unrestricted
+              : JavaScriptMode.disabled,
+        )
+        ..loadRequest(
+          Uri.parse(context.tree.element?.attributes['src'] ?? 'about:blank'),
+        );
+
+      if (navigationDelegate != null) {
+        controller.setNavigationDelegate(navigationDelegate);
+      }
+
       return SizedBox(
         width: givenWidth ?? (givenHeight ?? 150) * 2,
         height: givenHeight ?? (givenWidth ?? 300) / 2,
         child: CssBoxWidget(
           style: context.style,
           childIsReplaced: true,
-          child: WebView(
-            initialUrl: context.tree.element?.attributes['src'],
+          child: WebViewWidget(
             key: key,
-            javascriptMode:
-                sandboxMode == null || sandboxMode == "allow-scripts"
-                    ? JavascriptMode.unrestricted
-                    : JavascriptMode.disabled,
-            navigationDelegate: navigationDelegate,
-            gestureRecognizers: {
+            controller: controller,
+            gestureRecognizers: <Factory<OneSequenceGestureRecognizer>>{
               Factory<VerticalDragGestureRecognizer>(
-                  () => VerticalDragGestureRecognizer())
+                () => VerticalDragGestureRecognizer(),
+              ),
             },
           ),
         ),
