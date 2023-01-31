@@ -535,7 +535,7 @@ double _aspectRatio(
   if (heightString != null && widthString != null) {
     final height = double.tryParse(heightString);
     final width = double.tryParse(widthString);
-    return height == null || width == null
+    return height == null || width == null || height == 0.0 
         ? calculated.data!.aspectRatio
         : width / height;
   }
