@@ -37,7 +37,6 @@ void testNewParser(BuildContext context) {
     HtmlParser.parseHTML("Hello! <b>Hello, World!</b><i>Hello, New World!</i>"),
     [],
     Html.tags,
-    context,
     HtmlParser(
       key: null,
       htmlData: HtmlParser.parseHTML(
@@ -54,6 +53,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
+      bodyStyle: const TextStyle(fontSize: 18),
     ),
   );
 
@@ -62,7 +62,6 @@ void testNewParser(BuildContext context) {
         "Hello, World! <a href='https://example.com'>This is a link</a>"),
     [],
     Html.tags,
-    context,
     HtmlParser(
       key: null,
       htmlData: HtmlParser.parseHTML(
@@ -79,6 +78,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
+      bodyStyle: const TextStyle(fontSize: 18),
     ),
   );
 
@@ -86,7 +86,6 @@ void testNewParser(BuildContext context) {
     HtmlParser.parseHTML("<img alt='' src='https://image.example.com' />"),
     [],
     Html.tags,
-    context,
     HtmlParser(
       key: null,
       htmlData: HtmlParser.parseHTML(
@@ -103,6 +102,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
+      bodyStyle: const TextStyle(fontSize: 18),
     ),
   );
 
@@ -111,7 +111,6 @@ void testNewParser(BuildContext context) {
         "<div><div><div><div><a href='https://example.com'>Link</a><div>Hello, World! <b>Bold and <i>Italic</i></b></div></div></div></div></div>"),
     [],
     Html.tags,
-    context,
     HtmlParser(
       key: null,
       htmlData: HtmlParser.parseHTML(
@@ -128,6 +127,7 @@ void testNewParser(BuildContext context) {
       tagsList: Html.tags,
       selectionControls: null,
       scrollPhysics: null,
+      bodyStyle: const TextStyle(fontSize: 18),
     ),
   );
 

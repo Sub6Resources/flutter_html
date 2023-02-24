@@ -196,13 +196,6 @@ CustomRender base64ImageRender() =>
           _src(context.tree.element!.attributes.cast())!
               .split("base64,")[1]
               .trim());
-      precacheImage(
-        MemoryImage(decodedImage),
-        context.buildContext,
-        onError: (exception, StackTrace? stackTrace) {
-          context.parser.onImageError?.call(exception, stackTrace);
-        },
-      );
       final widget = Image.memory(
         decodedImage,
         frameBuilder: (ctx, child, frame, _) {

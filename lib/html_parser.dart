@@ -25,7 +25,7 @@ typedef OnCssParseError = String? Function(
   List<cssparser.Message> errors,
 );
 
-class HtmlParser extends StatelessWidget {
+class HtmlParser {
   final dom.Element htmlData;
   final OnTap? onLinkTap;
   final OnTap? onAnchorTap;
@@ -34,6 +34,7 @@ class HtmlParser extends StatelessWidget {
   final ImageErrorListener? onImageError;
   final bool shrinkWrap;
   final bool selectable;
+  final TextStyle bodyStyle;
 
   final Map<String, Style> style;
   final Map<CustomRenderMatcher, CustomRender> customRenders;
@@ -44,9 +45,9 @@ class HtmlParser extends StatelessWidget {
   final ScrollPhysics? scrollPhysics;
 
   final Map<String, Size> cachedImageSizes = {};
+  final Key? key;
 
   HtmlParser({
-    required super.key,
     required this.htmlData,
     required this.onLinkTap,
     required this.onAnchorTap,
@@ -58,38 +59,32 @@ class HtmlParser extends StatelessWidget {
     required this.style,
     required this.customRenders,
     required this.tagsList,
+    required this.bodyStyle,
     this.root,
     this.selectionControls,
     this.scrollPhysics,
+    this.key,
   }) : internalOnAnchorTap = onAnchorTap ??
             (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
 
-  /// As the widget [build]s, the HTML data is processed into a tree of [StyledElement]s,
-  /// which are then parsed into an [InlineSpan] tree that is then rendered to the screen by Flutter
-  //TODO Lazy processing of data. We don't need the processing steps done every build phase unless the data has changed.
-  @override
-  Widget build(BuildContext context) {
+  Widget build(double devicePixelRatio) {
     // Lexing Step
     StyledElement lexedTree = lexDomTree(
       htmlData,
       customRenders.keys.toList(),
       tagsList,
-      context,
       this,
     );
 
     // Styling Step
-    StyledElement styledTree =
-        styleTree(lexedTree, htmlData, style, onCssParseError);
+    StyledElement styledTree = styleTree(lexedTree, htmlData, style, onCssParseError);
 
     // Processing Step
-    StyledElement processedTree =
-        processTree(styledTree, MediaQuery.of(context).devicePixelRatio);
+    StyledElement processedTree = processTree(styledTree, devicePixelRatio);
 
     // Parsing Step
     InlineSpan parsedTree = parseTree(
       RenderContext(
-        buildContext: context,
         parser: this,
         tree: processedTree,
         style: processedTree.style,
@@ -122,7 +117,6 @@ class HtmlParser extends StatelessWidget {
     dom.Element html,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
-    BuildContext context,
     HtmlParser parser,
   ) {
     StyledElement tree = StyledElement(
@@ -130,7 +124,7 @@ class HtmlParser extends StatelessWidget {
       children: <StyledElement>[],
       node: html,
       //TODO(Sub6Resources): This seems  difficult to customize
-      style: Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+      style: Style.fromTextStyle(parser.bodyStyle),
     );
 
     for (var node in html.nodes) {
@@ -138,7 +132,6 @@ class HtmlParser extends StatelessWidget {
         node,
         customRenderMatchers,
         tagsList,
-        context,
         parser,
       ));
     }
@@ -154,7 +147,6 @@ class HtmlParser extends StatelessWidget {
     dom.Node node,
     List<CustomRenderMatcher> customRenderMatchers,
     List<String> tagsList,
-    BuildContext context,
     HtmlParser parser,
   ) {
     List<StyledElement> children = <StyledElement>[];
@@ -164,7 +156,6 @@ class HtmlParser extends StatelessWidget {
         childNode,
         customRenderMatchers,
         tagsList,
-        context,
         parser,
       ));
     }
@@ -192,11 +183,9 @@ class HtmlParser extends StatelessWidget {
         for (final entry in customRenderMatchers) {
           if (entry.call(
             RenderContext(
-              buildContext: context,
               parser: parser,
               tree: tree,
-              style:
-                  Style.fromTextStyle(Theme.of(context).textTheme.bodyText2!),
+              style: Style.fromTextStyle(parser.bodyStyle),
             ),
           )) {
             return tree;
@@ -338,7 +327,6 @@ class HtmlParser extends StatelessWidget {
     // Merge this element's style into the context so that children
     // inherit the correct style
     RenderContext newContext = RenderContext(
-      buildContext: context.buildContext,
       parser: this,
       tree: tree,
       style: context.style.copyOnlyInherited(tree.style),
@@ -891,14 +879,12 @@ class HtmlParser extends StatelessWidget {
 /// in the [HtmlParser], and contains information about the [Style] of the current
 /// tree root.
 class RenderContext {
-  final BuildContext buildContext;
   final HtmlParser parser;
   final StyledElement tree;
   final Style style;
   final AnchorKey? key;
 
   RenderContext({
-    required this.buildContext,
     required this.parser,
     required this.tree,
     required this.style,

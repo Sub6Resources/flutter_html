@@ -62,7 +62,9 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  })  : documentElement = null,
+    this.bodyStyle,
+  })
+      : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -80,7 +82,9 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  })  : data = null,
+    this.bodyStyle,
+  })
+      : data = null,
         assert(document != null),
         documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -99,7 +103,9 @@ class Html extends StatefulWidget {
     this.onImageTap,
     this.tagsList = const [],
     this.style = const {},
-  })  : data = null,
+    this.bodyStyle,
+  })
+      : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -132,6 +138,8 @@ class Html extends StatefulWidget {
 
   /// A function that defines what to do when an image is tapped
   final OnTap? onImageTap;
+
+  final TextStyle? bodyStyle;
 
   /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
@@ -179,10 +187,14 @@ class _HtmlState extends State<Html> {
 
   @override
   Widget build(BuildContext context) {
-    return HtmlParser(
-      key: widget._anchorKey,
+    var pixelRatio = MediaQuery
+        .of(context)
+        .devicePixelRatio;
+    var bodyStyle = widget.bodyStyle ?? const TextStyle(fontSize: 18);
+    var parser = HtmlParser(
+      key: widget.key,
       htmlData: documentElement,
-      onLinkTap: widget.onLinkTap,
+      onLinkTap: (_, _1, _2, _3) {},
       onAnchorTap: widget.onAnchorTap,
       onImageTap: widget.onImageTap,
       onCssParseError: widget.onCssParseError,
@@ -190,11 +202,12 @@ class _HtmlState extends State<Html> {
       shrinkWrap: widget.shrinkWrap,
       selectable: false,
       style: widget.style,
-      customRenders: {}
-        ..addAll(widget.customRenders)
-        ..addAll(generateDefaultRenders()),
+      bodyStyle: bodyStyle,
+      customRenders: {}..addAll(widget.customRenders)..addAll(generateDefaultRenders()),
       tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
     );
+
+    return parser.build(pixelRatio);
   }
 }
 
@@ -243,7 +256,9 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  })  : documentElement = null,
+    this.bodyStyle,
+  })
+      : documentElement = null,
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -261,7 +276,9 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  })  : data = null,
+    this.bodyStyle,
+  })
+      : data = null,
         assert(document != null),
         documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -280,7 +297,9 @@ class SelectableHtml extends StatefulWidget {
     this.tagsList = const [],
     this.selectionControls,
     this.scrollPhysics,
-  })  : data = null,
+    this.bodyStyle,
+  })
+      : data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -309,6 +328,8 @@ class SelectableHtml extends StatefulWidget {
   /// constraints. For example, auto horizontal margins are ignored, and
   /// block-level elements only take up the width they need.
   final bool shrinkWrap;
+
+  final TextStyle? bodyStyle;
 
   /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
   final List<String> tagsList;
@@ -347,6 +368,7 @@ class _SelectableHtmlState extends State<SelectableHtml> {
 
   @override
   Widget build(BuildContext context) {
+    double devicePixelRatio = MediaQuery.of(context).devicePixelRatio;
     return SizedBox(
       width: widget.shrinkWrap ? null : MediaQuery.of(context).size.width,
       child: HtmlParser(
@@ -367,7 +389,8 @@ class _SelectableHtmlState extends State<SelectableHtml> {
             widget.tagsList.isEmpty ? SelectableHtml.tags : widget.tagsList,
         selectionControls: widget.selectionControls,
         scrollPhysics: widget.scrollPhysics,
-      ),
+        bodyStyle: widget.bodyStyle ?? const TextStyle(fontSize: 18),
+      ).build(devicePixelRatio),
     );
   }
 }
