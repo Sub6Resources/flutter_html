@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:video_player/video_player.dart';
 import 'package:html/dom.dart' as dom;
+import 'dart:io';
 
 typedef VideoControllerCallback = void Function(
     dom.Element?, ChewieController, VideoPlayerController);
@@ -54,13 +55,23 @@ class _VideoWidgetState extends State<VideoWidget> {
     if (sources.isNotEmpty && sources.first != null) {
       _width = givenWidth ?? (givenHeight ?? 150) * 2;
       _height = givenHeight ?? (givenWidth ?? 300) / 2;
-      _videoController = VideoPlayerController.network(sources.first!);
+      Uri sourceUri = Uri.parse(sources.first!);
+      switch (sourceUri.scheme) {
+        case 'asset':
+          _videoController = VideoPlayerController.asset(sourceUri.path);
+          break;
+        case 'file':
+          _videoController = VideoPlayerController.file(File.fromUri(sourceUri));
+          break;
+        default:
+          _videoController = VideoPlayerController.network(sourceUri.toString());
+          break;
+      }
       _chewieController = ChewieController(
         videoPlayerController: _videoController!,
-        placeholder:
-            attributes['poster'] != null && attributes['poster']!.isNotEmpty
-                ? Image.network(attributes['poster']!)
-                : Container(color: Colors.black),
+        placeholder: attributes['poster'] != null && attributes['poster']!.isNotEmpty
+            ? Image.network(attributes['poster']!)
+            : Container(color: Colors.black),
         autoPlay: attributes['autoplay'] != null,
         looping: attributes['loop'] != null,
         showControls: attributes['controls'] != null,
