@@ -761,8 +761,8 @@ class HtmlParser extends StatelessWidget {
         if (tree.children[i].style.margin == null) {
           tree.children[i].style.margin = Margins.only(top: newTop);
         } else {
-          tree.children[i].style.margin = tree.children[i].style.margin!
-              .copyWithEdge(top: newTop);
+          tree.children[i].style.margin =
+              tree.children[i].style.margin!.copyWithEdge(top: newTop);
         }
       }
     }
