@@ -2,6 +2,7 @@ library flutter_html_video;
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:video_player/video_player.dart';
 import 'package:html/dom.dart' as dom;
@@ -25,11 +26,15 @@ CustomRenderMatcher videoMatcher() => (context) {
 class VideoWidget extends StatefulWidget {
   final RenderContext context;
   final VideoControllerCallback? callback;
+  final List<DeviceOrientation>? deviceOrientationsOnEnterFullScreen;
+  final List<DeviceOrientation> deviceOrientationsAfterFullScreen;
 
   const VideoWidget({
     Key? key,
     required this.context,
     this.callback,
+    this.deviceOrientationsOnEnterFullScreen,
+    this.deviceOrientationsAfterFullScreen = DeviceOrientation.values,
   }) : super(key: key);
 
   @override
@@ -76,8 +81,9 @@ class _VideoWidgetState extends State<VideoWidget> {
         looping: attributes['loop'] != null,
         showControls: attributes['controls'] != null,
         autoInitialize: true,
-        aspectRatio:
-            _width == null || _height == null ? null : _width! / _height!,
+        aspectRatio: _width == null || _height == null ? null : _width! / _height!,
+        deviceOrientationsOnEnterFullScreen: widget.deviceOrientationsOnEnterFullScreen,
+        deviceOrientationsAfterFullScreen: widget.deviceOrientationsAfterFullScreen,
       );
       widget.callback?.call(
           widget.context.tree.element, _chewieController!, _videoController!);
