@@ -66,24 +66,30 @@ class _VideoWidgetState extends State<VideoWidget> {
           _videoController = VideoPlayerController.asset(sourceUri.path);
           break;
         case 'file':
-          _videoController = VideoPlayerController.file(File.fromUri(sourceUri));
+          _videoController =
+              VideoPlayerController.file(File.fromUri(sourceUri));
           break;
         default:
-          _videoController = VideoPlayerController.network(sourceUri.toString());
+          _videoController =
+              VideoPlayerController.network(sourceUri.toString());
           break;
       }
       _chewieController = ChewieController(
         videoPlayerController: _videoController!,
-        placeholder: attributes['poster'] != null && attributes['poster']!.isNotEmpty
-            ? Image.network(attributes['poster']!)
-            : Container(color: Colors.black),
+        placeholder:
+            attributes['poster'] != null && attributes['poster']!.isNotEmpty
+                ? Image.network(attributes['poster']!)
+                : Container(color: Colors.black),
         autoPlay: attributes['autoplay'] != null,
         looping: attributes['loop'] != null,
         showControls: attributes['controls'] != null,
         autoInitialize: true,
-        aspectRatio: _width == null || _height == null ? null : _width! / _height!,
-        deviceOrientationsOnEnterFullScreen: widget.deviceOrientationsOnEnterFullScreen,
-        deviceOrientationsAfterFullScreen: widget.deviceOrientationsAfterFullScreen,
+        aspectRatio:
+            _width == null || _height == null ? null : _width! / _height!,
+        deviceOrientationsOnEnterFullScreen:
+            widget.deviceOrientationsOnEnterFullScreen,
+        deviceOrientationsAfterFullScreen:
+            widget.deviceOrientationsAfterFullScreen,
       );
       widget.callback?.call(
           widget.context.tree.element, _chewieController!, _videoController!);
