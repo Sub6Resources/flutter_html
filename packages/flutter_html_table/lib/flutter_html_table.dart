@@ -108,8 +108,7 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
           rowStart: rowi,
           rowSpan: min(child.rowspan, rows.length - rowi),
           child: CssBoxWidget(
-            style: child.style
-                .merge(row.style), //TODO padding/decoration(color/border)
+            style: row.style, //TODO padding/decoration(color/border)
             child: SizedBox.expand(
               child: Container(
                 alignment: child.style.alignment ??
