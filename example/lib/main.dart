@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_all/flutter_html_all.dart';
+import 'package:flutter_html_math/flutter_html_math.dart';
 
 void main() => runApp(const MyApp());
 
@@ -203,7 +203,7 @@ const htmlData = r"""
           <mn>2</mn>
        </msup>
         <mo>&sdot;</mo>
-        <mi>&dd;</mi><mi>x</mi>
+        <mi>d</mi><mi>x</mi>
         <mo>=</mo>
         <mo>[</mo>
         <mfrac>
@@ -232,6 +232,7 @@ const htmlData = r"""
           <mi>3</mi>
        </mfrac>
       </math>
+      <br />
       <math>
         <msup>
           <mo>sin</mo>
@@ -292,73 +293,83 @@ class MyHomePageState extends State<MyHomePage> {
               alignment: Alignment.topLeft,
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
+            'flutter': Style(
+              display: Display.block,
+              fontSize: FontSize(5, Unit.em),
+            ),
           },
           tagsList: Html.tags..addAll(['tex', 'bird', 'flutter']),
-          customRenders: {
-            tagMatcher("tex"): CustomRender.widget(
-                widget: (context, buildChildren) => Math.tex(
-                      context.tree.element?.innerHtml ?? '',
-                      mathStyle: MathStyle.display,
-                      textStyle: context.style.generateTextStyle(),
-                      onErrorFallback: (FlutterMathException e) {
-                        return Text(e.message);
-                      },
-                    )),
-            tagMatcher("bird"): CustomRender.inlineSpan(
-                inlineSpan: (context, buildChildren) =>
-                    const TextSpan(text: "🐦")),
-            tagMatcher("flutter"): CustomRender.widget(
-                widget: (context, buildChildren) => FlutterLogo(
-                      style: (context.tree.element!.attributes['horizontal'] !=
-                              null)
-                          ? FlutterLogoStyle.horizontal
-                          : FlutterLogoStyle.markOnly,
-                      textColor: context.style.color!,
-                      size: context.style.fontSize!.value * 5,
-                    )),
-            tagMatcher("table"): CustomRender.widget(
-                widget: (context, buildChildren) => SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: tableRender
-                          .call()
-                          .widget!
-                          .call(context, buildChildren),
-                    )),
-            audioMatcher(): audioRender(),
-            iframeMatcher(): iframeRender(),
-            mathMatcher():
-                mathRender(onMathError: (error, exception, exceptionWithType) {
-              debugPrint(exception);
-              return Text(exception);
-            }),
-            svgTagMatcher(): svgTagRender(),
-            svgDataUriMatcher(): svgDataImageRender(),
-            svgAssetUriMatcher(): svgAssetImageRender(),
-            svgNetworkSourceMatcher(): svgNetworkImageRender(),
-            networkSourceMatcher(domains: ["flutter.dev"]):
-                CustomRender.widget(widget: (context, buildChildren) {
-              return const FlutterLogo(size: 36);
-            }),
-            networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
-              headers: {"Custom-Header": "some-value"},
-              altWidget: (alt) => Text(alt ?? ""),
-              loadingWidget: () => const Text("Loading..."),
+          extensions: [
+            TagExtension(
+              tagsToExtend: {"h4"},
+              child: FlutterLogo(),
             ),
-            // On relative paths starting with /wiki, prefix with a base url
-            (context) =>
-                context.tree.element?.attributes["src"] != null &&
-                context.tree.element!.attributes["src"]!
-                    .startsWith("/wiki"): networkImageRender(
-                mapUrl: (url) => "https://upload.wikimedia.org${url!}"),
-            // Custom placeholder image for broken links
-            networkSourceMatcher():
-                networkImageRender(altWidget: (_) => const FlutterLogo()),
-            videoMatcher(): videoRender(),
-          },
-          onLinkTap: (url, _, __, ___) {
+            TagExtension(
+              tagsToExtend: {"tex"},
+              builder: (context) => Math.tex(
+                  context.innerHtml,
+                  mathStyle: MathStyle.display,
+                  textStyle: context.styledElement?.style.generateTextStyle(),
+                  onErrorFallback: (FlutterMathException e) {
+                    return Text(e.message);
+                  },
+                ),
+            ),
+            TagExtension.inline(
+              tagsToExtend: {"bird"},
+              child: const TextSpan(text: "🐦"),
+            ),
+            TagExtension(
+              tagsToExtend: {"flutter"},
+              builder: (context) => FlutterLogo(
+                  style: context.attributes['horizontal'] != null
+                      ? FlutterLogoStyle.horizontal
+                      : FlutterLogoStyle.markOnly,
+                  textColor: context.styledElement!.style.color!,
+                  size: context.styledElement!.style.fontSize!.value,
+                ),
+            ),
+            MathHtmlExtension(),
+          ],
+          // customRenders: {
+          //   tagMatcher("table"): CustomRender.widget(
+          //       widget: (context, buildChildren) => SingleChildScrollView(
+          //             scrollDirection: Axis.horizontal,
+          //             child: tableRender
+          //                 .call()
+          //                 .widget!
+          //                 .call(context, buildChildren),
+          //           )),
+          //   audioMatcher(): audioRender(),
+          //   iframeMatcher(): iframeRender(),
+          //   svgTagMatcher(): svgTagRender(),
+          //   svgDataUriMatcher(): svgDataImageRender(),
+          //   svgAssetUriMatcher(): svgAssetImageRender(),
+          //   svgNetworkSourceMatcher(): svgNetworkImageRender(),
+          //   networkSourceMatcher(domains: ["flutter.dev"]):
+          //       CustomRender.widget(widget: (context, buildChildren) {
+          //     return const FlutterLogo(size: 36);
+          //   }),
+          //   networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
+          //     headers: {"Custom-Header": "some-value"},
+          //     altWidget: (alt) => Text(alt ?? ""),
+          //     loadingWidget: () => const Text("Loading..."),
+          //   ),
+          //   // On relative paths starting with /wiki, prefix with a base url
+          //   (context) =>
+          //       context.tree.element?.attributes["src"] != null &&
+          //       context.tree.element!.attributes["src"]!
+          //           .startsWith("/wiki"): networkImageRender(
+          //       mapUrl: (url) => "https://upload.wikimedia.org${url!}"),
+          //   // Custom placeholder image for broken links
+          //   networkSourceMatcher():
+          //       networkImageRender(altWidget: (_) => const FlutterLogo()),
+          //   videoMatcher(): videoRender(),
+          // },
+          onLinkTap: (url, _, __) {
             debugPrint("Opening $url...");
           },
-          onImageTap: (src, _, __, ___) {
+          onImageTap: (src, _, __) {
             debugPrint(src);
           },
           onImageError: (exception, stackTrace) {
@@ -378,11 +389,11 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-CustomRenderMatcher texMatcher() =>
-    (context) => context.tree.element?.localName == 'tex';
+// CustomRenderMatcher texMatcher() =>
+//     (context) => context.tree.element?.localName == 'tex';
 
-CustomRenderMatcher birdMatcher() =>
-    (context) => context.tree.element?.localName == 'bird';
+// CustomRenderMatcher birdMatcher() =>
+//     (context) => context.tree.element?.localName == 'bird';
 
-CustomRenderMatcher flutterMatcher() =>
-    (context) => context.tree.element?.localName == 'flutter';
+// CustomRenderMatcher flutterMatcher() =>
+//     (context) => context.tree.element?.localName == 'flutter';

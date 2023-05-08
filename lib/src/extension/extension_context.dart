@@ -23,7 +23,11 @@ class ExtensionContext {
 
   /// Returns the HTML within this element, or an empty string if there is none.
   String get innerHtml {
-    return node.sourceSpan?.text ?? '';
+    if(node is html.Element) {
+      return (node as html.Element).innerHtml;
+    }
+
+    return node.text ?? "";
   }
 
   /// Returns the list of child Elements on this html Node, or an empty list if

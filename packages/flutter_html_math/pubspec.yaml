@@ -12,9 +12,6 @@ dependencies:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
   flutter_html: ^3.0.0-alpha.6
-#  flutter_html:
-#    path: ../..
-
   flutter_math_fork: '>=0.6.0 <1.0.0'
 
 dev_dependencies:
