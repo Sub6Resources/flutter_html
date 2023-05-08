@@ -76,18 +76,18 @@ const htmlData = r"""
       </p>
       <table>
       <colgroup>
-        <col width="50%" />
-        <col span="2" width="25%" />
+        <col width="200" />
+        <col span="2" width="150" />
       </colgroup>
       <thead>
       <tr><th>One</th><th>Two</th><th>Three</th></tr>
       </thead>
       <tbody>
       <tr>
-        <td rowspan='2'>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan</td><td>Data</td><td>Data</td>
+        <td rowspan='2'>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan</td><td>Data</td><td>Data</td>
       </tr>
       <tr>
-        <td colspan="2"><img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' /></td>
+        <td colspan="2"><img width="175" alt='xkcd' src='https://imgs.xkcd.com/comics/commemorative_plaque.png' /></td>
       </tr>
       </tbody>
       <tfoot>
@@ -135,7 +135,7 @@ const htmlData = r"""
       </p>
       <h3>Image support:</h3>
       <h3>Network png</h3>
-      <img alt='Google' src='https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+      <img width="200" alt='xkcd' src='https://imgs.xkcd.com/comics/commemorative_plaque.png' />
       <h3>Network svg</h3>
       <img src='https://dev.w3.org/SVG/tools/svgweb/samples/svg-files/android.svg' />
       <h3>Local asset png</h3>
@@ -154,7 +154,7 @@ const htmlData = r"""
       <img alt='No source' />
       <img alt='Empty source' src='' />
       <h3>Broken network image</h3>
-      <img alt='Broken image' src='https://www.notgoogle.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
+      <img alt='Broken image' src='https://www.example.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png' />
       <h3>MathML Support:</h3>
       <math>
       <mrow>
@@ -281,16 +281,13 @@ class MyHomePageState extends State<MyHomePage> {
             "table": Style(
               backgroundColor: const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
             ),
-            "tr": Style(
-              border: const Border(bottom: BorderSide(color: Colors.grey)),
-            ),
             "th": Style(
               padding: const EdgeInsets.all(6),
               backgroundColor: Colors.grey,
             ),
             "td": Style(
               padding: const EdgeInsets.all(6),
-              alignment: Alignment.topLeft,
+              border: const Border(bottom: BorderSide(color: Colors.grey)),
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),
             'flutter': Style(
@@ -298,12 +295,8 @@ class MyHomePageState extends State<MyHomePage> {
               fontSize: FontSize(5, Unit.em),
             ),
           },
-          tagsList: Html.tags..addAll(['tex', 'bird', 'flutter']),
+          tagsList: Html.tags..addAll(['tex', 'bird', 'flutter', 'table', 'th', 'tr', 'td', 'colgroup', 'col', 'thead', 'tbody', 'tfoot']),
           extensions: [
-            TagExtension(
-              tagsToExtend: {"h4"},
-              child: FlutterLogo(),
-            ),
             TagExtension(
               tagsToExtend: {"tex"},
               builder: (context) => Math.tex(
@@ -333,6 +326,7 @@ class MyHomePageState extends State<MyHomePage> {
             const AudioHtmlExtension(),
             const VideoHtmlExtension(),
             const IframeHtmlExtension(),
+            const TableHtmlExtension(),
           ],
           // customRenders: {
           //   tagMatcher("table"): CustomRender.widget(

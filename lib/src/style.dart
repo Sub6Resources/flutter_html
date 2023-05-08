@@ -681,6 +681,9 @@ enum VerticalAlign {
   baseline,
   sub,
   sup,
+  top,
+  bottom,
+  middle,
 }
 
 enum WhiteSpace {

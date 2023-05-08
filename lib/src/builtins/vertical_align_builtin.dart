@@ -18,7 +18,8 @@ class VerticalAlignBuiltIn extends Extension {
   @override
   bool matches(ExtensionContext context) {
     return context.styledElement?.style.verticalAlign != null &&
-           context.styledElement!.style.verticalAlign != VerticalAlign.baseline;
+        (context.styledElement!.style.verticalAlign == VerticalAlign.sub
+        || context.styledElement!.style.verticalAlign == VerticalAlign.sup);
   }
 
   @override

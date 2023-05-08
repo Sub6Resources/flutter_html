@@ -23,6 +23,7 @@ class IframeHtmlExtension extends Extension {
   InlineSpan parse(ExtensionContext context, parseChildren) {
     return WidgetSpan(
       child: IframeWidget(
+        extensionContext: context,
         navigationDelegate: navigationDelegate,
       ),
     );
