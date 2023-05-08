@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_math/flutter_html_math.dart';
+import 'package:flutter_html_all/flutter_html_all.dart';
 
 void main() => runApp(const MyApp());
 

@@ -11,6 +11,16 @@ class ExtensionContext {
   /// The HTML node being represented as a Flutter widget.
   final html.Node node;
 
+  /// Returns the reference to the Html element if this Html node represents
+  /// and element. Otherwise returns null.
+  html.Element? get element {
+    if(node is html.Element) {
+      return (node as html.Element);
+    }
+
+    return null;
+  }
+
   /// Returns the name of the Html element, or an empty string if the node is
   /// a text content node, comment node, or any other node without a name.
   String get elementName {

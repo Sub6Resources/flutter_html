@@ -7,29 +7,36 @@ import 'package:flutter_math_fork/flutter_math.dart';
 
 export 'package:flutter_math_fork/flutter_math.dart';
 
-class MathHtmlExtension extends TagExtension {
+/// [MathHtmlExtension] adds support for the <math> tag to the flutter_html
+/// library.
+class MathHtmlExtension extends Extension {
 
-  MathHtmlExtension({OnMathErrorBuilder? onMathErrorBuilder}): super(
-    tagsToExtend: {"math"},
-    builder: (context) => _renderMath(context, onMathErrorBuilder),
-  );
+  final OnMathErrorBuilder? onMathErrorBuilder;
 
-  static Widget _renderMath(ExtensionContext context, OnMathErrorBuilder? onMathError) {
+  const MathHtmlExtension({this.onMathErrorBuilder});
+
+  @override
+  Set<String> get supportedTags => {"math"};
+
+  @override
+  InlineSpan parse(ExtensionContext context, parseChildren) {
     String texStr = _parseMathRecursive(context.styledElement!.element!, '');
-    return CssBoxWidget(
-      style: context.styledElement!.style,
-      childIsReplaced: true,
-      child: Math.tex(
-        texStr,
-        mathStyle: MathStyle.display,
-        textStyle: context.styledElement!.style.generateTextStyle(),
-        onErrorFallback: (FlutterMathException e) {
-          if (onMathError != null) {
-            return onMathError.call(texStr, e.message, e.messageWithType);
-          } else {
-            return Text(e.message);
-          }
-        },
+    return WidgetSpan(
+      child: CssBoxWidget(
+        style: context.styledElement!.style,
+        childIsReplaced: true,
+        child: Math.tex(
+          texStr,
+          mathStyle: MathStyle.display,
+          textStyle: context.styledElement!.style.generateTextStyle(),
+          onErrorFallback: (FlutterMathException e) {
+            if (onMathErrorBuilder != null) {
+              return onMathErrorBuilder!.call(texStr, e.message, e.messageWithType);
+            } else {
+              return Text(e.message);
+            }
+          },
+        ),
       ),
     );
   }
@@ -90,9 +97,7 @@ String _parseMathRecursive(dom.Node node, String parsed) {
         node.localName == "mn" ||
         node.localName == "mo") {
       if (_mathML2Tex.keys.contains(node.text.trim())) {
-        parsed = parsed +
-            _mathML2Tex[
-                _mathML2Tex.keys.firstWhere((e) => e == node.text.trim())]!;
+        parsed = parsed + _mathML2Tex[node.text.trim()]!;
       } else if (node.text.startsWith("&") && node.text.endsWith(";")) {
         parsed = parsed +
             node.text

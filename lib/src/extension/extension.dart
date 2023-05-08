@@ -1,5 +1,6 @@
 import 'package:flutter/painting.dart';
 import 'package:flutter_html/src/extension/extension_context.dart';
+import 'package:flutter_html/src/style.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
 
 export 'package:flutter_html/src/extension/extension_context.dart';
@@ -29,25 +30,36 @@ abstract class Extension {
     return supportedTags.contains(context.elementName);
   }
 
-  // Converts parsed HTML to a StyledElement.
+  /// Converts parsed HTML to a StyledElement.
   StyledElement lex(ExtensionContext context, List<StyledElement> children) {
-    throw UnimplementedError("Extension `$runtimeType` matched `${context.elementName}` but didn't implement `lex`");
+    return StyledElement(
+      node: context.node,
+      style: Style(),
+      elementClasses: context.classes.toList(),
+      elementId: context.id,
+      children: children,
+      name: context.elementName,
+    );
   }
 
-  // Called before styles are applied to the tree. Default behavior: do nothing;
+  /// Called before styles are applied to the tree. Default behavior: do nothing;
   void beforeStyle(ExtensionContext context) {}
 
-  // Called after styling, but before extra elements/whitespace has been
-  // removed, margins collapsed, list characters processed, or relative
-  // values calculated. Default behavior: do nothing;
+  /// Called after styling, but before extra elements/whitespace has been
+  /// removed, margins collapsed, list characters processed, or relative
+  /// values calculated. Default behavior: do nothing;
   void beforeProcessing(ExtensionContext context) {}
 
-  //The final step in the chain. Converts the StyledElement tree, with its attached `Style` elements, into an `InlineSpan` tree that includes Widget/TextSpans that can be rendered in a RichText widget.
+  /// The final step in the chain. Converts the StyledElement tree, with its
+  /// attached `Style` elements, into an `InlineSpan` tree that includes
+  /// Widget/TextSpans that can be rendered in a RichText widget.
   InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
     throw UnimplementedError("Extension `$runtimeType` matched `${context.styledElement!.name}` but didn't implement `parse`");
   }
 
-  //Called when the Html widget is being destroyed. This would be a very good place to dispose() any controllers or free any resources that the extension uses. Default behavior: do nothing.
+  /// Called when the Html widget is being destroyed. This would be a very
+  /// good place to dispose() any controllers or free any resources that
+  /// the extension uses. Default behavior: do nothing.
   void onDispose() {
     // Subclasses may override this to clean up when the extension is being disposed.
   }
