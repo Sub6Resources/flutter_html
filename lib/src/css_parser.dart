@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
 
+//TODO refactor
 Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   Style style = Style();
   declarations.forEach((property, value) {
@@ -547,6 +548,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
   return style;
 }
 
+//TODO refactor
 Style? inlineCssToStyle(String? inlineStyle, OnCssParseError? errorHandler) {
   var errors = <cssparser.Message>[];
   final sheet = cssparser.parse("*{$inlineStyle}", errors: errors);
@@ -562,8 +564,11 @@ Style? inlineCssToStyle(String? inlineStyle, OnCssParseError? errorHandler) {
   return null;
 }
 
+//TODO refactor?
 Map<String, Map<String, List<css.Expression>>> parseExternalCss(
     String css, OnCssParseError? errorHandler) {
+  if(css.isEmpty) return {};
+
   var errors = <cssparser.Message>[];
   final sheet = cssparser.parse(css, errors: errors);
   if (errors.isEmpty) {

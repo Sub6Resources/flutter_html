@@ -1,7 +1,8 @@
-export 'styled_element.dart';
-export 'interactable_element.dart';
-export 'replaced_element.dart';
+export 'tree/styled_element.dart';
+export 'tree/interactable_element.dart';
+export 'tree/replaced_element.dart';
 
+//TODO remove
 class HtmlElements {
   static const styledElements = [
     "abbr",
@@ -120,15 +121,7 @@ class HtmlElements {
 
   static const layoutElements = [
     "details",
-    "tr",
-    "tbody",
-    "tfoot",
-    "thead",
   ];
-
-  static const tableCellElements = ["th", "td"];
-
-  static const tableDefinitionElements = ["col", "colgroup"];
 
   static const externalElements = [
     "audio",
@@ -141,67 +134,4 @@ class HtmlElements {
   ];
 
   static const replacedExternalElements = ["iframe", "img", "video", "audio"];
-
-  static const selectableElements = [
-    "br",
-    "a",
-    "article",
-    "aside",
-    "blockquote",
-    "body",
-    "center",
-    "dd",
-    "div",
-    "dl",
-    "dt",
-    "figcaption",
-    "figure",
-    "footer",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "header",
-    "hr",
-    "html",
-    "main",
-    "nav",
-    "noscript",
-    "p",
-    "pre",
-    "section",
-    "summary",
-    "abbr",
-    "acronym",
-    "address",
-    "b",
-    "bdi",
-    "bdo",
-    "big",
-    "cite",
-    "code",
-    "data",
-    "del",
-    "dfn",
-    "em",
-    "font",
-    "i",
-    "ins",
-    "kbd",
-    "mark",
-    "q",
-    "s",
-    "samp",
-    "small",
-    "span",
-    "strike",
-    "strong",
-    "time",
-    "tt",
-    "u",
-    "var",
-    "wbr",
-  ];
 }

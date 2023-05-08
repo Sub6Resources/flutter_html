@@ -22,17 +22,7 @@ class CssBoxWidget extends StatelessWidget {
     this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
-    bool selectable = false,
-    TextSelectionControls? selectionControls,
-    ScrollPhysics? scrollPhysics,
-  }) : child = selectable
-            ? _generateSelectableWidgetChild(
-                children,
-                style,
-                selectionControls,
-                scrollPhysics,
-              )
-            : _generateWidgetChild(children, style);
+  }) : child = _generateWidgetChild(children, style);
 
   /// The child to be rendered within the CSS Box.
   final Widget child;
@@ -112,30 +102,6 @@ class CssBoxWidget extends StatelessWidget {
       textDirection: style.direction,
       maxLines: style.maxLines,
       overflow: style.textOverflow ?? TextOverflow.clip,
-    );
-  }
-
-  static Widget _generateSelectableWidgetChild(
-    List<InlineSpan> children,
-    Style style,
-    TextSelectionControls? selectionControls,
-    ScrollPhysics? scrollPhysics,
-  ) {
-    if (children.isEmpty) {
-      return Container();
-    }
-
-    return SelectableText.rich(
-      TextSpan(
-        style: style.generateTextStyle(),
-        children: children,
-      ),
-      style: style.generateTextStyle(),
-      textAlign: style.textAlign,
-      textDirection: style.direction,
-      maxLines: style.maxLines,
-      selectionControls: selectionControls,
-      scrollPhysics: scrollPhysics,
     );
   }
 

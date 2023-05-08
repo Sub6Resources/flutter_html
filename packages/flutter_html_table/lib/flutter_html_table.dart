@@ -152,3 +152,56 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
     children: cells,
   );
 }
+
+class TableCellElement extends StyledElement {
+  int colspan = 1;
+  int rowspan = 1;
+
+  TableCellElement({
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required super.children,
+    required super.style,
+    required super.node,
+  }) {
+    colspan = _parseSpan(this, "colspan");
+    rowspan = _parseSpan(this, "rowspan");
+  }
+
+  static int _parseSpan(StyledElement element, String attributeName) {
+    final spanValue = element.attributes[attributeName];
+    return spanValue == null ? 1 : int.tryParse(spanValue) ?? 1;
+  }
+}
+
+class TableExtension extends Extension {
+  @override
+  Set<String> get supportedTags => {
+    "tr",
+    "tbody",
+    "tfoot",
+    "thead",
+    "th",
+    "td",
+    "col",
+    "colgroup",
+  };
+
+  @override
+  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+    if(context.elementName == "th") {
+      return StyledElement(
+        style: Style(
+          fontWeight: FontWeight.bold,
+        ),
+        children: children,
+        node: context.node.firstChild?.parent, //TODO find a better solution for heaven's sake
+        name: context.elementName,
+        elementClasses: context.classes.toList(),
+        elementId: context.id,
+      );
+    }
+  }
+
+}

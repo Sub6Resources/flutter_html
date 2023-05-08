@@ -18,7 +18,7 @@ class Style {
   /// CSS attribute "`background-color`"
   ///
   /// Inherited: no,
-  /// Default: Colors.transparent,
+  /// Default: null (transparent),
   Color? backgroundColor;
 
   /// CSS attribute "`color`"
@@ -232,7 +232,7 @@ class Style {
   TextTransform? textTransform;
 
   Style({
-    this.backgroundColor = Colors.transparent,
+    this.backgroundColor,
     this.color,
     this.counterIncrement,
     this.counterReset,

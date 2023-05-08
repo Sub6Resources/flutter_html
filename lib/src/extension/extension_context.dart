@@ -1,7 +1,7 @@
 import 'dart:collection';
 
 import 'package:flutter/widgets.dart';
-import 'package:flutter_html/html_parser.dart';
+import 'package:flutter_html/src/html_parser.dart';
 import 'package:flutter_html/src/html_elements.dart';
 import 'package:html/dom.dart' as html;
 
@@ -69,13 +69,27 @@ class ExtensionContext {
   final StyledElement? styledElement;
 
   /// Guaranteed only when in the `parse` method of an Extension, but it might not necessarily be the nearest BuildContext. Probably should use a `Builder` Widget if you absolutely need the most relevant BuildContext.
-  final BuildContext? context;
+  final BuildContext? buildContext;
 
   /// Constructs a new [ExtensionContext] object with the given information.
   const ExtensionContext({
     required this.node,
     required this.parser,
     this.styledElement,
-    this.context,
+    this.buildContext,
   });
+
+  ExtensionContext copyWith({
+    html.Node? node,
+    HtmlParser? parser,
+    StyledElement? styledElement,
+    BuildContext? buildContext,
+  }) {
+    return ExtensionContext(
+      node: node ?? this.node,
+      parser: parser ?? this.parser,
+      styledElement: styledElement ?? this.styledElement,
+      buildContext: buildContext ?? this.buildContext,
+    );
+  }
 }
