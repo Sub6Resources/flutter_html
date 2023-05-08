@@ -329,7 +329,10 @@ class MyHomePageState extends State<MyHomePage> {
                   size: context.styledElement!.style.fontSize!.value,
                 ),
             ),
-            MathHtmlExtension(),
+            const MathHtmlExtension(),
+            const AudioHtmlExtension(),
+            const VideoHtmlExtension(),
+            const IframeHtmlExtension(),
           ],
           // customRenders: {
           //   tagMatcher("table"): CustomRender.widget(
@@ -340,8 +343,6 @@ class MyHomePageState extends State<MyHomePage> {
           //                 .widget!
           //                 .call(context, buildChildren),
           //           )),
-          //   audioMatcher(): audioRender(),
-          //   iframeMatcher(): iframeRender(),
           //   svgTagMatcher(): svgTagRender(),
           //   svgDataUriMatcher(): svgDataImageRender(),
           //   svgAssetUriMatcher(): svgAssetImageRender(),
@@ -364,7 +365,6 @@ class MyHomePageState extends State<MyHomePage> {
           //   // Custom placeholder image for broken links
           //   networkSourceMatcher():
           //       networkImageRender(altWidget: (_) => const FlutterLogo()),
-          //   videoMatcher(): videoRender(),
           // },
           onLinkTap: (url, _, __) {
             debugPrint("Opening $url...");
