@@ -81,12 +81,19 @@ void main() {
     expect(find.text('Text', findRichText: true), findsNothing);
   });
 
-  testWidgets('Check that a custom element is not displayed', (tester) async {
+  testWidgets('Check that a custom element is displayed when configured',
+      (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Html(
           data: "<custom>Text</custom>",
           tagsList: Html.tags..add('custom'),
+          extensions: [
+            TagExtension(
+              tagsToExtend: {"custom"},
+              builder: (context) => Text(context.innerHtml),
+            ),
+          ],
         ),
       ),
     );
