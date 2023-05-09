@@ -115,6 +115,51 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       }
       parsed = '$parsed & ';
     }
+    if (node.localName == "mmultiscripts") {
+      String base = _parseMathRecursive(nodeList[0], "");
+      String preSubScripts = "";
+      String preSuperScripts = "";
+      String postSubScripts = "";
+      String postSuperScripts = "";
+      bool isPostScripts = true;
+      bool isSubScripts = true;
+      for (var element in nodeList.skip(1)) {
+        if (element.localName == "mprescripts") {
+          isPostScripts = false;
+          isSubScripts = true;
+          continue;
+        }
+
+        if (isPostScripts) {
+          if (isSubScripts) {
+            postSubScripts = _parseMathRecursive(element, postSubScripts);
+          } else {
+            postSuperScripts = _parseMathRecursive(element, postSuperScripts);
+          }
+        } else {
+          if (isSubScripts) {
+            preSubScripts = _parseMathRecursive(element, preSubScripts);
+          } else {
+            preSuperScripts = _parseMathRecursive(element, preSuperScripts);
+          }
+        }
+        isSubScripts = !isSubScripts;
+      }
+      if (preSubScripts.isNotEmpty) {
+        preSubScripts = "_$preSubScripts";
+      }
+      if (preSuperScripts.isNotEmpty) {
+        preSuperScripts = "^$preSuperScripts";
+      }
+      if (postSubScripts.isNotEmpty) {
+        postSubScripts = "_$postSubScripts";
+      }
+      if (postSuperScripts.isNotEmpty) {
+        postSuperScripts = "^$postSuperScripts";
+      }
+      parsed =
+          "$parsed{}$preSubScripts$preSuperScripts $base$postSubScripts$postSuperScripts ";
+    }
   }
   return parsed;
 }
