@@ -2,9 +2,11 @@ library flutter_html_video;
 
 import 'package:chewie/chewie.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:video_player/video_player.dart';
 import 'package:html/dom.dart' as dom;
+import 'dart:io';
 
 typedef VideoControllerCallback = void Function(
     dom.Element?, ChewieController, VideoPlayerController);
@@ -24,11 +26,15 @@ CustomRenderMatcher videoMatcher() => (context) {
 class VideoWidget extends StatefulWidget {
   final RenderContext context;
   final VideoControllerCallback? callback;
+  final List<DeviceOrientation>? deviceOrientationsOnEnterFullScreen;
+  final List<DeviceOrientation> deviceOrientationsAfterFullScreen;
 
   const VideoWidget({
     Key? key,
     required this.context,
     this.callback,
+    this.deviceOrientationsOnEnterFullScreen,
+    this.deviceOrientationsAfterFullScreen = DeviceOrientation.values,
   }) : super(key: key);
 
   @override
@@ -54,7 +60,20 @@ class _VideoWidgetState extends State<VideoWidget> {
     if (sources.isNotEmpty && sources.first != null) {
       _width = givenWidth ?? (givenHeight ?? 150) * 2;
       _height = givenHeight ?? (givenWidth ?? 300) / 2;
-      _videoController = VideoPlayerController.network(sources.first!);
+      Uri sourceUri = Uri.parse(sources.first!);
+      switch (sourceUri.scheme) {
+        case 'asset':
+          _videoController = VideoPlayerController.asset(sourceUri.path);
+          break;
+        case 'file':
+          _videoController =
+              VideoPlayerController.file(File.fromUri(sourceUri));
+          break;
+        default:
+          _videoController =
+              VideoPlayerController.network(sourceUri.toString());
+          break;
+      }
       _chewieController = ChewieController(
         videoPlayerController: _videoController!,
         placeholder:
@@ -67,6 +86,10 @@ class _VideoWidgetState extends State<VideoWidget> {
         autoInitialize: true,
         aspectRatio:
             _width == null || _height == null ? null : _width! / _height!,
+        deviceOrientationsOnEnterFullScreen:
+            widget.deviceOrientationsOnEnterFullScreen,
+        deviceOrientationsAfterFullScreen:
+            widget.deviceOrientationsAfterFullScreen,
       );
       widget.callback?.call(
           widget.context.tree.element, _chewieController!, _videoController!);
