@@ -178,7 +178,7 @@ class SvgHtmlExtension extends Extension {
     final data = dataUri?.namedGroup('data');
     if (data == null) return const SizedBox(height: 0, width: 0);
 
-    if (dataUri?.namedGroup('encoding') == ';base64') {
+    if (dataUri?.namedGroup('encoding') == 'base64') {
       return SvgPicture.memory(
         base64.decode(data.trim()),
         width: imageStyle.width?.value,
