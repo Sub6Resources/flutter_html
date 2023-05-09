@@ -287,7 +287,8 @@ CustomRender networkImageRender({
       if (context.parser.cachedImageSizes[src] != null) {
         completer.complete(context.parser.cachedImageSizes[src]);
       } else {
-        Image image = Image.network(src, frameBuilder: (ctx, child, frame, _) {
+        Image image = Image.network(src, headers: headers,
+            frameBuilder: (ctx, child, frame, _) {
           if (frame == null) {
             if (!completer.isCompleted) {
               completer.completeError("error");
