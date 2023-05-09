@@ -335,7 +335,7 @@ class SelectableHtml extends StatefulWidget {
 }
 
 class _SelectableHtmlState extends State<SelectableHtml> {
-  late final dom.Element documentElement;
+  late dom.Element documentElement;
 
   @override
   void initState() {
@@ -343,6 +343,16 @@ class _SelectableHtmlState extends State<SelectableHtml> {
     documentElement = widget.data != null
         ? HtmlParser.parseHTML(widget.data!)
         : widget.documentElement!;
+  }
+  @override
+  void didUpdateWidget(SelectableHtml oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if ((widget.data != null && oldWidget.data != widget.data) ||
+        oldWidget.documentElement != widget.documentElement) {
+      documentElement = widget.data != null
+          ? HtmlParser.parseHTML(widget.data!)
+          : widget.documentElement!;
+    }
   }
 
   @override
