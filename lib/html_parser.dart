@@ -756,20 +756,13 @@ class HtmlParser extends StatelessWidget {
             tree.children[i - 1].style.margin?.bottom?.value ?? 0;
         final thisTop = tree.children[i].style.margin?.top?.value ?? 0;
         final newInternalMargin = max(previousSiblingBottom, thisTop);
-
-        if (tree.children[i - 1].style.margin == null) {
-          tree.children[i - 1].style.margin =
-              Margins.only(bottom: newInternalMargin);
-        } else {
-          tree.children[i - 1].style.margin = tree.children[i - 1].style.margin!
-              .copyWithEdge(bottom: newInternalMargin);
-        }
+        final newTop = newInternalMargin - previousSiblingBottom;
 
         if (tree.children[i].style.margin == null) {
-          tree.children[i].style.margin = Margins.only(top: newInternalMargin);
+          tree.children[i].style.margin = Margins.only(top: newTop);
         } else {
-          tree.children[i].style.margin = tree.children[i].style.margin!
-              .copyWithEdge(top: newInternalMargin);
+          tree.children[i].style.margin =
+              tree.children[i].style.margin!.copyWithEdge(top: newTop);
         }
       }
     }
