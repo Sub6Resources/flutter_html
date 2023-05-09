@@ -132,6 +132,14 @@ class _HtmlParserState extends State<HtmlParser> {
     );
   }
 
+  @override
+  void dispose() {
+    for (var e in widget.extensions) {
+      e.onDispose();
+    }
+    super.dispose();
+  }
+
   /// Converts the tree of Html nodes into a simplified StyledElement tree
   void lexHtmlTree() {
     tree = StyledElement(
