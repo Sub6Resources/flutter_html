@@ -23,9 +23,8 @@ void main() {
     // Happy path (taken from SvgPicture examples)
     testMatchAndRender(
         "matches and renders svg tag",
-        makeSvgTag(content: svgRawString, width: 100, height: 100),
-        svgTagMatcher(),
-        svgTagRender(),
+        makeSvgTag(content: svgString, width: 100, height: 100),
+        const SvgHtmlExtension(),
         TestResult.matchAndRenderSvgPicture);
   });
 }

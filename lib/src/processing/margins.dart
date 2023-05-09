@@ -3,7 +3,6 @@ import 'dart:math';
 import 'package:flutter_html/flutter_html.dart';
 
 class MarginProcessing {
-
   /// [processMargins] applies processing steps for collapsing margins.
   static StyledElement processMargins(StyledElement tree) {
     return _collapseMargins(tree);

@@ -4,7 +4,7 @@ version: 3.0.0-alpha.4
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
-  sdk: ">=2.12.0 <3.0.0"
+  sdk: ">=2.17.0 <3.0.0"
   flutter: ">=2.2.0"
 
 dependencies:
@@ -12,10 +12,7 @@ dependencies:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
   flutter_html: ^3.0.0-alpha.6
-#  flutter_html:
-#    path: ../..
-
-  flutter_svg: '>=1.0.0 <2.0.0'
+  flutter_svg: '>=1.0.0 <3.0.0'
 
 dev_dependencies:
   flutter_test:

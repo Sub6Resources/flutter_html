@@ -38,22 +38,17 @@ class TextContentElement extends ReplacedElement {
     required this.text,
     required super.node,
     dom.Element? element,
-  }) : super(
-            name: "[text]",
-            style: style,
-            elementId: "[[No ID]]");
+  }) : super(name: "[text]", style: style, elementId: "[[No ID]]");
 
   @override
   String toString() {
     return "\"${text!.replaceAll("\n", "\\n")}\"";
   }
-
 }
 
 class EmptyContentElement extends ReplacedElement {
   EmptyContentElement({required super.node, String name = "empty"})
       : super(name: name, style: Style(), elementId: "[[No ID]]");
-
 }
 
 class RubyElement extends ReplacedElement {

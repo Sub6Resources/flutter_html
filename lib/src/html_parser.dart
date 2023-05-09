@@ -44,7 +44,6 @@ class HtmlParser extends StatefulWidget {
   final OnTap? internalOnAnchorTap;
   final Html? root;
 
-
   HtmlParser({
     required super.key,
     required this.htmlData,
@@ -84,9 +83,8 @@ class HtmlParser extends StatefulWidget {
     return css_parser.parse(data);
   }
 
-  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) => (String? url,
-          Map<String, String> attributes,
-          html.Element? element) {
+  static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
+      (String? url, Map<String, String> attributes, html.Element? element) {
         if (url?.startsWith("#") == true) {
           final anchorContext =
               AnchorKey.forId(key, url!.substring(1))?.currentContext;
@@ -100,7 +98,6 @@ class HtmlParser extends StatefulWidget {
 }
 
 class _HtmlParserState extends State<HtmlParser> {
-
   late StyledElement tree;
 
   @override
@@ -141,10 +138,11 @@ class _HtmlParserState extends State<HtmlParser> {
       name: '[Tree Root]',
       children: [],
       node: widget.htmlData,
-      style: Style.fromTextStyle(DefaultTextStyle.of(context).style), //TODO this was Theme.of(context).textTheme.bodyText2!. Compare.
+      style: Style.fromTextStyle(DefaultTextStyle.of(context)
+          .style), //TODO this was Theme.of(context).textTheme.bodyText2!. Compare.
     );
 
-    for(var node in widget.htmlData.nodes) {
+    for (var node in widget.htmlData.nodes) {
       tree.children.add(_lexHtmlTreeRecursive(node));
     }
   }
@@ -162,20 +160,21 @@ class _HtmlParserState extends State<HtmlParser> {
     );
 
     // Block the widget from rendering if it isn't in the tag list.
-    if(node is html.Element && !widget.tagsList.contains(extensionContext.elementName)) {
+    if (node is html.Element &&
+        !widget.tagsList.contains(extensionContext.elementName)) {
       return EmptyContentElement(node: node);
     }
 
     // Loop through every extension and see if it can handle this node
-    for(final extension in widget.extensions) {
-      if(extension.matches(extensionContext)) {
+    for (final extension in widget.extensions) {
+      if (extension.matches(extensionContext)) {
         return extension.lex(extensionContext, children);
       }
     }
 
     // Loop through built in elements and see if they can handle this node.
-    for(final builtIn in HtmlParser.builtIns) {
-      if(builtIn.matches(extensionContext)) {
+    for (final builtIn in HtmlParser.builtIns) {
+      if (builtIn.matches(extensionContext)) {
         return builtIn.lex(extensionContext, children);
       }
     }
@@ -194,15 +193,15 @@ class _HtmlParserState extends State<HtmlParser> {
     );
 
     // Loop through every extension and see if it wants to process this element
-    for(final extension in widget.extensions) {
-      if(extension.matches(extensionContext)) {
+    for (final extension in widget.extensions) {
+      if (extension.matches(extensionContext)) {
         extension.beforeStyle(extensionContext);
       }
     }
 
     // Loop through built in elements and see if they want to process this element.
-    for(final builtIn in HtmlParser.builtIns) {
-      if(builtIn.matches(extensionContext)) {
+    for (final builtIn in HtmlParser.builtIns) {
+      if (builtIn.matches(extensionContext)) {
         builtIn.beforeStyle(extensionContext);
       }
     }
@@ -214,8 +213,12 @@ class _HtmlParserState extends State<HtmlParser> {
   /// [styleTree] takes the lexed [StyleElement] tree and applies external,
   /// inline, and custom CSS/Flutter styles, and then cascades the styles down the tree.
   void styleTree() {
-    final styleTagContents = widget.htmlData.getElementsByTagName("style").map((e) => e.innerHtml).join();
-    final styleTagDeclarations = parseExternalCss(styleTagContents, widget.onCssParseError);
+    final styleTagContents = widget.htmlData
+        .getElementsByTagName("style")
+        .map((e) => e.innerHtml)
+        .join();
+    final styleTagDeclarations =
+        parseExternalCss(styleTagContents, widget.onCssParseError);
 
     _styleTreeRecursive(tree, styleTagDeclarations);
   }
@@ -231,7 +234,8 @@ class _HtmlParserState extends State<HtmlParser> {
 
     // Apply inline styles
     if (tree.attributes.containsKey("style")) {
-      final newStyle = inlineCssToStyle(tree.attributes['style'], widget.onCssParseError);
+      final newStyle =
+          inlineCssToStyle(tree.attributes['style'], widget.onCssParseError);
       if (newStyle != null) {
         tree.style = tree.style.merge(newStyle);
       }
@@ -261,15 +265,15 @@ class _HtmlParserState extends State<HtmlParser> {
     );
 
     // Loop through every extension and see if it can process this element
-    for(final extension in widget.extensions) {
-      if(extension.matches(extensionContext)) {
+    for (final extension in widget.extensions) {
+      if (extension.matches(extensionContext)) {
         extension.beforeProcessing(extensionContext);
       }
     }
 
     // Loop through built in elements and see if they can process this element.
-    for(final builtIn in HtmlParser.builtIns) {
-      if(builtIn.matches(extensionContext)) {
+    for (final builtIn in HtmlParser.builtIns) {
+      if (builtIn.matches(extensionContext)) {
         builtIn.beforeProcessing(extensionContext);
       }
     }
@@ -298,7 +302,6 @@ class _HtmlParserState extends State<HtmlParser> {
   }
 
   InlineSpan _parseTreeRecursive(StyledElement tree) {
-
     Map<StyledElement, InlineSpan> parseChildren() {
       return Map.fromEntries(tree.children.map((child) {
         return MapEntry(child, _parseTreeRecursive(child));
@@ -314,15 +317,15 @@ class _HtmlParserState extends State<HtmlParser> {
     );
 
     // Loop through every extension and see if it can handle this node
-    for(final extension in widget.extensions) {
-      if(extension.matches(extensionContext)) {
+    for (final extension in widget.extensions) {
+      if (extension.matches(extensionContext)) {
         return extension.parse(extensionContext, parseChildren);
       }
     }
 
     // Loop through built in elements and see if they can handle this node.
-    for(final builtIn in HtmlParser.builtIns) {
-      if(builtIn.matches(extensionContext)) {
+    for (final builtIn in HtmlParser.builtIns) {
+      if (builtIn.matches(extensionContext)) {
         return builtIn.parse(extensionContext, parseChildren);
       }
     }

@@ -8,8 +8,8 @@ class DetailsElementBuiltIn extends Extension {
 
   @override
   Set<String> get supportedTags => {
-    "details",
-  };
+        "details",
+      };
 
   @override
   StyledElement lex(ExtensionContext context, List<StyledElement> children) {
@@ -22,8 +22,8 @@ class DetailsElementBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
-
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
     final childList = parseChildren();
     final children = childList.values;
 
@@ -33,7 +33,7 @@ class DetailsElementBuiltIn extends Extension {
           key: AnchorKey.of(context.parser.key, context.styledElement!),
           expandedAlignment: Alignment.centerLeft,
           title: childList.keys.isNotEmpty &&
-              childList.keys.first.name == "summary"
+                  childList.keys.first.name == "summary"
               ? CssBoxWidget.withInlineSpanChildren(
                   children: firstChild == null ? [] : [firstChild],
                   style: context.styledElement!.style,
@@ -41,9 +41,10 @@ class DetailsElementBuiltIn extends Extension {
               : const Text("Details"),
           children: [
             CssBoxWidget.withInlineSpanChildren(
-              children: childList.keys.isNotEmpty && childList.keys.first.name == "summary"
-                ? children.skip(1).toList()
-                : children.toList(),
+              children: childList.keys.isNotEmpty &&
+                      childList.keys.first.name == "summary"
+                  ? children.skip(1).toList()
+                  : children.toList(),
               style: context.styledElement!.style,
             ),
           ]),

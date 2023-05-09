@@ -1,11 +1,11 @@
 import 'package:flutter_html/flutter_html.dart';
 
 class RelativeSizesProcessing {
-
   /// [processRelativeValues] handles CSS size types like `em` and `rem` that
   /// depend on the font sizes of ancestors in the style tree.
   static StyledElement processRelativeValues(StyledElement tree) {
-    return _calculateRelativeValues(tree, 1.0); //TODO do we really need to use devicePixelRatio?
+    return _calculateRelativeValues(
+        tree, 1.0); //TODO do we really need to use devicePixelRatio?
   }
 
   /// [_calculateRelativeValues] converts rem values to px sizes and then
@@ -53,7 +53,7 @@ class RelativeSizesProcessing {
             break;
           case Unit.px:
           case Unit.auto:
-          //Ignore
+            //Ignore
             break;
         }
       }

@@ -14,7 +14,7 @@ class ExtensionContext {
   /// Returns the reference to the Html element if this Html node represents
   /// and element. Otherwise returns null.
   html.Element? get element {
-    if(node is html.Element) {
+    if (node is html.Element) {
       return (node as html.Element);
     }
 
@@ -33,7 +33,7 @@ class ExtensionContext {
 
   /// Returns the HTML within this element, or an empty string if there is none.
   String get innerHtml {
-    if(node is html.Element) {
+    if (node is html.Element) {
       return (node as html.Element).innerHtml;
     }
 

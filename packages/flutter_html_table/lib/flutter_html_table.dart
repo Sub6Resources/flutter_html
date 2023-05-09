@@ -6,26 +6,30 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
+/// [TableHtmlExtension] adds support for the <table> element to the flutter_html library.
+/// <tr>, <tbody>, <tfoot>, <thead>, <th>, <td>, <col>, and <colgroup> are also
+/// supported.
+///
+/// Currently, nested tables are not supported.
 class TableHtmlExtension extends Extension {
-
   const TableHtmlExtension();
 
   @override
   Set<String> get supportedTags => {
-    "table",
-    "tr",
-    "tbody",
-    "tfoot",
-    "thead",
-    "th",
-    "td",
-    "col",
-    "colgroup",
-  };
+        "table",
+        "tr",
+        "tbody",
+        "tfoot",
+        "thead",
+        "th",
+        "td",
+        "col",
+        "colgroup",
+      };
 
   @override
   StyledElement lex(ExtensionContext context, List<StyledElement> children) {
-    if(context.elementName == "table") {
+    if (context.elementName == "table") {
       final cellDescendants = _getCellDescendants(children);
 
       return TableElement(
@@ -39,15 +43,17 @@ class TableHtmlExtension extends Extension {
       );
     }
 
-    if(context.elementName == "th" || context.elementName == "td") {
+    if (context.elementName == "th" || context.elementName == "td") {
       return TableCellElement(
-        style: context.elementName == "th"? Style(
-          fontWeight: FontWeight.bold,
-          textAlign: TextAlign.center,
-          verticalAlign: VerticalAlign.middle,
-        ): Style(
-          verticalAlign: VerticalAlign.middle,
-        ),
+        style: context.elementName == "th"
+            ? Style(
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.center,
+                verticalAlign: VerticalAlign.middle,
+              )
+            : Style(
+                verticalAlign: VerticalAlign.middle,
+              ),
         children: children,
         node: context.node,
         name: context.elementName,
@@ -56,7 +62,9 @@ class TableHtmlExtension extends Extension {
       );
     }
 
-    if(context.elementName == "tbody" || context.elementName == "thead" || context.elementName == "tfoot") {
+    if (context.elementName == "tbody" ||
+        context.elementName == "thead" ||
+        context.elementName == "tfoot") {
       return TableSectionLayoutElement(
         name: context.elementName,
         elementId: context.id,
@@ -67,7 +75,7 @@ class TableHtmlExtension extends Extension {
       );
     }
 
-    if(context.elementName == "tr") {
+    if (context.elementName == "tr") {
       return TableRowLayoutElement(
         name: context.elementName,
         elementId: context.id,
@@ -78,7 +86,7 @@ class TableHtmlExtension extends Extension {
       );
     }
 
-    if(context.elementName == "col" || context.elementName == "colgroup") {
+    if (context.elementName == "col" || context.elementName == "colgroup") {
       return TableStyleElement(
         name: context.elementName,
         elementId: context.id,
@@ -93,8 +101,9 @@ class TableHtmlExtension extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
-    if(context.elementName == "table") {
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
+    if (context.elementName == "table") {
       return WidgetSpan(
         child: CssBoxWidget(
           style: context.styledElement!.style,
@@ -119,7 +128,6 @@ class TableHtmlExtension extends Extension {
       ),
     );
   }
-
 }
 
 /// Recursively gets a flattened list of the table's
@@ -127,8 +135,8 @@ class TableHtmlExtension extends Extension {
 List<TableCellElement> _getCellDescendants(List<StyledElement> children) {
   final descendants = <TableCellElement>[];
 
-  for(final child in children) {
-    if(child is TableCellElement) {
+  for (final child in children) {
+    if (child is TableCellElement) {
       descendants.add(child);
     }
 
@@ -185,7 +193,8 @@ Widget _layoutCells(
 
   // All table rows have a height intrinsic to their (spanned) contents
   final rowSizes = List.generate(
-    rows.length, (_) => const IntrinsicContentTrackSize(),
+    rows.length,
+    (_) => const IntrinsicContentTrackSize(),
   );
 
   // Calculate column bounds
@@ -229,20 +238,21 @@ Widget _layoutCells(
           rowSpan: min(child.rowspan, rows.length - rowi),
           child: CssBoxWidget(
             style: child.style.merge(row.style),
-            child: Builder(
-              builder: (context) {
-                final alignment = child.style.direction ?? Directionality.of(context);
-                return SizedBox.expand(
-                  child: Container(
-                    alignment: _getCellAlignment(child, alignment),
-                    child: CssBoxWidget.withInlineSpanChildren(
-                      children: [parsedCells[child] ?? const TextSpan(text: "error")],
-                      style: Style(),
-                    ),
+            child: Builder(builder: (context) {
+              final alignment =
+                  child.style.direction ?? Directionality.of(context);
+              return SizedBox.expand(
+                child: Container(
+                  alignment: _getCellAlignment(child, alignment),
+                  child: CssBoxWidget.withInlineSpanChildren(
+                    children: [
+                      parsedCells[child] ?? const TextSpan(text: "error")
+                    ],
+                    style: Style(),
                   ),
-                );
-              }
-            ),
+                ),
+              );
+            }),
           ),
         ));
         columnRowOffset[columni] = child.rowspan - 1;
@@ -276,10 +286,9 @@ Widget _layoutCells(
 }
 
 Alignment _getCellAlignment(TableCellElement cell, TextDirection alignment) {
-
   Alignment verticalAlignment;
 
-  switch(cell.style.verticalAlign) {
+  switch (cell.style.verticalAlign) {
     case null:
     case VerticalAlign.baseline:
     case VerticalAlign.sub:
@@ -295,7 +304,7 @@ Alignment _getCellAlignment(TableCellElement cell, TextDirection alignment) {
       break;
   }
 
-  switch(cell.style.textAlign) {
+  switch (cell.style.textAlign) {
     case TextAlign.left:
       return verticalAlignment + Alignment.centerLeft;
     case TextAlign.right:
@@ -305,14 +314,14 @@ Alignment _getCellAlignment(TableCellElement cell, TextDirection alignment) {
     case null:
     case TextAlign.start:
     case TextAlign.justify:
-      switch(alignment) {
+      switch (alignment) {
         case TextDirection.rtl:
           return verticalAlignment + Alignment.centerRight;
         case TextDirection.ltr:
           return verticalAlignment + Alignment.centerLeft;
       }
     case TextAlign.end:
-      switch(alignment) {
+      switch (alignment) {
         case TextDirection.rtl:
           return verticalAlignment + Alignment.centerLeft;
         case TextDirection.ltr:
@@ -354,7 +363,7 @@ class TableElement extends StyledElement {
     required this.tableStructure,
     required super.style,
     required super.node,
-  }): super(children: cellDescendants);
+  }) : super(children: cellDescendants);
 }
 
 class TableSectionLayoutElement extends StyledElement {

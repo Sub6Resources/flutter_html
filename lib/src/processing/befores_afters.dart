@@ -26,8 +26,8 @@ class BeforesAftersProcessing {
       tree.children.add(TextContentElement(
         text: tree.style.after,
         style: tree.style.copyWith(
-            beforeAfterNull: true,
-            display: Display.inline,
+          beforeAfterNull: true,
+          display: Display.inline,
         ),
         node: tree.node, // TODO should we really just copy this from parent?
       ));

@@ -5,6 +5,7 @@ import 'package:flutter_html/src/tree/styled_element.dart';
 
 export 'package:flutter_html/src/extension/extension_context.dart';
 export 'package:flutter_html/src/extension/helpers/tag_extension.dart';
+export 'package:flutter_html/src/extension/helpers/matcher_extension.dart';
 
 /// The [Extension] class allows you to customize the behavior of flutter_html
 /// or add additional functionality.
@@ -53,8 +54,10 @@ abstract class Extension {
   /// The final step in the chain. Converts the StyledElement tree, with its
   /// attached `Style` elements, into an `InlineSpan` tree that includes
   /// Widget/TextSpans that can be rendered in a RichText widget.
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
-    throw UnimplementedError("Extension `$runtimeType` matched `${context.styledElement!.name}` but didn't implement `parse`");
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
+    throw UnimplementedError(
+        "Extension `$runtimeType` matched `${context.styledElement!.name}` but didn't implement `parse`");
   }
 
   /// Called when the Html widget is being destroyed. This would be a very

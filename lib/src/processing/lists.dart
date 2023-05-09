@@ -72,7 +72,7 @@ class ListProcessing {
         tree.counters
             .lastWhereOrNull(
               (counter) => counter.name == counterName,
-        )
+            )
             ?.increment(increment ?? 1);
 
         // If we didn't newly create the counter, increment the counter in the old copy as well.
@@ -81,7 +81,7 @@ class ListProcessing {
           counters
               ?.lastWhereOrNull(
                 (counter) => counter.name == counterName,
-          )
+              )
               ?.increment(increment ?? 1);
         }
       });

@@ -9,7 +9,6 @@ import 'package:html/dom.dart' as dom;
 /// [AudioHtmlExtension] adds support for the <audio> tag to the flutter_html
 /// library.
 class AudioHtmlExtension extends Extension {
-
   final AudioControllerCallback? audioControllerCallback;
 
   const AudioHtmlExtension({
@@ -22,13 +21,11 @@ class AudioHtmlExtension extends Extension {
   @override
   InlineSpan parse(ExtensionContext context, parseChildren) {
     return WidgetSpan(
-      child: AudioWidget(
-        context: context,
-        callback: audioControllerCallback,
-      )
-    );
+        child: AudioWidget(
+      context: context,
+      callback: audioControllerCallback,
+    ));
   }
-
 }
 
 typedef AudioControllerCallback = void Function(

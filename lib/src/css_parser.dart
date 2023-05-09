@@ -567,7 +567,7 @@ Style? inlineCssToStyle(String? inlineStyle, OnCssParseError? errorHandler) {
 //TODO refactor?
 Map<String, Map<String, List<css.Expression>>> parseExternalCss(
     String css, OnCssParseError? errorHandler) {
-  if(css.isEmpty) return {};
+  if (css.isEmpty) return {};
 
   var errors = <cssparser.Message>[];
   final sheet = cssparser.parse(css, errors: errors);

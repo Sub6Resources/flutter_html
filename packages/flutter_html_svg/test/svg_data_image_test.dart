@@ -20,41 +20,44 @@ void main() {
 
     // Happy path (taken from SvgPicture examples)
     testMatchAndRender(
-        "matches and renders image/svg+xml with text encoding",
-        makeImgTag(
-            src: 'data:image/svg+xml,$svgEncoded', width: 100, height: 100),
-        svgDataUriMatcher(encoding: null),
-        svgDataImageRender(),
-        TestResult.matchAndRenderSvgPicture);
+      "matches and renders image/svg+xml with text encoding",
+      makeImgTag(
+          src: 'data:image/svg+xml,$svgEncoded', width: 100, height: 100),
+      const SvgHtmlExtension(
+        dataEncoding: null,
+      ),
+      TestResult.matchAndRenderSvgPicture,
+    );
+
     testMatchAndRender(
-        "matches and renders image/svg+xml and base64 encoding",
-        makeImgTag(src: 'data:image/svg+xml;base64,$svgBase64'),
-        svgDataUriMatcher(),
-        svgDataImageRender(),
-        TestResult.matchAndRenderSvgPicture);
+      "matches and renders image/svg+xml and base64 encoding",
+      makeImgTag(src: 'data:image/svg+xml;base64,$svgBase64'),
+      const SvgHtmlExtension(),
+      TestResult.matchAndRenderSvgPicture,
+    );
 
     // Failure paths
-    testMatchAndRender("image tag with no attributes", makeImgTag(),
-        svgDataUriMatcher(), svgDataImageRender(), TestResult.noMatch);
     testMatchAndRender(
-        "does not match base64 image data uri",
-        makeImgTag(
-            src:
-                'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='),
-        svgDataUriMatcher(),
-        svgDataImageRender(),
-        TestResult.noMatch);
+      "image tag with no attributes",
+      makeImgTag(),
+      const SvgHtmlExtension(),
+      TestResult.noMatch,
+    );
+
     testMatchAndRender(
-        "does not match non-svg mime data",
-        makeImgTag(src: 'data:text/plain;base64,'),
-        svgDataUriMatcher(),
-        svgDataImageRender(),
-        TestResult.noMatch);
+      "does not match base64 image data uri",
+      makeImgTag(
+          src:
+              'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg=='),
+      const SvgHtmlExtension(),
+      TestResult.noMatch,
+    );
+
     testMatchAndRender(
-        "does not match non-data schema",
-        makeImgTag(src: 'http:'),
-        svgDataUriMatcher(),
-        svgDataImageRender(),
-        TestResult.noMatch);
+      "does not match non-svg mime data",
+      makeImgTag(src: 'data:text/plain;base64,'),
+      const SvgHtmlExtension(),
+      TestResult.noMatch,
+    );
   });
 }

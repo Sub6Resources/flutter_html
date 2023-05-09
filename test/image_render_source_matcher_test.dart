@@ -1,3 +1,4 @@
+import 'package:flutter_html/src/builtins/image_builtin.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -7,7 +8,12 @@ import 'golden_test.dart';
 
 void main() {
   group("asset uri matcher", () {
-    CustomRenderMatcher matcher = assetUriMatcher();
+    //TODO replace when ImageMatcherExtension is written
+    matcher(ExtensionContext context) {
+      return context.elementName == "img" &&
+          (context.attributes['src']?.startsWith("asset:") ?? false);
+    }
+
     testImgSrcMatcher(
       "matches a full asset: uri",
       matcher,
@@ -40,7 +46,13 @@ void main() {
     );
   });
   group("default network source matcher", () {
-    CustomRenderMatcher matcher = networkSourceMatcher();
+    //TODO replace when ImageMatcherExtension is written
+    matcher(ExtensionContext context) {
+      return context.elementName == "img" &&
+          ((context.attributes['src']?.startsWith("http:") ?? false) ||
+              (context.attributes['src']?.startsWith('https:') ?? false));
+    }
+
     testImgSrcMatcher(
       "matches a full http uri",
       matcher,
@@ -79,11 +91,14 @@ void main() {
     );
   });
   group("custom network source matcher", () {
-    CustomRenderMatcher matcher = networkSourceMatcher(
-      schemas: ['https'],
-      domains: ['www.google.com'],
-      extension: 'png',
-    );
+    //TODO replace when ImageMatcherExtension is written
+    matcher(ExtensionContext context) {
+      return context.elementName == "img" &&
+          (context.attributes['src']?.startsWith("https://www.google.com") ??
+              false) &&
+          (context.attributes['src']?.endsWith('.png') ?? false);
+    }
+
     testImgSrcMatcher(
       "matches schema, domain and extension",
       matcher,
@@ -126,7 +141,14 @@ void main() {
     );
   });
   group("default (base64) image data uri matcher", () {
-    CustomRenderMatcher matcher = dataUriMatcher();
+    //TODO replace when ImageMatcherExtension is written
+    matcher(ExtensionContext context) {
+      return context.elementName == "img" &&
+          ImageBuiltIn.dataUriFormat
+                  .firstMatch(context.attributes['src'] ?? "") !=
+              null;
+    }
+
     testImgSrcMatcher(
       "matches a full png base64 data uri",
       matcher,
@@ -190,7 +212,7 @@ String _fakeElement(String? src) {
 @isTest
 void testImgSrcMatcher(
   String name,
-  CustomRenderMatcher matcher, {
+  bool Function(ExtensionContext) matcher, {
   required String? imgSrc,
   required bool shouldMatch,
 }) {
@@ -199,17 +221,18 @@ void testImgSrcMatcher(
       TestApp(
         Html(
           data: _fakeElement(imgSrc),
-          customRenders: {
-            matcher: CustomRender.widget(
-              widget: (RenderContext context, _) {
-                return const Text("Success");
-              },
+          extensions: [
+            MatcherExtension(
+              matcher: matcher,
+              builder: (_) => const Text("Success"),
             ),
-          },
+          ],
         ),
       ),
     );
     await expectLater(
-        find.text("Success"), shouldMatch ? findsOneWidget : findsNothing);
+      find.text("Success"),
+      shouldMatch ? findsOneWidget : findsNothing,
+    );
   });
 }

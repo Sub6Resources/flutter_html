@@ -295,18 +295,32 @@ class MyHomePageState extends State<MyHomePage> {
               fontSize: FontSize(5, Unit.em),
             ),
           },
-          tagsList: Html.tags..addAll(['tex', 'bird', 'flutter', 'table', 'th', 'tr', 'td', 'colgroup', 'col', 'thead', 'tbody', 'tfoot']),
+          tagsList: Html.tags
+            ..addAll([
+              'tex',
+              'bird',
+              'flutter',
+              'table',
+              'th',
+              'tr',
+              'td',
+              'colgroup',
+              'col',
+              'thead',
+              'tbody',
+              'tfoot'
+            ]),
           extensions: [
             TagExtension(
               tagsToExtend: {"tex"},
               builder: (context) => Math.tex(
-                  context.innerHtml,
-                  mathStyle: MathStyle.display,
-                  textStyle: context.styledElement?.style.generateTextStyle(),
-                  onErrorFallback: (FlutterMathException e) {
-                    return Text(e.message);
-                  },
-                ),
+                context.innerHtml,
+                mathStyle: MathStyle.display,
+                textStyle: context.styledElement?.style.generateTextStyle(),
+                onErrorFallback: (FlutterMathException e) {
+                  return Text(e.message);
+                },
+              ),
             ),
             TagExtension.inline(
               tagsToExtend: {"bird"},
@@ -315,32 +329,21 @@ class MyHomePageState extends State<MyHomePage> {
             TagExtension(
               tagsToExtend: {"flutter"},
               builder: (context) => FlutterLogo(
-                  style: context.attributes['horizontal'] != null
-                      ? FlutterLogoStyle.horizontal
-                      : FlutterLogoStyle.markOnly,
-                  textColor: context.styledElement!.style.color!,
-                  size: context.styledElement!.style.fontSize!.value,
-                ),
+                style: context.attributes['horizontal'] != null
+                    ? FlutterLogoStyle.horizontal
+                    : FlutterLogoStyle.markOnly,
+                textColor: context.styledElement!.style.color!,
+                size: context.styledElement!.style.fontSize!.value,
+              ),
             ),
             const MathHtmlExtension(),
             const AudioHtmlExtension(),
             const VideoHtmlExtension(),
             const IframeHtmlExtension(),
             const TableHtmlExtension(),
+            const SvgHtmlExtension(),
           ],
           // customRenders: {
-          //   tagMatcher("table"): CustomRender.widget(
-          //       widget: (context, buildChildren) => SingleChildScrollView(
-          //             scrollDirection: Axis.horizontal,
-          //             child: tableRender
-          //                 .call()
-          //                 .widget!
-          //                 .call(context, buildChildren),
-          //           )),
-          //   svgTagMatcher(): svgTagRender(),
-          //   svgDataUriMatcher(): svgDataImageRender(),
-          //   svgAssetUriMatcher(): svgAssetImageRender(),
-          //   svgNetworkSourceMatcher(): svgNetworkImageRender(),
           //   networkSourceMatcher(domains: ["flutter.dev"]):
           //       CustomRender.widget(widget: (context, buildChildren) {
           //     return const FlutterLogo(size: 36);

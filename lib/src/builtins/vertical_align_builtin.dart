@@ -11,15 +11,15 @@ class VerticalAlignBuiltIn extends Extension {
 
   @override
   Set<String> get supportedTags => {
-    "sub",
-    "sup",
-  };
+        "sub",
+        "sup",
+      };
 
   @override
   bool matches(ExtensionContext context) {
     return context.styledElement?.style.verticalAlign != null &&
-        (context.styledElement!.style.verticalAlign == VerticalAlign.sub
-        || context.styledElement!.style.verticalAlign == VerticalAlign.sup);
+        (context.styledElement!.style.verticalAlign == VerticalAlign.sub ||
+            context.styledElement!.style.verticalAlign == VerticalAlign.sup);
   }
 
   @override
@@ -45,5 +45,4 @@ class VerticalAlignBuiltIn extends Extension {
         return 0;
     }
   }
-
 }

@@ -4,225 +4,243 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 // ignore: implementation_imports
-import 'package:flutter_html/src/utils.dart';
+import 'package:flutter_html/src/tree/image_element.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// The CustomRender function that renders the <svg> HTML tag.
-// CustomRender svgTagRender() =>
-//     CustomRender.widget(widget: (context, buildChildren) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//
-//       return Builder(
-//           key: context.key,
-//           builder: (buildContext) {
-//             return GestureDetector(
-//               child: SvgPicture.string(
-//                 context.tree.element?.outerHtml ?? "",
-//                 width: _width(attributes),
-//                 height: _height(attributes),
-//               ),
-//               onTap: () {
-//                 if (MultipleTapGestureDetector.of(buildContext) != null) {
-//                   MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
-//                 }
-//                 context.parser.onImageTap?.call(
-//                     context.tree.element?.outerHtml ?? "",
-//                     context,
-//                     attributes,
-//                     context.tree.element);
-//               },
-//             );
-//           });
-//     });
+// TODO re-add MultipleGestureDetector for image taps in this extension
 
-/// The CustomRender function that renders an <img> tag with hardcoded svg data.
-// CustomRender svgDataImageRender() =>
-//     CustomRender.widget(widget: (context, buildChildren) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//       final dataUri = _dataUriFormat.firstMatch(_src(attributes)!);
-//       final data = dataUri?.namedGroup('data');
-//
-//       if (data == null || data.isEmpty) {
-//         return const SizedBox(height: 0, width: 0);
-//       }
-//       return Builder(
-//           key: context.key,
-//           builder: (buildContext) {
-//             final width = _width(attributes);
-//             final height = _height(attributes);
-//
-//             return GestureDetector(
-//               child: dataUri?.namedGroup('encoding') == ';base64'
-//                   ? SvgPicture.memory(
-//                       base64.decode(data.trim()),
-//                       width: width,
-//                       height: height,
-//                     )
-//                   : SvgPicture.string(
-//                       Uri.decodeFull(data),
-//                       width: width,
-//                       height: height,
-//                     ),
-//               onTap: () {
-//                 if (MultipleTapGestureDetector.of(buildContext) != null) {
-//                   MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
-//                 }
-//                 context.parser.onImageTap?.call(Uri.decodeFull(data), context,
-//                     attributes, context.tree.element);
-//               },
-//             );
-//           });
-//     });
+class SvgHtmlExtension extends Extension {
+  final String? dataEncoding;
+  final String? dataMimeType;
+  final List<String> networkSchemas;
+  final List<String>? networkDomains;
+  final String? extension;
+  final String assetSchema;
+  final AssetBundle? assetBundle;
 
-/// The CustomRender function that renders an <img> tag with a network svg image.
-// CustomRender svgNetworkImageRender() =>
-//     CustomRender.widget(widget: (context, buildChildren) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//
-//       if (attributes["src"] == null) {
-//         return const SizedBox(height: 0, width: 0);
-//       }
-//       return Builder(
-//           key: context.key,
-//           builder: (buildContext) {
-//             return GestureDetector(
-//               child: SvgPicture.network(
-//                 attributes["src"]!,
-//                 width: _width(attributes),
-//                 height: _height(attributes),
-//               ),
-//               onTap: () {
-//                 if (MultipleTapGestureDetector.of(buildContext) != null) {
-//                   MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
-//                 }
-//                 context.parser.onImageTap?.call(attributes["src"]!, context,
-//                     attributes, context.tree.element);
-//               },
-//             );
-//           });
-//     });
+  const SvgHtmlExtension({
+    this.dataEncoding = "base64",
+    this.dataMimeType = "image/svg+xml",
+    this.networkSchemas = const ["https", "http"],
+    this.networkDomains,
+    this.extension = "svg",
+    this.assetSchema = "asset:",
+    this.assetBundle,
+  });
 
-/// The CustomRender function that renders an <img> tag with an svg asset in your app
-// CustomRender svgAssetImageRender({AssetBundle? bundle}) =>
-//     CustomRender.widget(widget: (context, buildChildren) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//
-//       if (_src(attributes) == null) {
-//         return const SizedBox(height: 0, width: 0);
-//       }
-//
-//       final assetPath = _src(context.tree.element!.attributes.cast())!
-//           .replaceFirst('asset:', '');
-//       return Builder(
-//           key: context.key,
-//           builder: (buildContext) {
-//             return GestureDetector(
-//               child: SvgPicture.asset(
-//                 assetPath,
-//                 bundle: bundle,
-//                 width: _width(attributes),
-//                 height: _height(attributes),
-//               ),
-//               onTap: () {
-//                 if (MultipleTapGestureDetector.of(buildContext) != null) {
-//                   MultipleTapGestureDetector.of(buildContext)!.onTap?.call();
-//                 }
-//                 context.parser.onImageTap?.call(
-//                     assetPath, context, attributes, context.tree.element);
-//               },
-//             );
-//           });
-//     });
+  @override
+  Set<String> get supportedTags => {"svg", "img"};
 
-/// The CustomRenderMatcher for the <svg> HTML tag.
-// CustomRenderMatcher svgTagMatcher() => (context) {
-//       return context.tree.element?.localName == "svg";
-//     };
+  @override
+  bool matches(ExtensionContext context) {
+    if (!supportedTags.contains(context.elementName)) {
+      return false;
+    }
 
-/// A CustomRenderMatcher for an <img> tag with encoded svg data.
-// CustomRenderMatcher svgDataUriMatcher(
-//         {String? encoding = 'base64', String? mime = 'image/svg+xml'}) =>
-//     (context) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//
-//       if (_src(attributes) == null) {
-//         return false;
-//       }
-//
-//       final dataUri = _dataUriFormat.firstMatch(_src(attributes)!);
-//
-//       return context.tree.element?.localName == "img" &&
-//           dataUri != null &&
-//           (mime == null || dataUri.namedGroup('mime') == mime) &&
-//           (encoding == null || dataUri.namedGroup('encoding') == ';$encoding');
-//     };
+    if (context.elementName == "svg") {
+      return true;
+    }
 
-/// A CustomRenderMatcher for an <img> tag with an svg tag over the network
-// CustomRenderMatcher svgNetworkSourceMatcher({
-//   List<String> schemas = const ["https", "http"],
-//   List<String>? domains,
-//   String? extension = "svg",
-// }) =>
-//     (context) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//
-//       if (_src(attributes) == null) {
-//         return false;
-//       }
-//
-//       try {
-//         final src = Uri.parse(_src(attributes)!);
-//
-//         return context.tree.element?.localName == "img" &&
-//             schemas.contains(src.scheme) &&
-//             (domains == null || domains.contains(src.host)) &&
-//             (extension == null || src.path.endsWith(".$extension"));
-//       } catch (e) {
-//         return false;
-//       }
-//     };
+    return _matchesSvgNetworkSource(context) ||
+        _matchesSvgAssetUri(context) ||
+        _matchesSvgDataUri(context);
+  }
 
-/// A CustomRenderMatcher for an <img> tag with an in-app svg asset
-// CustomRenderMatcher svgAssetUriMatcher() => (context) {
-//       final attributes =
-//           context.tree.element?.attributes.cast<String, String>() ??
-//               <String, String>{};
-//
-//       return context.tree.element?.localName == "img" &&
-//           _src(attributes) != null &&
-//           _src(attributes)!.startsWith("asset:") &&
-//           _src(attributes)!.endsWith(".svg");
-//     };
+  /// Matches an <img> tag with encoded svg data.
+  bool _matchesSvgDataUri(ExtensionContext context) {
+    final attributes = context.attributes;
 
+    if (attributes['src'] == null) {
+      return false;
+    }
+
+    final dataUri = _dataUriFormat.firstMatch(attributes['src']!);
+
+    return context.elementName == "img" &&
+        dataUri != null &&
+        (dataMimeType == null || dataUri.namedGroup('mime') == dataMimeType) &&
+        (dataEncoding == null ||
+            dataUri.namedGroup('encoding') == dataEncoding);
+  }
+
+  /// Matches an <img> tag with an svg network image
+  bool _matchesSvgNetworkSource(ExtensionContext context) {
+    final attributes = context.attributes;
+
+    if (attributes['src'] == null) {
+      return false;
+    }
+
+    final src = Uri.tryParse(attributes['src']!);
+    if (src == null) {
+      return false;
+    }
+
+    return context.elementName == "img" &&
+        networkSchemas.contains(src.scheme) &&
+        (networkDomains == null || networkDomains!.contains(src.host)) &&
+        (extension == null || src.path.endsWith(".$extension"));
+  }
+
+  /// Matches an <img> tag with an svg asset image
+  bool _matchesSvgAssetUri(ExtensionContext context) {
+    final attributes = context.attributes;
+
+    return context.elementName == "img" &&
+        attributes['src'] != null &&
+        attributes['src']!.startsWith(assetSchema) &&
+        attributes['src']!.endsWith(".$extension");
+  }
+
+  @override
+  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+    if (context.elementName == "svg") {
+      final parsedWidth = double.tryParse(context.attributes['width'] ?? "");
+      final parsedHeight = double.tryParse(context.attributes['height'] ?? "");
+
+      return SvgTagElement(
+        name: context.elementName,
+        elementId: context.id,
+        node: context.node,
+        children: children,
+        style: Style(),
+        width: parsedWidth != null ? Width(parsedWidth) : null,
+        height: parsedHeight != null ? Height(parsedHeight) : null,
+      );
+    }
+
+    if (context.elementName == "img") {
+      final parsedWidth = double.tryParse(context.attributes['width'] ?? "");
+      final parsedHeight = double.tryParse(context.attributes['height'] ?? "");
+
+      return ImageElement(
+        name: context.elementName,
+        elementId: context.id,
+        node: context.node,
+        children: children,
+        style: Style(),
+        src: context.attributes['src'] ?? "",
+        alt: context.attributes['alt'],
+        width: parsedWidth != null ? Width(parsedWidth) : null,
+        height: parsedHeight != null ? Height(parsedHeight) : null,
+      );
+    }
+
+    return super.lex(context, children);
+  }
+
+  @override
+  InlineSpan parse(ExtensionContext context, parseChildren) {
+    late final Widget widget;
+
+    if (context.elementName == "svg") {
+      widget = _renderSvgTag(context);
+    } else if (context.styledElement is ImageElement) {
+      if (_matchesSvgAssetUri(context)) {
+        widget = _renderAssetSvg(context);
+      } else if (_matchesSvgDataUri(context)) {
+        widget = _renderDataSvg(context);
+      } else if (_matchesSvgNetworkSource(context)) {
+        widget = _renderNetworkSvg(context);
+      }
+    }
+
+    return WidgetSpan(
+      child: CssBoxWidget(
+        style: context.styledElement!.style,
+        childIsReplaced: true,
+        child: widget,
+      ),
+    );
+  }
+
+  Widget _renderSvgTag(ExtensionContext context) {
+    final element = context.styledElement as SvgTagElement;
+    final imageStyle = Style(
+      width: element.width,
+      height: element.height,
+    ).merge(context.styledElement!.style);
+
+    return SvgPicture.string(
+      context.element!.outerHtml,
+      width: imageStyle.width?.value,
+      height: imageStyle.height?.value,
+    );
+  }
+
+  Widget _renderDataSvg(ExtensionContext context) {
+    final element = context.styledElement as ImageElement;
+    final imageStyle = Style(
+      width: element.width,
+      height: element.height,
+    ).merge(context.styledElement!.style);
+    final dataUri = _dataUriFormat.firstMatch(element.src);
+    final data = dataUri?.namedGroup('data');
+    if (data == null) return const SizedBox(height: 0, width: 0);
+
+    if (dataUri?.namedGroup('encoding') == ';base64') {
+      return SvgPicture.memory(
+        base64.decode(data.trim()),
+        width: imageStyle.width?.value,
+        height: imageStyle.height?.value,
+      );
+    } else {
+      return SvgPicture.string(
+        Uri.decodeFull(data),
+        width: imageStyle.width?.value,
+        height: imageStyle.height?.value,
+      );
+    }
+  }
+
+  Widget _renderNetworkSvg(ExtensionContext context) {
+    final element = context.styledElement as ImageElement;
+    final imageStyle = Style(
+      width: element.width,
+      height: element.height,
+    ).merge(context.styledElement!.style);
+
+    return SvgPicture.network(
+      element.src,
+      width: imageStyle.width?.value,
+      height: imageStyle.height?.value,
+    );
+  }
+
+  Widget _renderAssetSvg(ExtensionContext context) {
+    final element = context.styledElement as ImageElement;
+
+    final imageStyle = Style(
+      width: element.width,
+      height: element.height,
+    ).merge(context.styledElement!.style);
+
+    final assetPath = element.src.replaceFirst(assetSchema, '');
+
+    return SvgPicture.asset(
+      assetPath,
+      width: imageStyle.width?.value,
+      height: imageStyle.height?.value,
+      bundle: assetBundle,
+    );
+  }
+}
+
+class SvgTagElement extends ReplacedElement {
+  final Width? width;
+  final Height? height;
+
+  SvgTagElement({
+    required super.name,
+    required super.elementId,
+    required super.node,
+    required super.style,
+    required super.children,
+    this.width,
+    this.height,
+  });
+}
+
+/// Defines the format that a data URI might take
 final _dataUriFormat = RegExp(
-    "^(?<scheme>data):(?<mime>image\\/[\\w\\+\\-\\.]+)(?<encoding>;base64)?\\,(?<data>.*)");
-
-String? _src(Map<String, String> attributes) {
-  return attributes["src"];
-}
-
-double? _height(Map<String, String> attributes) {
-  final heightString = attributes["height"];
-  return heightString == null
-      ? heightString as double?
-      : double.tryParse(heightString);
-}
-
-double? _width(Map<String, String> attributes) {
-  final widthString = attributes["width"];
-  return widthString == null
-      ? widthString as double?
-      : double.tryParse(widthString);
-}
+    r"^(?<scheme>data):(?<mime>image/[\w+\-.]+);*(?<encoding>base64)?,(?<data>.*)");

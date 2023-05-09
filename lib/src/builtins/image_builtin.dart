@@ -5,7 +5,6 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/tree/image_element.dart';
 
 class ImageBuiltIn extends Extension {
-
   final Map<String, String>? networkHeaders;
 
   //TODO how can the end user access this?
@@ -15,8 +14,8 @@ class ImageBuiltIn extends Extension {
 
   @override
   Set<String> get supportedTags => {
-    "img",
-  };
+        "img",
+      };
 
   @override
   bool matches(ExtensionContext context) {
@@ -31,7 +30,7 @@ class ImageBuiltIn extends Extension {
     final src = context.attributes['src']!;
 
     // Data Image Schema:
-    final dataUri = _dataUriFormat.firstMatch(src);
+    final dataUri = dataUriFormat.firstMatch(src);
     if (dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml") {
       return true;
     }
@@ -63,21 +62,22 @@ class ImageBuiltIn extends Extension {
       elementId: context.id,
       src: context.attributes["src"]!,
       alt: context.attributes["alt"],
-      width: parsedWidth != null? Width(parsedWidth): null,
-      height: parsedHeight != null? Height(parsedHeight): null,
+      width: parsedWidth != null ? Width(parsedWidth) : null,
+      height: parsedHeight != null ? Height(parsedHeight) : null,
     );
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
     final element = context.styledElement as ImageElement;
 
-      final dataUri = _dataUriFormat.firstMatch(element.src);
-      if (dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml") {
-        return WidgetSpan(
-          child: _base64ImageRender(context),
-        );
-      }
+    final dataUri = dataUriFormat.firstMatch(element.src);
+    if (dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml") {
+      return WidgetSpan(
+        child: _base64ImageRender(context),
+      );
+    }
 
     if (element.src.startsWith("asset:") && !element.src.endsWith(".svg")) {
       return WidgetSpan(
@@ -95,7 +95,8 @@ class ImageBuiltIn extends Extension {
     }
   }
 
-  RegExp get _dataUriFormat => RegExp(r"^(?<scheme>data):(?<mime>image/[\w+\-.]+);(?<encoding>base64)?,\s+(?<data>.*)");
+  static RegExp get dataUriFormat => RegExp(
+      r"^(?<scheme>data):(?<mime>image\/[\w+\-.]+);(?<encoding>base64)?,\s*(?<data>.*)");
 
   //TODO remove repeated code between these methods:
 
@@ -126,7 +127,6 @@ class ImageBuiltIn extends Extension {
   }
 
   Widget _assetImageRender(ExtensionContext context) {
-
     final element = context.styledElement as ImageElement;
     final assetPath = element.src.replaceFirst('asset:', '');
     final imageStyle = Style(
@@ -142,7 +142,6 @@ class ImageBuiltIn extends Extension {
         width: imageStyle.width?.value,
         height: imageStyle.height?.value,
         fit: BoxFit.fill,
-
         errorBuilder: (ctx, error, stackTrace) {
           return Text(
             element.alt ?? "",
@@ -178,5 +177,4 @@ class ImageBuiltIn extends Extension {
       ),
     );
   }
-
 }

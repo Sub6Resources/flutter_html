@@ -9,7 +9,6 @@ import 'iframe_unsupported.dart'
     if (dart.library.html) 'iframe_web.dart';
 
 class IframeHtmlExtension extends Extension {
-
   final NavigationDelegate? navigationDelegate;
 
   const IframeHtmlExtension({
@@ -28,5 +27,4 @@ class IframeHtmlExtension extends Extension {
       ),
     );
   }
-
 }

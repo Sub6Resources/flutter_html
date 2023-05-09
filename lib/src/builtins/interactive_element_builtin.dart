@@ -37,8 +37,8 @@ class InteractiveElementBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
-
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
     return TextSpan(
       children: parseChildren().values.map((childSpan) {
         return _processInteractableChild(context, childSpan);
@@ -46,37 +46,40 @@ class InteractiveElementBuiltIn extends Extension {
     );
   }
 
-InlineSpan _processInteractableChild(
+  InlineSpan _processInteractableChild(
     ExtensionContext context,
     InlineSpan childSpan,
-    ) {
+  ) {
     onTap() => context.parser.internalOnAnchorTap?.call(
-      (context.styledElement! as InteractiveElement).href,
-      context.attributes,
-      (context.node as dom.Element),
-    );
+          (context.styledElement! as InteractiveElement).href,
+          context.attributes,
+          (context.node as dom.Element),
+        );
 
-
-  if (childSpan is TextSpan) {
-    return TextSpan(
-      text: childSpan.text,
-      children: childSpan.children?.map((e) => _processInteractableChild(context, e)).toList(),
-      style: childSpan.style,
-      semanticsLabel: childSpan.semanticsLabel,
-      recognizer: TapGestureRecognizer()..onTap = onTap,
-    );
-  } else {
-    return WidgetSpan(
-      child: MultipleTapGestureDetector(
-        onTap: onTap,
-        child: GestureDetector(
-          key: AnchorKey.of(context.parser.key, context.styledElement), //TODO this replaced context.key. Does it work?
+    if (childSpan is TextSpan) {
+      return TextSpan(
+        text: childSpan.text,
+        children: childSpan.children
+            ?.map((e) => _processInteractableChild(context, e))
+            .toList(),
+        style: childSpan.style,
+        semanticsLabel: childSpan.semanticsLabel,
+        recognizer: TapGestureRecognizer()..onTap = onTap,
+      );
+    } else {
+      return WidgetSpan(
+        child: MultipleTapGestureDetector(
           onTap: onTap,
-          child: (childSpan as WidgetSpan).child,
+          child: GestureDetector(
+            key: AnchorKey.of(
+                context.parser.key,
+                context
+                    .styledElement), //TODO this replaced context.key. Does it work?
+            onTap: onTap,
+            child: (childSpan as WidgetSpan).child,
+          ),
         ),
-      ),
-    );
+      );
+    }
   }
-}
-
 }

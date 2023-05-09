@@ -30,13 +30,12 @@ class StyledElement {
     return (element != null && matches(element!, selector)) || name == selector;
   }
 
-  Map<String, String> get attributes =>
-      node.attributes.map((key, value) {
+  Map<String, String> get attributes => node.attributes.map((key, value) {
         return MapEntry(key.toString(), value);
       });
 
   dom.Element? get element {
-    if(node is dom.Element) {
+    if (node is dom.Element) {
       return node as dom.Element;
     }
     return null;

@@ -4,7 +4,6 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as html;
 
 class WhitespaceProcessing {
-
   /// [processWhitespace] handles the removal of unnecessary whitespace from
   /// a StyledElement tree.
   static StyledElement processWhitespace(StyledElement tree) {
@@ -41,9 +40,9 @@ class WhitespaceProcessing {
   /// inline elements, and replaces any instance of two or more spaces with a single space, according
   /// to the w3's HTML whitespace processing specification linked to above.
   static StyledElement _processInlineWhitespaceRecursive(
-      StyledElement tree,
-      Context<bool> keepLeadingSpace,
-      ) {
+    StyledElement tree,
+    Context<bool> keepLeadingSpace,
+  ) {
     if (tree is TextContentElement) {
       /// initialize indices to negative numbers to make conditionals a little easier
       int textIndex = -1;
@@ -55,7 +54,8 @@ class WhitespaceProcessing {
 
       /// find the index of the text in the current tree
       if (tree.element?.nodes.isNotEmpty ?? false) {
-        textIndex = tree.element!.nodes.indexWhere((element) => element == tree.node);
+        textIndex =
+            tree.element!.nodes.indexWhere((element) => element == tree.node);
       }
 
       /// get the parent nodes
@@ -117,7 +117,9 @@ class WhitespaceProcessing {
       /// update the [Context] to signify to that next text node whether it should
       /// keep its whitespace. This is based on whether the current text ends with a
       /// whitespace.
-      if (textIndex == ((tree.element?.nodes.length ?? 0) - 1) && //TODO is this the proper ??
+      if (textIndex ==
+              ((tree.element?.nodes.length ?? 0) -
+                  1) && //TODO is this the proper ??
           tree.element?.localName != "br" &&
           parentAfterText.startsWith(' ')) {
         keepLeadingSpace.data = !tree.text!.endsWith(' ');
@@ -160,11 +162,11 @@ class WhitespaceProcessing {
         toRemove.add(child);
       } else if (child is TextContentElement &&
           ((tree.name == "body" &&
-              (index == 0 ||
-                  index + 1 == tree.children.length ||
-                  tree.children[index - 1].style.display == Display.block ||
-                  tree.children[index + 1].style.display ==
-                      Display.block)) ||
+                  (index == 0 ||
+                      index + 1 == tree.children.length ||
+                      tree.children[index - 1].style.display == Display.block ||
+                      tree.children[index + 1].style.display ==
+                          Display.block)) ||
               tree.name == "ul") &&
           child.text!.replaceAll(' ', '').isEmpty) {
         toRemove.add(child);

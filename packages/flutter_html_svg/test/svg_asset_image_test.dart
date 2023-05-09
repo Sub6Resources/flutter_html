@@ -4,7 +4,6 @@ import './test_utils.dart';
 
 void main() {
   group("custom image asset tests:", () {
-    const String svgString = svgRawString;
     String makeImgTag({
       String? src,
       int? width,
@@ -21,18 +20,21 @@ void main() {
 
     // Happy path (taken from SvgPicture examples)
     testMatchAndRender(
-        "matches and renders img with asset",
-        makeImgTag(src: "asset:fake.svg", width: 100, height: 100),
-        svgAssetUriMatcher(),
-        svgAssetImageRender(bundle: FakeAssetBundle()),
-        TestResult.matchAndRenderSvgPicture);
+      "matches and renders img with asset",
+      makeImgTag(src: "asset:fake.svg", width: 100, height: 100),
+      SvgHtmlExtension(
+        assetBundle: FakeAssetBundle(),
+      ),
+      TestResult.matchAndRenderSvgPicture,
+    );
 
     // Failure paths
     testMatchAndRender(
         "does not match",
         makeImgTag(src: "fake.svg"),
-        svgAssetUriMatcher(),
-        svgAssetImageRender(bundle: FakeAssetBundle()),
+        SvgHtmlExtension(
+          assetBundle: FakeAssetBundle(),
+        ),
         TestResult.noMatch);
   });
 }

@@ -10,7 +10,6 @@ import 'dart:html' as html;
 import 'package:webview_flutter/webview_flutter.dart';
 
 class IframeWidget extends StatelessWidget {
-
   final NavigationDelegate? navigationDelegate;
   final ExtensionContext extensionContext;
 
@@ -23,23 +22,25 @@ class IframeWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final givenWidth =
-    double.tryParse(extensionContext.attributes['width'] ?? "");
+        double.tryParse(extensionContext.attributes['width'] ?? "");
     final givenHeight =
-    double.tryParse(extensionContext.attributes['height'] ?? "");
+        double.tryParse(extensionContext.attributes['height'] ?? "");
     final html.IFrameElement iframe = html.IFrameElement()
       ..width = (givenWidth ?? (givenHeight ?? 150) * 2).toString()
       ..height = (givenHeight ?? (givenWidth ?? 300) / 2).toString()
       ..src = extensionContext.attributes['src']
       ..style.border = 'none';
     final String createdViewId = _getRandString(10);
-    ui.platformViewRegistry.registerViewFactory(createdViewId, (int viewId) => iframe);
+    ui.platformViewRegistry
+        .registerViewFactory(createdViewId, (int viewId) => iframe);
     return SizedBox(
-      width:
-      double.tryParse(extensionContext.attributes['width'] ?? "") ??
-          (double.tryParse(extensionContext.attributes['height'] ?? "") ?? 150) * 2,
-      height: double.tryParse(
-          extensionContext.attributes['height'] ?? "") ??
-          (double.tryParse(extensionContext.attributes['width'] ?? "") ?? 300) / 2,
+      width: double.tryParse(extensionContext.attributes['width'] ?? "") ??
+          (double.tryParse(extensionContext.attributes['height'] ?? "") ??
+                  150) *
+              2,
+      height: double.tryParse(extensionContext.attributes['height'] ?? "") ??
+          (double.tryParse(extensionContext.attributes['width'] ?? "") ?? 300) /
+              2,
       child: CssBoxWidget(
         style: extensionContext.styledElement!.style,
         childIsReplaced: true,
@@ -52,7 +53,6 @@ class IframeWidget extends StatelessWidget {
       ),
     );
   }
-
 }
 
 String _getRandString(int len) {

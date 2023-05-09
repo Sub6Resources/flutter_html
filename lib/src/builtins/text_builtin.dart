@@ -9,18 +9,18 @@ class TextBuiltIn extends Extension {
 
   @override
   bool matches(ExtensionContext context) {
-    return supportedTags.contains(context.elementName)
-        || context.node is dom.Text;
+    return supportedTags.contains(context.elementName) ||
+        context.node is dom.Text;
   }
 
   @override
   Set<String> get supportedTags => {
-    "br",
-  };
+        "br",
+      };
 
   @override
   StyledElement lex(ExtensionContext context, List<StyledElement> children) {
-    if(context.elementName == "br") {
+    if (context.elementName == "br") {
       return TextContentElement(
         text: '\n',
         style: Style(whiteSpace: WhiteSpace.pre),
@@ -29,7 +29,7 @@ class TextBuiltIn extends Extension {
       );
     }
 
-    if(context.node is dom.Text) {
+    if (context.node is dom.Text) {
       return TextContentElement(
         text: context.node.text,
         style: Style(),
@@ -42,12 +42,12 @@ class TextBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
     final element = context.styledElement! as TextContentElement;
     return TextSpan(
       style: element.style.generateTextStyle(),
       text: element.text!.transformed(element.style.textTransform),
     );
   }
-
 }

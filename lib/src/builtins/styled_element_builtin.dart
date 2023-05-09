@@ -7,79 +7,78 @@ import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
 
-
 class StyledElementBuiltIn extends Extension {
   const StyledElementBuiltIn();
 
   @override
   Set<String> get supportedTags => {
-    "abbr",
-    "acronym",
-    "address",
-    "b",
-    "bdi",
-    "bdo",
-    "big",
-    "cite",
-    "code",
-    "data",
-    "del",
-    "dfn",
-    "em",
-    "font",
-    "i",
-    "ins",
-    "kbd",
-    "mark",
-    "q",
-    "rt",
-    "s",
-    "samp",
-    "small",
-    "span",
-    "strike",
-    "strong",
-    "sub",
-    "sup",
-    "time",
-    "tt",
-    "u",
-    "var",
-    "wbr",
+        "abbr",
+        "acronym",
+        "address",
+        "b",
+        "bdi",
+        "bdo",
+        "big",
+        "cite",
+        "code",
+        "data",
+        "del",
+        "dfn",
+        "em",
+        "font",
+        "i",
+        "ins",
+        "kbd",
+        "mark",
+        "q",
+        "rt",
+        "s",
+        "samp",
+        "small",
+        "span",
+        "strike",
+        "strong",
+        "sub",
+        "sup",
+        "time",
+        "tt",
+        "u",
+        "var",
+        "wbr",
 
-    //BLOCK ELEMENTS
-    "article",
-    "aside",
-    "blockquote",
-    "body",
-    "center",
-    "dd",
-    "div",
-    "dl",
-    "dt",
-    "figcaption",
-    "figure",
-    "footer",
-    "h1",
-    "h2",
-    "h3",
-    "h4",
-    "h5",
-    "h6",
-    "header",
-    "hr",
-    "html",
-    "li",
-    "main",
-    "nav",
-    "noscript",
-    "ol",
-    "p",
-    "pre",
-    "section",
-    "summary",
-    "ul",
-  };
+        //BLOCK ELEMENTS
+        "article",
+        "aside",
+        "blockquote",
+        "body",
+        "center",
+        "dd",
+        "div",
+        "dl",
+        "dt",
+        "figcaption",
+        "figure",
+        "footer",
+        "h1",
+        "h2",
+        "h3",
+        "h4",
+        "h5",
+        "h6",
+        "header",
+        "hr",
+        "html",
+        "li",
+        "main",
+        "nav",
+        "noscript",
+        "ol",
+        "p",
+        "pre",
+        "section",
+        "summary",
+        "ul",
+      };
 
   @override
   StyledElement lex(ExtensionContext context, List<StyledElement> children) {
@@ -120,9 +119,9 @@ class StyledElementBuiltIn extends Extension {
         break;
       case "bdo":
         TextDirection textDirection =
-        ((context.attributes["dir"] ?? "ltr") == "rtl")
-            ? TextDirection.rtl
-            : TextDirection.ltr;
+            ((context.attributes["dir"] ?? "ltr") == "rtl")
+                ? TextDirection.rtl
+                : TextDirection.ltr;
         styledElement.style = Style(
           direction: textDirection,
         );
@@ -211,9 +210,10 @@ class StyledElementBuiltIn extends Extension {
         styledElement.style = Style(
           color: context.attributes['color'] != null
               ? context.attributes['color']!.startsWith("#")
-              ? ExpressionMapping.stringToColor(context.attributes['color']!)
-              : ExpressionMapping.namedColorToColor(
-              context.attributes['color']!)
+                  ? ExpressionMapping.stringToColor(
+                      context.attributes['color']!)
+                  : ExpressionMapping.namedColorToColor(
+                      context.attributes['color']!)
               : null,
           fontFamily: context.attributes['face']?.split(",").first,
           fontSize: context.attributes['size'] != null
@@ -406,11 +406,13 @@ class StyledElementBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
-    if(context.styledElement!.style.display == Display.listItem ||
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
+    if (context.styledElement!.style.display == Display.listItem ||
         ((context.styledElement!.style.display == Display.block ||
-        context.styledElement!.style.display == Display.inlineBlock) &&
-        (context.styledElement!.children.isNotEmpty || context.elementName == "hr"))) {
+                context.styledElement!.style.display == Display.inlineBlock) &&
+            (context.styledElement!.children.isNotEmpty ||
+                context.elementName == "hr"))) {
       return WidgetSpan(
         alignment: PlaceholderAlignment.baseline,
         baseline: TextBaseline.alphabetic,
@@ -418,16 +420,18 @@ class StyledElementBuiltIn extends Extension {
           //TODO key: needs anchor key,
           style: context.styledElement!.style,
           shrinkWrap: context.parser.shrinkWrap,
-          childIsReplaced:
-          HtmlElements.replacedExternalElements.contains(context.styledElement!.name),
-          children: parseChildren().entries.expandIndexed((i, child) => [
-            child.value,
-            if (i != context.styledElement!.children.length - 1 &&
-                child.key.style.display == Display.block &&
-                child.key.element?.localName != "html" &&
-                child.key.element?.localName != "body")
-              const TextSpan(text: "\n"),
-          ])
+          childIsReplaced: HtmlElements.replacedExternalElements
+              .contains(context.styledElement!.name),
+          children: parseChildren()
+              .entries
+              .expandIndexed((i, child) => [
+                    child.value,
+                    if (i != context.styledElement!.children.length - 1 &&
+                        child.key.style.display == Display.block &&
+                        child.key.element?.localName != "html" &&
+                        child.key.element?.localName != "body")
+                      const TextSpan(text: "\n"),
+                  ])
               .toList(),
         ),
       );
@@ -435,16 +439,17 @@ class StyledElementBuiltIn extends Extension {
 
     return TextSpan(
       style: context.styledElement!.style.generateTextStyle(),
-      children: parseChildren().entries
+      children: parseChildren()
+          .entries
           .expand((child) => [
-        child.value,
-        if (child.key.style.display == Display.block &&
-            child.key.element?.parent?.localName != "th" &&
-            child.key.element?.parent?.localName != "td" &&
-            child.key.element?.localName != "html" &&
-            child.key.element?.localName != "body")
-          const TextSpan(text: "\n"),
-      ])
+                child.value,
+                if (child.key.style.display == Display.block &&
+                    child.key.element?.parent?.localName != "th" &&
+                    child.key.element?.parent?.localName != "td" &&
+                    child.key.element?.localName != "html" &&
+                    child.key.element?.localName != "body")
+                  const TextSpan(text: "\n"),
+              ])
           .toList(),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_svg/flutter_html_svg.dart';
 import 'package:meta/meta.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -38,8 +39,7 @@ enum TestResult {
 void testMatchAndRender(
   String testName,
   String data,
-  CustomRenderMatcher matcher,
-  CustomRender renderer,
+  SvgHtmlExtension extension,
   TestResult expectedResult,
 ) {
   testWidgets(testName, (WidgetTester tester) async {
@@ -47,9 +47,7 @@ void testMatchAndRender(
       TestApp(
         Html(
           data: data,
-          customRenders: {
-            matcher: renderer,
-          },
+          extensions: [extension],
         ),
       ),
     );

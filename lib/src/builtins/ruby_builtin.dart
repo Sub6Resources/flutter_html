@@ -11,14 +11,14 @@ class RubyBuiltIn extends Extension {
 
   @override
   Set<String> get supportedTags => {
-    "rp",
-    "rt",
-    "ruby",
-  };
+        "rp",
+        "rt",
+        "ruby",
+      };
 
   @override
   StyledElement lex(ExtensionContext context, List<StyledElement> children) {
-    if(context.elementName == "ruby") {
+    if (context.elementName == "ruby") {
       return RubyElement(
         element: context.node as dom.Element,
         children: children,
@@ -38,7 +38,8 @@ class RubyBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, Map<StyledElement, InlineSpan> Function() parseChildren) {
+  InlineSpan parse(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
     StyledElement? node;
     List<Widget> widgets = <Widget>[];
     final rubySize = context.parser.style['rt']?.fontSize?.value ??
@@ -81,10 +82,13 @@ class RubyBuiltIn extends Extension {
               style: context.styledElement!.style,
               child: node is TextContentElement
                   ? Text(
-                node.text?.trim() ?? "",
-                style: context.styledElement!.style.generateTextStyle(),
-              )
-                  : RichText(text: const TextSpan(text: '!rc!')),// TODO was context.parser.parseTree(context, node)),
+                      node.text?.trim() ?? "",
+                      style: context.styledElement!.style.generateTextStyle(),
+                    )
+                  : RichText(
+                      text: const TextSpan(
+                          text:
+                              '!rc!')), // TODO was context.parser.parseTree(context, node)),
             ),
           ],
         );
@@ -102,18 +106,16 @@ class RubyBuiltIn extends Extension {
         child: Wrap(
           key: AnchorKey.of(context.parser.key, context.styledElement),
           runSpacing: rubySize,
-          children: widgets
-              .map((e) {
-                return Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  textBaseline: TextBaseline.alphabetic,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [e],
-                );
-              }).toList(),
+          children: widgets.map((e) {
+            return Row(
+              crossAxisAlignment: CrossAxisAlignment.end,
+              textBaseline: TextBaseline.alphabetic,
+              mainAxisSize: MainAxisSize.min,
+              children: [e],
+            );
+          }).toList(),
         ),
       ),
     );
   }
-
 }
