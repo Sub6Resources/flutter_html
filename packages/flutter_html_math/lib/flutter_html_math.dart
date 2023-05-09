@@ -83,6 +83,10 @@ String _parseMathRecursive(dom.Node node, String parsed) {
       parsed = "${_parseMathRecursive(nodeList[1], parsed + r"\sqrt[")}]";
       parsed = "${_parseMathRecursive(nodeList[0], "$parsed{")}}";
     }
+    if (node.localName == "mfenced") {
+      String inner = nodeList.map((e) => _parseMathRecursive(e, '')).join(', ');
+      parsed = "$parsed\\left($inner\\right)";
+    }
     if (node.localName == "mi" ||
         node.localName == "mn" ||
         node.localName == "mo") {
