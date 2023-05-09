@@ -64,7 +64,7 @@ class _CodeBlockState extends State<CodeBlock> {
             await widget.setCodeLanguage!(hashKey, lang);
           }
           if (mounted) {
-            WidgetsBinding.instance?.addPostFrameCallback((_) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
               if (mounted) setState(() => language = lang);
             });
           }
@@ -97,13 +97,13 @@ class _CodeBlockState extends State<CodeBlock> {
           constraints:
               BoxConstraints(maxHeight: widget.maxLines == 1 ? 20 : 250),
           child: Scrollbar(
-            isAlwaysShown: true,
+            thumbVisibility: true,
             controller: _verticalScrollController,
             child: SingleChildScrollView(
               scrollDirection: Axis.vertical,
               controller: _verticalScrollController,
               child: Scrollbar(
-                isAlwaysShown: true,
+                thumbVisibility: true,
                 controller: _horizontalScrollController,
                 child: SingleChildScrollView(
                   scrollDirection: Axis.horizontal,
