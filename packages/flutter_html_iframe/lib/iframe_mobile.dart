@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:webview_flutter/webview_flutter.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
-CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
+CustomRender iframeRender() =>
     CustomRender.widget(widget: (context, buildChildren) {
       final sandboxMode = context.tree.element?.attributes["sandbox"];
       final UniqueKey key = UniqueKey();
@@ -18,17 +18,21 @@ CustomRender iframeRender({NavigationDelegate? navigationDelegate}) =>
         child: CssBoxWidget(
           style: context.style,
           childIsReplaced: true,
-          child: WebView(
-            initialUrl: context.tree.element?.attributes['src'],
+          child: InAppWebView(
+            initialUrlRequest: URLRequest(
+              url: Uri.parse(context.tree.element?.attributes['src'] ?? ""),
+            ),
+            initialOptions: InAppWebViewGroupOptions(
+              crossPlatform: InAppWebViewOptions(
+                javaScriptEnabled:
+                    sandboxMode == null || sandboxMode == "allow-scripts",
+              ),
+            ),
             key: key,
-            javascriptMode:
-                sandboxMode == null || sandboxMode == "allow-scripts"
-                    ? JavascriptMode.unrestricted
-                    : JavascriptMode.disabled,
-            navigationDelegate: navigationDelegate,
             gestureRecognizers: {
               Factory<VerticalDragGestureRecognizer>(
-                  () => VerticalDragGestureRecognizer())
+                () => VerticalDragGestureRecognizer(),
+              )
             },
           ),
         ),
