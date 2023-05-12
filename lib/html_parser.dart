@@ -104,6 +104,7 @@ class HtmlParser extends StatelessWidget {
       scrollPhysics: scrollPhysics,
       selectionControls: selectionControls,
       shrinkWrap: shrinkWrap,
+      top: true,
     );
   }
 
