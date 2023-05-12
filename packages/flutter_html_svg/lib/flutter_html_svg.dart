@@ -95,7 +95,8 @@ class SvgHtmlExtension extends Extension {
   }
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     if (context.elementName == "svg") {
       final parsedWidth = double.tryParse(context.attributes['width'] ?? "");
       final parsedHeight = double.tryParse(context.attributes['height'] ?? "");
@@ -128,11 +129,11 @@ class SvgHtmlExtension extends Extension {
       );
     }
 
-    return super.lex(context, children);
+    return super.prepare(context, children);
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, parseChildren) {
     late final Widget widget;
 
     if (context.elementName == "svg") {

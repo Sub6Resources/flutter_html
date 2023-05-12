@@ -2,12 +2,16 @@ import 'dart:collection';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/src/html_parser.dart';
-import 'package:flutter_html/src/html_elements.dart';
+import 'package:flutter_html/src/tree/styled_element.dart';
 import 'package:html/dom.dart' as html;
 
 /// Provides information about the current element on the Html tree for
 /// an [Extension] to use.
 class ExtensionContext {
+  /// Allows matchers to get a sense for what step the HtmlParser is pinging
+  /// them for. Only non-null in calls to `matches`.
+  final CurrentStep currentStep;
+
   /// The HTML node being represented as a Flutter widget.
   final html.Node node;
 
@@ -91,6 +95,7 @@ class ExtensionContext {
     required this.parser,
     this.styledElement,
     this.buildContext,
+    required this.currentStep,
   });
 
   ExtensionContext copyWith({
@@ -98,12 +103,21 @@ class ExtensionContext {
     HtmlParser? parser,
     StyledElement? styledElement,
     BuildContext? buildContext,
+    CurrentStep? currentStep,
   }) {
     return ExtensionContext(
       node: node ?? this.node,
       parser: parser ?? this.parser,
       styledElement: styledElement ?? this.styledElement,
       buildContext: buildContext ?? this.buildContext,
+      currentStep: currentStep ?? this.currentStep,
     );
   }
+}
+
+enum CurrentStep {
+  preparing,
+  preStyling,
+  preProcessing,
+  building,
 }

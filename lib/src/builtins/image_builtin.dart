@@ -52,7 +52,8 @@ class ImageBuiltIn extends Extension {
   }
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     final parsedWidth = double.tryParse(context.attributes["width"] ?? "");
     final parsedHeight = double.tryParse(context.attributes["height"] ?? "");
 
@@ -70,7 +71,7 @@ class ImageBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     final element = context.styledElement as ImageElement;
 

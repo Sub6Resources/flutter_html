@@ -3,7 +3,6 @@ library flutter_html;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/src/html_parser.dart';
 import 'package:flutter_html/src/extension/extension.dart';
-import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -40,7 +39,10 @@ class Html extends StatefulWidget {
   ///
   /// **onImageTap** This is called whenever an image is tapped.
   ///
-  /// **tagsList** Tag names in this array will be the only tags rendered. By default all supported HTML tags are rendered.
+  /// **onlyRenderTheseTags** provides an exclusive list of tags to render.
+  ///
+  /// **doNotRenderTheseTags** provides a short list of tags that the Html
+  /// widget should completely ignore.
   ///
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
@@ -52,13 +54,16 @@ class Html extends StatefulWidget {
     this.onAnchorTap,
     this.extensions = const [],
     this.onCssParseError,
-    this.onImageError,
     this.shrinkWrap = false,
-    this.onImageTap,
-    this.tagsList = const [],
+    this.onlyRenderTheseTags,
+    this.doNotRenderTheseTags,
     this.style = const {},
   })  : documentElement = null,
         assert(data != null),
+        assert(
+          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
+          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
+        ),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
@@ -70,13 +75,16 @@ class Html extends StatefulWidget {
     this.onAnchorTap,
     this.extensions = const [],
     this.onCssParseError,
-    this.onImageError,
     this.shrinkWrap = false,
-    this.onImageTap,
-    this.tagsList = const [],
+    this.doNotRenderTheseTags,
+    this.onlyRenderTheseTags,
     this.style = const {},
   })  : data = null,
         assert(document != null),
+        assert(
+          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
+          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
+        ),
         documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -89,13 +97,16 @@ class Html extends StatefulWidget {
     this.onAnchorTap,
     this.extensions = const [],
     this.onCssParseError,
-    this.onImageError,
     this.shrinkWrap = false,
-    this.onImageTap,
-    this.tagsList = const [],
+    this.doNotRenderTheseTags,
+    this.onlyRenderTheseTags,
     this.style = const {},
   })  : data = null,
         assert(documentElement != null),
+        assert(
+          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
+          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
+        ),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
@@ -118,18 +129,19 @@ class Html extends StatefulWidget {
   /// A function that defines what to do when CSS fails to parse
   final OnCssParseError? onCssParseError;
 
-  /// A function that defines what to do when an image errors
-  final ImageErrorListener? onImageError;
-
   /// A parameter that should be set when the HTML widget is expected to be
   /// flexible
   final bool shrinkWrap;
 
-  /// A function that defines what to do when an image is tapped
-  final OnTap? onImageTap;
+  /// A set of HTML tags to completely ignore in the provided code.
+  final Set<String>? doNotRenderTheseTags;
 
-  /// A list of HTML tags that are the only tags that are rendered. By default, this list is empty and all supported HTML tags are rendered.
-  final List<String> tagsList;
+  /// A set of the only HTML tags that should be rendered by this widget.
+  ///
+  /// Note that the html parser wraps your html in an <html> and <body> tag
+  /// by default, so you should include those in this set if you want any
+  /// of your html to render.
+  final Set<String>? onlyRenderTheseTags;
 
   /// A list of [Extension]s that add additional capabilities to flutter_html
   /// See the [Extension] class for more details.
@@ -137,12 +149,6 @@ class Html extends StatefulWidget {
 
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;
-
-  static List<String> get tags => List<String>.from(HtmlElements.styledElements)
-    ..addAll(HtmlElements.interactableElements)
-    ..addAll(HtmlElements.replacedElements)
-    ..addAll(HtmlElements.layoutElements)
-    ..addAll(HtmlElements.externalElements);
 
   @override
   State<StatefulWidget> createState() => _HtmlState();
@@ -177,13 +183,12 @@ class _HtmlState extends State<Html> {
       htmlData: documentElement,
       onLinkTap: widget.onLinkTap,
       onAnchorTap: widget.onAnchorTap,
-      onImageTap: widget.onImageTap,
       onCssParseError: widget.onCssParseError,
-      onImageError: widget.onImageError,
       shrinkWrap: widget.shrinkWrap,
       style: widget.style,
       extensions: widget.extensions,
-      tagsList: widget.tagsList.isEmpty ? Html.tags : widget.tagsList,
+      doNotRenderTheseTags: widget.doNotRenderTheseTags,
+      onlyRenderTheseTags: widget.onlyRenderTheseTags,
     );
   }
 }

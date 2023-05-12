@@ -3,7 +3,7 @@
 
 #### 3.0.0-beta.1 - *May 2023*
 
- - Migrates from customRender to Extension
+ - Several Breaking Changes. See the [migration guide](https://github.com/Sub6Resources/flutter_html/wiki/Migration-Guides#300)
 
  - **FIX**: Aspect ratio exception when height is 0 ([#1222](https://github.com/sub6resources/flutter_html/issues/1222)). ([ed75f8fe](https://github.com/sub6resources/flutter_html/commit/ed75f8fef779e920ecc1f27719a4150a29e3ebee))
  - **FIX**: Fix issue with font scaling introduced in 3.0.0-alpha.6 ([#1173](https://github.com/sub6resources/flutter_html/issues/1173)). ([c75e0dfb](https://github.com/sub6resources/flutter_html/commit/c75e0dfb1be6cb79748f719487043d12bc330c60))

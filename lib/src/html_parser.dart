@@ -33,14 +33,12 @@ class HtmlParser extends StatefulWidget {
   final html.Element htmlData;
   final OnTap? onLinkTap;
   final OnTap? onAnchorTap;
-  final OnTap? onImageTap;
   final OnCssParseError? onCssParseError;
-  final ImageErrorListener? onImageError;
   final bool shrinkWrap;
-
   final Map<String, Style> style;
   final List<Extension> extensions;
-  final List<String> tagsList; //TODO replace with blacklist/whitelist
+  final Set<String>? doNotRenderTheseTags;
+  final Set<String>? onlyRenderTheseTags;
   final OnTap? internalOnAnchorTap;
   final Html? root;
 
@@ -49,16 +47,19 @@ class HtmlParser extends StatefulWidget {
     required this.htmlData,
     required this.onLinkTap,
     required this.onAnchorTap,
-    required this.onImageTap,
     required this.onCssParseError,
-    required this.onImageError,
     required this.shrinkWrap,
     required this.style,
     required this.extensions,
-    required this.tagsList,
+    required this.doNotRenderTheseTags,
+    required this.onlyRenderTheseTags,
     this.root,
-  }) : internalOnAnchorTap = onAnchorTap ??
-            (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
+  })  : internalOnAnchorTap = onAnchorTap ??
+            (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap),
+        assert(
+          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
+          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
+        );
 
   @override
   State<HtmlParser> createState() => _HtmlParserState();
@@ -107,8 +108,8 @@ class _HtmlParserState extends State<HtmlParser> {
   }
 
   void prepareTree() {
-    // Lexing Step
-    lexHtmlTree();
+    // Preparing Step
+    prepareHtmlTree();
 
     // Styling Step
     beforeStyleTree(tree);
@@ -123,11 +124,11 @@ class _HtmlParserState extends State<HtmlParser> {
   /// which are then parsed into an [InlineSpan] tree that is then rendered to the screen by Flutter
   @override
   Widget build(BuildContext context) {
-    //Parsing Step
+    //Rendering Step
     return CssBoxWidget.withInlineSpanChildren(
       style: tree.style,
-      //TODO can we have parseTree return a list of InlineSpans rather than a single one.
-      children: [parseTree()],
+      //TODO can we have buildTree return a list of InlineSpans rather than a single one.
+      children: [buildTree()],
       shrinkWrap: widget.shrinkWrap,
     );
   }
@@ -141,7 +142,7 @@ class _HtmlParserState extends State<HtmlParser> {
   }
 
   /// Converts the tree of Html nodes into a simplified StyledElement tree
-  void lexHtmlTree() {
+  void prepareHtmlTree() {
     tree = StyledElement(
       name: '[Tree Root]',
       children: [],
@@ -151,39 +152,58 @@ class _HtmlParserState extends State<HtmlParser> {
     );
 
     for (var node in widget.htmlData.nodes) {
-      tree.children.add(_lexHtmlTreeRecursive(node));
+      tree.children.add(_prepareHtmlTreeRecursive(node));
     }
   }
 
-  /// Recursive helper method for [lexHtmlTree].
-  StyledElement _lexHtmlTreeRecursive(html.Node node) {
-    // Lex this element's children
-    final children = node.nodes.map(_lexHtmlTreeRecursive).toList();
+  bool _isTagRestricted(ExtensionContext context) {
+    // Block the tag from rendering if it is restricted.
+    if (context.node is! html.Element) {
+      return false;
+    }
 
+    if (widget.doNotRenderTheseTags != null &&
+        widget.doNotRenderTheseTags!.contains(context.elementName)) {
+      return true;
+    }
+
+    if (widget.onlyRenderTheseTags != null &&
+        !widget.onlyRenderTheseTags!.contains(context.elementName)) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /// Recursive helper method for [lexHtmlTree].
+  StyledElement _prepareHtmlTreeRecursive(html.Node node) {
     // Set the extension context for this node.
     final extensionContext = ExtensionContext(
       parser: widget,
       buildContext: context,
       node: node,
+      currentStep: CurrentStep.preparing,
     );
 
-    // Block the widget from rendering if it isn't in the tag list.
-    if (node is html.Element &&
-        !widget.tagsList.contains(extensionContext.elementName)) {
+    // Block the tag from rendering if it is restricted.
+    if (_isTagRestricted(extensionContext)) {
       return EmptyContentElement(node: node);
     }
+
+    // Lex this element's children
+    final children = node.nodes.map(_prepareHtmlTreeRecursive).toList();
 
     // Loop through every extension and see if it can handle this node
     for (final extension in widget.extensions) {
       if (extension.matches(extensionContext)) {
-        return extension.lex(extensionContext, children);
+        return extension.prepare(extensionContext, children);
       }
     }
 
     // Loop through built in elements and see if they can handle this node.
     for (final builtIn in HtmlParser.builtIns) {
       if (builtIn.matches(extensionContext)) {
-        return builtIn.lex(extensionContext, children);
+        return builtIn.prepare(extensionContext, children);
       }
     }
 
@@ -198,7 +218,13 @@ class _HtmlParserState extends State<HtmlParser> {
       parser: widget,
       styledElement: tree,
       buildContext: context,
+      currentStep: CurrentStep.preStyling,
     );
+
+    // Prevent restricted tags from getting sent to extensions.
+    if (_isTagRestricted(extensionContext)) {
+      return;
+    }
 
     // Loop through every extension and see if it wants to process this element
     for (final extension in widget.extensions) {
@@ -270,7 +296,13 @@ class _HtmlParserState extends State<HtmlParser> {
       parser: widget,
       styledElement: tree,
       buildContext: context,
+      currentStep: CurrentStep.preProcessing,
     );
+
+    // Prevent restricted tags from getting sent to extensions
+    if (_isTagRestricted(extensionContext)) {
+      return;
+    }
 
     // Loop through every extension and see if it can process this element
     for (final extension in widget.extensions) {
@@ -303,38 +335,45 @@ class _HtmlParserState extends State<HtmlParser> {
     tree = MarginProcessing.processMargins(tree);
   }
 
-  /// [parseTree] converts a tree of [StyledElement]s to an [InlineSpan] tree.
-  InlineSpan parseTree() {
+  /// [buildTree] converts a tree of [StyledElement]s to an [InlineSpan] tree.
+  InlineSpan buildTree() {
     //TODO, can't we just break tree out from parent element created in lexHtmlTree?
-    return _parseTreeRecursive(tree);
+    return _buildTreeRecursive(tree);
   }
 
-  InlineSpan _parseTreeRecursive(StyledElement tree) {
-    Map<StyledElement, InlineSpan> parseChildren() {
-      return Map.fromEntries(tree.children.map((child) {
-        return MapEntry(child, _parseTreeRecursive(child));
-      }));
-    }
-
+  InlineSpan _buildTreeRecursive(StyledElement tree) {
     // Set the extension context for this node.
     final extensionContext = ExtensionContext(
       parser: widget,
       buildContext: context,
       node: tree.node,
       styledElement: tree,
+      currentStep: CurrentStep.building,
     );
+
+    // Block restricted tags from getting sent to extensions
+    if (_isTagRestricted(extensionContext)) {
+      return const TextSpan(text: "");
+    }
+
+    // Generate a function that allows children to be generated
+    Map<StyledElement, InlineSpan> parseChildren() {
+      return Map.fromEntries(tree.children.map((child) {
+        return MapEntry(child, _buildTreeRecursive(child));
+      }));
+    }
 
     // Loop through every extension and see if it can handle this node
     for (final extension in widget.extensions) {
       if (extension.matches(extensionContext)) {
-        return extension.parse(extensionContext, parseChildren);
+        return extension.build(extensionContext, parseChildren);
       }
     }
 
     // Loop through built in elements and see if they can handle this node.
     for (final builtIn in HtmlParser.builtIns) {
       if (builtIn.matches(extensionContext)) {
-        return builtIn.parse(extensionContext, parseChildren);
+        return builtIn.build(extensionContext, parseChildren);
       }
     }
 

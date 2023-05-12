@@ -12,7 +12,8 @@ class InteractiveElementBuiltIn extends Extension {
   Set<String> get supportedTags => {'a'};
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     if (context.attributes.containsKey('href')) {
       return InteractiveElement(
         name: context.elementName,
@@ -37,7 +38,7 @@ class InteractiveElementBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     return TextSpan(
       children: parseChildren().values.map((childSpan) {

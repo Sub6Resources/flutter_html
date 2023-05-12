@@ -12,7 +12,8 @@ class DetailsElementBuiltIn extends Extension {
       };
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     return StyledElement(
       name: context.elementName,
       children: children,
@@ -22,7 +23,7 @@ class DetailsElementBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     final childList = parseChildren();
     final children = childList.values;

@@ -42,7 +42,7 @@ class TagExtension extends Extension {
   Set<String> get supportedTags => tagsToExtend;
 
   @override
-  InlineSpan parse(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, parseChildren) {
     return builder(context);
   }
 }

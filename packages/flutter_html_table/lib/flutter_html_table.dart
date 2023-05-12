@@ -28,7 +28,8 @@ class TableHtmlExtension extends Extension {
       };
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     if (context.elementName == "table") {
       final cellDescendants = _getCellDescendants(children);
 
@@ -101,7 +102,7 @@ class TableHtmlExtension extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     if (context.elementName == "table") {
       return WidgetSpan(

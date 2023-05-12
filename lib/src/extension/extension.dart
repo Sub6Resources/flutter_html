@@ -7,6 +7,7 @@ export 'package:flutter_html/src/extension/extension_context.dart';
 export 'package:flutter_html/src/extension/helpers/tag_extension.dart';
 export 'package:flutter_html/src/extension/helpers/matcher_extension.dart';
 export 'package:flutter_html/src/extension/helpers/image_extension.dart';
+export 'package:flutter_html/src/extension/helpers/image_tap_extension.dart';
 
 /// The [Extension] class allows you to customize the behavior of flutter_html
 /// or add additional functionality.
@@ -33,7 +34,8 @@ abstract class Extension {
   }
 
   /// Converts parsed HTML to a StyledElement.
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     return StyledElement(
       node: context.node,
       style: Style(),
@@ -55,7 +57,7 @@ abstract class Extension {
   /// The final step in the chain. Converts the StyledElement tree, with its
   /// attached `Style` elements, into an `InlineSpan` tree that includes
   /// Widget/TextSpans that can be rendered in a RichText widget.
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     throw UnimplementedError(
         "Extension `$runtimeType` matched `${context.styledElement!.name}` but didn't implement `parse`");

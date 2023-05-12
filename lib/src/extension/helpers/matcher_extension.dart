@@ -38,7 +38,7 @@ class MatcherExtension extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, parseChildren) {
     return builder(context);
   }
 }

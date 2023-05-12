@@ -23,7 +23,7 @@ class VerticalAlignBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, parseChildren) {
     return WidgetSpan(
       child: Transform.translate(
         offset: Offset(0, _getVerticalOffset(context.styledElement!)),

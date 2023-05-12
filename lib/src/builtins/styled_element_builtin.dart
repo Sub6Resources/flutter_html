@@ -1,10 +1,11 @@
 import 'package:collection/collection.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/css_parser.dart';
 import 'package:flutter_html/src/extension/extension.dart';
-import 'package:flutter_html/src/html_elements.dart';
 import 'package:flutter_html/src/style.dart';
+import 'package:flutter_html/src/tree/styled_element.dart';
 import 'package:html/dom.dart' as dom;
 
 class StyledElementBuiltIn extends Extension {
@@ -81,7 +82,8 @@ class StyledElementBuiltIn extends Extension {
       };
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     StyledElement styledElement = StyledElement(
       name: context.elementName,
       elementId: context.id,
@@ -406,7 +408,7 @@ class StyledElementBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     if (context.styledElement!.style.display == Display.listItem ||
         ((context.styledElement!.style.display == Display.block ||
@@ -417,10 +419,10 @@ class StyledElementBuiltIn extends Extension {
         alignment: PlaceholderAlignment.baseline,
         baseline: TextBaseline.alphabetic,
         child: CssBoxWidget.withInlineSpanChildren(
-          //TODO key: needs anchor key,
+          key: AnchorKey.of(context.parser.key, context.styledElement),
           style: context.styledElement!.style,
           shrinkWrap: context.parser.shrinkWrap,
-          childIsReplaced: HtmlElements.replacedExternalElements
+          childIsReplaced: ["iframe", "img", "video", "audio"]
               .contains(context.styledElement!.name),
           children: parseChildren()
               .entries

@@ -295,21 +295,6 @@ class MyHomePageState extends State<MyHomePage> {
               fontSize: FontSize(5, Unit.em),
             ),
           },
-          tagsList: Html.tags
-            ..addAll([
-              'tex',
-              'bird',
-              'flutter',
-              'table',
-              'th',
-              'tr',
-              'td',
-              'colgroup',
-              'col',
-              'thead',
-              'tbody',
-              'tfoot'
-            ]),
           extensions: [
             TagExtension(
               tagsToExtend: {"tex"},
@@ -365,12 +350,6 @@ class MyHomePageState extends State<MyHomePage> {
           // },
           onLinkTap: (url, _, __) {
             debugPrint("Opening $url...");
-          },
-          onImageTap: (src, _, __) {
-            debugPrint(src);
-          },
-          onImageError: (exception, stackTrace) {
-            debugPrint(exception.toString());
           },
           onCssParseError: (css, messages) {
             debugPrint("css that errored: $css");

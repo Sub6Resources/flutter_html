@@ -49,7 +49,7 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<p>Text</p>",
-          tagsList: const ['div'], //Anything but `p`
+          onlyRenderTheseTags: const {'html', 'body', 'div'}, //Anything but `p`
         ),
       ),
     );
@@ -63,7 +63,7 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<p>Text</p>",
-          tagsList: const ['html', 'body', 'p'],
+          onlyRenderTheseTags: const {'html', 'body', 'p'},
         ),
       ),
     );
@@ -87,7 +87,6 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<custom>Text</custom>",
-          tagsList: Html.tags..add('custom'),
           extensions: [
             TagExtension(
               tagsToExtend: {"custom"},

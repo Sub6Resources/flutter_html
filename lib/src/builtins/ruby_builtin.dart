@@ -17,7 +17,8 @@ class RubyBuiltIn extends Extension {
       };
 
   @override
-  StyledElement lex(ExtensionContext context, List<StyledElement> children) {
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
     if (context.elementName == "ruby") {
       return RubyElement(
         element: context.node as dom.Element,
@@ -38,7 +39,7 @@ class RubyBuiltIn extends Extension {
   }
 
   @override
-  InlineSpan parse(ExtensionContext context,
+  InlineSpan build(ExtensionContext context,
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     StyledElement? node;
     List<Widget> widgets = <Widget>[];

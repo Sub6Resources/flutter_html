@@ -21,7 +21,7 @@ class VideoHtmlExtension extends Extension {
   Set<String> get supportedTags => {"video"};
 
   @override
-  InlineSpan parse(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, parseChildren) {
     return WidgetSpan(
         child: VideoWidget(
       context: context,
