@@ -166,7 +166,7 @@ class CssBoxWidget extends StatelessWidget {
 }
 
 class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
-  const _CSSBoxRenderer({
+  _CSSBoxRenderer({
     Key? key,
     required super.children,
     required this.display,
