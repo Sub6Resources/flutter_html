@@ -15,7 +15,7 @@ dependencies:
   csslib: ^0.17.2
 
   # Plugin for firstWhereOrNull extension on lists
-  collection: ^1.17.1
+  collection: ^1.17.0
 
   # plugin to manage lists and counting in a variety of styles
   list_counter: ^1.0.2
