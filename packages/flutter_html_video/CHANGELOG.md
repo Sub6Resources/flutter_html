@@ -1,3 +1,5 @@
+## 3.0.0-beta.1
+
 ## 3.0.0-alpha.5
 
  - Update a dependency to the latest release.
