@@ -25,19 +25,19 @@ class Html extends StatefulWidget {
   /// tree of the parsed HTML content.
   ///
   /// **Attributes**
+  ///
   /// **data** *required* takes in a String of HTML data (required only for `Html` constructor).
+  ///
   /// **document** *required* takes in a Document of HTML data (required only for `Html.fromDom` constructor).
+  ///
+  /// **extensions** A list of [Extension]s that add additional capabilities to flutter_html
+  /// See the [Extension] class for more details.
   ///
   /// **onLinkTap** This function is called whenever a link (`<a href>`)
   /// is tapped.
   ///
-  /// **onImageError** This is called whenever an image fails to load or
-  /// display on the page.
-  ///
   /// **shrinkWrap** This makes the Html widget take up only the width it
   /// needs and no more.
-  ///
-  /// **onImageTap** This is called whenever an image is tapped.
   ///
   /// **onlyRenderTheseTags** provides an exclusive list of tags to render.
   ///

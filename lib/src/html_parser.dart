@@ -18,12 +18,12 @@ import 'package:flutter_html/src/processing/whitespace.dart';
 import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart' as html_parser;
 
-//TODO had to remove RenderContext. Document alternatives
 typedef OnTap = void Function(
   String? url,
   Map<String, String> attributes,
   html.Element? element,
 );
+
 typedef OnCssParseError = String? Function(
   String css,
   List<css_parser.Message> errors,
