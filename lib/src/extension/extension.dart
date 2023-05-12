@@ -6,6 +6,7 @@ import 'package:flutter_html/src/tree/styled_element.dart';
 export 'package:flutter_html/src/extension/extension_context.dart';
 export 'package:flutter_html/src/extension/helpers/tag_extension.dart';
 export 'package:flutter_html/src/extension/helpers/matcher_extension.dart';
+export 'package:flutter_html/src/extension/helpers/image_extension.dart';
 
 /// The [Extension] class allows you to customize the behavior of flutter_html
 /// or add additional functionality.

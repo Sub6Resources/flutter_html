@@ -9,7 +9,7 @@ class MatcherExtension extends Extension {
     required this.matcher,
     Widget? child,
     Widget Function(ExtensionContext)? builder,
-  }) : assert((child != null) ^ (builder != null)) {
+  }) : assert((child != null) || (builder != null)) {
     if (child != null) {
       this.builder = (_) => WidgetSpan(child: child);
     } else {
@@ -21,7 +21,7 @@ class MatcherExtension extends Extension {
     required this.matcher,
     InlineSpan? child,
     InlineSpan Function(ExtensionContext)? builder,
-  }) : assert((child != null) ^ (builder != null)) {
+  }) : assert((child != null) || (builder != null)) {
     if (child != null) {
       this.builder = (_) => child;
     } else {

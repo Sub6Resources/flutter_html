@@ -17,6 +17,7 @@ class SvgHtmlExtension extends Extension {
   final String? extension;
   final String assetSchema;
   final AssetBundle? assetBundle;
+  final String? assetPackage;
 
   const SvgHtmlExtension({
     this.dataEncoding = "base64",
@@ -26,6 +27,7 @@ class SvgHtmlExtension extends Extension {
     this.extension = "svg",
     this.assetSchema = "asset:",
     this.assetBundle,
+    this.assetPackage,
   });
 
   @override
@@ -222,6 +224,7 @@ class SvgHtmlExtension extends Extension {
       width: imageStyle.width?.value,
       height: imageStyle.height?.value,
       bundle: assetBundle,
+      package: assetPackage,
     );
   }
 }
@@ -243,4 +246,4 @@ class SvgTagElement extends ReplacedElement {
 
 /// Defines the format that a data URI might take
 final _dataUriFormat = RegExp(
-    r"^(?<scheme>data):(?<mime>image/[\w+\-.]+);*(?<encoding>base64)?,(?<data>.*)");
+    r"^(?<scheme>data):(?<mime>image/[\w+\-.]+);*(?<encoding>base64)?,\s*(?<data>.*)");

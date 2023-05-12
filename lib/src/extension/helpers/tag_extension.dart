@@ -13,7 +13,7 @@ class TagExtension extends Extension {
     required this.tagsToExtend,
     Widget? child,
     Widget Function(ExtensionContext)? builder,
-  }) : assert((child == null) ^ (builder == null),
+  }) : assert((child != null) || (builder != null),
             "Either child or builder needs to be provided to TagExtension") {
     if (child != null) {
       this.builder = (_) => WidgetSpan(child: child);
@@ -29,7 +29,7 @@ class TagExtension extends Extension {
     required this.tagsToExtend,
     InlineSpan? child,
     InlineSpan Function(ExtensionContext)? builder,
-  }) : assert((child == null) ^ (builder == null),
+  }) : assert((child != null) || (builder != null),
             "Either child or builder needs to be provided to TagExtension.inline") {
     if (child != null) {
       this.builder = (_) => child;

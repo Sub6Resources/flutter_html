@@ -5,11 +5,34 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/tree/image_element.dart';
 
 class ImageBuiltIn extends Extension {
+  final String? dataEncoding;
+  final Set<String>? mimeTypes;
   final Map<String, String>? networkHeaders;
+  final Set<String> networkSchemas;
+  final Set<String>? networkDomains;
+  final Set<String>? fileExtensions;
 
-  //TODO how can the end user access this?
+  final String assetSchema;
+  final AssetBundle? assetBundle;
+  final String? assetPackage;
+
+  final bool handleNetworkImages;
+  final bool handleAssetImages;
+  final bool handleDataImages;
+
   const ImageBuiltIn({
     this.networkHeaders,
+    this.networkDomains,
+    this.networkSchemas = const {"http", "https"},
+    this.fileExtensions,
+    this.assetSchema = "asset:",
+    this.assetBundle,
+    this.assetPackage,
+    this.mimeTypes,
+    this.dataEncoding,
+    this.handleNetworkImages = true,
+    this.handleAssetImages = true,
+    this.handleDataImages = true,
   });
 
   @override
@@ -23,30 +46,9 @@ class ImageBuiltIn extends Extension {
       return false;
     }
 
-    if (context.attributes['src'] == null) {
-      return false;
-    }
-
-    final src = context.attributes['src']!;
-
-    // Data Image Schema:
-    final dataUri = dataUriFormat.firstMatch(src);
-    if (dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml") {
-      return true;
-    }
-
-    // Asset Image Schema:
-    if (src.startsWith("asset:") && !src.endsWith(".svg")) {
-      return true;
-    }
-
-    // Network Image Schema:
-    try {
-      final srcUri = Uri.parse(src);
-      return !srcUri.path.endsWith(".svg");
-    } on FormatException {
-      return false;
-    }
+    return (_matchesNetworkImage(context) && handleNetworkImages) ||
+        (_matchesAssetImage(context) && handleAssetImages) ||
+        (_matchesBase64Image(context) && handleDataImages);
   }
 
   @override
@@ -72,92 +74,125 @@ class ImageBuiltIn extends Extension {
       Map<StyledElement, InlineSpan> Function() parseChildren) {
     final element = context.styledElement as ImageElement;
 
-    final dataUri = dataUriFormat.firstMatch(element.src);
-    if (dataUri != null && dataUri.namedGroup('mime') != "image/svg+xml") {
-      return WidgetSpan(
-        child: _base64ImageRender(context),
-      );
+    final imageStyle = Style(
+      width: element.width,
+      height: element.height,
+    ).merge(context.styledElement!.style);
+
+    late Widget child;
+    if (_matchesBase64Image(context)) {
+      child = _base64ImageRender(context, imageStyle);
+    } else if (_matchesAssetImage(context)) {
+      child = _assetImageRender(context, imageStyle);
+    } else if (_matchesNetworkImage(context)) {
+      child = _networkImageRender(context, imageStyle);
+    } else {
+      // Our matcher went a little overboard and matched
+      // something we can't render
+      return TextSpan(text: element.alt);
     }
 
-    if (element.src.startsWith("asset:") && !element.src.endsWith(".svg")) {
-      return WidgetSpan(
-        child: _assetImageRender(context),
-      );
-    }
-
-    try {
-      final srcUri = Uri.parse(element.src);
-      return WidgetSpan(
-        child: _networkImageRender(context, srcUri),
-      );
-    } on FormatException {
-      return const TextSpan(text: "");
-    }
+    return WidgetSpan(
+      child: CssBoxWidget(
+        style: imageStyle,
+        childIsReplaced: true,
+        child: child,
+      ),
+    );
   }
 
   static RegExp get dataUriFormat => RegExp(
-      r"^(?<scheme>data):(?<mime>image\/[\w+\-.]+);(?<encoding>base64)?,\s*(?<data>.*)");
+      r"^(?<scheme>data):(?<mime>image/[\w+\-.]+);*(?<encoding>base64)?,\s*(?<data>.*)");
 
-  //TODO remove repeated code between these methods:
+  bool _matchesBase64Image(ExtensionContext context) {
+    final attributes = context.attributes;
 
-  Widget _base64ImageRender(ExtensionContext context) {
+    if (attributes['src'] == null) {
+      return false;
+    }
+
+    final dataUri = dataUriFormat.firstMatch(attributes['src']!);
+
+    return context.elementName == "img" &&
+        dataUri != null &&
+        (mimeTypes == null ||
+            mimeTypes!.contains(dataUri.namedGroup('mime'))) &&
+        dataUri.namedGroup('mime') != 'image/svg+xml' &&
+        (dataEncoding == null ||
+            dataUri.namedGroup('encoding') == dataEncoding);
+  }
+
+  bool _matchesAssetImage(ExtensionContext context) {
+    final attributes = context.attributes;
+
+    return context.elementName == "img" &&
+        attributes['src'] != null &&
+        !attributes['src']!.endsWith(".svg") &&
+        attributes['src']!.startsWith(assetSchema) &&
+        (fileExtensions == null ||
+            attributes['src']!.endsWithAnyFileExtension(fileExtensions!));
+  }
+
+  bool _matchesNetworkImage(ExtensionContext context) {
+    final attributes = context.attributes;
+
+    if (attributes['src'] == null) {
+      return false;
+    }
+
+    final src = Uri.tryParse(attributes['src']!);
+    if (src == null) {
+      return false;
+    }
+
+    return context.elementName == "img" &&
+        networkSchemas.contains(src.scheme) &&
+        !src.path.endsWith(".svg") &&
+        (networkDomains == null || networkDomains!.contains(src.host)) &&
+        (fileExtensions == null ||
+            src.path.endsWithAnyFileExtension(fileExtensions!));
+  }
+
+  Widget _base64ImageRender(ExtensionContext context, Style imageStyle) {
     final element = context.styledElement as ImageElement;
     final decodedImage = base64.decode(element.src.split("base64,")[1].trim());
-    final imageStyle = Style(
-      width: element.width,
-      height: element.height,
-    ).merge(context.styledElement!.style);
 
-    return CssBoxWidget(
-      style: imageStyle,
-      childIsReplaced: true,
-      child: Image.memory(
-        decodedImage,
-        width: imageStyle.width?.value,
-        height: imageStyle.height?.value,
-        fit: BoxFit.fill,
-        errorBuilder: (ctx, error, stackTrace) {
-          return Text(
-            element.alt ?? "",
-            style: context.styledElement!.style.generateTextStyle(),
-          );
-        },
-      ),
+    return Image.memory(
+      decodedImage,
+      width: imageStyle.width?.value,
+      height: imageStyle.height?.value,
+      fit: BoxFit.fill,
+      errorBuilder: (ctx, error, stackTrace) {
+        return Text(
+          element.alt ?? "",
+          style: context.styledElement!.style.generateTextStyle(),
+        );
+      },
     );
   }
 
-  Widget _assetImageRender(ExtensionContext context) {
+  Widget _assetImageRender(ExtensionContext context, Style imageStyle) {
     final element = context.styledElement as ImageElement;
     final assetPath = element.src.replaceFirst('asset:', '');
-    final imageStyle = Style(
-      width: element.width,
-      height: element.height,
-    ).merge(context.styledElement!.style);
 
-    return CssBoxWidget(
-      style: imageStyle,
-      childIsReplaced: true,
-      child: Image.asset(
-        assetPath,
-        width: imageStyle.width?.value,
-        height: imageStyle.height?.value,
-        fit: BoxFit.fill,
-        errorBuilder: (ctx, error, stackTrace) {
-          return Text(
-            element.alt ?? "",
-            style: context.styledElement!.style.generateTextStyle(),
-          );
-        },
-      ),
+    return Image.asset(
+      assetPath,
+      width: imageStyle.width?.value,
+      height: imageStyle.height?.value,
+      fit: BoxFit.fill,
+      bundle: assetBundle,
+      package: assetPackage,
+      errorBuilder: (ctx, error, stackTrace) {
+        return Text(
+          element.alt ?? "",
+          style: context.styledElement!.style.generateTextStyle(),
+        );
+      },
     );
   }
 
-  Widget _networkImageRender(ExtensionContext context, Uri srcUri) {
+  Widget _networkImageRender(ExtensionContext context, Style imageStyle) {
     final element = context.styledElement as ImageElement;
-    final imageStyle = Style(
-      width: element.width,
-      height: element.height,
-    ).merge(context.styledElement!.style);
 
     return CssBoxWidget(
       style: imageStyle,
@@ -176,5 +211,16 @@ class ImageBuiltIn extends Extension {
         },
       ),
     );
+  }
+}
+
+extension _SetFolding on String {
+  bool endsWithAnyFileExtension(Iterable<String> endings) {
+    for (final element in endings) {
+      if (endsWith(".$element")) {
+        return true;
+      }
+    }
+    return false;
   }
 }
