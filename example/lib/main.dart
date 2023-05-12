@@ -321,6 +321,18 @@ class MyHomePageState extends State<MyHomePage> {
                 size: context.styledElement!.style.fontSize!.value,
               ),
             ),
+            ImageExtension(
+              handleAssetImages: false,
+              handleDataImages: false,
+              networkDomains: {"flutter.dev"},
+              child: const FlutterLogo(size: 36),
+            ),
+            ImageExtension(
+              handleAssetImages: false,
+              handleDataImages: false,
+              networkDomains: {"mydomain.com"},
+              networkHeaders: {"Custom-Header": "some-value"},
+            ),
             const MathHtmlExtension(),
             const AudioHtmlExtension(),
             const VideoHtmlExtension(),
@@ -328,26 +340,6 @@ class MyHomePageState extends State<MyHomePage> {
             const TableHtmlExtension(),
             const SvgHtmlExtension(),
           ],
-          // customRenders: {
-          //   networkSourceMatcher(domains: ["flutter.dev"]):
-          //       CustomRender.widget(widget: (context, buildChildren) {
-          //     return const FlutterLogo(size: 36);
-          //   }),
-          //   networkSourceMatcher(domains: ["mydomain.com"]): networkImageRender(
-          //     headers: {"Custom-Header": "some-value"},
-          //     altWidget: (alt) => Text(alt ?? ""),
-          //     loadingWidget: () => const Text("Loading..."),
-          //   ),
-          //   // On relative paths starting with /wiki, prefix with a base url
-          //   (context) =>
-          //       context.tree.element?.attributes["src"] != null &&
-          //       context.tree.element!.attributes["src"]!
-          //           .startsWith("/wiki"): networkImageRender(
-          //       mapUrl: (url) => "https://upload.wikimedia.org${url!}"),
-          //   // Custom placeholder image for broken links
-          //   networkSourceMatcher():
-          //       networkImageRender(altWidget: (_) => const FlutterLogo()),
-          // },
           onLinkTap: (url, _, __) {
             debugPrint("Opening $url...");
           },
@@ -365,11 +357,3 @@ class MyHomePageState extends State<MyHomePage> {
   }
 }
 
-// CustomRenderMatcher texMatcher() =>
-//     (context) => context.tree.element?.localName == 'tex';
-
-// CustomRenderMatcher birdMatcher() =>
-//     (context) => context.tree.element?.localName == 'bird';
-
-// CustomRenderMatcher flutterMatcher() =>
-//     (context) => context.tree.element?.localName == 'flutter';
