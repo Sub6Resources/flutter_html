@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
-import 'package:flutter_html/src/extension/extension.dart';
+import 'package:flutter_html/src/extension/html_extension.dart';
 import 'package:flutter_html/src/style.dart';
 
 /// [VerticalAlignBuiltin] handles rendering of sub/sup tags with a vertical
 /// alignment off of the normal text baseline
-class VerticalAlignBuiltIn extends Extension {
+class VerticalAlignBuiltIn extends HtmlExtension {
   const VerticalAlignBuiltIn();
 
   @override

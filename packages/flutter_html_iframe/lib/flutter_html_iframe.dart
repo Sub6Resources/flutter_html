@@ -8,7 +8,7 @@ import 'iframe_unsupported.dart'
     if (dart.library.io) 'iframe_mobile.dart'
     if (dart.library.html) 'iframe_web.dart';
 
-class IframeHtmlExtension extends Extension {
+class IframeHtmlExtension extends HtmlExtension {
   final NavigationDelegate? navigationDelegate;
 
   const IframeHtmlExtension({

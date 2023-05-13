@@ -36,7 +36,7 @@ class HtmlParser extends StatefulWidget {
   final OnCssParseError? onCssParseError;
   final bool shrinkWrap;
   final Map<String, Style> style;
-  final List<Extension> extensions;
+  final List<HtmlExtension> extensions;
   final Set<String>? doNotRenderTheseTags;
   final Set<String>? onlyRenderTheseTags;
   final OnTap? internalOnAnchorTap;

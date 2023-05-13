@@ -3,7 +3,7 @@ import 'package:flutter_html/flutter_html.dart';
 
 /// The [DetailsElementBuiltIn] handles the default rendering for the
 /// `<details>` html tag
-class DetailsElementBuiltIn extends Extension {
+class DetailsElementBuiltIn extends HtmlExtension {
   const DetailsElementBuiltIn();
 
   @override

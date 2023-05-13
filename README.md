@@ -120,7 +120,7 @@ If you would like to modify or sanitize the HTML before rendering it, then `Html
 More examples and in-depth details are available:
 
  - [Style](https://github.com/Sub6Resources/flutter_html/wiki/How-To-Use-Style).
- - [Extension](https://github.com/Sub6Resources/flutter_html/wiki/How-To-Use-Extensions)
+ - [HtmlExtension](https://github.com/Sub6Resources/flutter_html/wiki/How-To-Use-Extensions)
 
 ## External Packages
 

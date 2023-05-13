@@ -9,7 +9,7 @@ export 'package:flutter_math_fork/flutter_math.dart';
 
 /// [MathHtmlExtension] adds support for the <math> tag to the flutter_html
 /// library.
-class MathHtmlExtension extends Extension {
+class MathHtmlExtension extends HtmlExtension {
   final OnMathErrorBuilder? onMathErrorBuilder;
 
   const MathHtmlExtension({this.onMathErrorBuilder});

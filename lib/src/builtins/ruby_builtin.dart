@@ -6,7 +6,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:html/dom.dart' as dom;
 
 /// Handles the rendering of rp, rt, and ruby tags.
-class RubyBuiltIn extends Extension {
+class RubyBuiltIn extends HtmlExtension {
   const RubyBuiltIn();
 
   @override

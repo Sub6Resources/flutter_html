@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/css_parser.dart';
-import 'package:flutter_html/src/extension/extension.dart';
+import 'package:flutter_html/src/extension/html_extension.dart';
 import 'package:flutter_html/src/style.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
 import 'package:html/dom.dart' as dom;
 
-class StyledElementBuiltIn extends Extension {
+class StyledElementBuiltIn extends HtmlExtension {
   const StyledElementBuiltIn();
 
   @override

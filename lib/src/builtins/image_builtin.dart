@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/tree/image_element.dart';
 
-class ImageBuiltIn extends Extension {
+class ImageBuiltIn extends HtmlExtension {
   final String? dataEncoding;
   final Set<String>? mimeTypes;
   final Map<String, String>? networkHeaders;

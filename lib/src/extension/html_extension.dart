@@ -9,13 +9,13 @@ export 'package:flutter_html/src/extension/helpers/matcher_extension.dart';
 export 'package:flutter_html/src/extension/helpers/image_extension.dart';
 export 'package:flutter_html/src/extension/helpers/image_tap_extension.dart';
 
-/// The [Extension] class allows you to customize the behavior of flutter_html
+/// The [HtmlExtension] class allows you to customize the behavior of flutter_html
 /// or add additional functionality.
 ///
 /// TODO add additional documentation
 ///
-abstract class Extension {
-  const Extension();
+abstract class HtmlExtension {
+  const HtmlExtension();
 
   /// Tells the [HtmlParser] what additional tags to add to the default
   /// supported tag list (the extension's user can still override this by

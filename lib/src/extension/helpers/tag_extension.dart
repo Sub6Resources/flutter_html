@@ -1,9 +1,9 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_html/src/extension/extension.dart';
+import 'package:flutter_html/src/extension/html_extension.dart';
 
 /// [TagExtension] allows you to extend the functionality of flutter_html
 /// by defining the behavior of custom tags.
-class TagExtension extends Extension {
+class TagExtension extends HtmlExtension {
   final Set<String> tagsToExtend;
   late final InlineSpan Function(ExtensionContext) builder;
 

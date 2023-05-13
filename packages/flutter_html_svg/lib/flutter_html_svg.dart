@@ -9,7 +9,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 // TODO re-add MultipleGestureDetector for image taps in this extension
 
-class SvgHtmlExtension extends Extension {
+class SvgHtmlExtension extends HtmlExtension {
   final String? dataEncoding;
   final String? dataMimeType;
   final List<String> networkSchemas;

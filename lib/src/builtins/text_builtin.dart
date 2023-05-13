@@ -4,7 +4,7 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 
 /// Handles rendering of text nodes and <br> tags.
-class TextBuiltIn extends Extension {
+class TextBuiltIn extends HtmlExtension {
   const TextBuiltIn();
 
   @override

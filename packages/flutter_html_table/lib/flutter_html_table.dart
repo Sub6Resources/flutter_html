@@ -11,7 +11,7 @@ import 'package:flutter_html/flutter_html.dart';
 /// supported.
 ///
 /// Currently, nested tables are not supported.
-class TableHtmlExtension extends Extension {
+class TableHtmlExtension extends HtmlExtension {
   const TableHtmlExtension();
 
   @override

@@ -5,7 +5,7 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 
 /// Defines the way an anchor ('a') element is lexed and parsed.
-class InteractiveElementBuiltIn extends Extension {
+class InteractiveElementBuiltIn extends HtmlExtension {
   const InteractiveElementBuiltIn();
 
   @override

@@ -1,7 +1,7 @@
 import 'package:flutter/widgets.dart';
-import 'package:flutter_html/src/extension/extension.dart';
+import 'package:flutter_html/src/extension/html_extension.dart';
 
-class MatcherExtension extends Extension {
+class MatcherExtension extends HtmlExtension {
   final bool Function(ExtensionContext) matcher;
   late final InlineSpan Function(ExtensionContext) builder;
 

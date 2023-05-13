@@ -10,7 +10,7 @@ import 'dart:io';
 
 /// [VideoHtmlExtension] adds support for the <video> tag to the flutter_html
 /// library.
-class VideoHtmlExtension extends Extension {
+class VideoHtmlExtension extends HtmlExtension {
   final VideoControllerCallback? videoControllerCallback;
 
   const VideoHtmlExtension({

@@ -2,7 +2,7 @@ library flutter_html;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/src/html_parser.dart';
-import 'package:flutter_html/src/extension/extension.dart';
+import 'package:flutter_html/src/extension/html_extension.dart';
 import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
 
@@ -18,7 +18,7 @@ export 'package:flutter_html/src/css_box_widget.dart';
 //export style api
 export 'package:flutter_html/src/style.dart';
 //export extension api
-export 'package:flutter_html/src/extension/extension.dart';
+export 'package:flutter_html/src/extension/html_extension.dart';
 
 class Html extends StatefulWidget {
   /// The `Html` widget takes HTML as input and displays a RichText
@@ -143,9 +143,9 @@ class Html extends StatefulWidget {
   /// of your html to render.
   final Set<String>? onlyRenderTheseTags;
 
-  /// A list of [Extension]s that add additional capabilities to flutter_html
-  /// See the [Extension] class for more details.
-  final List<Extension> extensions;
+  /// A list of [HtmlExtension]s that add additional capabilities to flutter_html
+  /// See the [HtmlExtension] class for more details.
+  final List<HtmlExtension> extensions;
 
   /// An API that allows you to override the default style for any HTML element
   final Map<String, Style> style;

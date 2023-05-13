@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/src/builtins/image_builtin.dart';
-import 'package:flutter_html/src/extension/extension.dart';
+import 'package:flutter_html/src/extension/html_extension.dart';
 
 class ImageExtension extends ImageBuiltIn {
   late final InlineSpan Function(ExtensionContext) builder;
