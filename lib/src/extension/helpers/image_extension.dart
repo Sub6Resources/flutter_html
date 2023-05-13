@@ -3,7 +3,7 @@ import 'package:flutter_html/src/builtins/image_builtin.dart';
 import 'package:flutter_html/src/extension/html_extension.dart';
 
 class ImageExtension extends ImageBuiltIn {
-  late final InlineSpan Function(ExtensionContext) builder;
+  late final InlineSpan Function(ExtensionContext)? builder;
 
   /// [ImageExtension] allows you to extend the built-in <img> support by
   /// providing a custom way to render a specific selection of attributes
@@ -23,8 +23,7 @@ class ImageExtension extends ImageBuiltIn {
     super.handleNetworkImages = true,
     Widget? child,
     Widget Function(ExtensionContext)? builder,
-  }) : assert((child != null) || (builder != null),
-            "Either child or builder needs to be provided to ImageExtension") {
+  }) {
     if (child != null) {
       this.builder = (_) => WidgetSpan(child: child);
     } else {
@@ -61,6 +60,10 @@ class ImageExtension extends ImageBuiltIn {
 
   @override
   InlineSpan build(ExtensionContext context, parseChildren) {
-    return builder.call(context);
+    if (builder != null) {
+      return builder!.call(context);
+    } else {
+      return super.build(context, parseChildren);
+    }
   }
 }
