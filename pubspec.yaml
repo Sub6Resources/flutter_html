@@ -42,3 +42,9 @@ screenshots:
 
 funding:
   - https://opencollective.com/flutter_html
+
+topics:
+  - html
+  - css
+  - widgets
+  - layout
