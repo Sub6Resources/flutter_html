@@ -39,7 +39,7 @@ Widget build(context) {
 
 becomes...
 
-<img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_readme_screenshot.png" alt="A screenshot showing the above code snippet rendered using flutter_html" />
+<img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/example/screenshots/flutter_html_readme_screenshot.png" alt="A screenshot showing the above code snippet rendered using flutter_html" />
 
 ## Table of Contents:
 
@@ -348,10 +348,10 @@ Here's what the example in example/lib/main.dart looks like after being run (in 
 
 <table>
 <tr>
-<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot.png" alt="A screenshot showing the result of running the example" /></td>
-<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot1.png" alt="A second screenshot showing the result of running the example" /></td>
-<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot2.png" alt="A third screenshot showing the result of running the example" /></td>
-<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/.github/flutter_html_screenshot3.png" alt="A fourth screenshot showing the result of running the example" /></td>
+<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/example/screenshots/flutter_html_screenshot.png" alt="A screenshot showing the result of running the example" /></td>
+<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/example/screenshots/flutter_html_screenshot1.png" alt="A second screenshot showing the result of running the example" /></td>
+<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/example/screenshots/flutter_html_screenshot2.png" alt="A third screenshot showing the result of running the example" /></td>
+<td><img src="https://raw.githubusercontent.com/Sub6Resources/flutter_html/master/example/screenshots/flutter_html_screenshot3.png" alt="A fourth screenshot showing the result of running the example" /></td>
 </tr>
 </table>
 

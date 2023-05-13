@@ -32,15 +32,15 @@ dev_dependencies:
 
 screenshots:
   - description: 'An example of the output produced by flutter_html'
-    path: .github/flutter_html_screenshot.png
+    path: example/screenshots/flutter_html_screenshot.png
   - description: 'Continued example of the output produced by flutter_html'
-    path: .github/flutter_html_screenshot1.png
+    path: example/screenshots/flutter_html_screenshot1.png
   - description: 'Continued example of the output produced by flutter_html'
-    path: .github/flutter_html_screenshot2.png
+    path: example/screenshots/flutter_html_screenshot2.png
   - description: 'Continued example of the output produced by flutter_html'
-    path: .github/flutter_html_screenshot3.png
+    path: example/screenshots/flutter_html_screenshot3.png
   - description: 'Another example of the output produced by flutter_html'
-    path: .github/flutter_html_readme_screenshot.png
+    path: example/screenshots/flutter_html_readme_screenshot.png
 
 funding:
   - https://opencollective.com/flutter_html
