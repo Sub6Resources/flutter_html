@@ -60,10 +60,6 @@ class Html extends StatefulWidget {
     this.style = const {},
   })  : documentElement = null,
         assert(data != null),
-        assert(
-          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
-          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
-        ),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 
@@ -81,10 +77,6 @@ class Html extends StatefulWidget {
     this.style = const {},
   })  : data = null,
         assert(document != null),
-        assert(
-          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
-          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
-        ),
         documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -103,10 +95,6 @@ class Html extends StatefulWidget {
     this.style = const {},
   })  : data = null,
         assert(documentElement != null),
-        assert(
-          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
-          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
-        ),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
 

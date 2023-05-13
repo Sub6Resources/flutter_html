@@ -54,12 +54,8 @@ class HtmlParser extends StatefulWidget {
     required this.doNotRenderTheseTags,
     required this.onlyRenderTheseTags,
     this.root,
-  })  : internalOnAnchorTap = onAnchorTap ??
-            (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap),
-        assert(
-          onlyRenderTheseTags == null || doNotRenderTheseTags == null,
-          "Can't provide both `onlyRenderTheseTags` and `doNotRenderTheseTags`",
-        );
+  }) : internalOnAnchorTap = onAnchorTap ??
+            (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
 
   @override
   State<HtmlParser> createState() => _HtmlParserState();
