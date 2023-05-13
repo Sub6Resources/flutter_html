@@ -155,3 +155,5 @@ modules.xml
 packages/**/pubspec_overrides.yaml
 ./pubspec_overrides.yaml
 /example/pubspec_overrides.yaml
+
+coverage/

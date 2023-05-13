@@ -1,3 +1,21 @@
+# Change Log
+
+
+#### 3.0.0-beta.1 - *May 2023*
+
+ - Several Breaking Changes. See the [migration guide](https://github.com/Sub6Resources/flutter_html/wiki/Migration-Guides#300)
+
+ - **FIX**: Aspect ratio exception when height is 0 ([#1222](https://github.com/sub6resources/flutter_html/issues/1222)). ([ed75f8fe](https://github.com/sub6resources/flutter_html/commit/ed75f8fef779e920ecc1f27719a4150a29e3ebee))
+ - **FIX**: Fix issue with font scaling introduced in 3.0.0-alpha.6 ([#1173](https://github.com/sub6resources/flutter_html/issues/1173)). ([c75e0dfb](https://github.com/sub6resources/flutter_html/commit/c75e0dfb1be6cb79748f719487043d12bc330c60))
+ - **FIX**: Fix various issues with list rendering. ([520ff3c3](https://github.com/sub6resources/flutter_html/commit/520ff3c326d5dc8f5a601022c2a32d58e2e83cbb))
+ - **FIX**: Apply margins to <table> properly. ([7581ea79](https://github.com/sub6resources/flutter_html/commit/7581ea798744b2830affaaf75bbdff016b03f7af))
+ - **FIX**: Use enum instead of const int internally in length.dart. ([9dc7f08c](https://github.com/sub6resources/flutter_html/commit/9dc7f08ca238ff6a93314be5de716ad4e3baebb8))
+ - **FIX**: Change CSSBoxWidget to CssBoxWidget. ([a62449a7](https://github.com/sub6resources/flutter_html/commit/a62449a77c18701a0faf8ffd650f9c535b2d006c))
+ - **FEAT**: Support mmultiscripts. ([#1175](https://github.com/sub6resources/flutter_html/issues/1175)). ([a999a300](https://github.com/sub6resources/flutter_html/commit/a999a30027eff0aabb2825ffdbe383f9affab7f6))
+ - **FEAT**: Support mfenced. ([#1174](https://github.com/sub6resources/flutter_html/issues/1174)). ([9ca23084](https://github.com/sub6resources/flutter_html/commit/9ca230848beb15332f96294083ed4989831130d7))
+ - **FEAT**: Upgrade list-style-type to CSS3. ([deb726ae](https://github.com/sub6resources/flutter_html/commit/deb726ae2776f45305026c0aa081d4a5b5a1c71d))
+ - **FEAT**: Support mtable, mtd, mtr for draw matrix. ([#1164](https://github.com/sub6resources/flutter_html/issues/1164)). ([e99e2cc1](https://github.com/sub6resources/flutter_html/commit/e99e2cc1553ab17b4ceff08f784e99283b28dff4))
+
 ## 3.0.0-alpha.6 - *September 2022*
 
  - **FIX** #731 Resolve newline `<br>` issue

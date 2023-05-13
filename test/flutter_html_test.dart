@@ -18,20 +18,6 @@ void main() {
   );
 
   testWidgets(
-    "Check that selectable widget does not fail on empty data",
-    (tester) async {
-      await tester.pumpWidget(
-        MaterialApp(
-          home: SelectableHtml(
-            data: '',
-          ),
-        ),
-      );
-      expect(find.text('', findRichText: true), findsOneWidget);
-    },
-  );
-
-  testWidgets(
     "Check that widget displays given text",
     (tester) async {
       await tester.pumpWidget(
@@ -63,7 +49,7 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<p>Text</p>",
-          tagsList: const ['div'], //Anything but `p`
+          onlyRenderTheseTags: const {'html', 'body', 'div'}, //Anything but `p`
         ),
       ),
     );
@@ -77,7 +63,7 @@ void main() {
       MaterialApp(
         home: Html(
           data: "<p>Text</p>",
-          tagsList: const ['html', 'body', 'p'],
+          onlyRenderTheseTags: const {'html', 'body', 'p'},
         ),
       ),
     );
@@ -95,12 +81,18 @@ void main() {
     expect(find.text('Text', findRichText: true), findsNothing);
   });
 
-  testWidgets('Check that a custom element is not displayed', (tester) async {
+  testWidgets('Check that a custom element is displayed when configured',
+      (tester) async {
     await tester.pumpWidget(
       MaterialApp(
         home: Html(
           data: "<custom>Text</custom>",
-          tagsList: Html.tags..add('custom'),
+          extensions: [
+            TagExtension(
+              tagsToExtend: {"custom"},
+              builder: (context) => Text(context.innerHtml),
+            ),
+          ],
         ),
       ),
     );

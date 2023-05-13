@@ -1,3 +1,7 @@
+## 3.0.0-beta.1
+
+ - Migrate from `customRender` to `Extension`
+
 ## 3.0.0-alpha.6
 
  - Update a dependency to the latest release.

@@ -7,34 +7,40 @@ import 'package:flutter_math_fork/flutter_math.dart';
 
 export 'package:flutter_math_fork/flutter_math.dart';
 
-/// The CustomRender function for the <math> tag.
-CustomRender mathRender({OnMathError? onMathError}) =>
-    CustomRender.widget(widget: (context, buildChildren) {
-      String texStr = context.tree.element == null
-          ? ''
-          : _parseMathRecursive(context.tree.element!, r'');
-      return SizedBox(
-          width: context.parser.shrinkWrap
-              ? null
-              : MediaQuery.of(context.buildContext).size.width,
-          child: Math.tex(
-            texStr,
-            mathStyle: MathStyle.display,
-            textStyle: context.style.generateTextStyle(),
-            onErrorFallback: (FlutterMathException e) {
-              if (onMathError != null) {
-                return onMathError.call(texStr, e.message, e.messageWithType);
-              } else {
-                return Text(e.message);
-              }
-            },
-          ));
-    });
+/// [MathHtmlExtension] adds support for the <math> tag to the flutter_html
+/// library.
+class MathHtmlExtension extends HtmlExtension {
+  final OnMathErrorBuilder? onMathErrorBuilder;
 
-/// The CustomRenderMatcher for the <math> element.
-CustomRenderMatcher mathMatcher() => (context) {
-      return context.tree.element?.localName == "math";
-    };
+  const MathHtmlExtension({this.onMathErrorBuilder});
+
+  @override
+  Set<String> get supportedTags => {"math"};
+
+  @override
+  InlineSpan build(ExtensionContext context, parseChildren) {
+    String texStr = _parseMathRecursive(context.styledElement!.element!, '');
+    return WidgetSpan(
+      child: CssBoxWidget(
+        style: context.styledElement!.style,
+        childIsReplaced: true,
+        child: Math.tex(
+          texStr,
+          mathStyle: MathStyle.display,
+          textStyle: context.styledElement!.style.generateTextStyle(),
+          onErrorFallback: (FlutterMathException e) {
+            if (onMathErrorBuilder != null) {
+              return onMathErrorBuilder!
+                  .call(texStr, e.message, e.messageWithType);
+            } else {
+              return Text(e.message);
+            }
+          },
+        ),
+      ),
+    );
+  }
+}
 
 String _parseMathRecursive(dom.Node node, String parsed) {
   if (node is dom.Element) {
@@ -91,9 +97,7 @@ String _parseMathRecursive(dom.Node node, String parsed) {
         node.localName == "mn" ||
         node.localName == "mo") {
       if (_mathML2Tex.keys.contains(node.text.trim())) {
-        parsed = parsed +
-            _mathML2Tex[
-                _mathML2Tex.keys.firstWhere((e) => e == node.text.trim())]!;
+        parsed = parsed + _mathML2Tex[node.text.trim()]!;
       } else if (node.text.startsWith("&") && node.text.endsWith(";")) {
         parsed = parsed +
             node.text
@@ -164,7 +168,7 @@ String _parseMathRecursive(dom.Node node, String parsed) {
   return parsed;
 }
 
-Map<String, String> _mathML2Tex = {
+const Map<String, String> _mathML2Tex = {
   "sin": r"\sin",
   "sinh": r"\sinh",
   "csc": r"\csc",
@@ -183,7 +187,7 @@ Map<String, String> _mathML2Tex = {
   "}": r"\}",
 };
 
-typedef OnMathError = Widget Function(
+typedef OnMathErrorBuilder = Widget Function(
   String parsedTex,
   String exception,
   String exceptionWithType,

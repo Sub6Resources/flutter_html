@@ -1,6 +1,6 @@
 name: flutter_html_all
 description: All optional flutter_html widgets, bundled into a single package.
-version: 3.0.0-alpha.6
+version: 3.0.0-beta.1
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
@@ -11,29 +11,25 @@ dependencies:
   flutter:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
-  flutter_html: ^3.0.0-alpha.6
-  flutter_html_audio: ^3.0.0-alpha.4
-  flutter_html_iframe: ^3.0.0-alpha.4
-  flutter_html_math: ^3.0.0-alpha.4
-  flutter_html_svg: ^3.0.0-alpha.4
-  flutter_html_table: ^3.0.0-alpha.4
-  flutter_html_video: ^3.0.0-alpha.5
-#  flutter_html_audio:
-#    path: ../flutter_html_audio
-#  flutter_html_iframe:
-#    path: ../flutter_html_iframe
-#  flutter_html_math:
-#    path: ../flutter_html_math
-#  flutter_html_svg:
-#    path: ../flutter_html_svg
-#  flutter_html_table:
-#    path: ../flutter_html_table
-#  flutter_html_video:
-#    path: ../flutter_html_video
+  flutter_html: ^3.0.0-beta.1
+  flutter_html_audio: ^3.0.0-beta.1
+  flutter_html_iframe: ^3.0.0-beta.1
+  flutter_html_math: ^3.0.0-beta.1
+  flutter_html_svg: ^3.0.0-beta.1
+  flutter_html_table: ^3.0.0-beta.1
+  flutter_html_video: ^3.0.0-beta.1
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
 
-flutter:
+funding:
+  - https://opencollective.com/flutter_html
+
+topics:
+  - html
+  - css
+  - widgets
+  - layout
+  - flutter_html

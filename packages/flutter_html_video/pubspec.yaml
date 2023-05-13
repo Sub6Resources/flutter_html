@@ -1,6 +1,6 @@
 name: flutter_html_video
 description: This extension package allows the <video> tag to be rendered using the flutter_html package
-version: 3.0.0-alpha.5
+version: 3.0.0-beta.1
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
@@ -11,10 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
   html: '>=0.15.0 <1.0.0'
-  flutter_html: ^3.0.0-alpha.6
-#  flutter_html:
-#    path: ../..
-
+  flutter_html: ^3.0.0-beta.1
   video_player: '>=2.2.8 <3.0.0'
   chewie: '>=1.1.0 <2.0.0'
 
@@ -23,4 +20,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.1
 
-flutter:
+funding:
+  - https://opencollective.com/flutter_html
+
+topics:
+  - html
+  - css
+  - video
+  - widgets
+  - flutter_html

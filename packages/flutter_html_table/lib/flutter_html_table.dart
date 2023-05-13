@@ -6,27 +6,155 @@ import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 
-/// The CustomRender function that will render the <table> HTML tag
-CustomRender tableRender() =>
-    CustomRender.widget(widget: (context, buildChildren) {
-      return CssBoxWidget(
-        key: context.key,
-        style: context.style,
-        child: LayoutBuilder(
-          builder: (_, constraints) => _layoutCells(context, constraints),
+/// [TableHtmlExtension] adds support for the <table> element to the flutter_html library.
+/// <tr>, <tbody>, <tfoot>, <thead>, <th>, <td>, <col>, and <colgroup> are also
+/// supported.
+///
+/// Currently, nested tables are not supported.
+class TableHtmlExtension extends HtmlExtension {
+  const TableHtmlExtension();
+
+  @override
+  Set<String> get supportedTags => {
+        "table",
+        "tr",
+        "tbody",
+        "tfoot",
+        "thead",
+        "th",
+        "td",
+        "col",
+        "colgroup",
+      };
+
+  @override
+  StyledElement prepare(
+      ExtensionContext context, List<StyledElement> children) {
+    if (context.elementName == "table") {
+      final cellDescendants = _getCellDescendants(children);
+
+      return TableElement(
+        name: context.elementName,
+        elementId: context.id,
+        elementClasses: context.classes.toList(),
+        tableStructure: children,
+        cellDescendants: cellDescendants,
+        style: Style(),
+        node: context.node,
+      );
+    }
+
+    if (context.elementName == "th" || context.elementName == "td") {
+      return TableCellElement(
+        style: context.elementName == "th"
+            ? Style(
+                fontWeight: FontWeight.bold,
+                textAlign: TextAlign.center,
+                verticalAlign: VerticalAlign.middle,
+              )
+            : Style(
+                verticalAlign: VerticalAlign.middle,
+              ),
+        children: children,
+        node: context.node,
+        name: context.elementName,
+        elementClasses: context.classes.toList(),
+        elementId: context.id,
+      );
+    }
+
+    if (context.elementName == "tbody" ||
+        context.elementName == "thead" ||
+        context.elementName == "tfoot") {
+      return TableSectionLayoutElement(
+        name: context.elementName,
+        elementId: context.id,
+        elementClasses: context.classes.toList(),
+        children: children,
+        style: Style(),
+        node: context.node,
+      );
+    }
+
+    if (context.elementName == "tr") {
+      return TableRowLayoutElement(
+        name: context.elementName,
+        elementId: context.id,
+        elementClasses: context.classes.toList(),
+        children: children,
+        style: Style(),
+        node: context.node,
+      );
+    }
+
+    if (context.elementName == "col" || context.elementName == "colgroup") {
+      return TableStyleElement(
+        name: context.elementName,
+        elementId: context.id,
+        elementClasses: context.classes.toList(),
+        children: children,
+        style: Style(),
+        node: context.node,
+      );
+    }
+
+    throw UnimplementedError("This isn't possible");
+  }
+
+  @override
+  InlineSpan build(ExtensionContext context,
+      Map<StyledElement, InlineSpan> Function() parseChildren) {
+    if (context.elementName == "table") {
+      return WidgetSpan(
+        child: CssBoxWidget(
+          style: context.styledElement!.style,
+          child: LayoutBuilder(
+            builder: (_, constraints) {
+              return _layoutCells(
+                context.styledElement as TableElement,
+                parseChildren(),
+                context,
+                constraints,
+              );
+            },
+          ),
         ),
       );
-    });
+    }
 
-/// A CustomRenderMatcher for matching the <table> HTML tag
-CustomRenderMatcher tableMatcher() => (context) {
-      return context.tree.element?.localName == "table";
-    };
+    return WidgetSpan(
+      child: CssBoxWidget.withInlineSpanChildren(
+        children: parseChildren().values.toList(),
+        style: Style(),
+      ),
+    );
+  }
+}
 
-Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
+/// Recursively gets a flattened list of the table's
+/// cell descendants
+List<TableCellElement> _getCellDescendants(List<StyledElement> children) {
+  final descendants = <TableCellElement>[];
+
+  for (final child in children) {
+    if (child is TableCellElement) {
+      descendants.add(child);
+    }
+
+    descendants.addAll(_getCellDescendants(child.children));
+  }
+
+  return descendants;
+}
+
+Widget _layoutCells(
+    TableElement table,
+    Map<StyledElement, InlineSpan> parsedCells,
+    ExtensionContext context,
+    BoxConstraints constraints) {
   final rows = <TableRowLayoutElement>[];
   List<TrackSize> columnSizes = <TrackSize>[];
-  for (var child in context.tree.children) {
+  for (var child in table.tableStructure) {
     if (child is TableStyleElement) {
       // Map <col> tags to predetermined column track sizes
       columnSizes = child.children
@@ -43,7 +171,7 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
                 final percentageSize =
                     double.tryParse(colWidth.substring(0, colWidth.length - 1));
                 return percentageSize != null && !percentageSize.isNaN
-                    ? FlexibleTrackSize(percentageSize * 0.01)
+                    ? FlexibleTrackSize(percentageSize / 100)
                     : const IntrinsicContentTrackSize();
               } else if (colWidth != null) {
                 final fixedPxSize = double.tryParse(colWidth);
@@ -65,8 +193,10 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
   }
 
   // All table rows have a height intrinsic to their (spanned) contents
-  final rowSizes =
-      List.generate(rows.length, (_) => const IntrinsicContentTrackSize());
+  final rowSizes = List.generate(
+    rows.length,
+    (_) => const IntrinsicContentTrackSize(),
+  );
 
   // Calculate column bounds
   int columnMax = 0;
@@ -108,19 +238,22 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
           rowStart: rowi,
           rowSpan: min(child.rowspan, rows.length - rowi),
           child: CssBoxWidget(
-            style: child.style
-                .merge(row.style), //TODO padding/decoration(color/border)
-            child: SizedBox.expand(
-              child: Container(
-                alignment: child.style.alignment ??
-                    context.style.alignment ??
-                    Alignment.centerLeft,
-                child: CssBoxWidget.withInlineSpanChildren(
-                  children: [context.parser.parseTree(context, child)],
-                  style: child.style, //TODO updated this. Does it work?
+            style: child.style.merge(row.style),
+            child: Builder(builder: (context) {
+              final alignment =
+                  child.style.direction ?? Directionality.of(context);
+              return SizedBox.expand(
+                child: Container(
+                  alignment: _getCellAlignment(child, alignment),
+                  child: CssBoxWidget.withInlineSpanChildren(
+                    children: [
+                      parsedCells[child] ?? const TextSpan(text: "error")
+                    ],
+                    style: Style(),
+                  ),
                 ),
-              ),
-            ),
+              );
+            }),
           ),
         ));
         columnRowOffset[columni] = child.rowspan - 1;
@@ -151,4 +284,118 @@ Widget _layoutCells(RenderContext context, BoxConstraints constraints) {
     rowSizes: rowSizes,
     children: cells,
   );
+}
+
+Alignment _getCellAlignment(TableCellElement cell, TextDirection alignment) {
+  Alignment verticalAlignment;
+
+  switch (cell.style.verticalAlign) {
+    case null:
+    case VerticalAlign.baseline:
+    case VerticalAlign.sub:
+    case VerticalAlign.sup:
+    case VerticalAlign.top:
+      verticalAlignment = Alignment.topCenter;
+      break;
+    case VerticalAlign.middle:
+      verticalAlignment = Alignment.center;
+      break;
+    case VerticalAlign.bottom:
+      verticalAlignment = Alignment.bottomCenter;
+      break;
+  }
+
+  switch (cell.style.textAlign) {
+    case TextAlign.left:
+      return verticalAlignment + Alignment.centerLeft;
+    case TextAlign.right:
+      return verticalAlignment + Alignment.centerRight;
+    case TextAlign.center:
+      return verticalAlignment + Alignment.center;
+    case null:
+    case TextAlign.start:
+    case TextAlign.justify:
+      switch (alignment) {
+        case TextDirection.rtl:
+          return verticalAlignment + Alignment.centerRight;
+        case TextDirection.ltr:
+          return verticalAlignment + Alignment.centerLeft;
+      }
+    case TextAlign.end:
+      switch (alignment) {
+        case TextDirection.rtl:
+          return verticalAlignment + Alignment.centerLeft;
+        case TextDirection.ltr:
+          return verticalAlignment + Alignment.centerRight;
+      }
+  }
+}
+
+class TableCellElement extends StyledElement {
+  int colspan = 1;
+  int rowspan = 1;
+
+  TableCellElement({
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required super.children,
+    required super.style,
+    required super.node,
+  }) {
+    colspan = _parseSpan(this, "colspan");
+    rowspan = _parseSpan(this, "rowspan");
+  }
+
+  static int _parseSpan(StyledElement element, String attributeName) {
+    final spanValue = element.attributes[attributeName];
+    return int.tryParse(spanValue ?? "1") ?? 1;
+  }
+}
+
+class TableElement extends StyledElement {
+  final List<StyledElement> tableStructure;
+
+  TableElement({
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required List<TableCellElement> cellDescendants,
+    required this.tableStructure,
+    required super.style,
+    required super.node,
+  }) : super(children: cellDescendants);
+}
+
+class TableSectionLayoutElement extends StyledElement {
+  TableSectionLayoutElement({
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required super.children,
+    required super.style,
+    required super.node,
+  });
+}
+
+class TableRowLayoutElement extends StyledElement {
+  TableRowLayoutElement({
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required super.children,
+    required super.style,
+    required super.node,
+  });
+}
+
+class TableStyleElement extends StyledElement {
+  TableStyleElement({
+    required super.name,
+    required super.elementId,
+    required super.elementClasses,
+    required super.children,
+    required super.style,
+    required super.node,
+  });
 }

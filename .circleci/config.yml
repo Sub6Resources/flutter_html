@@ -37,4 +37,4 @@ jobs:
           command: melos run analyze
       - run:
           name: Check That Flutter Code is Formatted Correctly
-          command: flutter format -o none --set-exit-if-changed .
+          command: dart format -o none --set-exit-if-changed .

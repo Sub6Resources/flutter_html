@@ -8,23 +8,34 @@ import 'package:video_player/video_player.dart';
 import 'package:html/dom.dart' as dom;
 import 'dart:io';
 
+/// [VideoHtmlExtension] adds support for the <video> tag to the flutter_html
+/// library.
+class VideoHtmlExtension extends HtmlExtension {
+  final VideoControllerCallback? videoControllerCallback;
+
+  const VideoHtmlExtension({
+    this.videoControllerCallback,
+  });
+
+  @override
+  Set<String> get supportedTags => {"video"};
+
+  @override
+  InlineSpan build(ExtensionContext context, parseChildren) {
+    return WidgetSpan(
+        child: VideoWidget(
+      context: context,
+      callback: videoControllerCallback,
+    ));
+  }
+}
+
 typedef VideoControllerCallback = void Function(
     dom.Element?, ChewieController, VideoPlayerController);
 
-/// A CustomRender function for rendering the <video> HTML tag.
-CustomRender videoRender({VideoControllerCallback? onControllerCreated}) =>
-    CustomRender.widget(
-        widget: (context, buildChildren) =>
-            VideoWidget(context: context, callback: onControllerCreated));
-
-/// A CustomRenderMatcher for the <video> HTML tag
-CustomRenderMatcher videoMatcher() => (context) {
-      return context.tree.element?.localName == "video";
-    };
-
 /// A VideoWidget for displaying within the HTML tree.
 class VideoWidget extends StatefulWidget {
-  final RenderContext context;
+  final ExtensionContext context;
   final VideoControllerCallback? callback;
   final List<DeviceOrientation>? deviceOrientationsOnEnterFullScreen;
   final List<DeviceOrientation> deviceOrientationsAfterFullScreen;
@@ -49,14 +60,16 @@ class _VideoWidgetState extends State<VideoWidget> {
 
   @override
   void initState() {
-    final attributes = widget.context.tree.element?.attributes ?? {};
+    final attributes = widget.context.attributes;
+
     final sources = <String?>[
       if (attributes['src'] != null) attributes['src'],
-      ...ReplacedElement.parseMediaSources(
-          widget.context.tree.element!.children),
+      ...ReplacedElement.parseMediaSources(widget.context.node.children),
     ];
+
     final givenWidth = double.tryParse(attributes['width'] ?? "");
     final givenHeight = double.tryParse(attributes['height'] ?? "");
+
     if (sources.isNotEmpty && sources.first != null) {
       _width = givenWidth ?? (givenHeight ?? 150) * 2;
       _height = givenHeight ?? (givenWidth ?? 300) / 2;
@@ -92,7 +105,10 @@ class _VideoWidgetState extends State<VideoWidget> {
             widget.deviceOrientationsAfterFullScreen,
       );
       widget.callback?.call(
-          widget.context.tree.element, _chewieController!, _videoController!);
+        widget.context.element,
+        _chewieController!,
+        _videoController!,
+      );
     }
     super.initState();
   }
@@ -109,15 +125,12 @@ class _VideoWidgetState extends State<VideoWidget> {
     if (_chewieController == null) {
       return const SizedBox(height: 0, width: 0);
     }
-    final child = Container(
-      key: widget.context.key,
+
+    return AspectRatio(
+      aspectRatio: _width! / _height!,
       child: Chewie(
         controller: _chewieController!,
       ),
-    );
-    return AspectRatio(
-      aspectRatio: _width! / _height!,
-      child: child,
     );
   }
 }
