@@ -19,4 +19,12 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^2.0.1
 
-flutter:
+funding:
+  - https://opencollective.com/flutter_html
+
+topics:
+  - html
+  - latex
+  - math
+  - tex
+  - flutter_html

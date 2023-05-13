@@ -18,22 +18,18 @@ dependencies:
   flutter_html_svg: ^3.0.0-beta.1
   flutter_html_table: ^3.0.0-beta.1
   flutter_html_video: ^3.0.0-beta.1
-#  flutter_html_audio:
-#    path: ../flutter_html_audio
-#  flutter_html_iframe:
-#    path: ../flutter_html_iframe
-#  flutter_html_math:
-#    path: ../flutter_html_math
-#  flutter_html_svg:
-#    path: ../flutter_html_svg
-#  flutter_html_table:
-#    path: ../flutter_html_table
-#  flutter_html_video:
-#    path: ../flutter_html_video
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.1
 
-flutter:
+funding:
+  - https://opencollective.com/flutter_html
+
+topics:
+  - html
+  - css
+  - widgets
+  - layout
+  - flutter_html

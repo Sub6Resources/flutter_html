@@ -20,4 +20,12 @@ dev_dependencies:
   flutter_lints: ^2.0.1
   meta: ^1.8.0
 
-flutter:
+funding:
+  - https://opencollective.com/flutter_html
+
+topics:
+  - html
+  - css
+  - svg
+  - images
+  - flutter_html
