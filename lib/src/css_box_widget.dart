@@ -62,7 +62,9 @@ class CssBoxWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final markerBox = style.listStylePosition == ListStylePosition.outside ? _generateMarkerBoxSpan(style) : null;
+    final markerBox = style.listStylePosition == ListStylePosition.outside
+        ? _generateMarkerBoxSpan(style)
+        : null;
 
     return _CSSBoxRenderer(
       width: style.width ?? Width.auto(),
@@ -79,11 +81,16 @@ class CssBoxWidget extends StatelessWidget {
         Container(
             decoration: BoxDecoration(
               border: style.border,
-              color: style.backgroundColor, //Colors the padding and content boxes
+              color:
+                  style.backgroundColor, //Colors the padding and content boxes
             ),
             width: _shouldExpandToFillBlock() ? double.infinity : null,
             padding: style.padding ?? EdgeInsets.zero,
-            child: top ? child : MediaQuery(data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0), child: child)),
+            child: top
+                ? child
+                : MediaQuery(
+                    data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                    child: child)),
         if (markerBox != null) Text.rich(markerBox),
       ],
     );
@@ -150,7 +157,8 @@ class CssBoxWidget extends StatelessWidget {
           child: Image.network(
             style.listStyleImage!.uriText,
             errorBuilder: (_, __, ___) {
-              if (style.marker?.content.replacementContent?.isNotEmpty ?? false) {
+              if (style.marker?.content.replacementContent?.isNotEmpty ??
+                  false) {
                 return Text.rich(
                   TextSpan(
                     text: style.marker!.content.replacementContent!,
@@ -181,10 +189,14 @@ class CssBoxWidget extends StatelessWidget {
   /// width available to it or if it should just let its inner content
   /// determine the content-box's width.
   bool _shouldExpandToFillBlock() {
-    return (style.display == Display.block || style.display == Display.listItem) && !childIsReplaced && !shrinkWrap;
+    return (style.display == Display.block ||
+            style.display == Display.listItem) &&
+        !childIsReplaced &&
+        !shrinkWrap;
   }
 
-  TextDirection _checkTextDirection(BuildContext context, TextDirection? direction) {
+  TextDirection _checkTextDirection(
+      BuildContext context, TextDirection? direction) {
     final textDirection = direction ?? Directionality.maybeOf(context);
 
     assert(
@@ -318,7 +330,9 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
 
 /// Implements the CSS layout algorithm
 class _RenderCSSBox extends RenderBox
-    with ContainerRenderObjectMixin<RenderBox, CSSBoxParentData>, RenderBoxContainerDefaultsMixin<RenderBox, CSSBoxParentData> {
+    with
+        ContainerRenderObjectMixin<RenderBox, CSSBoxParentData>,
+        RenderBoxContainerDefaultsMixin<RenderBox, CSSBoxParentData> {
   _RenderCSSBox({
     required Display display,
     required Width width,
@@ -427,11 +441,13 @@ class _RenderCSSBox extends RenderBox
     }
   }
 
-  static double getIntrinsicDimension(RenderBox? firstChild, double Function(RenderBox child) mainChildSizeGetter) {
+  static double getIntrinsicDimension(RenderBox? firstChild,
+      double Function(RenderBox child) mainChildSizeGetter) {
     double extent = 0.0;
     RenderBox? child = firstChild;
     while (child != null) {
-      final CSSBoxParentData childParentData = child.parentData! as CSSBoxParentData;
+      final CSSBoxParentData childParentData =
+          child.parentData! as CSSBoxParentData;
       extent = math.max(extent, mainChildSizeGetter(child));
       assert(child.parentData == childParentData);
       child = childParentData.nextSibling;
@@ -441,22 +457,26 @@ class _RenderCSSBox extends RenderBox
 
   @override
   double computeMinIntrinsicWidth(double height) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMinIntrinsicWidth(height));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMinIntrinsicWidth(height));
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMaxIntrinsicWidth(height));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMaxIntrinsicWidth(height));
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMinIntrinsicHeight(width));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMinIntrinsicHeight(width));
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
-    return getIntrinsicDimension(firstChild, (RenderBox child) => child.getMaxIntrinsicHeight(width));
+    return getIntrinsicDimension(
+        firstChild, (RenderBox child) => child.getMaxIntrinsicHeight(width));
   }
 
   @override
@@ -472,7 +492,9 @@ class _RenderCSSBox extends RenderBox
     ).parentSize;
   }
 
-  _Sizes _computeSize({required BoxConstraints constraints, required ChildLayouter layoutChild}) {
+  _Sizes _computeSize(
+      {required BoxConstraints constraints,
+      required ChildLayouter layoutChild}) {
     if (childCount == 0) {
       return _Sizes(constraints.biggest, Size.zero);
     }
@@ -491,10 +513,14 @@ class _RenderCSSBox extends RenderBox
     final childConstraints = constraints.copyWith(
       maxWidth: (this.width.unit != Unit.auto)
           ? this.width.value
-          : containingBlockSize.width - (margins.left?.value ?? 0) - (margins.right?.value ?? 0),
+          : containingBlockSize.width -
+              (margins.left?.value ?? 0) -
+              (margins.right?.value ?? 0),
       maxHeight: (this.height.unit != Unit.auto)
           ? this.height.value
-          : containingBlockSize.height - (margins.top?.value ?? 0) - (margins.bottom?.value ?? 0),
+          : containingBlockSize.height -
+              (margins.top?.value ?? 0) -
+              (margins.bottom?.value ?? 0),
       minWidth: (this.width.unit != Unit.auto) ? this.width.value : 0,
       minHeight: (this.height.unit != Unit.auto) ? this.height.value : 0,
     );
@@ -505,14 +531,18 @@ class _RenderCSSBox extends RenderBox
 
     // Calculate used values of margins based on rules
     final usedMargins = _calculateUsedMargins(childSize, containingBlockSize);
-    final horizontalMargins = (usedMargins.left?.value ?? 0) + (usedMargins.right?.value ?? 0);
-    final verticalMargins = (usedMargins.top?.value ?? 0) + (usedMargins.bottom?.value ?? 0);
+    final horizontalMargins =
+        (usedMargins.left?.value ?? 0) + (usedMargins.right?.value ?? 0);
+    final verticalMargins =
+        (usedMargins.top?.value ?? 0) + (usedMargins.bottom?.value ?? 0);
 
     //Calculate Width and Height of CSS Box
     height = childSize.height;
     switch (display) {
       case Display.block:
-        width = (shrinkWrap || childIsReplaced) ? childSize.width + horizontalMargins : containingBlockSize.width;
+        width = (shrinkWrap || childIsReplaced)
+            ? childSize.width + horizontalMargins
+            : containingBlockSize.width;
         height = childSize.height + verticalMargins;
         break;
       case Display.inline:
@@ -524,7 +554,9 @@ class _RenderCSSBox extends RenderBox
         height = childSize.height + verticalMargins;
         break;
       case Display.listItem:
-        width = shrinkWrap ? childSize.width + horizontalMargins : containingBlockSize.width;
+        width = shrinkWrap
+            ? childSize.width + horizontalMargins
+            : containingBlockSize.width;
         height = childSize.height + verticalMargins;
         break;
       case Display.none:
@@ -549,10 +581,12 @@ class _RenderCSSBox extends RenderBox
     assert(firstChild != null);
     RenderBox child = firstChild!;
 
-    final CSSBoxParentData childParentData = child.parentData! as CSSBoxParentData;
+    final CSSBoxParentData childParentData =
+        child.parentData! as CSSBoxParentData;
 
     // Calculate used margins based on constraints and child size
-    final usedMargins = _calculateUsedMargins(sizes.childSize, constraints.biggest);
+    final usedMargins =
+        _calculateUsedMargins(sizes.childSize, constraints.biggest);
     final leftMargin = usedMargins.left?.value ?? 0;
     final topMargin = usedMargins.top?.value ?? 0;
 
@@ -585,8 +619,13 @@ class _RenderCSSBox extends RenderBox
     RenderBox? markerBox = childParentData.nextSibling;
     if (markerBox != null) {
       final markerBoxParentData = markerBox.parentData! as CSSBoxParentData;
-      final distance = (child.getDistanceToBaseline(TextBaseline.alphabetic, onlyReal: true) ?? 0) + topOffset;
-      final offsetHeight = distance - (markerBox.getDistanceToBaseline(TextBaseline.alphabetic) ?? markerBox.size.height);
+      final distance = (child.getDistanceToBaseline(TextBaseline.alphabetic,
+                  onlyReal: true) ??
+              0) +
+          topOffset;
+      final offsetHeight = distance -
+          (markerBox.getDistanceToBaseline(TextBaseline.alphabetic) ??
+              markerBox.size.height);
       markerBoxParentData.offset = Offset(-markerBox.size.width, offsetHeight);
     }
   }
@@ -618,7 +657,8 @@ class _RenderCSSBox extends RenderBox
       // width of the containing block, then consider left and right margins to
       // have a 0 value.
       if (!widthIsAuto) {
-        if ((childSize.width + marginLeft.value + marginRight.value) > containingBlockSize.width) {
+        if ((childSize.width + marginLeft.value + marginRight.value) >
+            containingBlockSize.width) {
           //Treat auto values of margin left and margin right as 0 for following rules
           marginLeft = Margin(0);
           marginRight = Margin(0);
@@ -630,16 +670,22 @@ class _RenderCSSBox extends RenderBox
       // If all values are non-auto, the box is overconstrained.
       // One of the margins will need to be adjusted so that the
       // entire width of the containing block is used.
-      if (!widthIsAuto && !marginLeftIsAuto && !marginRightIsAuto && !shrinkWrap && !childIsReplaced) {
+      if (!widthIsAuto &&
+          !marginLeftIsAuto &&
+          !marginRightIsAuto &&
+          !shrinkWrap &&
+          !childIsReplaced) {
         //Ignore either left or right margin based on textDirection.
 
         switch (textDirection) {
           case TextDirection.rtl:
-            final difference = containingBlockSize.width - childSize.width - marginRight.value;
+            final difference =
+                containingBlockSize.width - childSize.width - marginRight.value;
             marginLeft = Margin(difference);
             break;
           case TextDirection.ltr:
-            final difference = containingBlockSize.width - childSize.width - marginLeft.value;
+            final difference =
+                containingBlockSize.width - childSize.width - marginLeft.value;
             marginRight = Margin(difference);
             break;
         }
@@ -649,10 +695,12 @@ class _RenderCSSBox extends RenderBox
       if (widthIsAuto && !marginLeftIsAuto && !marginRightIsAuto) {
         widthIsAuto = false;
       } else if (!widthIsAuto && marginLeftIsAuto && !marginRightIsAuto) {
-        marginLeft = Margin(containingBlockSize.width - childSize.width - marginRight.value);
+        marginLeft = Margin(
+            containingBlockSize.width - childSize.width - marginRight.value);
         marginLeftIsAuto = false;
       } else if (!widthIsAuto && !marginLeftIsAuto && marginRightIsAuto) {
-        marginRight = Margin(containingBlockSize.width - childSize.width - marginLeft.value);
+        marginRight = Margin(
+            containingBlockSize.width - childSize.width - marginLeft.value);
         marginRightIsAuto = false;
       }
 
@@ -673,7 +721,8 @@ class _RenderCSSBox extends RenderBox
       //If both margin-left and margin-right are auto, their used values are equal.
       // This horizontally centers the element within the containing block.
       if (marginLeftIsAuto && marginRightIsAuto) {
-        final newMargin = Margin((containingBlockSize.width - childSize.width) / 2);
+        final newMargin =
+            Margin((containingBlockSize.width - childSize.width) / 2);
         marginLeft = newMargin;
         marginRight = newMargin;
         marginLeftIsAuto = false;
@@ -684,7 +733,11 @@ class _RenderCSSBox extends RenderBox
       assert(!marginLeftIsAuto && !marginRightIsAuto && !widthIsAuto);
     }
 
-    return Margins(left: marginLeft, right: marginRight, top: margins.top, bottom: margins.bottom);
+    return Margins(
+        left: marginLeft,
+        right: marginRight,
+        top: margins.top,
+        bottom: margins.bottom);
   }
 
   @override

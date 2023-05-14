@@ -344,6 +344,7 @@ class _SelectableHtmlState extends State<SelectableHtml> {
         ? HtmlParser.parseHTML(widget.data!)
         : widget.documentElement!;
   }
+
   @override
   void didUpdateWidget(SelectableHtml oldWidget) {
     super.didUpdateWidget(oldWidget);
