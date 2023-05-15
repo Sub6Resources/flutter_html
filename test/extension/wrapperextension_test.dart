@@ -5,7 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets(
     "Check that widget renders a div normally",
-        (tester) async {
+    (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Html(
@@ -13,7 +13,8 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true), findsOneWidget);
+      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true),
+          findsOneWidget);
     },
   );
 
@@ -21,7 +22,7 @@ void main() {
 
   testWidgets(
     "Check that WrapperExtension doesn't match anything when given an empty set",
-        (tester) async {
+    (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Html(
@@ -35,14 +36,15 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true), findsOneWidget);
+      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true),
+          findsOneWidget);
       expect(find.byKey(finderKey), findsNothing);
     },
   );
 
   testWidgets(
     "Check that WrapperExtension doesn't match anything when told to wrap a tag that isn't there",
-        (tester) async {
+    (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Html(
@@ -56,14 +58,15 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true), findsOneWidget);
+      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true),
+          findsOneWidget);
       expect(find.byKey(finderKey), findsNothing);
     },
   );
 
   testWidgets(
     "Check that WrapperExtension matches a normal div",
-        (tester) async {
+    (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Html(
@@ -77,14 +80,15 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true), findsOneWidget);
+      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true),
+          findsOneWidget);
       expect(find.byKey(finderKey), findsOneWidget);
     },
   );
 
   testWidgets(
     "Check that WrapperExtension doesn't render children unnecessarily",
-        (tester) async {
+    (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Html(
@@ -98,7 +102,8 @@ void main() {
           ),
         ),
       );
-      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true), findsNothing);
+      expect(find.text('Lorem ipsum dolor sit amet', findRichText: true),
+          findsNothing);
       expect(find.byKey(finderKey), findsOneWidget);
     },
   );
