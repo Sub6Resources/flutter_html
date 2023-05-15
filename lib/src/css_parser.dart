@@ -538,6 +538,10 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
             style.textTransform = TextTransform.none;
           }
           break;
+        case 'vertical-align':
+          style.verticalAlign =
+              ExpressionMapping.expressionToVerticalAlign(value.first);
+          break;
         case 'width':
           style.width =
               ExpressionMapping.expressionToWidth(value.first) ?? style.width;
@@ -1210,6 +1214,28 @@ class ExpressionMapping {
     }
     List<Shadow> finalShadows = shadow.toSet().toList();
     return finalShadows;
+  }
+
+  static VerticalAlign expressionToVerticalAlign(css.Expression value) {
+    if (value is css.LiteralTerm) {
+      switch (value.text) {
+        case "sub":
+          return VerticalAlign.sub;
+        case "super":
+          return VerticalAlign.sup;
+        case "bottom":
+          return VerticalAlign.bottom;
+        case "top":
+          return VerticalAlign.top;
+        case "middle":
+          return VerticalAlign.middle;
+        case "baseline":
+        default:
+          return VerticalAlign.baseline;
+      }
+    }
+
+    return VerticalAlign.baseline;
   }
 
   static Color stringToColor(String rawText) {

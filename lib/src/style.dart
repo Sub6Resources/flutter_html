@@ -177,8 +177,8 @@ class Style {
   /// CSS attribute "`vertical-align`"
   ///
   /// Inherited: no,
-  /// Default: VerticalAlign.BASELINE,
-  VerticalAlign? verticalAlign;
+  /// Default: VerticalAlign.baseline,
+  VerticalAlign verticalAlign;
 
   /// CSS attribute "`white-space`"
   ///
@@ -259,7 +259,7 @@ class Style {
     this.textDecorationStyle,
     this.textDecorationThickness,
     this.textShadow,
-    this.verticalAlign,
+    this.verticalAlign = VerticalAlign.baseline,
     this.whiteSpace,
     this.width,
     this.wordSpacing,
@@ -503,25 +503,26 @@ class Style {
     );
   }
 
-  Style.fromTextStyle(TextStyle textStyle) {
-    backgroundColor = textStyle.backgroundColor;
-    color = textStyle.color;
-    textDecoration = textStyle.decoration;
-    textDecorationColor = textStyle.decorationColor;
-    textDecorationStyle = textStyle.decorationStyle;
-    textDecorationThickness = textStyle.decorationThickness;
-    fontFamily = textStyle.fontFamily;
-    fontFamilyFallback = textStyle.fontFamilyFallback;
-    fontFeatureSettings = textStyle.fontFeatures;
-    fontSize =
-        textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null;
-    fontStyle = textStyle.fontStyle;
-    fontWeight = textStyle.fontWeight;
-    letterSpacing = textStyle.letterSpacing;
-    textShadow = textStyle.shadows;
-    wordSpacing = textStyle.wordSpacing;
-    lineHeight = LineHeight(textStyle.height ?? 1.2);
-    textTransform = TextTransform.none;
+  factory Style.fromTextStyle(TextStyle textStyle) {
+    return Style(
+      backgroundColor: textStyle.backgroundColor,
+      color: textStyle.color,
+      textDecoration: textStyle.decoration,
+      textDecorationColor: textStyle.decorationColor,
+      textDecorationStyle: textStyle.decorationStyle,
+      textDecorationThickness: textStyle.decorationThickness,
+      fontFamily: textStyle.fontFamily,
+      fontFamilyFallback: textStyle.fontFamilyFallback,
+      fontFeatureSettings: textStyle.fontFeatures,
+      fontSize:
+          textStyle.fontSize != null ? FontSize(textStyle.fontSize!) : null,
+      fontStyle: textStyle.fontStyle,
+      fontWeight: textStyle.fontWeight,
+      letterSpacing: textStyle.letterSpacing,
+      textShadow: textStyle.shadows,
+      wordSpacing: textStyle.wordSpacing,
+      lineHeight: LineHeight(textStyle.height ?? 1.2),
+    );
   }
 
   /// Sets any dimensions set to rem or em to the computed size

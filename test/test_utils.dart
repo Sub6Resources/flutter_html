@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_html/src/css_box_widget.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 class TestApp extends StatelessWidget {
   final Widget child;
@@ -124,3 +126,18 @@ const testData = <String, String>{
   'u': '<u>Hello, World!</u>',
   'var': '<var>Hello, World!</var>',
 };
+
+CssBoxWidget? findCssBox(Finder finder) {
+  final boxFinder = find.ancestor(
+    of: finder,
+    matching: find.byType(CssBoxWidget),
+  );
+
+  final found = boxFinder.evaluate();
+
+  if (found.isEmpty) {
+    return null;
+  } else {
+    return found.first.widget as CssBoxWidget;
+  }
+}
