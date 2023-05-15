@@ -429,11 +429,12 @@ class StyledElementBuiltIn extends HtmlExtension {
               .entries
               .expandIndexed((i, child) => [
                     child.value,
-                    if (i != context.styledElement!.children.length - 1 &&
+                    if (context.parser.shrinkWrap &&
+                        i != context.styledElement!.children.length - 1 &&
                         child.key.style.display == Display.block &&
                         child.key.element?.localName != "html" &&
                         child.key.element?.localName != "body")
-                      const TextSpan(text: "\n"),
+                      const TextSpan(text: "\n", style: TextStyle(fontSize: 0)),
                   ])
               .toList(),
         ),
@@ -444,14 +445,16 @@ class StyledElementBuiltIn extends HtmlExtension {
       style: context.styledElement!.style.generateTextStyle(),
       children: buildChildren()
           .entries
-          .expand((child) => [
+          .expandIndexed((index, child) => [
                 child.value,
-                if (child.key.style.display == Display.block &&
+                if (context.parser.shrinkWrap &&
+                    child.key.style.display == Display.block &&
+                    index != context.styledElement!.children.length - 1 &&
                     child.key.element?.parent?.localName != "th" &&
                     child.key.element?.parent?.localName != "td" &&
                     child.key.element?.localName != "html" &&
                     child.key.element?.localName != "body")
-                  const TextSpan(text: "\n"),
+                  const TextSpan(text: "\n", style: TextStyle(fontSize: 0)),
               ])
           .toList(),
     );
