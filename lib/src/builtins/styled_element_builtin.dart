@@ -13,6 +13,7 @@ class StyledElementBuiltIn extends HtmlExtension {
 
   @override
   Set<String> get supportedTags => {
+        "a",
         "abbr",
         "acronym",
         "address",
