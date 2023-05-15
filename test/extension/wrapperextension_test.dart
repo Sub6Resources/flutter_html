@@ -28,7 +28,7 @@ void main() {
           home: Html(
             data: "<div>Lorem ipsum dolor sit amet</div>",
             extensions: [
-              WrapperExtension(
+              TagWrapExtension(
                 tagsToWrap: {},
                 builder: (child) => Container(key: finderKey, child: child),
               ),
@@ -50,7 +50,7 @@ void main() {
           home: Html(
             data: "<div>Lorem ipsum dolor sit amet</div>",
             extensions: [
-              WrapperExtension(
+              TagWrapExtension(
                 tagsToWrap: {"p"},
                 builder: (child) => Container(key: finderKey, child: child),
               ),
@@ -72,7 +72,7 @@ void main() {
           home: Html(
             data: "<div>Lorem ipsum dolor sit amet</div>",
             extensions: [
-              WrapperExtension(
+              TagWrapExtension(
                 tagsToWrap: {"div"},
                 builder: (child) => Container(key: finderKey, child: child),
               ),
@@ -94,7 +94,7 @@ void main() {
           home: Html(
             data: "<div>Lorem ipsum dolor sit amet</div>",
             extensions: [
-              WrapperExtension(
+              TagWrapExtension(
                 tagsToWrap: {"div"},
                 builder: (child) => Container(key: finderKey),
               ),

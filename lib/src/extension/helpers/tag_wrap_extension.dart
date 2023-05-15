@@ -5,11 +5,11 @@ import 'package:flutter_html/src/style.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
 import 'package:html/dom.dart' as html;
 
-class WrapperExtension extends HtmlExtension {
+class TagWrapExtension extends HtmlExtension {
   final Set<String> tagsToWrap;
   final Widget Function(Widget child) builder;
 
-  /// [WrapperExtension] allows you to easily wrap a specific tag (or tags)
+  /// [TagWrapExtension] allows you to easily wrap a specific tag (or tags)
   /// in another element. For example, you could wrap `<table>` in a
   /// `SingleChildScrollView`:
   ///
@@ -26,7 +26,7 @@ class WrapperExtension extends HtmlExtension {
   ///   ),
   /// ],
   /// ```
-  WrapperExtension({
+  TagWrapExtension({
     required this.tagsToWrap,
     required this.builder,
   });

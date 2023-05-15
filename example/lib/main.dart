@@ -317,7 +317,7 @@ class MyHomePageState extends State<MyHomePage> {
             ),
           },
           extensions: [
-            WrapperExtension(
+            TagWrapExtension(
                 tagsToWrap: {"table"},
                 builder: (child) {
                   return SingleChildScrollView(
