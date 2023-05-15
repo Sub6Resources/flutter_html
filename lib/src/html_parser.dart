@@ -92,6 +92,61 @@ class HtmlParser extends StatefulWidget {
         }
         onLinkTap?.call(url, attributes, element);
       };
+
+  /// Prepares the html node using one of the built-ins or HtmlExtensions
+  /// available. If none of the extensions matches, returns an
+  /// EmptyContentElement
+  StyledElement prepareFromExtension(
+    ExtensionContext extensionContext,
+    List<StyledElement> children, {
+    Set<HtmlExtension> extensionsToIgnore = const {},
+  }) {
+    // Loop through every extension and see if it can handle this node
+    for (final extension in extensions) {
+      if (!extensionsToIgnore.contains(extension) &&
+          extension.matches(extensionContext)) {
+        return extension.prepare(extensionContext, children);
+      }
+    }
+
+    // Loop through built in elements and see if they can handle this node.
+    for (final builtIn in builtIns) {
+      if (!extensionsToIgnore.contains(builtIn) &&
+          builtIn.matches(extensionContext)) {
+        return builtIn.prepare(extensionContext, children);
+      }
+    }
+
+    // If no extension or built-in matches, then return an empty content element.
+    return EmptyContentElement(node: extensionContext.node);
+  }
+
+  /// Builds the StyledElement into an InlineSpan using one of the built-ins
+  /// or HtmlExtensions available. If none of the extensions matches, returns
+  /// an empty TextSpan.
+  InlineSpan buildFromExtension(
+    ExtensionContext extensionContext,
+    Map<StyledElement, InlineSpan> Function() buildChildren, {
+    Set<HtmlExtension> extensionsToIgnore = const {},
+  }) {
+    // Loop through every extension and see if it can handle this node
+    for (final extension in extensions) {
+      if (!extensionsToIgnore.contains(extension) &&
+          extension.matches(extensionContext)) {
+        return extension.build(extensionContext, buildChildren);
+      }
+    }
+
+    // Loop through built in elements and see if they can handle this node.
+    for (final builtIn in builtIns) {
+      if (!extensionsToIgnore.contains(builtIn) &&
+          builtIn.matches(extensionContext)) {
+        return builtIn.build(extensionContext, buildChildren);
+      }
+    }
+
+    return const TextSpan(text: "");
+  }
 }
 
 class _HtmlParserState extends State<HtmlParser> {
@@ -189,22 +244,8 @@ class _HtmlParserState extends State<HtmlParser> {
     // Lex this element's children
     final children = node.nodes.map(_prepareHtmlTreeRecursive).toList();
 
-    // Loop through every extension and see if it can handle this node
-    for (final extension in widget.extensions) {
-      if (extension.matches(extensionContext)) {
-        return extension.prepare(extensionContext, children);
-      }
-    }
-
-    // Loop through built in elements and see if they can handle this node.
-    for (final builtIn in HtmlParser.builtIns) {
-      if (builtIn.matches(extensionContext)) {
-        return builtIn.prepare(extensionContext, children);
-      }
-    }
-
-    // If no extension or built-in matches, then return an empty content element.
-    return EmptyContentElement(node: node);
+    // Prepare the element from one of the extensions
+    return widget.prepareFromExtension(extensionContext, children);
   }
 
   /// Called before any styling is cascaded on the tree
@@ -353,26 +394,12 @@ class _HtmlParserState extends State<HtmlParser> {
     }
 
     // Generate a function that allows children to be generated
-    Map<StyledElement, InlineSpan> parseChildren() {
+    Map<StyledElement, InlineSpan> buildChildren() {
       return Map.fromEntries(tree.children.map((child) {
         return MapEntry(child, _buildTreeRecursive(child));
       }));
     }
 
-    // Loop through every extension and see if it can handle this node
-    for (final extension in widget.extensions) {
-      if (extension.matches(extensionContext)) {
-        return extension.build(extensionContext, parseChildren);
-      }
-    }
-
-    // Loop through built in elements and see if they can handle this node.
-    for (final builtIn in HtmlParser.builtIns) {
-      if (builtIn.matches(extensionContext)) {
-        return builtIn.build(extensionContext, parseChildren);
-      }
-    }
-
-    return const TextSpan(text: "");
+    return widget.buildFromExtension(extensionContext, buildChildren);
   }
 }

@@ -59,11 +59,11 @@ class ImageExtension extends ImageBuiltIn {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     if (builder != null) {
       return builder!.call(context);
     } else {
-      return super.build(context, parseChildren);
+      return super.build(context, buildChildren);
     }
   }
 }

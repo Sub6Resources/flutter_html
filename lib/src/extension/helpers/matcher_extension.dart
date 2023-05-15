@@ -38,7 +38,7 @@ class MatcherExtension extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     return builder(context);
   }
 }

@@ -18,7 +18,7 @@ class MathHtmlExtension extends HtmlExtension {
   Set<String> get supportedTags => {"math"};
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     String texStr = _parseMathRecursive(context.styledElement!.element!, '');
     return WidgetSpan(
       child: CssBoxWidget(

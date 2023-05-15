@@ -8,7 +8,10 @@ class TagExtension extends HtmlExtension {
   late final InlineSpan Function(ExtensionContext) builder;
 
   /// [TagExtension] allows you to extend the functionality of flutter_html
-  /// by defining the behavior of custom tags to return a child widget.
+  /// by defining a mapping from a custom or existing tag to a widget.
+  ///
+  /// If instead you'd like to wrap a tag (or custom tag) in a widget,
+  /// see [TagWrapExtension].
   TagExtension({
     required this.tagsToExtend,
     Widget? child,
@@ -23,8 +26,8 @@ class TagExtension extends HtmlExtension {
   }
 
   /// [TagExtension.inline] allows you to extend the functionality of
-  /// flutter_html by defining the behavior of custom tags to return
-  /// a child InlineSpan.
+  /// flutter_html by defining a mapping from a custom or existing tag
+  /// to an InlineSpan.
   TagExtension.inline({
     required this.tagsToExtend,
     InlineSpan? child,
@@ -42,7 +45,7 @@ class TagExtension extends HtmlExtension {
   Set<String> get supportedTags => tagsToExtend;
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     return builder(context);
   }
 }

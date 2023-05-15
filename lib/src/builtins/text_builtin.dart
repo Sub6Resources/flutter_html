@@ -44,7 +44,7 @@ class TextBuiltIn extends HtmlExtension {
 
   @override
   InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() parseChildren) {
+      Map<StyledElement, InlineSpan> Function() buildChildren) {
     final element = context.styledElement! as TextContentElement;
     return TextSpan(
       style: element.style.generateTextStyle(),
