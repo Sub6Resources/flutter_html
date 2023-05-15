@@ -290,7 +290,6 @@ Alignment _getCellAlignment(TableCellElement cell, TextDirection alignment) {
   Alignment verticalAlignment;
 
   switch (cell.style.verticalAlign) {
-    case null:
     case VerticalAlign.baseline:
     case VerticalAlign.sub:
     case VerticalAlign.sup:
