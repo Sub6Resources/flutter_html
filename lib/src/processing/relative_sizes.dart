@@ -12,6 +12,8 @@ class RelativeSizesProcessing {
   /// applies relative calculations
   static StyledElement _calculateRelativeValues(
       StyledElement tree, double devicePixelRatio) {
+    tree.style.fontSize ??= FontSize.medium;
+
     double remSize = (tree.style.fontSize?.value ?? FontSize.medium.value);
 
     //If the root element has a rem-based fontSize, then give it the default

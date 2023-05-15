@@ -1,3 +1,20 @@
+import 'package:flutter/material.dart';
+
+class TestApp extends StatelessWidget {
+  final Widget child;
+
+  const TestApp({Key? key, required this.child}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: Scaffold(
+        body: child,
+      ),
+    );
+  }
+}
+
 const testData = <String, String>{
   'a': '<a>Hello, World!</a>',
   'abbr': '<abbr>HLO-WRLD</abbr>',

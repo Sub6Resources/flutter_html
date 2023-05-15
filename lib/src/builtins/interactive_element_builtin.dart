@@ -5,6 +5,9 @@ import 'package:flutter_html/src/utils.dart';
 import 'package:html/dom.dart' as dom;
 
 /// Defines the way an anchor ('a') element is lexed and parsed.
+///
+/// An `<a>` element with no `href` attribute is not interactive and is thus
+/// not handled by this BuiltIn.
 class InteractiveElementBuiltIn extends HtmlExtension {
   const InteractiveElementBuiltIn();
 
@@ -12,26 +15,22 @@ class InteractiveElementBuiltIn extends HtmlExtension {
   Set<String> get supportedTags => {'a'};
 
   @override
+  bool matches(ExtensionContext context) {
+    return supportedTags.contains(context.elementName) &&
+        context.attributes.containsKey("href");
+  }
+
+  @override
   StyledElement prepare(
       ExtensionContext context, List<StyledElement> children) {
-    if (context.attributes.containsKey('href')) {
-      return InteractiveElement(
-        name: context.elementName,
-        children: children,
-        href: context.attributes['href'],
-        style: Style(
-          color: Colors.blue,
-          textDecoration: TextDecoration.underline,
-        ),
-        node: context.node,
-        elementId: context.id,
-      );
-    }
-    // When <a> tag have no href, it must be unclickable and without decoration.
-    return StyledElement(
+    return InteractiveElement(
       name: context.elementName,
       children: children,
-      style: Style(),
+      href: context.attributes['href'],
+      style: Style(
+        color: Colors.blue,
+        textDecoration: TextDecoration.underline,
+      ),
       node: context.node,
       elementId: context.id,
     );
@@ -72,10 +71,7 @@ class InteractiveElementBuiltIn extends HtmlExtension {
         child: MultipleTapGestureDetector(
           onTap: onTap,
           child: GestureDetector(
-            key: AnchorKey.of(
-                context.parser.key,
-                context
-                    .styledElement), //TODO this replaced context.key. Does it work?
+            key: AnchorKey.of(context.parser.key, context.styledElement),
             onTap: onTap,
             child: (childSpan as WidgetSpan).child,
           ),
