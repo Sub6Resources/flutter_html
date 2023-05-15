@@ -67,4 +67,67 @@ void main() {
           equals(VerticalAlign.baseline));
     },
   );
+
+  testWidgets(
+    'Tag with vertical align bottom set should have that value',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Html(
+            data: """
+            <div style="vertical-align: bottom;">Text</div>
+          """,
+          ),
+        ),
+      );
+      expect(find.text("Text", findRichText: true), findsOneWidget);
+      expect(
+          findCssBox(find.text("Text", findRichText: true))!
+              .style
+              .verticalAlign,
+          equals(VerticalAlign.bottom));
+    },
+  );
+
+  testWidgets(
+    'Tag with vertical align middle set should have that value',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Html(
+            data: """
+            <div style="vertical-align: middle;">Text</div>
+          """,
+          ),
+        ),
+      );
+      expect(find.text("Text", findRichText: true), findsOneWidget);
+      expect(
+          findCssBox(find.text("Text", findRichText: true))!
+              .style
+              .verticalAlign,
+          equals(VerticalAlign.middle));
+    },
+  );
+
+  testWidgets(
+    'Tag with vertical align top set should have that value',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Html(
+            data: """
+            <div style="vertical-align: top;">Text</div>
+          """,
+          ),
+        ),
+      );
+      expect(find.text("Text", findRichText: true), findsOneWidget);
+      expect(
+          findCssBox(find.text("Text", findRichText: true))!
+              .style
+              .verticalAlign,
+          equals(VerticalAlign.top));
+    },
+  );
 }
