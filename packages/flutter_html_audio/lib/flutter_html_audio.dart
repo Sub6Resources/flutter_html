@@ -19,7 +19,7 @@ class AudioHtmlExtension extends HtmlExtension {
   Set<String> get supportedTags => {"audio"};
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     return WidgetSpan(
         child: AudioWidget(
       context: context,

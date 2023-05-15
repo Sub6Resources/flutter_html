@@ -23,12 +23,12 @@ class VerticalAlignBuiltIn extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     return WidgetSpan(
       child: Transform.translate(
         offset: Offset(0, _getVerticalOffset(context.styledElement!)),
         child: CssBoxWidget.withInlineSpanChildren(
-          children: parseChildren().values.toList(),
+          children: buildChildren().values.toList(),
           style: context.styledElement!.style,
         ),
       ),

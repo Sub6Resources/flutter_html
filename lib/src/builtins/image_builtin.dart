@@ -72,7 +72,7 @@ class ImageBuiltIn extends HtmlExtension {
 
   @override
   InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() parseChildren) {
+      Map<StyledElement, InlineSpan> Function() buildChildren) {
     final element = context.styledElement as ImageElement;
 
     final imageStyle = Style(

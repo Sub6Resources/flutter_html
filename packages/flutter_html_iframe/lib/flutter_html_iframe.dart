@@ -19,7 +19,7 @@ class IframeHtmlExtension extends HtmlExtension {
   Set<String> get supportedTags => {"iframe"};
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     return WidgetSpan(
       child: IframeWidget(
         extensionContext: context,

@@ -39,9 +39,9 @@ class InteractiveElementBuiltIn extends HtmlExtension {
 
   @override
   InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() parseChildren) {
+      Map<StyledElement, InlineSpan> Function() buildChildren) {
     return TextSpan(
-      children: parseChildren().values.map((childSpan) {
+      children: buildChildren().values.map((childSpan) {
         return _processInteractableChild(context, childSpan);
       }).toList(),
     );

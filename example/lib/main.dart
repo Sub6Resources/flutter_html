@@ -317,6 +317,14 @@ class MyHomePageState extends State<MyHomePage> {
             ),
           },
           extensions: [
+            WrapperExtension(
+                tagsToWrap: {"table"},
+                builder: (child) {
+                  return SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: child,
+                  );
+                }),
             TagExtension(
               tagsToExtend: {"tex"},
               builder: (context) => Math.tex(

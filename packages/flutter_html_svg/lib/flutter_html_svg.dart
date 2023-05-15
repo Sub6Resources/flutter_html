@@ -133,7 +133,7 @@ class SvgHtmlExtension extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, parseChildren) {
+  InlineSpan build(ExtensionContext context, buildChildren) {
     late final Widget widget;
 
     if (context.elementName == "svg") {
