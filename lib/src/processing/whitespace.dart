@@ -20,13 +20,16 @@ class WhitespaceProcessing {
 
   /// [_processInternalWhitespace] removes unnecessary whitespace from the StyledElement tree.
   static StyledElement _processInternalWhitespace(StyledElement tree) {
-    if ((tree.style.whiteSpace ?? WhiteSpace.normal) == WhiteSpace.pre) {
-      // Preserve this whitespace
-    } else if (tree is TextContentElement) {
+    if (tree.style.whiteSpace == WhiteSpace.pre) {
+      return tree;
+    }
+
+    if (tree is TextContentElement) {
       tree.text = _removeUnnecessaryWhitespace(tree.text!);
     } else {
       tree.children.forEach(_processInternalWhitespace);
     }
+
     return tree;
   }
 
@@ -41,6 +44,10 @@ class WhitespaceProcessing {
   /// rendering contexts. Specifically, a space at the beginning and end of
   /// the line should be removed.
   static StyledElement _processBlockWhitespace(StyledElement tree) {
+    if (tree.style.whiteSpace == WhiteSpace.pre) {
+      return tree;
+    }
+
     bool isBlockContext = false;
     for (final child in tree.children) {
       if (child.style.display == Display.block) {
@@ -56,10 +63,8 @@ class WhitespaceProcessing {
           child.style.display = Display.block;
         }
 
-        if (child.style.whiteSpace != WhiteSpace.pre) {
-          _removeLeadingSpace(child);
-          _removeTrailingSpace(child);
-        }
+        _removeLeadingSpace(child);
+        _removeTrailingSpace(child);
       }
     }
 
@@ -70,6 +75,10 @@ class WhitespaceProcessing {
   /// from the text of the tree at this level, no matter how deep in the tree
   /// it may be.
   static void _removeLeadingSpace(StyledElement element) {
+    if (element.style.whiteSpace == WhiteSpace.pre) {
+      return;
+    }
+
     if (element is TextContentElement) {
       element.text = element.text?.trimLeft();
     } else if (element.children.isNotEmpty) {
@@ -81,6 +90,10 @@ class WhitespaceProcessing {
   /// from the text of the tree at this level, no matter how deep in the tree
   /// it may be.
   static void _removeTrailingSpace(StyledElement element) {
+    if (element.style.whiteSpace == WhiteSpace.pre) {
+      return;
+    }
+
     if (element is TextContentElement) {
       element.text = element.text?.trimRight();
     } else if (element.children.isNotEmpty) {
@@ -95,6 +108,10 @@ class WhitespaceProcessing {
     StyledElement tree,
     Context<bool> keepLeadingSpace,
   ) {
+    if (tree.style.whiteSpace == WhiteSpace.pre) {
+      return tree;
+    }
+
     if (tree is TextContentElement) {
       /// initialize indices to negative numbers to make conditionals a little easier
       int textIndex = -1;
