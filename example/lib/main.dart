@@ -296,11 +296,11 @@ class MyHomePageState extends State<MyHomePage> {
               backgroundColor: const Color.fromARGB(0x50, 0xee, 0xee, 0xee),
             ),
             "th": Style(
-              padding: const EdgeInsets.all(6),
+              padding: HtmlPaddings.all(6),
               backgroundColor: Colors.grey,
             ),
             "td": Style(
-              padding: const EdgeInsets.all(6),
+              padding: HtmlPaddings.all(6),
               border: const Border(bottom: BorderSide(color: Colors.grey)),
             ),
             'h5': Style(maxLines: 2, textOverflow: TextOverflow.ellipsis),

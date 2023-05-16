@@ -6,6 +6,7 @@ import 'package:flutter_html/src/css_parser.dart';
 
 //Export Style value-unit APIs
 export 'package:flutter_html/src/style/margin.dart';
+export 'package:flutter_html/src/style/padding.dart';
 export 'package:flutter_html/src/style/length.dart';
 export 'package:flutter_html/src/style/size.dart';
 export 'package:flutter_html/src/style/fontsize.dart';
@@ -120,8 +121,8 @@ class Style {
   /// CSS attribute "`padding`"
   ///
   /// Inherited: no,
-  /// Default: EdgeInsets.zero
-  EdgeInsets? padding;
+  /// Default: HtmlPaddings.zero
+  HtmlPaddings? padding;
 
   /// CSS pseudo-element "`::marker`"
   ///
@@ -213,7 +214,6 @@ class Style {
   String? after;
   Border? border;
   Alignment? alignment;
-  Widget? markerContent;
 
   /// MaxLine
   ///
@@ -267,7 +267,6 @@ class Style {
     this.after,
     this.border,
     this.alignment,
-    this.markerContent,
     this.maxLines,
     this.textOverflow,
     this.textTransform = TextTransform.none,
@@ -316,8 +315,6 @@ class Style {
       shadows: textShadow,
       wordSpacing: wordSpacing,
       height: lineHeight?.size ?? 1.0,
-      //TODO background
-      //TODO textBaseline
     );
   }
 
@@ -346,10 +343,8 @@ class Style {
       listStyleImage: other.listStyleImage,
       listStyleType: other.listStyleType,
       listStylePosition: other.listStylePosition,
-      padding: other.padding,
-      //TODO merge EdgeInsets
-      margin: other.margin,
-      //TODO merge Margins
+      padding: padding?.merge(other.padding) ?? other.padding,
+      margin: margin?.merge(other.margin) ?? other.margin,
       marker: other.marker,
       textAlign: other.textAlign,
       textDecoration: other.textDecoration,
@@ -361,13 +356,10 @@ class Style {
       whiteSpace: other.whiteSpace,
       width: other.width,
       wordSpacing: other.wordSpacing,
-
       before: other.before,
       after: other.after,
-      border: other.border,
-      //TODO merge border
+      border: border?.merge(other.border) ?? other.border,
       alignment: other.alignment,
-      markerContent: other.markerContent,
       maxLines: other.maxLines,
       textOverflow: other.textOverflow,
       textTransform: other.textTransform,
@@ -436,7 +428,7 @@ class Style {
     ListStyleImage? listStyleImage,
     ListStyleType? listStyleType,
     ListStylePosition? listStylePosition,
-    EdgeInsets? padding,
+    HtmlPaddings? padding,
     Margins? margin,
     Marker? marker,
     TextAlign? textAlign,
@@ -496,7 +488,6 @@ class Style {
       after: beforeAfterNull == true ? null : after ?? this.after,
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
-      markerContent: markerContent ?? this.markerContent,
       maxLines: maxLines ?? this.maxLines,
       textOverflow: textOverflow ?? this.textOverflow,
       textTransform: textTransform ?? this.textTransform,
@@ -527,58 +518,75 @@ class Style {
 
   /// Sets any dimensions set to rem or em to the computed size
   void setRelativeValues(double remValue, double emValue) {
-    if (width?.unit == Unit.rem) {
-      width = Width(width!.value * remValue);
-    } else if (width?.unit == Unit.em) {
-      width = Width(width!.value * emValue);
+    final calculatedWidth = width?.calculateRelativeValue(remValue, emValue);
+    if (calculatedWidth != null) {
+      width = Width(calculatedWidth);
     }
 
-    if (height?.unit == Unit.rem) {
-      height = Height(height!.value * remValue);
-    } else if (height?.unit == Unit.em) {
-      height = Height(height!.value * emValue);
+    final calculatedHeight = height?.calculateRelativeValue(remValue, emValue);
+    if (calculatedHeight != null) {
+      height = Height(calculatedHeight);
     }
 
-    if (fontSize?.unit == Unit.rem) {
-      fontSize = FontSize(fontSize!.value * remValue);
-    } else if (fontSize?.unit == Unit.em) {
-      fontSize = FontSize(fontSize!.value * emValue);
-    }
-
-    Margin? marginLeft;
-    Margin? marginTop;
-    Margin? marginRight;
-    Margin? marginBottom;
-
-    if (margin?.left?.unit == Unit.rem) {
-      marginLeft = Margin(margin!.left!.value * remValue);
-    } else if (margin?.left?.unit == Unit.em) {
-      marginLeft = Margin(margin!.left!.value * emValue);
-    }
-
-    if (margin?.top?.unit == Unit.rem) {
-      marginTop = Margin(margin!.top!.value * remValue);
-    } else if (margin?.top?.unit == Unit.em) {
-      marginTop = Margin(margin!.top!.value * emValue);
-    }
-
-    if (margin?.right?.unit == Unit.rem) {
-      marginRight = Margin(margin!.right!.value * remValue);
-    } else if (margin?.right?.unit == Unit.em) {
-      marginRight = Margin(margin!.right!.value * emValue);
-    }
-
-    if (margin?.bottom?.unit == Unit.rem) {
-      marginBottom = Margin(margin!.bottom!.value * remValue);
-    } else if (margin?.bottom?.unit == Unit.em) {
-      marginBottom = Margin(margin!.bottom!.value * emValue);
+    final calculatedFontSize =
+        fontSize?.calculateRelativeValue(remValue, emValue);
+    if (calculatedFontSize != null) {
+      fontSize = FontSize(calculatedFontSize);
     }
 
     margin = margin?.copyWith(
-      left: marginLeft,
-      top: marginTop,
-      right: marginRight,
-      bottom: marginBottom,
+      left: margin?.left?.getRelativeValue(remValue, emValue),
+      top: margin?.top?.getRelativeValue(remValue, emValue),
+      right: margin?.right?.getRelativeValue(remValue, emValue),
+      bottom: margin?.bottom?.getRelativeValue(remValue, emValue),
+      inlineStart: margin?.inlineStart?.getRelativeValue(remValue, emValue),
+      inlineEnd: margin?.inlineEnd?.getRelativeValue(remValue, emValue),
+      blockStart: margin?.blockStart?.getRelativeValue(remValue, emValue),
+      blockEnd: margin?.blockEnd?.getRelativeValue(remValue, emValue),
+    );
+
+    padding = padding?.copyWith(
+      left: padding?.left?.getRelativeValue(remValue, emValue),
+      top: padding?.top?.getRelativeValue(remValue, emValue),
+      right: padding?.right?.getRelativeValue(remValue, emValue),
+      bottom: padding?.bottom?.getRelativeValue(remValue, emValue),
+      inlineStart: padding?.inlineStart?.getRelativeValue(remValue, emValue),
+      inlineEnd: padding?.inlineEnd?.getRelativeValue(remValue, emValue),
+      blockStart: padding?.blockStart?.getRelativeValue(remValue, emValue),
+      blockEnd: padding?.blockEnd?.getRelativeValue(remValue, emValue),
+    );
+  }
+}
+
+extension _MarginRelativeValues on Margin {
+  Margin? getRelativeValue(double remValue, double emValue) {
+    double? calculatedValue = calculateRelativeValue(remValue, emValue);
+    if (calculatedValue != null) {
+      return Margin(calculatedValue);
+    }
+
+    return null;
+  }
+}
+
+extension _PaddingRelativeValues on HtmlPadding {
+  HtmlPadding? getRelativeValue(double remValue, double emValue) {
+    double? calculatedValue = calculateRelativeValue(remValue, emValue);
+    if (calculatedValue != null) {
+      return HtmlPadding(calculatedValue);
+    }
+
+    return null;
+  }
+}
+
+extension MergeBorders on Border? {
+  Border? merge(Border? other) {
+    return Border(
+      top: other?.top ?? this?.top ?? BorderSide.none,
+      right: other?.right ?? this?.right ?? BorderSide.none,
+      bottom: other?.bottom ?? this?.bottom ?? BorderSide.none,
+      left: other?.left ?? this?.left ?? BorderSide.none,
     );
   }
 }

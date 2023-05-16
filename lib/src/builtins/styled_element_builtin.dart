@@ -338,14 +338,22 @@ class StyledElementBuiltIn extends HtmlExtension {
         styledElement.style = Style(
           display: Display.block,
           listStyleType: ListStyleType.decimal,
-          padding: const EdgeInsets.only(left: 40),
+          padding: HtmlPaddings.only(inlineStart: 40),
+          margin: Margins(
+            blockStart: Margin(1, Unit.em),
+            blockEnd: Margin(1, Unit.em),
+          ),
         );
         break;
       case "ul":
         styledElement.style = Style(
           display: Display.block,
           listStyleType: ListStyleType.disc,
-          padding: const EdgeInsets.only(left: 40),
+          padding: HtmlPaddings.only(inlineStart: 40),
+          margin: Margins(
+            blockStart: Margin(1, Unit.em),
+            blockEnd: Margin(1, Unit.em),
+          ),
         );
         break;
       case "p":

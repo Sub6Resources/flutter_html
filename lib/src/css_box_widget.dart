@@ -56,16 +56,19 @@ class CssBoxWidget extends StatelessWidget {
         ? _generateMarkerBoxSpan(style)
         : null;
 
+    final directionality = _checkTextDirection(context, textDirection);
+    final padding = style.padding?.toEdgeInsets(directionality);
+
     return _CSSBoxRenderer(
       width: style.width ?? Width.auto(),
       height: style.height ?? Height.auto(),
-      paddingSize: style.padding?.collapsedSize ?? Size.zero,
+      paddingSize: padding?.collapsedSize ?? Size.zero,
       borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
       margins: style.margin ?? Margins.zero,
       display: style.display ?? Display.inline,
       childIsReplaced: childIsReplaced,
       emValue: _calculateEmValue(style, context),
-      textDirection: _checkTextDirection(context, textDirection),
+      textDirection: directionality,
       shrinkWrap: shrinkWrap,
       children: [
         Container(
@@ -74,7 +77,7 @@ class CssBoxWidget extends StatelessWidget {
             color: style.backgroundColor, //Colors the padding and content boxes
           ),
           width: _shouldExpandToFillBlock() ? double.infinity : null,
-          padding: style.padding ?? EdgeInsets.zero,
+          padding: padding,
           child: top
               ? child
               : MediaQuery(
@@ -253,10 +256,21 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
   }
 
   Margins _preProcessMargins(Margins margins, bool shrinkWrap) {
-    Margin leftMargin = margins.left ?? Margin.zero();
-    Margin rightMargin = margins.right ?? Margin.zero();
-    Margin topMargin = margins.top ?? Margin.zero();
-    Margin bottomMargin = margins.bottom ?? Margin.zero();
+    late Margin leftMargin;
+    late Margin rightMargin;
+    Margin topMargin = margins.top ?? margins.blockStart ?? Margin.zero();
+    Margin bottomMargin = margins.bottom ?? margins.blockEnd ?? Margin.zero();
+
+    switch (textDirection) {
+      case TextDirection.rtl:
+        leftMargin = margins.left ?? margins.inlineEnd ?? Margin.zero();
+        rightMargin = margins.right ?? margins.inlineStart ?? Margin.zero();
+        break;
+      case TextDirection.ltr:
+        leftMargin = margins.left ?? margins.inlineStart ?? Margin.zero();
+        rightMargin = margins.right ?? margins.inlineEnd ?? Margin.zero();
+        break;
+    }
 
     //Preprocess margins to a pixel value
     leftMargin.normalize(emValue);
@@ -593,7 +607,20 @@ class _RenderCSSBox extends RenderBox
       final offsetHeight = distance -
           (markerBox.getDistanceToBaseline(TextBaseline.alphabetic) ??
               markerBox.size.height);
-      markerBoxParentData.offset = Offset(-markerBox.size.width, offsetHeight);
+      switch (_textDirection) {
+        case TextDirection.rtl:
+          markerBoxParentData.offset = Offset(
+            child.size.width,
+            offsetHeight,
+          );
+          break;
+        case TextDirection.ltr:
+          markerBoxParentData.offset = Offset(
+            -markerBox.size.width,
+            offsetHeight,
+          );
+          break;
+      }
     }
   }
 
@@ -701,10 +728,11 @@ class _RenderCSSBox extends RenderBox
     }
 
     return Margins(
-        left: marginLeft,
-        right: marginRight,
-        top: margins.top,
-        bottom: margins.bottom);
+      left: marginLeft,
+      right: marginRight,
+      top: margins.top,
+      bottom: margins.bottom,
+    );
   }
 
   @override

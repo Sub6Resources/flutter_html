@@ -41,6 +41,16 @@ abstract class Dimension {
   Dimension(this.value, this.unit, UnitType dimensionUnitType)
       : assert(dimensionUnitType.matches(unit.unitType),
             "This Dimension was given a Unit that isn't specified.");
+
+  double? calculateRelativeValue(double remValue, double emValue) {
+    if (unit == Unit.rem) {
+      return value * remValue;
+    } else if (unit == Unit.em) {
+      return value * emValue;
+    }
+
+    return null;
+  }
 }
 
 /// This dimension takes a value with a length unit such as px or em. Note that
