@@ -42,7 +42,7 @@ class WhitespaceProcessing {
 
   /// [_processBlockWhitespace] removes unnecessary whitespace from block
   /// rendering contexts. Specifically, a space at the beginning and end of
-  /// the line should be removed.
+  /// each inline rendering context should be removed.
   static StyledElement _processBlockWhitespace(StyledElement tree) {
     if (tree.style.whiteSpace == WhiteSpace.pre) {
       return tree;
@@ -50,7 +50,7 @@ class WhitespaceProcessing {
 
     bool isBlockContext = false;
     for (final child in tree.children) {
-      if (child.style.display == Display.block) {
+      if (child.style.display == Display.block || child.name == "br") {
         isBlockContext = true;
       }
 
@@ -58,13 +58,30 @@ class WhitespaceProcessing {
     }
 
     if (isBlockContext) {
-      for (final child in tree.children) {
-        if (child is TextContentElement) {
-          child.style.display = Display.block;
+      for (int i = 0; i < tree.children.length; i++) {
+        final lastChild = i != 0 ? tree.children[i - 1] : null;
+        final child = tree.children[i];
+        final nextChild =
+            (i + 1) != tree.children.length ? tree.children[i + 1] : null;
+
+        if (child.style.whiteSpace == WhiteSpace.pre) {
+          continue;
         }
 
-        _removeLeadingSpace(child);
-        _removeTrailingSpace(child);
+        if (child.style.display == Display.block) {
+          _removeLeadingSpace(child);
+          _removeTrailingSpace(child);
+        }
+
+        if (lastChild?.style.display == Display.block ||
+            lastChild?.name == "br") {
+          _removeLeadingSpace(child);
+        }
+
+        if (nextChild?.style.display == Display.block ||
+            nextChild?.name == "br") {
+          _removeTrailingSpace(child);
+        }
       }
     }
 

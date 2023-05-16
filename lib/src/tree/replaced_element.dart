@@ -46,6 +46,13 @@ class TextContentElement extends ReplacedElement {
   }
 }
 
+class LinebreakContentElement extends ReplacedElement {
+  LinebreakContentElement({
+    required super.style,
+    required super.node,
+  }) : super(name: 'br', elementId: "[[No ID]]");
+}
+
 class EmptyContentElement extends ReplacedElement {
   EmptyContentElement({required super.node, String name = "empty"})
       : super(name: name, style: Style(), elementId: "[[No ID]]");
