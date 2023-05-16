@@ -200,7 +200,12 @@ class StyledElementBuiltIn extends HtmlExtension {
         break;
       case "figure":
         styledElement.style = Style(
-          margin: Margins.symmetric(vertical: 14.0, horizontal: 40.0),
+          margin: Margins(
+            top: Margin(1, Unit.em),
+            bottom: Margin(1, Unit.em),
+            left: Margin(40, Unit.px),
+            right: Margin(40, Unit.px),
+          ),
           display: Display.block,
         );
         break;
