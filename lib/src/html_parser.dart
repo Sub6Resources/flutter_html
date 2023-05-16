@@ -181,6 +181,7 @@ class _HtmlParserState extends State<HtmlParser> {
       //TODO can we have buildTree return a list of InlineSpans rather than a single one.
       children: [buildTree()],
       shrinkWrap: widget.shrinkWrap,
+      top: true,
     );
   }
 
