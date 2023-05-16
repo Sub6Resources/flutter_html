@@ -12,6 +12,7 @@ class CssBoxWidget extends StatelessWidget {
     this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
+    this.top = false,
   });
 
   /// Generates a CSSBoxWidget that contains a list of InlineSpan children.
@@ -22,6 +23,7 @@ class CssBoxWidget extends StatelessWidget {
     this.textDirection,
     this.childIsReplaced = false,
     this.shrinkWrap = false,
+    this.top = false,
   }) : child = _generateWidgetChild(children, style);
 
   /// The child to be rendered within the CSS Box.
@@ -44,6 +46,9 @@ class CssBoxWidget extends StatelessWidget {
   /// Whether or not the content should ignore auto horizontal margins and not
   /// necessarily take up the full available width unless necessary
   final bool shrinkWrap;
+
+  /// For the root widget, so textScaleFactor, etc are only applied once
+  final bool top;
 
   @override
   Widget build(BuildContext context) {
@@ -70,7 +75,12 @@ class CssBoxWidget extends StatelessWidget {
           ),
           width: _shouldExpandToFillBlock() ? double.infinity : null,
           padding: style.padding ?? EdgeInsets.zero,
-          child: child,
+          child: top
+              ? child
+              : MediaQuery(
+                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                  child: child,
+                ),
         ),
         if (markerBox != null) Text.rich(markerBox),
       ],
@@ -93,8 +103,8 @@ class CssBoxWidget extends StatelessWidget {
       }
     }
 
-    return RichText(
-      text: TextSpan(
+    return Text.rich(
+      TextSpan(
         style: style.generateTextStyle(),
         children: children,
       ),
