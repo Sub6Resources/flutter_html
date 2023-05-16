@@ -1,5 +1,7 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
-import 'package:flutter_html/src/css_box_widget.dart';
+import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class TestApp extends StatelessWidget {
@@ -139,5 +141,88 @@ CssBoxWidget? findCssBox(Finder finder) {
     return null;
   } else {
     return found.first.widget as CssBoxWidget;
+  }
+}
+
+Future<StyledElement> generateStyledElementTreeFromHtml(
+  WidgetTester tester, {
+  required String html,
+  bool applyStyleSteps = true,
+  bool applyProcessingSteps = true,
+  bool shrinkWrap = false,
+  List<HtmlExtension> extensions = const [],
+  Map<String, Style> styles = const {},
+}) async {
+  final completer = Completer<StyledElement>();
+
+  await tester.pumpWidget(TestApp(
+    child: Html(
+      data: html,
+      shrinkWrap: shrinkWrap,
+      extensions: [
+        ...extensions,
+        TestExtension(
+          beforeStyleCallback: (tree) {
+            if (!applyStyleSteps) {
+              completer.complete(tree);
+            }
+          },
+          beforeProcessingCallback: (tree) {
+            if (!completer.isCompleted && !applyProcessingSteps) {
+              completer.complete(tree);
+            }
+          },
+          finalCallback: (tree) {
+            if (!completer.isCompleted) {
+              completer.complete(tree);
+            }
+          },
+        ),
+      ],
+      style: styles,
+    ),
+  ));
+
+  return completer.future;
+}
+
+class TestExtension extends HtmlExtension {
+  final void Function(StyledElement)? beforeStyleCallback;
+  final void Function(StyledElement)? beforeProcessingCallback;
+  final void Function(StyledElement)? finalCallback;
+
+  TestExtension({
+    this.beforeStyleCallback,
+    this.beforeProcessingCallback,
+    this.finalCallback,
+  });
+
+  @override
+  Set<String> get supportedTags => {};
+
+  @override
+  bool matches(ExtensionContext context) {
+    return context.currentStep != CurrentStep.preparing &&
+        context.elementName == "html";
+  }
+
+  @override
+  void beforeStyle(ExtensionContext context) {
+    beforeStyleCallback?.call(context.styledElement!);
+  }
+
+  @override
+  void beforeProcessing(ExtensionContext context) {
+    beforeProcessingCallback?.call(context.styledElement!);
+  }
+
+  @override
+  InlineSpan build(ExtensionContext context, buildChildren) {
+    finalCallback?.call(context.styledElement!);
+    return context.parser.buildFromExtension(
+      context,
+      buildChildren,
+      extensionsToIgnore: {this},
+    );
   }
 }
