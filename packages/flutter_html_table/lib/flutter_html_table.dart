@@ -102,8 +102,7 @@ class TableHtmlExtension extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() buildChildren) {
+  InlineSpan build(ExtensionContext context) {
     if (context.elementName == "table") {
       return WidgetSpan(
         child: CssBoxWidget(
@@ -112,7 +111,7 @@ class TableHtmlExtension extends HtmlExtension {
             builder: (_, constraints) {
               return _layoutCells(
                 context.styledElement as TableElement,
-                buildChildren(),
+                context.builtChildrenMap!,
                 context,
                 constraints,
               );
@@ -124,7 +123,7 @@ class TableHtmlExtension extends HtmlExtension {
 
     return WidgetSpan(
       child: CssBoxWidget.withInlineSpanChildren(
-        children: buildChildren().values.toList(),
+        children: context.inlineSpanChildren!,
         style: Style(),
       ),
     );

@@ -2,6 +2,7 @@ import 'dart:collection';
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/src/html_parser.dart';
+import 'package:flutter_html/src/style.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
 import 'package:html/dom.dart' as html;
 
@@ -59,7 +60,8 @@ class ExtensionContext {
     }));
   }
 
-  /// Returns the id of the element, or an empty string if it is not present
+  /// Returns the id of the element, or an empty string if it is not present or
+  /// this Node is not an html Element.
   String get id {
     if (node is html.Element) {
       return (node as html.Element).id;
@@ -68,8 +70,8 @@ class ExtensionContext {
     return '';
   }
 
-  /// Returns a set of classes on the element, or an empty set if none are
-  /// present.
+  /// Returns a set of classes on this Element, or an empty set if none are
+  /// present or this Node is not an html Element.
   Set<String> get classes {
     if (node is html.Element) {
       return (node as html.Element).classes;
@@ -83,37 +85,57 @@ class ExtensionContext {
   final HtmlParser parser;
 
   /// A reference to the [StyledElement] representation of this node.
-  /// Guaranteed to be non-null only after the lexing step
+  /// Guaranteed to be non-null only after the preparing step
   final StyledElement? styledElement;
 
-  /// Guaranteed only when in the `parse` method of an Extension, but it might not necessarily be the nearest BuildContext. Probably should use a `Builder` Widget if you absolutely need the most relevant BuildContext.
+  /// A reference to the [Style] on the [StyledElement] representation of this
+  /// node. Guaranteed to be non-null only after the preparing step.
+  Style? get style {
+    return styledElement?.style;
+  }
+
+  /// The [StyledElement] version of this node's children. Guaranteed to be
+  /// non-null only after the preparing step.
+  List<StyledElement> get styledElementChildren {
+    return styledElement!.children;
+  }
+
+  final BuildChildrenCallback? _callbackToBuildChildren;
+  Map<StyledElement, InlineSpan>? _builtChildren;
+
+  /// A map between the original [StyledElement] children of this node and the
+  /// fully built [InlineSpan] children of this node.
+  Map<StyledElement, InlineSpan>? get builtChildrenMap {
+    _builtChildren ??= _callbackToBuildChildren?.call();
+
+    return _builtChildren;
+  }
+
+  /// The [InlineSpan] version of this node's children. Constructed lazily.
+  /// Guaranteed to be non-null only when `currentStep` is `building`.
+  List<InlineSpan>? get inlineSpanChildren {
+    _builtChildren ??= _callbackToBuildChildren?.call();
+
+    return _builtChildren?.values.toList();
+  }
+
+  /// Guaranteed to be non-null only when `currentStep` is `building`,
+  /// but it might not necessarily be the nearest BuildContext. Probably should
+  /// use a `Builder` Widget if you need the most relevant BuildContext.
   final BuildContext? buildContext;
 
   /// Constructs a new [ExtensionContext] object with the given information.
-  const ExtensionContext({
+  ExtensionContext({
+    required this.currentStep,
     required this.node,
     required this.parser,
     this.styledElement,
     this.buildContext,
-    required this.currentStep,
-  });
-
-  ExtensionContext copyWith({
-    html.Node? node,
-    HtmlParser? parser,
-    StyledElement? styledElement,
-    BuildContext? buildContext,
-    CurrentStep? currentStep,
-  }) {
-    return ExtensionContext(
-      node: node ?? this.node,
-      parser: parser ?? this.parser,
-      styledElement: styledElement ?? this.styledElement,
-      buildContext: buildContext ?? this.buildContext,
-      currentStep: currentStep ?? this.currentStep,
-    );
-  }
+    BuildChildrenCallback? buildChildrenCallback,
+  }) : _callbackToBuildChildren = buildChildrenCallback;
 }
+
+typedef BuildChildrenCallback = Map<StyledElement, InlineSpan> Function();
 
 enum CurrentStep {
   preparing,

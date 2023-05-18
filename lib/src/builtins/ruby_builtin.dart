@@ -39,8 +39,7 @@ class RubyBuiltIn extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() buildChildren) {
+  InlineSpan build(ExtensionContext context) {
     StyledElement? node;
     List<Widget> widgets = <Widget>[];
     final rubySize = context.parser.style['rt']?.fontSize?.value ??

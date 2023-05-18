@@ -44,11 +44,13 @@ class OnImageTapExtension extends ImageBuiltIn {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, buildChildren) {
-    final children = buildChildren();
+  InlineSpan build(ExtensionContext context) {
+    final children = context.builtChildrenMap!;
 
-    assert(children.keys.isNotEmpty,
-        "The OnImageTapExtension has been thwarted! It no longer has an `img` child");
+    assert(
+      children.keys.isNotEmpty,
+      "The OnImageTapExtension has been thwarted! It no longer has an `img` child",
+    );
 
     final actualImage = children.keys.first;
 

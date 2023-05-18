@@ -217,11 +217,10 @@ class TestExtension extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, buildChildren) {
+  InlineSpan build(ExtensionContext context) {
     finalCallback?.call(context.styledElement!);
     return context.parser.buildFromExtension(
       context,
-      buildChildren,
       extensionsToIgnore: {this},
     );
   }

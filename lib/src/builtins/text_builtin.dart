@@ -41,8 +41,7 @@ class TextBuiltIn extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() buildChildren) {
+  InlineSpan build(ExtensionContext context) {
     if (context.styledElement is LinebreakContentElement) {
       return TextSpan(
         text: '\n',
