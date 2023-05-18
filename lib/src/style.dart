@@ -118,12 +118,6 @@ class Style {
   /// Default: ListStylePosition.OUTSIDE
   ListStylePosition? listStylePosition;
 
-  /// CSS attribute "`padding`"
-  ///
-  /// Inherited: no,
-  /// Default: HtmlPaddings.zero
-  HtmlPaddings? padding;
-
   /// CSS pseudo-element "`::marker`"
   ///
   /// Inherited: no,
@@ -133,8 +127,14 @@ class Style {
   /// CSS attribute "`margin`"
   ///
   /// Inherited: no,
-  /// Default: EdgeInsets.zero
+  /// Default: Margins.zero
   Margins? margin;
+
+  /// CSS attribute "`padding`"
+  ///
+  /// Inherited: no,
+  /// Default: HtmlPaddings.zero
+  HtmlPaddings? padding;
 
   /// CSS attribute "`text-align`"
   ///

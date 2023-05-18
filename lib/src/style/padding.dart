@@ -7,6 +7,14 @@ class HtmlPadding extends LengthOrPercent {
         super(value, unit ?? Unit.px);
 
   HtmlPadding.zero() : super(0, Unit.px);
+
+  @override
+  int get hashCode => Object.hash(value, unit);
+
+  @override
+  bool operator ==(Object other) {
+    return other is HtmlPadding && other.value == value && other.unit == unit;
+  }
 }
 
 class HtmlPaddings {
@@ -87,7 +95,7 @@ class HtmlPaddings {
   static HtmlPaddings get zero => HtmlPaddings.all(0);
 
   /// Analogous to [EdgeInsets.all]
-  HtmlPaddings.all(double value, {Unit? unit})
+  HtmlPaddings.all(double value, [Unit? unit])
       : left = HtmlPadding(value, unit),
         right = HtmlPadding(value, unit),
         inlineEnd = null,
@@ -143,13 +151,13 @@ class HtmlPaddings {
   }
 
   /// Calculates the padding EdgeInsets given the textDirection.
-  EdgeInsets toEdgeInsets(TextDirection textDirection) {
+  EdgeInsets resolve(TextDirection direction) {
     late double? leftPad;
     late double? rightPad;
     double? topPad = top?.value ?? blockStart?.value ?? 0;
     double? bottomPad = bottom?.value ?? blockEnd?.value ?? 0;
 
-    switch (textDirection) {
+    switch (direction) {
       case TextDirection.rtl:
         leftPad = left?.value ?? inlineEnd?.value ?? 0;
         rightPad = right?.value ?? inlineStart?.value ?? 0;
@@ -161,5 +169,46 @@ class HtmlPaddings {
     }
 
     return EdgeInsets.fromLTRB(leftPad, topPad, rightPad, bottomPad);
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+        left, right, inlineStart, inlineEnd, top, bottom, blockStart, blockEnd);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is HtmlPaddings &&
+        left == other.left &&
+        right == other.right &&
+        top == other.top &&
+        bottom == other.bottom &&
+        inlineStart == other.inlineStart &&
+        inlineEnd == other.inlineEnd &&
+        blockStart == other.blockStart &&
+        blockEnd == other.blockEnd;
+  }
+}
+
+extension PaddingsFromEdgeInsets on EdgeInsets {
+  HtmlPaddings get htmlPadding {
+    return HtmlPaddings(
+      top: HtmlPadding(top),
+      bottom: HtmlPadding(bottom),
+      left: HtmlPadding(left),
+      right: HtmlPadding(right),
+    );
+  }
+}
+
+extension PaddingsFromEdgeInsetsDirectional on EdgeInsetsDirectional {
+  HtmlPaddings get htmlPadding {
+    return HtmlPaddings(
+      top: HtmlPadding(top),
+      bottom: HtmlPadding(bottom),
+      inlineStart: HtmlPadding(start),
+      inlineEnd: HtmlPadding(end),
+    );
   }
 }

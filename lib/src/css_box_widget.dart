@@ -56,8 +56,8 @@ class CssBoxWidget extends StatelessWidget {
         ? _generateMarkerBoxSpan(style)
         : null;
 
-    final directionality = _checkTextDirection(context, textDirection);
-    final padding = style.padding?.toEdgeInsets(directionality);
+    final direction = _checkTextDirection(context, textDirection);
+    final padding = style.padding?.resolve(direction);
 
     return _CSSBoxRenderer(
       width: style.width ?? Width.auto(),
@@ -68,7 +68,7 @@ class CssBoxWidget extends StatelessWidget {
       display: style.display ?? Display.inline,
       childIsReplaced: childIsReplaced,
       emValue: _calculateEmValue(style, context),
-      textDirection: directionality,
+      textDirection: direction,
       shrinkWrap: shrinkWrap,
       children: [
         Container(
