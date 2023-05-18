@@ -58,10 +58,10 @@ abstract class HtmlExtension {
   /// The final step in the chain. Converts the StyledElement tree, with its
   /// attached `Style` elements, into an `InlineSpan` tree that includes
   /// Widget/TextSpans that can be rendered in a RichText widget.
-  InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() buildChildren) {
+  InlineSpan build(ExtensionContext context) {
     throw UnimplementedError(
-        "Extension `$runtimeType` matched `${context.styledElement!.name}` but didn't implement `parse`");
+      "Extension `$runtimeType` matched `${context.styledElement!.name}` but didn't implement `parse`",
+    );
   }
 
   /// Called when the Html widget is being destroyed. This would be a very

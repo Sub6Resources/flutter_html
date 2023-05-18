@@ -125,15 +125,14 @@ class HtmlParser extends StatefulWidget {
   /// or HtmlExtensions available. If none of the extensions matches, returns
   /// an empty TextSpan.
   InlineSpan buildFromExtension(
-    ExtensionContext extensionContext,
-    Map<StyledElement, InlineSpan> Function() buildChildren, {
+    ExtensionContext extensionContext, {
     Set<HtmlExtension> extensionsToIgnore = const {},
   }) {
     // Loop through every extension and see if it can handle this node
     for (final extension in extensions) {
       if (!extensionsToIgnore.contains(extension) &&
           extension.matches(extensionContext)) {
-        return extension.build(extensionContext, buildChildren);
+        return extension.build(extensionContext);
       }
     }
 
@@ -141,7 +140,7 @@ class HtmlParser extends StatefulWidget {
     for (final builtIn in builtIns) {
       if (!extensionsToIgnore.contains(builtIn) &&
           builtIn.matches(extensionContext)) {
-        return builtIn.build(extensionContext, buildChildren);
+        return builtIn.build(extensionContext);
       }
     }
 
@@ -380,6 +379,13 @@ class _HtmlParserState extends State<HtmlParser> {
   }
 
   InlineSpan _buildTreeRecursive(StyledElement tree) {
+    // Generate a function that allows children to be built lazily
+    Map<StyledElement, InlineSpan> buildChildren() {
+      return Map.fromEntries(tree.children.map((child) {
+        return MapEntry(child, _buildTreeRecursive(child));
+      }));
+    }
+
     // Set the extension context for this node.
     final extensionContext = ExtensionContext(
       parser: widget,
@@ -387,6 +393,7 @@ class _HtmlParserState extends State<HtmlParser> {
       node: tree.node,
       styledElement: tree,
       currentStep: CurrentStep.building,
+      buildChildrenCallback: buildChildren,
     );
 
     // Block restricted tags from getting sent to extensions
@@ -394,13 +401,6 @@ class _HtmlParserState extends State<HtmlParser> {
       return const TextSpan(text: "");
     }
 
-    // Generate a function that allows children to be generated
-    Map<StyledElement, InlineSpan> buildChildren() {
-      return Map.fromEntries(tree.children.map((child) {
-        return MapEntry(child, _buildTreeRecursive(child));
-      }));
-    }
-
-    return widget.buildFromExtension(extensionContext, buildChildren);
+    return widget.buildFromExtension(extensionContext);
   }
 }

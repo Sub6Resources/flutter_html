@@ -60,11 +60,10 @@ class TagWrapExtension extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context, buildChildren) {
-    final children = buildChildren();
+  InlineSpan build(ExtensionContext context) {
     final child = CssBoxWidget.withInlineSpanChildren(
-      children: children.values.toList(),
-      style: context.styledElement!.style,
+      children: context.inlineSpanChildren!,
+      style: context.style!,
     );
 
     return WidgetSpan(

@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:collection/collection.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/style/marker.dart';
 import 'package:list_counter/list_counter.dart';
 
 class ListProcessing {

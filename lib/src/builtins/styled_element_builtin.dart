@@ -414,8 +414,7 @@ class StyledElementBuiltIn extends HtmlExtension {
   }
 
   @override
-  InlineSpan build(ExtensionContext context,
-      Map<StyledElement, InlineSpan> Function() buildChildren) {
+  InlineSpan build(ExtensionContext context) {
     if (context.styledElement!.style.display == Display.listItem ||
         ((context.styledElement!.style.display == Display.block ||
                 context.styledElement!.style.display == Display.inlineBlock) &&
@@ -430,8 +429,7 @@ class StyledElementBuiltIn extends HtmlExtension {
           shrinkWrap: context.parser.shrinkWrap,
           childIsReplaced: ["iframe", "img", "video", "audio"]
               .contains(context.styledElement!.name),
-          children: buildChildren()
-              .entries
+          children: context.builtChildrenMap!.entries
               .expandIndexed((i, child) => [
                     child.value,
                     if (context.parser.shrinkWrap &&
@@ -448,8 +446,7 @@ class StyledElementBuiltIn extends HtmlExtension {
 
     return TextSpan(
       style: context.styledElement!.style.generateTextStyle(),
-      children: buildChildren()
-          .entries
+      children: context.builtChildrenMap!.entries
           .expandIndexed((index, child) => [
                 child.value,
                 if (context.parser.shrinkWrap &&
