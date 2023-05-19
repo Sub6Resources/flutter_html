@@ -66,6 +66,32 @@ void main() {
     },
   );
 
+  //See https://github.com/Sub6Resources/flutter_html/issues/1275
+  testWidgets(
+    "test that extra newlines aren't added unnecessarily for details/summary tags",
+    (tester) async {
+      final tree = await generateStyledElementTreeFromHtml(
+        tester,
+        html: """
+<!DOCTYPE html>
+<html>
+<body>
+<details>
+  <summary><h1>Header</h1></summary>
+  <p>These are the details.</p>
+</details>
+</body>
+</html>
+""",
+      );
+
+      expect(
+          tree.getWhitespace(),
+          equals(
+              "<body><details><summary><h1>Header</h1></summary><p>These◦are◦the◦details.</p></details></body>"));
+    },
+  );
+
   // See https://github.com/Sub6Resources/flutter_html/issues/1251
   testWidgets(
     'test that preserved whitespace is actually preserved',

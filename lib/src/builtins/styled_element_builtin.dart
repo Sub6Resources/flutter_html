@@ -172,6 +172,11 @@ class StyledElementBuiltIn extends HtmlExtension {
           textDecoration: TextDecoration.lineThrough,
         );
         break;
+      case "details":
+        styledElement.style = Style(
+          display: Display.block,
+        );
+        break;
       case "dfn":
         continue italics;
       case "div":
@@ -390,6 +395,11 @@ class StyledElementBuiltIn extends HtmlExtension {
         styledElement.style = Style(
           fontSize: FontSize.smaller,
           verticalAlign: VerticalAlign.sub,
+        );
+        break;
+      case "summary":
+        styledElement.style = Style(
+          display: Display.block,
         );
         break;
       case "sup":
