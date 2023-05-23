@@ -40,8 +40,12 @@ class MarginProcessing {
     // Handle case (1) from above.
     // Top margins cannot collapse if the element has padding
     if ((tree.style.padding?.top ?? 0) == 0) {
-      final parentTop = tree.style.margin?.top?.value ?? 0;
-      final firstChildTop = tree.children.first.style.margin?.top?.value ?? 0;
+      final parentTop = tree.style.margin?.top?.value ??
+          tree.style.margin?.blockStart?.value ??
+          0;
+      final firstChildTop = tree.children.first.style.margin?.top?.value ??
+          tree.children.first.style.margin?.blockStart?.value ??
+          0;
       final newOuterMarginTop = max(parentTop, firstChildTop);
 
       // Set the parent's margin
@@ -63,10 +67,14 @@ class MarginProcessing {
 
     // Handle case (3) from above.
     // Bottom margins cannot collapse if the element has padding
-    if ((tree.style.padding?.bottom ?? 0) == 0) {
-      final parentBottom = tree.style.margin?.bottom?.value ?? 0;
-      final lastChildBottom =
-          tree.children.last.style.margin?.bottom?.value ?? 0;
+    if ((tree.style.padding?.bottom ?? tree.style.padding?.blockEnd ?? 0) ==
+        0) {
+      final parentBottom = tree.style.margin?.bottom?.value ??
+          tree.style.margin?.blockEnd?.value ??
+          0;
+      final lastChildBottom = tree.children.last.style.margin?.bottom?.value ??
+          tree.children.last.style.margin?.blockEnd?.value ??
+          0;
       final newOuterMarginBottom = max(parentBottom, lastChildBottom);
 
       // Set the parent's margin
@@ -82,7 +90,7 @@ class MarginProcessing {
         tree.children.last.style.margin = Margins.zero;
       } else {
         tree.children.last.style.margin =
-            tree.children.last.style.margin!.copyWithEdge(bottom: 0);
+            tree.children.last.style.margin!.copyWith(bottom: Margin.zero());
       }
     }
 
@@ -90,8 +98,12 @@ class MarginProcessing {
     if (tree.children.length > 1) {
       for (int i = 1; i < tree.children.length; i++) {
         final previousSiblingBottom =
-            tree.children[i - 1].style.margin?.bottom?.value ?? 0;
-        final thisTop = tree.children[i].style.margin?.top?.value ?? 0;
+            tree.children[i - 1].style.margin?.bottom?.value ??
+                tree.children[i - 1].style.margin?.blockEnd?.value ??
+                0;
+        final thisTop = tree.children[i].style.margin?.top?.value ??
+            tree.children[i].style.margin?.blockStart?.value ??
+            0;
         final newInternalMargin = max(previousSiblingBottom, thisTop);
         final newTop = newInternalMargin - previousSiblingBottom;
 
