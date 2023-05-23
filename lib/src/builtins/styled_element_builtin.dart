@@ -434,7 +434,8 @@ class StyledElementBuiltIn extends HtmlExtension {
                     child.value,
                     if (context.parser.shrinkWrap &&
                         i != context.styledElement!.children.length - 1 &&
-                        child.key.style.display == Display.block &&
+                        (child.key.style.display == Display.block ||
+                            child.key.style.display == Display.listItem) &&
                         child.key.element?.localName != "html" &&
                         child.key.element?.localName != "body")
                       const TextSpan(text: "\n", style: TextStyle(fontSize: 0)),
