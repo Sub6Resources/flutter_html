@@ -7,6 +7,23 @@ class Margin extends AutoOrLengthOrPercent {
   Margin.auto() : super(0, Unit.auto);
 
   Margin.zero() : super(0, Unit.px);
+
+  @override
+  String toString() {
+    if (unit == Unit.auto) {
+      return "auto";
+    } else {
+      return "$value${unit.name}";
+    }
+  }
+
+  @override
+  int get hashCode => Object.hash(value, unit);
+
+  @override
+  bool operator ==(Object other) {
+    return other is Margin && other.value == value && other.unit == unit;
+  }
 }
 
 class Margins {
@@ -102,7 +119,7 @@ class Margins {
   static Margins get zero => Margins.all(0);
 
   /// Analogous to [EdgeInsets.all]
-  Margins.all(double value, {Unit? unit})
+  Margins.all(double value, [Unit? unit])
       : left = Margin(value, unit),
         right = Margin(value, unit),
         inlineEnd = null,
@@ -125,12 +142,12 @@ class Margins {
     Unit? unit,
   })  : left = Margin(left ?? 0, unit),
         right = Margin(right ?? 0, unit),
-        inlineEnd = Margin(inlineEnd ?? 0, unit),
-        inlineStart = Margin(inlineStart ?? 0, unit),
+        inlineEnd = inlineEnd != null ? Margin(inlineEnd, unit) : null,
+        inlineStart = inlineStart != null ? Margin(inlineStart, unit) : null,
         top = Margin(top ?? 0, unit),
         bottom = Margin(bottom ?? 0, unit),
-        blockEnd = Margin(blockEnd ?? 0, unit),
-        blockStart = Margin(blockStart ?? 0, unit);
+        blockEnd = blockEnd != null ? Margin(blockEnd, unit) : null,
+        blockStart = blockStart != null ? Margin(blockStart, unit) : null;
 
   /// Analogous to [EdgeInsets.symmetric]
   Margins.symmetric({double? horizontal, double? vertical, Unit? unit})
@@ -154,5 +171,39 @@ class Margins {
       blockStart: other?.blockStart,
       blockEnd: other?.blockEnd,
     );
+  }
+
+  @override
+  String toString() {
+    return "<$top,$right,$bottom,$left,$inlineStart,$inlineEnd,$blockStart,$blockEnd>";
+  }
+
+  @override
+  int get hashCode {
+    return Object.hash(
+        left, right, inlineStart, inlineEnd, top, bottom, blockStart, blockEnd);
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return other is Margins &&
+        (left == other.left ||
+            (left?.value == 0 &&
+                left?.unit != Unit.auto &&
+                other.left == null)) &&
+        (right == other.right ||
+            (right?.value == 0 &&
+                right?.unit != Unit.auto &&
+                other.right == null)) &&
+        (top == other.top ||
+            (top?.value == 0 && top?.unit != Unit.auto && other.top == null)) &&
+        (bottom == other.bottom ||
+            (bottom?.value == 0 &&
+                bottom?.unit != Unit.auto &&
+                other.bottom == null)) &&
+        inlineStart == other.inlineStart &&
+        inlineEnd == other.inlineEnd &&
+        blockStart == other.blockStart &&
+        blockEnd == other.blockEnd;
   }
 }

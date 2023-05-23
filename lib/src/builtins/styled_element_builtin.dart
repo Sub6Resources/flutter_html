@@ -176,7 +176,6 @@ class StyledElementBuiltIn extends HtmlExtension {
         continue italics;
       case "div":
         styledElement.style = Style(
-          margin: Margins.all(0),
           display: Display.block,
         );
         break;

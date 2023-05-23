@@ -626,6 +626,74 @@ void main() {
           )));
     },
   );
+
+  testWidgets(
+    'Test that em padding applies correctly',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: DefaultTextStyle(
+            style: const TextStyle(fontSize: 14),
+            child: Html(
+              data: """
+              <div style="padding-block: 1em 2em; font-size: 14px;">Test</div>
+              """,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+          _getDivContainer("Test").padding,
+          equals(const EdgeInsets.only(
+            top: 14,
+            bottom: 28,
+          )));
+    },
+  );
+
+  testWidgets(
+    'Test that rem padding applies correctly',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: DefaultTextStyle(
+            style: const TextStyle(fontSize: 14),
+            child: Html(
+              data: """
+              <div style="padding-top: 2rem;">Test</div>
+              """,
+            ),
+          ),
+        ),
+      );
+
+      expect(
+        _getDivContainer("Test").padding,
+        equals(const EdgeInsets.only(top: 28)),
+      );
+    },
+  );
+
+  testWidgets(
+    'Test that dimensionless padding applies correctly',
+    (tester) async {
+      await tester.pumpWidget(
+        TestApp(
+          child: Html(
+            data: """
+            <div style="padding-right: 12;">Test</div>
+            """,
+          ),
+        ),
+      );
+
+      expect(
+        _getDivContainer("Test").padding,
+        equals(const EdgeInsets.only(right: 12)),
+      );
+    },
+  );
 }
 
 HtmlPaddings? _getPadding(String textToFind) {

@@ -227,8 +227,8 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
   final bool shrinkWrap;
 
   @override
-  _RenderCSSBox createRenderObject(BuildContext context) {
-    return _RenderCSSBox(
+  RenderCSSBox createRenderObject(BuildContext context) {
+    return RenderCSSBox(
       display: display,
       width: width..normalize(emValue),
       height: height..normalize(emValue),
@@ -242,7 +242,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
   }
 
   @override
-  void updateRenderObject(BuildContext context, _RenderCSSBox renderObject) {
+  void updateRenderObject(BuildContext context, RenderCSSBox renderObject) {
     renderObject
       ..display = display
       ..width = (width..normalize(emValue))
@@ -309,12 +309,14 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
   }
 }
 
+@visibleForTesting
+
 /// Implements the CSS layout algorithm
-class _RenderCSSBox extends RenderBox
+class RenderCSSBox extends RenderBox
     with
         ContainerRenderObjectMixin<RenderBox, CSSBoxParentData>,
         RenderBoxContainerDefaultsMixin<RenderBox, CSSBoxParentData> {
-  _RenderCSSBox({
+  RenderCSSBox({
     required Display display,
     required Width width,
     required Height height,
