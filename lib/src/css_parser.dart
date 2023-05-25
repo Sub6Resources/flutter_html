@@ -402,7 +402,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               element is! css.NumberTerm &&
               !(element.text == 'auto'));
           Margins margin = ExpressionMapping.expressionToMargins(marginLengths);
-          style.margin = (style.margin ?? Margins.all(0)).copyWith(
+          style.margin = (style.margin ?? const Margins()).copyWith(
             left: margin.left,
             right: margin.right,
             top: margin.top,
@@ -410,20 +410,76 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           );
           break;
         case 'margin-left':
-          style.margin = (style.margin ?? Margins.zero).copyWith(
+          style.margin = (style.margin ?? const Margins()).copyWith(
               left: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'margin-right':
-          style.margin = (style.margin ?? Margins.zero).copyWith(
+          style.margin = (style.margin ?? const Margins()).copyWith(
               right: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'margin-top':
-          style.margin = (style.margin ?? Margins.zero)
+          style.margin = (style.margin ?? const Margins())
               .copyWith(top: ExpressionMapping.expressionToMargin(value.first));
           break;
         case 'margin-bottom':
-          style.margin = (style.margin ?? Margins.zero).copyWith(
+          style.margin = (style.margin ?? const Margins()).copyWith(
               bottom: ExpressionMapping.expressionToMargin(value.first));
+          break;
+        case 'margin-inline':
+          List<css.LiteralTerm>? marginLengths =
+              value.whereType<css.LiteralTerm>().toList();
+
+          /// List<css.LiteralTerm> might include other values than the ones we want for margin length, so make sure to remove those before passing it to [ExpressionMapping]
+          marginLengths.removeWhere((element) =>
+              element is! css.LengthTerm &&
+              element is! css.EmTerm &&
+              element is! css.RemTerm &&
+              element is! css.NumberTerm &&
+              !(element.text == 'auto'));
+          Margins margin =
+              ExpressionMapping.expressionToInlineMargins(marginLengths);
+          style.margin = (style.margin ?? const Margins()).copyWith(
+            inlineStart: margin.inlineStart,
+            inlineEnd: margin.inlineEnd,
+          );
+          break;
+        case 'margin-inline-end':
+          style.margin = (style.margin ?? const Margins()).copyWith(
+            inlineEnd: ExpressionMapping.expressionToMargin(value.first),
+          );
+          break;
+        case 'margin-inline-start':
+          style.margin = (style.margin ?? const Margins()).copyWith(
+            inlineStart: ExpressionMapping.expressionToMargin(value.first),
+          );
+          break;
+        case 'margin-block':
+          List<css.LiteralTerm>? marginLengths =
+              value.whereType<css.LiteralTerm>().toList();
+
+          /// List<css.LiteralTerm> might include other values than the ones we want for margin length, so make sure to remove those before passing it to [ExpressionMapping]
+          marginLengths.removeWhere((element) =>
+              element is! css.LengthTerm &&
+              element is! css.EmTerm &&
+              element is! css.RemTerm &&
+              element is! css.NumberTerm &&
+              !(element.text == 'auto'));
+          Margins margin =
+              ExpressionMapping.expressionToBlockMargins(marginLengths);
+          style.margin = (style.margin ?? const Margins()).copyWith(
+            blockStart: margin.blockStart,
+            blockEnd: margin.blockEnd,
+          );
+          break;
+        case 'margin-block-end':
+          style.margin = (style.margin ?? const Margins()).copyWith(
+            blockEnd: ExpressionMapping.expressionToMargin(value.first),
+          );
+          break;
+        case 'margin-block-start':
+          style.margin = (style.margin ?? const Margins()).copyWith(
+            blockStart: ExpressionMapping.expressionToMargin(value.first),
+          );
           break;
         case 'padding':
           List<css.LiteralTerm>? paddingLengths =
@@ -435,30 +491,84 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
               element is! css.EmTerm &&
               element is! css.RemTerm &&
               element is! css.NumberTerm);
-          List<double?> padding =
-              ExpressionMapping.expressionToPadding(paddingLengths);
-          style.padding = (style.padding ?? EdgeInsets.zero).copyWith(
-            left: padding[0],
-            right: padding[1],
-            top: padding[2],
-            bottom: padding[3],
+          final padding =
+              ExpressionMapping.expressionToHtmlPaddings(paddingLengths);
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            left: padding.left,
+            right: padding.right,
+            top: padding.top,
+            bottom: padding.bottom,
           );
           break;
         case 'padding-left':
-          style.padding = (style.padding ?? EdgeInsets.zero).copyWith(
-              left: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+              left: ExpressionMapping.expressionToHtmlPadding(value.first));
           break;
         case 'padding-right':
-          style.padding = (style.padding ?? EdgeInsets.zero).copyWith(
-              right: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+              right: ExpressionMapping.expressionToHtmlPadding(value.first));
           break;
         case 'padding-top':
-          style.padding = (style.padding ?? EdgeInsets.zero).copyWith(
-              top: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+              top: ExpressionMapping.expressionToHtmlPadding(value.first));
           break;
         case 'padding-bottom':
-          style.padding = (style.padding ?? EdgeInsets.zero).copyWith(
-              bottom: ExpressionMapping.expressionToPaddingLength(value.first));
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+              bottom: ExpressionMapping.expressionToHtmlPadding(value.first));
+          break;
+        case 'padding-inline':
+          List<css.LiteralTerm>? paddingLengths =
+              value.whereType<css.LiteralTerm>().toList();
+
+          /// List<css.LiteralTerm> might include other values than the ones we want for padding length, so make sure to remove those before passing it to [ExpressionMapping]
+          paddingLengths.removeWhere((element) =>
+              element is! css.LengthTerm &&
+              element is! css.EmTerm &&
+              element is! css.RemTerm &&
+              element is! css.NumberTerm);
+          HtmlPaddings padding =
+              ExpressionMapping.expressionToInlineHtmlPadding(paddingLengths);
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            inlineStart: padding.inlineStart,
+            inlineEnd: padding.inlineEnd,
+          );
+          break;
+        case 'padding-inline-end':
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            inlineEnd: ExpressionMapping.expressionToHtmlPadding(value.first),
+          );
+          break;
+        case 'padding-inline-start':
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            inlineStart: ExpressionMapping.expressionToHtmlPadding(value.first),
+          );
+          break;
+        case 'padding-block':
+          List<css.LiteralTerm>? paddingLengths =
+              value.whereType<css.LiteralTerm>().toList();
+
+          /// List<css.LiteralTerm> might include other values than the ones we want for padding length, so make sure to remove those before passing it to [ExpressionMapping]
+          paddingLengths.removeWhere((element) =>
+              element is! css.LengthTerm &&
+              element is! css.EmTerm &&
+              element is! css.RemTerm &&
+              element is! css.NumberTerm);
+          HtmlPaddings padding =
+              ExpressionMapping.expressionToBlockHtmlPadding(paddingLengths);
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            blockStart: padding.blockStart,
+            blockEnd: padding.blockEnd,
+          );
+          break;
+        case 'padding-block-end':
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            blockEnd: ExpressionMapping.expressionToHtmlPadding(value.first),
+          );
+          break;
+        case 'padding-block-start':
+          style.padding = (style.padding ?? const HtmlPaddings()).copyWith(
+            blockStart: ExpressionMapping.expressionToHtmlPadding(value.first),
+          );
           break;
         case 'text-align':
           style.textAlign =
@@ -984,6 +1094,30 @@ class ExpressionMapping {
     }
   }
 
+  static Margins expressionToInlineMargins(List<css.Expression>? lengths) {
+    Margin? inlineStart;
+    Margin? inlineEnd;
+
+    if (lengths != null && lengths.isNotEmpty) {
+      inlineStart = expressionToMargin(lengths.first);
+      inlineEnd = expressionToMargin(lengths.last);
+    }
+
+    return Margins(inlineStart: inlineStart, inlineEnd: inlineEnd);
+  }
+
+  static Margins expressionToBlockMargins(List<css.Expression>? lengths) {
+    Margin? blockStart;
+    Margin? blockEnd;
+
+    if (lengths != null && lengths.isNotEmpty) {
+      blockStart = expressionToMargin(lengths.first);
+      blockEnd = expressionToMargin(lengths.last);
+    }
+
+    return Margins(blockStart: blockStart, blockEnd: blockEnd);
+  }
+
   static Margins expressionToMargins(List<css.Expression>? lengths) {
     Margin? left;
     Margin? right;
@@ -1015,49 +1149,72 @@ class ExpressionMapping {
     return Margins(left: left, right: right, top: top, bottom: bottom);
   }
 
-  static List<double?> expressionToPadding(List<css.Expression>? lengths) {
-    double? left;
-    double? right;
-    double? top;
-    double? bottom;
-    if (lengths != null && lengths.isNotEmpty) {
-      top = expressionToPaddingLength(lengths.first);
-      if (lengths.length == 4) {
-        right = expressionToPaddingLength(lengths[1]);
-        bottom = expressionToPaddingLength(lengths[2]);
-        left = expressionToPaddingLength(lengths.last);
-      }
-      if (lengths.length == 3) {
-        left = expressionToPaddingLength(lengths[1]);
-        right = expressionToPaddingLength(lengths[1]);
-        bottom = expressionToPaddingLength(lengths.last);
-      }
-      if (lengths.length == 2) {
-        bottom = expressionToPaddingLength(lengths.first);
-        left = expressionToPaddingLength(lengths.last);
-        right = expressionToPaddingLength(lengths.last);
-      }
-      if (lengths.length == 1) {
-        bottom = expressionToPaddingLength(lengths.first);
-        left = expressionToPaddingLength(lengths.first);
-        right = expressionToPaddingLength(lengths.first);
-      }
-    }
-    return [left, right, top, bottom];
+  static HtmlPadding? expressionToHtmlPadding(css.Expression value) {
+    final computedValue = expressionToLengthOrPercent(value);
+    return HtmlPadding(computedValue.value, computedValue.unit);
   }
 
-  static double? expressionToPaddingLength(css.Expression value) {
-    if (value is css.NumberTerm) {
-      return double.tryParse(value.text);
-    } else if (value is css.EmTerm) {
-      return double.tryParse(value.text);
-    } else if (value is css.RemTerm) {
-      return double.tryParse(value.text);
-    } else if (value is css.LengthTerm) {
-      return double.tryParse(
-          value.text.replaceAll(RegExp(r'\s+(\d+\.\d+)\s+'), ''));
+  static HtmlPaddings expressionToInlineHtmlPadding(
+      List<css.Expression>? lengths) {
+    HtmlPadding? inlineStart;
+    HtmlPadding? inlineEnd;
+
+    if (lengths != null && lengths.isNotEmpty) {
+      inlineStart = expressionToHtmlPadding(lengths.first);
+      inlineEnd = expressionToHtmlPadding(lengths.last);
     }
-    return null;
+
+    return HtmlPaddings(inlineStart: inlineStart, inlineEnd: inlineEnd);
+  }
+
+  static HtmlPaddings expressionToBlockHtmlPadding(
+      List<css.Expression>? lengths) {
+    HtmlPadding? blockStart;
+    HtmlPadding? blockEnd;
+
+    if (lengths != null && lengths.isNotEmpty) {
+      blockStart = expressionToHtmlPadding(lengths.first);
+      blockEnd = expressionToHtmlPadding(lengths.last);
+    }
+
+    return HtmlPaddings(blockStart: blockStart, blockEnd: blockEnd);
+  }
+
+  static HtmlPaddings expressionToHtmlPaddings(List<css.Expression>? lengths) {
+    HtmlPadding? left;
+    HtmlPadding? right;
+    HtmlPadding? top;
+    HtmlPadding? bottom;
+
+    if (lengths != null && lengths.isNotEmpty) {
+      top = expressionToHtmlPadding(lengths.first);
+      if (lengths.length == 4) {
+        right = expressionToHtmlPadding(lengths[1]);
+        bottom = expressionToHtmlPadding(lengths[2]);
+        left = expressionToHtmlPadding(lengths.last);
+      }
+      if (lengths.length == 3) {
+        left = expressionToHtmlPadding(lengths[1]);
+        right = expressionToHtmlPadding(lengths[1]);
+        bottom = expressionToHtmlPadding(lengths.last);
+      }
+      if (lengths.length == 2) {
+        bottom = expressionToHtmlPadding(lengths.first);
+        left = expressionToHtmlPadding(lengths.last);
+        right = expressionToHtmlPadding(lengths.last);
+      }
+      if (lengths.length == 1) {
+        bottom = expressionToHtmlPadding(lengths.first);
+        left = expressionToHtmlPadding(lengths.first);
+        right = expressionToHtmlPadding(lengths.first);
+      }
+    }
+    return HtmlPaddings(
+      left: left,
+      right: right,
+      top: top,
+      bottom: bottom,
+    );
   }
 
   static LengthOrPercent expressionToLengthOrPercent(css.Expression value) {
@@ -1065,8 +1222,8 @@ class ExpressionMapping {
       return LengthOrPercent(double.parse(value.text));
     } else if (value is css.EmTerm) {
       return LengthOrPercent(double.parse(value.text), Unit.em);
-      // } else if (value is css.RemTerm) {
-      //   return LengthOrPercent(double.parse(value.text), Unit.rem);
+    } else if (value is css.RemTerm) {
+      return LengthOrPercent(double.parse(value.text), Unit.rem);
       // TODO there are several other available terms processed by the CSS parser
     } else if (value is css.LengthTerm) {
       double number =
@@ -1075,7 +1232,7 @@ class ExpressionMapping {
       return LengthOrPercent(number, unit);
     }
 
-    //Ignore unparsable input
+    //Ignore un-parsable input
     return LengthOrPercent(0);
   }
 

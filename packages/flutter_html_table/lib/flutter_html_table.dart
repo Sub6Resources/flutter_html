@@ -2,9 +2,9 @@ library flutter_html_table;
 
 import 'dart:math';
 
-import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_layout_grid/flutter_layout_grid.dart';
 
 /// [TableHtmlExtension] adds support for the <table> element to the flutter_html library.
 /// <tr>, <tbody>, <tfoot>, <thead>, <th>, <td>, <col>, and <colgroup> are also
@@ -39,7 +39,7 @@ class TableHtmlExtension extends HtmlExtension {
         elementClasses: context.classes.toList(),
         tableStructure: children,
         cellDescendants: cellDescendants,
-        style: Style(),
+        style: Style(display: Display.block),
         node: context.node,
       );
     }

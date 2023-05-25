@@ -176,7 +176,6 @@ class StyledElementBuiltIn extends HtmlExtension {
         continue italics;
       case "div":
         styledElement.style = Style(
-          margin: Margins.all(0),
           display: Display.block,
         );
         break;
@@ -338,14 +337,22 @@ class StyledElementBuiltIn extends HtmlExtension {
         styledElement.style = Style(
           display: Display.block,
           listStyleType: ListStyleType.decimal,
-          padding: const EdgeInsets.only(left: 40),
+          padding: HtmlPaddings.only(inlineStart: 40),
+          margin: Margins(
+            blockStart: Margin(1, Unit.em),
+            blockEnd: Margin(1, Unit.em),
+          ),
         );
         break;
       case "ul":
         styledElement.style = Style(
           display: Display.block,
           listStyleType: ListStyleType.disc,
-          padding: const EdgeInsets.only(left: 40),
+          padding: HtmlPaddings.only(inlineStart: 40),
+          margin: Margins(
+            blockStart: Margin(1, Unit.em),
+            blockEnd: Margin(1, Unit.em),
+          ),
         );
         break;
       case "p":
@@ -439,7 +446,8 @@ class StyledElementBuiltIn extends HtmlExtension {
                     child.value,
                     if (context.parser.shrinkWrap &&
                         i != context.styledElement!.children.length - 1 &&
-                        child.key.style.display == Display.block &&
+                        (child.key.style.display == Display.block ||
+                            child.key.style.display == Display.listItem) &&
                         child.key.element?.localName != "html" &&
                         child.key.element?.localName != "body")
                       const TextSpan(text: "\n", style: TextStyle(fontSize: 0)),
