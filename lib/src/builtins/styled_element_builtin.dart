@@ -172,11 +172,6 @@ class StyledElementBuiltIn extends HtmlExtension {
           textDecoration: TextDecoration.lineThrough,
         );
         break;
-      case "details":
-        styledElement.style = Style(
-          display: Display.block,
-        );
-        break;
       case "dfn":
         continue italics;
       case "div":
