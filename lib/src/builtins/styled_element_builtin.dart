@@ -399,6 +399,11 @@ class StyledElementBuiltIn extends HtmlExtension {
           verticalAlign: VerticalAlign.sub,
         );
         break;
+      case "summary":
+        styledElement.style = Style(
+          display: Display.block,
+        );
+        break;
       case "sup":
         styledElement.style = Style(
           fontSize: FontSize.smaller,
