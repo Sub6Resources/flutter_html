@@ -1,38 +1,8 @@
 # Change Log
 
-All notable changes to this project will be documented in this file.
-See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+#### 3.0.0-beta.2 *May 2023*
 
-## 2023-05-31
-
-### Changes
-
----
-
-Packages with breaking changes:
-
- - There are no breaking changes in this release.
-
-Packages with other changes:
-
- - [`flutter_html` - `v3.0.0-beta.2`](#flutter_html---v300-beta2)
- - [`flutter_html_audio` - `v3.0.0-beta.2`](#flutter_html_audio---v300-beta2)
- - [`flutter_html_iframe` - `v3.0.0-beta.2`](#flutter_html_iframe---v300-beta2)
- - [`flutter_html_math` - `v3.0.0-beta.2`](#flutter_html_math---v300-beta2)
- - [`flutter_html_svg` - `v3.0.0-beta.2`](#flutter_html_svg---v300-beta2)
- - [`flutter_html_table` - `v3.0.0-beta.2`](#flutter_html_table---v300-beta2)
- - [`flutter_html_video` - `v3.0.0-beta.2`](#flutter_html_video---v300-beta2)
- - [`flutter_html_all` - `v3.0.0-beta.2`](#flutter_html_all---v300-beta2)
-
-Packages with dependency updates only:
-
-> Packages listed below depend on other packages in this workspace that have had changes. Their versions have been incremented to bump the minimum dependency versions of the packages they depend upon in this project.
-
- - `flutter_html_all` - `v3.0.0-beta.2`
-
----
-
-#### `flutter_html` - `v3.0.0-beta.2`
+ - Several Breaking Changes. See the [migration guide](https://github.com/Sub6Resources/flutter_html/wiki/Migration-Guides#300)
 
  - **FIX**: start list items on a new line ([#1281](https://github.com/sub6resources/flutter_html/issues/1281)). ([496d1aa8](https://github.com/sub6resources/flutter_html/commit/496d1aa8e655891d2f597c5e4d7e92057801d815))
  - **FIX**: Add "display: Display.block" to table ([#1278](https://github.com/sub6resources/flutter_html/issues/1278)). ([6350f023](https://github.com/sub6resources/flutter_html/commit/6350f02354b7de601ce294123717e2051be97eee))
@@ -42,51 +12,6 @@ Packages with dependency updates only:
  - **FEAT**: Update CssBoxWidget to handle rtl marker boxes ([#1270](https://github.com/sub6resources/flutter_html/issues/1270)). ([d7091990](https://github.com/sub6resources/flutter_html/commit/d7091990d193e892e2f782ac8d91fc0326aff4bc))
  - **FEAT**: support vertical-align in inline styles ([#1266](https://github.com/sub6resources/flutter_html/issues/1266)). ([fe896de5](https://github.com/sub6resources/flutter_html/commit/fe896de5ed8b79425bb33800a26fa4ac328057fe))
  - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-#### `flutter_html_audio` - `v3.0.0-beta.2`
-
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-#### `flutter_html_iframe` - `v3.0.0-beta.2`
-
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-#### `flutter_html_math` - `v3.0.0-beta.2`
-
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-#### `flutter_html_svg` - `v3.0.0-beta.2`
-
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-#### `flutter_html_table` - `v3.0.0-beta.2`
-
- - **FIX**: Add "display: Display.block" to table ([#1278](https://github.com/sub6resources/flutter_html/issues/1278)). ([6350f023](https://github.com/sub6resources/flutter_html/commit/6350f02354b7de601ce294123717e2051be97eee))
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FEAT**: support vertical-align in inline styles ([#1266](https://github.com/sub6resources/flutter_html/issues/1266)). ([fe896de5](https://github.com/sub6resources/flutter_html/commit/fe896de5ed8b79425bb33800a26fa4ac328057fe))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-#### `flutter_html_video` - `v3.0.0-beta.2`
-
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-## 3.0.0-beta.2
-
- - **FIX**: start list items on a new line ([#1281](https://github.com/sub6resources/flutter_html/issues/1281)). ([496d1aa8](https://github.com/sub6resources/flutter_html/commit/496d1aa8e655891d2f597c5e4d7e92057801d815))
- - **FIX**: Add "display: Display.block" to table ([#1278](https://github.com/sub6resources/flutter_html/issues/1278)). ([6350f023](https://github.com/sub6resources/flutter_html/commit/6350f02354b7de601ce294123717e2051be97eee))
- - **FIX**: improve API for ExtensionContext and export marker.dart ([#1273](https://github.com/sub6resources/flutter_html/issues/1273)). ([27e33a95](https://github.com/sub6resources/flutter_html/commit/27e33a955e872d47306db9480f74f6da2e9a028a))
- - **FIX**: Cleaned up whitespace processing and added whitespace tests ([#1267](https://github.com/sub6resources/flutter_html/issues/1267)). ([cc00406b](https://github.com/sub6resources/flutter_html/commit/cc00406b1d0c115e5c66dd4bdfb40db32496f55f))
- - **FIX**: a tag should not style as link if href is not provided ([#1265](https://github.com/sub6resources/flutter_html/issues/1265)). ([d7247cb3](https://github.com/sub6resources/flutter_html/commit/d7247cb303c25d0011f85f9b2d3687924de3d83d))
- - **FEAT**: Update CssBoxWidget to handle rtl marker boxes ([#1270](https://github.com/sub6resources/flutter_html/issues/1270)). ([d7091990](https://github.com/sub6resources/flutter_html/commit/d7091990d193e892e2f782ac8d91fc0326aff4bc))
- - **FEAT**: support vertical-align in inline styles ([#1266](https://github.com/sub6resources/flutter_html/issues/1266)). ([fe896de5](https://github.com/sub6resources/flutter_html/commit/fe896de5ed8b79425bb33800a26fa4ac328057fe))
- - **FEAT**: Add WrapperExtension helper ([#1264](https://github.com/sub6resources/flutter_html/issues/1264)). ([2ffa1dda](https://github.com/sub6resources/flutter_html/commit/2ffa1ddabb3f2a660ab85c551255b89fe8a24ab5))
-
-# Change Log
 
 
 #### 3.0.0-beta.1 - *May 2023*
