@@ -427,13 +427,14 @@ class StyledElementBuiltIn extends HtmlExtension {
 
   @override
   InlineSpan build(ExtensionContext context) {
-    if (context.styledElement!.style.display == Display.listItem ||
-        ((context.styledElement!.style.display == Display.block ||
-                context.styledElement!.style.display == Display.inlineBlock) &&
+    final style = context.styledElement!.style;
+    final display = style.display;
+    if (display == Display.listItem ||
+        ((display == Display.block || display == Display.inlineBlock) &&
             (context.styledElement!.children.isNotEmpty ||
                 context.elementName == "hr"))) {
       return WidgetSpan(
-        alignment: PlaceholderAlignment.baseline,
+        alignment: style.verticalAlign.toPlaceholderAlignment(display),
         baseline: TextBaseline.alphabetic,
         child: CssBoxWidget.withInlineSpanChildren(
           key: AnchorKey.of(context.parser.key, context.styledElement),

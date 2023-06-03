@@ -67,6 +67,8 @@ class InteractiveElementBuiltIn extends HtmlExtension {
       );
     } else {
       return WidgetSpan(
+        alignment: context.style!.verticalAlign.toPlaceholderAlignment(context.style!.display),
+        baseline: TextBaseline.alphabetic,
         child: MultipleTapGestureDetector(
           onTap: onTap,
           child: GestureDetector(
