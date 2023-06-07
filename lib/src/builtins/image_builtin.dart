@@ -93,6 +93,9 @@ class ImageBuiltIn extends HtmlExtension {
     }
 
     return WidgetSpan(
+      alignment: context.style!.verticalAlign
+          .toPlaceholderAlignment(context.style!.display),
+      baseline: TextBaseline.alphabetic,
       child: CssBoxWidget(
         style: imageStyle,
         childIsReplaced: true,

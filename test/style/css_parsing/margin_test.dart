@@ -156,8 +156,8 @@ void main() {
           ),
         ),
       );
-      expect(_getMargin("Test"),
-          equals(Margins.only(bottom: 8, blockEnd: 8, unit: Unit.px)));
+      expect(
+          _getMargin("Test"), equals(Margins.only(blockEnd: 8, unit: Unit.px)));
     },
   );
 
@@ -291,8 +291,8 @@ void main() {
           ),
         ),
       );
-      expect(_getMargin("Test"),
-          equals(Margins.only(bottom: 8, blockEnd: 8, unit: Unit.px)));
+      expect(
+          _getMargin("Test"), equals(Margins.only(blockEnd: 8, unit: Unit.px)));
     },
   );
 

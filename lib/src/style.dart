@@ -5,6 +5,7 @@ import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 
 //Export Style value-unit APIs
+export 'package:flutter_html/src/style/display.dart';
 export 'package:flutter_html/src/style/margin.dart';
 export 'package:flutter_html/src/style/padding.dart';
 export 'package:flutter_html/src/style/length.dart';
@@ -49,7 +50,7 @@ class Style {
   /// CSS attribute "`display`"
   ///
   /// Inherited: no,
-  /// Default: unspecified,
+  /// Default: inline,
   Display? display;
 
   /// CSS attribute "`font-family`"
@@ -271,8 +272,7 @@ class Style {
     this.textOverflow,
     this.textTransform = TextTransform.none,
   }) {
-    if (alignment == null &&
-        (display == Display.block || display == Display.listItem)) {
+    if (alignment == null && (display?.isBlock ?? false)) {
       alignment = Alignment.centerLeft;
     }
   }
@@ -591,14 +591,6 @@ extension MergeBorders on Border? {
   }
 }
 
-enum Display {
-  block,
-  inline,
-  inlineBlock,
-  listItem,
-  none,
-}
-
 enum ListStyleType {
   arabicIndic('arabic-indic'),
   armenian('armenian'),
@@ -692,7 +684,34 @@ enum VerticalAlign {
   sup,
   top,
   bottom,
-  middle,
+  middle;
+
+  /// Converts this [VerticalAlign] to a [PlaceholderAlignment] given the
+  /// [Display] type of the current context
+  PlaceholderAlignment toPlaceholderAlignment(Display? display) {
+    // vertical-align only applies to inline context elements.
+    // If we aren't in such a context, use the default 'bottom' alignment.
+    // Also note that the default display, if it is not set, is inline, so we
+    // treat null `display` values as if they were inline by default.
+    if (display != Display.inline &&
+        display != Display.inlineBlock &&
+        display != null) {
+      return PlaceholderAlignment.bottom;
+    }
+
+    switch (this) {
+      case VerticalAlign.baseline:
+      case VerticalAlign.sub:
+      case VerticalAlign.sup:
+        return PlaceholderAlignment.baseline;
+      case VerticalAlign.top:
+        return PlaceholderAlignment.top;
+      case VerticalAlign.bottom:
+        return PlaceholderAlignment.bottom;
+      case VerticalAlign.middle:
+        return PlaceholderAlignment.middle;
+    }
+  }
 }
 
 enum WhiteSpace {
