@@ -61,13 +61,19 @@ class InteractiveElementBuiltIn extends HtmlExtension {
         children: childSpan.children
             ?.map((e) => _processInteractableChild(context, e))
             .toList(),
+        recognizer: TapGestureRecognizer()..onTap = onTap,
         style: childSpan.style,
         semanticsLabel: childSpan.semanticsLabel,
-        recognizer: TapGestureRecognizer()..onTap = onTap,
+        locale: childSpan.locale,
+        mouseCursor: childSpan.mouseCursor,
+        onEnter: childSpan.onEnter,
+        onExit: childSpan.onExit,
+        spellOut: childSpan.spellOut,
       );
     } else {
       return WidgetSpan(
-        alignment: context.style!.verticalAlign.toPlaceholderAlignment(context.style!.display),
+        alignment: context.style!.verticalAlign
+            .toPlaceholderAlignment(context.style!.display),
         baseline: TextBaseline.alphabetic,
         child: MultipleTapGestureDetector(
           onTap: onTap,

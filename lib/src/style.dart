@@ -689,14 +689,17 @@ enum VerticalAlign {
   /// Converts this [VerticalAlign] to a [PlaceholderAlignment] given the
   /// [Display] type of the current context
   PlaceholderAlignment toPlaceholderAlignment(Display? display) {
-
     // vertical-align only applies to inline context elements.
     // If we aren't in such a context, use the default 'bottom' alignment.
-    if(display != Display.inline && display != Display.inlineBlock) {
+    // Also note that the default display, if it is not set, is inline, so we
+    // treat null `display` values as if they were inline by default.
+    if (display != Display.inline &&
+        display != Display.inlineBlock &&
+        display != null) {
       return PlaceholderAlignment.bottom;
     }
 
-    switch(this) {
+    switch (this) {
       case VerticalAlign.baseline:
       case VerticalAlign.sub:
       case VerticalAlign.sup:
@@ -708,7 +711,6 @@ enum VerticalAlign {
       case VerticalAlign.middle:
         return PlaceholderAlignment.middle;
     }
-
   }
 }
 

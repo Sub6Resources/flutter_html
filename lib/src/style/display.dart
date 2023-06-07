@@ -3,19 +3,19 @@
 /// (https://www.w3.org/TR/css-display-3/#the-display-properties)
 enum Display {
   /// Equivalent to css `display: none;`
-  none (
+  none(
     displayBox: DisplayBox.none,
   ),
 
   /// Equivalent to css `display: contents;`
   ///
   /// Not supported by flutter_html
-  contents (
+  contents(
     displayBox: DisplayBox.contents,
   ),
 
   /// Equivalent to css `display: block;`
-  block (
+  block(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.flow,
   ),
@@ -23,19 +23,19 @@ enum Display {
   /// Equivalent to css `display: flow-root;`
   ///
   /// Not supported by flutter_html
-  flowRoot (
+  flowRoot(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.flowRoot,
   ),
 
   /// Equivalent to css `display: inline;`
-  inline (
+  inline(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.flow,
   ),
 
   /// Equivalent to css `display: inline-block;`
-  inlineBlock (
+  inlineBlock(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.flowRoot,
   ),
@@ -43,20 +43,20 @@ enum Display {
   /// Equivalent to css `display: run-in;`
   ///
   /// Not supported by flutter_html
-  runIn (
+  runIn(
     displayOutside: DisplayOutside.runIn,
     displayInside: DisplayInside.flow,
   ),
 
   /// Equivalent to css `display: list-item;`
-  listItem (
+  listItem(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.flow,
     displayListItem: true,
   ),
 
   /// Equivalent to css `display: inline list-item;`
-  inlineListItem (
+  inlineListItem(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.flow,
     displayListItem: true,
@@ -65,7 +65,7 @@ enum Display {
   /// Equivalent to css `display: flex;`
   ///
   /// Not supported by flutter_html
-  flex (
+  flex(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.flex,
   ),
@@ -73,7 +73,7 @@ enum Display {
   /// Equivalent to css `display: inline-flex;`
   ///
   /// Not supported by flutter_html
-  inlineFlex (
+  inlineFlex(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.flex,
   ),
@@ -81,7 +81,7 @@ enum Display {
   /// Equivalent to css `display: grid;`
   ///
   /// Not supported by flutter_html
-  grid (
+  grid(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.grid,
   ),
@@ -89,96 +89,96 @@ enum Display {
   /// Equivalent to css `display: inline-grid;`
   ///
   /// Not supported by flutter_html
-  inlineGrid (
+  inlineGrid(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.grid,
   ),
 
   /// Equivalent to css `display: ruby;`
-  ruby (
+  ruby(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.ruby,
   ),
 
   /// Equivalent to css `display: block ruby;`
-  blockRuby (
+  blockRuby(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.ruby,
   ),
 
   /// Equivalent to css `display: table;`
-  table (
+  table(
     displayOutside: DisplayOutside.block,
     displayInside: DisplayInside.table,
   ),
 
   /// Equivalent to css `display: inline-table;`
-  inlineTable (
+  inlineTable(
     displayOutside: DisplayOutside.inline,
     displayInside: DisplayInside.table,
   ),
 
   /// Equivalent to css `display: table-row-group;`
-  tableRowGroup (
+  tableRowGroup(
     displayInternal: DisplayInternal.tableRowGroup,
   ),
 
   /// Equivalent to css `display: table-header-group;`
-  tableHeaderGroup (
+  tableHeaderGroup(
     displayInternal: DisplayInternal.tableHeaderGroup,
   ),
 
   /// Equivalent to css `display: table-footer-group;`
-  tableFooterGroup (
+  tableFooterGroup(
     displayInternal: DisplayInternal.tableFooterGroup,
   ),
 
   /// Equivalent to css `display: table-row;`
-  tableRow (
+  tableRow(
     displayInternal: DisplayInternal.tableRowGroup,
   ),
 
   /// Equivalent to css `display: table-cell;`
-  tableCell (
+  tableCell(
     displayInternal: DisplayInternal.tableCell,
     displayInside: DisplayInside.flowRoot,
   ),
 
   /// Equivalent to css `display: table-column-group;`
-  tableColumnGroup (
+  tableColumnGroup(
     displayInternal: DisplayInternal.tableColumnGroup,
   ),
 
   /// Equivalent to css `display: table-column;`
-  tableColumn (
+  tableColumn(
     displayInternal: DisplayInternal.tableColumn,
   ),
 
   /// Equivalent to css `display: table-caption;`
-  tableCaption (
+  tableCaption(
     displayInternal: DisplayInternal.tableCaption,
     displayInside: DisplayInside.flowRoot,
   ),
 
   /// Equivalent to css `display: ruby-base;`
-  rubyBase (
+  rubyBase(
     displayInternal: DisplayInternal.rubyBase,
     displayInside: DisplayInside.flow,
   ),
 
   /// Equivalent to css `display: ruby-text;`
-  rubyText (
+  rubyText(
     displayInternal: DisplayInternal.rubyText,
     displayInside: DisplayInside.flow,
   ),
 
   /// Equivalent to css `display: ruby-base-container;`
-  rubyBaseContainer (
+  rubyBaseContainer(
     displayInternal: DisplayInternal.rubyBaseContainer,
   ),
 
   /// Equivalent to css `display: ruby-text-container;`
-  rubyTextContainer (
+  rubyTextContainer(
     displayInternal: DisplayInternal.rubyTextContainer,
   );
 
