@@ -10,6 +10,7 @@ import 'package:html/dom.dart' as dom;
 export 'package:flutter_html/src/html_parser.dart';
 //export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
+export 'package:flutter_html/src/tree/image_element.dart';
 export 'package:flutter_html/src/tree/interactable_element.dart';
 export 'package:flutter_html/src/tree/replaced_element.dart';
 export 'package:flutter_html/src/tree/styled_element.dart';
