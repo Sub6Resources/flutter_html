@@ -6,12 +6,12 @@ This package renders video elements using the [`chewie`](https://pub.dev/package
 
 The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `poster`, `width`, `height`, and `muted` when rendering the video widget.
 
-#### Registering the `CustomRender`:
+#### Registering the `VideoHtmlExtension`:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    videoMatcher(): videoRender(),
+  extensions: {
+    VideoHtmlExtension(),
   }
 );
 ```

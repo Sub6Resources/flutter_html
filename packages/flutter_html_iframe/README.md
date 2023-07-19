@@ -8,23 +8,23 @@ When rendering iframes, the package considers the width, height, and sandbox att
 
 Sandbox controls the JavaScript mode of the webview - a value of `null` or `allow-scripts` will set `javascriptMode: JavascriptMode.unrestricted`, otherwise it will set `javascriptMode: JavascriptMode.disabled`.
 
-#### Registering the `CustomRender`:
+#### Registering the `IframeHtmlExtension`:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    iframeMatcher(): iframeRender(),
+  extensions: {
+    IframeHtmlExtension(),
   }
 );
 ```
-You can set the `navigationDelegate` of the webview with the `navigationDelegate` property on `iframeRender`. This allows you to block or allow the loading of certain URLs.
+You can set the `navigationDelegate` of the webview with the `navigationDelegate` property on `IframeHtmlExtension`. This allows you to block or allow the loading of certain URLs.
 
 #### `NavigationDelegate` example:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    iframeMatcher(): iframeRender(navigationDelegate: (NavigationRequest request) {
+  extensions: {
+    IframeHtmlExtension(navigationDelegate: (NavigationRequest request) {
       if (request.url.contains("google.com/images")) {
         return NavigationDecision.prevent;
       } else {

@@ -6,12 +6,12 @@ This package renders table elements using the [`flutter_layout_grid`](https://pu
 
 When rendering table elements, the package tries to calculate the best fit for each element and size its cell accordingly. `Rowspan`s and `colspan`s are considered in this process, so cells that span across multiple rows and columns are rendered as expected. Heights are determined intrinsically to maintain an optimal aspect ratio for the cell.
 
-#### Registering the `CustomRender`:
+#### Registering the `TableHtmlExtension`:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    tableMatcher(): tableRender(),
+  extensions: {
+    TableHtmlExtension(),
   }
 );
 ```

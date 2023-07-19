@@ -8,15 +8,12 @@ When rendering SVGs, the package takes the SVG data within the `<svg>` tag and p
 
 The package also exposes a few ways to render SVGs within an `<img>` tag, specifically base64 SVGs, asset SVGs, and network SVGs.
 
-#### Registering the `CustomRender`:
+#### Registering the `SvgHtmlExtension`:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    svgTagMatcher(): svgTagRender(),
-    svgDataUriMatcher(): svgDataImageRender(),
-    svgAssetUriMatcher(): svgAssetImageRender(),
-    svgNetworkSourceMatcher(): svgNetworkImageRender(),
+  extensions: {
+    SvgHtmlExtension(),
   }
 );
 ```
