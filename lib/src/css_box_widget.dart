@@ -1,5 +1,7 @@
 import 'dart:math' as math;
+import 'dart:ui' as ui show BoxHeightStyle, BoxWidthStyle;
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_html/flutter_html.dart';
@@ -13,6 +15,7 @@ class CssBoxWidget extends StatelessWidget {
     this.childIsReplaced = false,
     this.shrinkWrap = false,
     this.top = false,
+    this.selectionConfiguration
   });
 
   /// Generates a CSSBoxWidget that contains a list of InlineSpan children.
@@ -24,7 +27,8 @@ class CssBoxWidget extends StatelessWidget {
     this.childIsReplaced = false,
     this.shrinkWrap = false,
     this.top = false,
-  }) : child = _generateWidgetChild(children, style);
+    this.selectionConfiguration
+  }) : child = _generateWidgetChild(children, style, selectionConfiguration);
 
   /// The child to be rendered within the CSS Box.
   final Widget child;
@@ -49,6 +53,9 @@ class CssBoxWidget extends StatelessWidget {
 
   /// For the root widget, so textScaleFactor, etc are only applied once
   final bool top;
+
+  /// If provided, text will be selectable, with the following configuration
+  final CssBoxSelectionConfiguration? selectionConfiguration;
 
   @override
   Widget build(BuildContext context) {
@@ -92,7 +99,8 @@ class CssBoxWidget extends StatelessWidget {
 
   /// Takes a list of InlineSpan children and generates a Text.rich Widget
   /// containing those children.
-  static Widget _generateWidgetChild(List<InlineSpan> children, Style style) {
+  static Widget _generateWidgetChild(List<InlineSpan> children, Style style,
+      CssBoxSelectionConfiguration? selectionConfiguration) {
     if (children.isEmpty) {
       return Container();
     }
@@ -106,15 +114,46 @@ class CssBoxWidget extends StatelessWidget {
       }
     }
 
-    return Text.rich(
-      TextSpan(
-        style: style.generateTextStyle(),
-        children: children,
-      ),
-      textAlign: style.textAlign ?? TextAlign.start,
-      textDirection: style.direction,
-      maxLines: style.maxLines,
-      overflow: style.textOverflow ?? TextOverflow.clip,
+    if (selectionConfiguration == null) {
+      return Text.rich(
+        TextSpan(
+          style: style.generateTextStyle(),
+          children: children,
+        ),
+        maxLines: style.maxLines,
+        overflow: style.textOverflow ?? TextOverflow.clip,
+        textAlign: style.textAlign ?? TextAlign.start,
+        textDirection: style.direction,
+      );
+    }
+    return SelectableText.rich(
+        TextSpan(
+          style: style.generateTextStyle(),
+          children: children,
+        ),
+        maxLines: style.maxLines,
+        style: TextStyle(
+          overflow: style.textOverflow ?? TextOverflow.clip,
+        ),
+        textAlign: style.textAlign ?? TextAlign.start,
+        textDirection: style.direction,
+        // selection config
+        focusNode: selectionConfiguration.focusNode,
+        autofocus: selectionConfiguration.autofocus,
+        showCursor: selectionConfiguration.showCursor,
+        cursorWidth: selectionConfiguration.cursorWidth,
+        cursorHeight: selectionConfiguration.cursorHeight,
+        cursorRadius: selectionConfiguration.cursorRadius,
+        cursorColor: selectionConfiguration.cursorColor,
+        selectionHeightStyle: selectionConfiguration.selectionHeightStyle,
+        selectionWidthStyle: selectionConfiguration.selectionWidthStyle,
+        enableInteractiveSelection: selectionConfiguration.enableInteractiveSelection,
+        selectionControls: selectionConfiguration.selectionControls,
+        dragStartBehavior: selectionConfiguration.dragStartBehavior,
+        onTap: selectionConfiguration.onTap,
+        scrollPhysics: selectionConfiguration.scrollPhysics,
+        onSelectionChanged: selectionConfiguration.onSelectionChanged,
+        contextMenuBuilder: selectionConfiguration.contextMenuBuilder
     );
   }
 
@@ -780,4 +819,81 @@ class _Sizes {
   final Size childSize;
 
   const _Sizes(this.parentSize, this.childSize);
+}
+
+/// Selection configuration extracted from [SelectableText.rich]
+class CssBoxSelectionConfiguration {
+  CssBoxSelectionConfiguration(
+      {this.focusNode,
+      this.autofocus = false,
+      this.showCursor = false,
+      this.cursorWidth = 2.0,
+      this.cursorHeight,
+      this.cursorRadius,
+      this.cursorColor,
+      this.selectionHeightStyle = ui.BoxHeightStyle.tight,
+      this.selectionWidthStyle = ui.BoxWidthStyle.tight,
+      this.enableInteractiveSelection = true,
+      this.selectionControls,
+      this.dragStartBehavior = DragStartBehavior.start,
+      this.onTap,
+      this.scrollPhysics,
+      this.onSelectionChanged,
+      this.contextMenuBuilder = _defaultContextMenuBuilder});
+
+  /// See [SelectableText.focusNode]
+  final FocusNode? focusNode;
+
+  /// See [SelectableText.autofocus]
+  final bool autofocus;
+
+  /// See [SelectableText.showCursor]
+  final bool showCursor;
+
+  /// See [SelectableText.cursorWidth]
+  final double cursorWidth;
+
+  /// See [SelectableText.cursorHeight]
+  final double? cursorHeight;
+
+  /// See [SelectableText.cursorRadius]
+  final Radius? cursorRadius;
+
+  /// See [SelectableText.cursorColor]
+  final Color? cursorColor;
+
+  /// See [SelectableText.selectionHeightStyle]
+  final ui.BoxHeightStyle selectionHeightStyle;
+
+  /// See [SelectableText.selectionWidthStyle]
+  final ui.BoxWidthStyle selectionWidthStyle;
+
+  /// See [SelectableText.enableInteractiveSelection]
+  final bool enableInteractiveSelection;
+
+  /// See [SelectableText.selectionControls]
+  final TextSelectionControls? selectionControls;
+
+  /// See [SelectableText.dragStartBehavior]
+  final DragStartBehavior dragStartBehavior;
+
+  /// See [SelectableText.onTap]
+  final GestureTapCallback? onTap;
+
+  /// See [SelectableText.scrollPhysics]
+  final ScrollPhysics? scrollPhysics;
+
+  /// See [SelectableText.onSelectionChanged]
+  final SelectionChangedCallback? onSelectionChanged;
+
+  /// See [SelectableText.contextMenuBuilder]
+  final EditableTextContextMenuBuilder contextMenuBuilder;
+
+  /// See [SelectableText._defaultContextMenuBuilder]
+  static Widget _defaultContextMenuBuilder(
+      BuildContext context, EditableTextState editableTextState) {
+    return AdaptiveTextSelectionToolbar.editableText(
+      editableTextState: editableTextState,
+    );
+  }
 }
