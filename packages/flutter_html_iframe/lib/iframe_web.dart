@@ -28,6 +28,7 @@ class IframeWidget extends StatelessWidget {
     final html.IFrameElement iframe = html.IFrameElement()
       ..width = (givenWidth ?? (givenHeight ?? 150) * 2).toString()
       ..height = (givenHeight ?? (givenWidth ?? 300) / 2).toString()
+      ..srcdoc = extensionContext.attributes['srcdoc']
       ..src = extensionContext.attributes['src']
       ..style.border = 'none';
     final String createdViewId = _getRandString(10);
