@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 class IframeWidget extends StatelessWidget {
@@ -8,6 +9,7 @@ class IframeWidget extends StatelessWidget {
     required ExtensionContext? extensionContext,
     NavigationDelegate? navigationDelegate,
     WebViewController? controller,
+    IframeProperties? iframeProperties,
   }) : super(key: key);
 
   @override

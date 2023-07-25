@@ -3,6 +3,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
+import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 import 'package:flutter_html_iframe/shims/dart_ui.dart' as ui;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
@@ -12,11 +13,13 @@ import 'package:webview_flutter/webview_flutter.dart';
 class IframeWidget extends StatelessWidget {
   final NavigationDelegate? navigationDelegate;
   final ExtensionContext extensionContext;
+  final IframeProperties? iframeProperties;
 
   const IframeWidget({
     Key? key,
     required this.extensionContext,
     this.navigationDelegate,
+    this.iframeProperties,
   }) : super(key: key);
 
   @override
@@ -26,8 +29,10 @@ class IframeWidget extends StatelessWidget {
     final givenHeight =
         double.tryParse(extensionContext.attributes['height'] ?? "");
     final html.IFrameElement iframe = html.IFrameElement()
-      ..width = (givenWidth ?? (givenHeight ?? 150) * 2).toString()
-      ..height = (givenHeight ?? (givenWidth ?? 300) / 2).toString()
+      ..width = iframeProperties?.width.toString() ??
+          (givenWidth ?? (givenHeight ?? 150) * 2).toString()
+      ..height = iframeProperties?.height.toString() ??
+          (givenHeight ?? (givenWidth ?? 300) / 2).toString()
       ..srcdoc = extensionContext.attributes['srcdoc']
       ..src = extensionContext.attributes['src']
       ..style.border = 'none';
