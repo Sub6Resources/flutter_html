@@ -10,9 +10,11 @@ import 'iframe_unsupported.dart'
 
 class IframeHtmlExtension extends HtmlExtension {
   final NavigationDelegate? navigationDelegate;
+  final WebViewController? controller;
 
   const IframeHtmlExtension({
     this.navigationDelegate,
+    this.controller,
   });
 
   @override
@@ -24,6 +26,7 @@ class IframeHtmlExtension extends HtmlExtension {
       child: IframeWidget(
         extensionContext: context,
         navigationDelegate: navigationDelegate,
+        controller: controller,
       ),
     );
   }

@@ -9,22 +9,27 @@ import 'package:webview_flutter/webview_flutter.dart';
 class IframeWidget extends StatelessWidget {
   final NavigationDelegate? navigationDelegate;
   final ExtensionContext extensionContext;
+  final WebViewController? controller;
 
   const IframeWidget({
     Key? key,
     required this.extensionContext,
     this.navigationDelegate,
+    this.controller,
   }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final WebViewController controller = WebViewController();
+    WebViewController controller = WebViewController();
 
     final sandboxMode = extensionContext.attributes["sandbox"];
-    controller.setJavaScriptMode(
-        sandboxMode == null || sandboxMode == "allow-scripts"
-            ? JavaScriptMode.unrestricted
-            : JavaScriptMode.disabled);
+    // The decision here was to allow the developer to have full control over the
+    // WebViewController they have passed in and to NOT override the JavaScriptMode
+    // they might have already set.
+    controller = this.controller ?? WebViewController()
+      ..setJavaScriptMode(sandboxMode == null || sandboxMode == "allow-scripts"
+          ? JavaScriptMode.unrestricted
+          : JavaScriptMode.disabled);
 
     if (navigationDelegate != null) {
       controller.setNavigationDelegate(navigationDelegate!);

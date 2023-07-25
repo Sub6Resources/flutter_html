@@ -7,6 +7,7 @@ class IframeWidget extends StatelessWidget {
     Key? key,
     required ExtensionContext? extensionContext,
     NavigationDelegate? navigationDelegate,
+    WebViewController? controller,
   }) : super(key: key);
 
   @override
