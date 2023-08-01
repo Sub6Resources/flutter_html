@@ -106,7 +106,7 @@ class ExtensionContext {
   /// A map between the original [StyledElement] children of this node and the
   /// fully built [InlineSpan] children of this node.
   Map<StyledElement, InlineSpan>? get builtChildrenMap {
-    _builtChildren ??= _callbackToBuildChildren?.call();
+    return  _callbackToBuildChildren?.call();
 
     return _builtChildren;
   }
