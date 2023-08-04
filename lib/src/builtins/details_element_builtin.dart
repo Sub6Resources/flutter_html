@@ -16,6 +16,7 @@ class DetailsElementBuiltIn extends HtmlExtension {
       ExtensionContext context, List<StyledElement> children) {
     return StyledElement(
       name: context.elementName,
+      parent: context.styledElement?.parent,
       children: children,
       style: Style(),
       node: context.node,

@@ -51,6 +51,7 @@ class TagWrapExtension extends HtmlExtension {
   StyledElement prepare(
       ExtensionContext context, List<StyledElement> children) {
     return WrapperElement(
+      parent: context.styledElement?.parent,
       child: context.parser.prepareFromExtension(
         context,
         children,
@@ -74,10 +75,12 @@ class TagWrapExtension extends HtmlExtension {
 
 class WrapperElement extends StyledElement {
   WrapperElement({
+    required StyledElement? parent,
     required StyledElement child,
   }) : super(
-          node: html.Element.tag("wrapper-element"),
+    node: html.Element.tag("wrapper-element"),
           style: Style(),
+          parent: parent,
           children: [child],
           name: "[wrapper-element]",
         );

@@ -90,6 +90,7 @@ class StyledElementBuiltIn extends HtmlExtension {
       elementId: context.id,
       elementClasses: context.classes.toList(),
       node: context.node as dom.Element,
+      parent: context.styledElement?.parent,
       children: children,
       style: Style(),
     );

@@ -12,6 +12,7 @@ class StyledElement {
   final String name;
   final String elementId;
   final List<String> elementClasses;
+  StyledElement? parent;
   List<StyledElement> children;
   Style style;
   final dom.Node node;
@@ -21,6 +22,7 @@ class StyledElement {
     this.name = "[[No name]]",
     this.elementId = "[[No ID]]",
     this.elementClasses = const [],
+    this.parent,
     this.children = const [],
     required this.style,
     required this.node,

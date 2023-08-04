@@ -29,6 +29,7 @@ class RubyBuiltIn extends HtmlExtension {
 
     //TODO we'll probably need specific styling for rp and rt
     return StyledElement(
+      parent: context.styledElement?.parent,
       children: children,
       elementId: context.id,
       elementClasses: context.classes.toList(),

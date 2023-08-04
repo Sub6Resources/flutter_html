@@ -15,10 +15,11 @@ abstract class ReplacedElement extends StyledElement {
     required super.name,
     required super.style,
     required super.elementId,
+    StyledElement? parent,
     List<StyledElement>? children,
     required super.node,
     this.alignment = PlaceholderAlignment.aboveBaseline,
-  }) : super(children: children ?? []);
+  }) : super(parent: parent, children: children ?? []);
 
   static List<String?> parseMediaSources(List<dom.Element> elements) {
     return elements
