@@ -4,14 +4,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/css_parser.dart';
 
+export 'package:flutter_html/src/style/fontsize.dart';
+export 'package:flutter_html/src/style/length.dart';
+export 'package:flutter_html/src/style/lineheight.dart';
 //Export Style value-unit APIs
 export 'package:flutter_html/src/style/margin.dart';
-export 'package:flutter_html/src/style/padding.dart';
-export 'package:flutter_html/src/style/length.dart';
-export 'package:flutter_html/src/style/size.dart';
-export 'package:flutter_html/src/style/fontsize.dart';
-export 'package:flutter_html/src/style/lineheight.dart';
 export 'package:flutter_html/src/style/marker.dart';
+export 'package:flutter_html/src/style/padding.dart';
+export 'package:flutter_html/src/style/size.dart';
 
 ///This class represents all the available CSS attributes
 ///for this package.
@@ -181,12 +181,6 @@ class Style {
   /// Default: VerticalAlign.baseline,
   VerticalAlign verticalAlign;
 
-  /// CSS attribute "`white-space`"
-  ///
-  /// Inherited: yes,
-  /// Default: WhiteSpace.NORMAL,
-  WhiteSpace? whiteSpace;
-
   /// CSS attribute "`width`"
   ///
   /// Inherited: no,
@@ -260,11 +254,8 @@ class Style {
     this.textDecorationThickness,
     this.textShadow,
     this.verticalAlign = VerticalAlign.baseline,
-    this.whiteSpace,
     this.width,
     this.wordSpacing,
-    this.before,
-    this.after,
     this.border,
     this.alignment,
     this.maxLines,
@@ -353,11 +344,8 @@ class Style {
       textDecorationThickness: other.textDecorationThickness,
       textShadow: other.textShadow,
       verticalAlign: other.verticalAlign,
-      whiteSpace: other.whiteSpace,
       width: other.width,
       wordSpacing: other.wordSpacing,
-      before: other.before,
-      after: other.after,
       border: border?.merge(other.border) ?? other.border,
       alignment: other.alignment,
       maxLines: other.maxLines,
@@ -401,7 +389,6 @@ class Style {
         textDecoration ?? TextDecoration.none,
       ]),
       textShadow: child.textShadow ?? textShadow,
-      whiteSpace: child.whiteSpace ?? whiteSpace,
       wordSpacing: child.wordSpacing ?? wordSpacing,
       maxLines: child.maxLines ?? maxLines,
       textOverflow: child.textOverflow ?? textOverflow,
@@ -438,7 +425,6 @@ class Style {
     double? textDecorationThickness,
     List<Shadow>? textShadow,
     VerticalAlign? verticalAlign,
-    WhiteSpace? whiteSpace,
     Width? width,
     double? wordSpacing,
     String? before,
@@ -481,11 +467,8 @@ class Style {
           textDecorationThickness ?? this.textDecorationThickness,
       textShadow: textShadow ?? this.textShadow,
       verticalAlign: verticalAlign ?? this.verticalAlign,
-      whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
       wordSpacing: wordSpacing ?? this.wordSpacing,
-      before: beforeAfterNull == true ? null : before ?? this.before,
-      after: beforeAfterNull == true ? null : after ?? this.after,
       border: border ?? this.border,
       alignment: alignment ?? this.alignment,
       maxLines: maxLines ?? this.maxLines,
@@ -693,9 +676,4 @@ enum VerticalAlign {
   top,
   bottom,
   middle,
-}
-
-enum WhiteSpace {
-  normal,
-  pre,
 }

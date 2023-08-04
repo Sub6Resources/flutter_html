@@ -365,15 +365,10 @@ class StyledElementBuiltIn extends HtmlExtension {
         styledElement.style = Style(
           fontFamily: 'monospace',
           margin: Margins.symmetric(vertical: 14.0),
-          whiteSpace: WhiteSpace.pre,
           display: Display.block,
         );
         break;
       case "q":
-        styledElement.style = Style(
-          before: "\"",
-          after: "\"",
-        );
         break;
       case "s":
         continue strikeThrough;

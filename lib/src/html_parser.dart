@@ -10,11 +10,9 @@ import 'package:flutter_html/src/builtins/styled_element_builtin.dart';
 import 'package:flutter_html/src/builtins/text_builtin.dart';
 import 'package:flutter_html/src/builtins/vertical_align_builtin.dart';
 import 'package:flutter_html/src/css_parser.dart';
-import 'package:flutter_html/src/processing/befores_afters.dart';
 import 'package:flutter_html/src/processing/lists.dart';
 import 'package:flutter_html/src/processing/margins.dart';
 import 'package:flutter_html/src/processing/relative_sizes.dart';
-import 'package:flutter_html/src/processing/whitespace.dart';
 import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart' as html_parser;
 
@@ -365,10 +363,8 @@ class _HtmlParserState extends State<HtmlParser> {
   /// processing `before`/`after` generated elements, and collapsing margins
   /// according to CSS rules.
   void processTree() {
-    tree = WhitespaceProcessing.processWhitespace(tree);
     tree = RelativeSizesProcessing.processRelativeValues(tree);
     tree = ListProcessing.processLists(tree);
-    tree = BeforesAftersProcessing.processBeforesAfters(tree);
     tree = MarginProcessing.processMargins(tree);
   }
 

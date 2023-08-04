@@ -120,6 +120,7 @@ class CssBoxWidget extends StatelessWidget {
       overflow: style.textOverflow ?? TextOverflow.clip,
       textAlign: style.textAlign ?? TextAlign.start,
       textDirection: style.direction,
+      onSelectionEvent: onSelectionEvent,
     );
   }
 

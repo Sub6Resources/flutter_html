@@ -31,14 +31,13 @@ abstract class ReplacedElement extends StyledElement {
 
 /// [TextContentElement] is a [ContentElement] with plaintext as its content.
 class TextContentElement extends ReplacedElement {
-  String? text;
+  String? get text => node.text;
 
   TextContentElement({
     required Style style,
-    required this.text,
-    required super.node,
+    required dom.Text node,
     dom.Element? element,
-  }) : super(name: "[text]", style: style, elementId: "[[No ID]]");
+  }) : super(name: "[text]", style: style, node: node, elementId: "[[No ID]]");
 
   @override
   String toString() {
