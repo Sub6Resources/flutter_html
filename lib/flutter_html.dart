@@ -1,24 +1,25 @@
 library flutter_html;
 
 import 'package:flutter/material.dart';
-import 'package:flutter_html/src/html_parser.dart';
 import 'package:flutter_html/src/extension/html_extension.dart';
+import 'package:flutter_html/src/html_parser.dart';
+import 'package:flutter_html/src/processing/node_order.dart';
 import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
 
-//export render context api
-export 'package:flutter_html/src/html_parser.dart';
 //export src for advanced custom render uses (e.g. casting context.tree)
 export 'package:flutter_html/src/anchor.dart';
+//export css_box_widget for use in extensions.
+export 'package:flutter_html/src/css_box_widget.dart';
+//export extension api
+export 'package:flutter_html/src/extension/html_extension.dart';
+//export render context api
+export 'package:flutter_html/src/html_parser.dart';
+//export style api
+export 'package:flutter_html/src/style.dart';
 export 'package:flutter_html/src/tree/interactable_element.dart';
 export 'package:flutter_html/src/tree/replaced_element.dart';
 export 'package:flutter_html/src/tree/styled_element.dart';
-//export css_box_widget for use in extensions.
-export 'package:flutter_html/src/css_box_widget.dart';
-//export style api
-export 'package:flutter_html/src/style.dart';
-//export extension api
-export 'package:flutter_html/src/extension/html_extension.dart';
 
 class Html extends StatefulWidget {
   /// The `Html` widget takes HTML as input and displays a RichText
@@ -52,13 +53,16 @@ class Html extends StatefulWidget {
     required this.data,
     this.onLinkTap,
     this.onAnchorTap,
-    this.extensions = const [],
+    List<HtmlExtension>? extensions,
     this.onCssParseError,
     this.shrinkWrap = false,
     this.onlyRenderTheseTags,
     this.doNotRenderTheseTags,
-    this.style = const {},
-  })  : documentElement = null,
+    Map<String, Style>? style,
+  })
+      : documentElement = null,
+        extensions = extensions ?? [],
+        style = style ?? {},
         assert(data != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -69,13 +73,14 @@ class Html extends StatefulWidget {
     @required dom.Document? document,
     this.onLinkTap,
     this.onAnchorTap,
-    this.extensions = const [],
+    List<HtmlExtension>? extensions,
     this.onCssParseError,
     this.shrinkWrap = false,
     this.doNotRenderTheseTags,
     this.onlyRenderTheseTags,
     this.style = const {},
-  })  : data = null,
+  })  : extensions = extensions ?? [],
+        data = null,
         assert(document != null),
         documentElement = document!.documentElement,
         _anchorKey = anchorKey ?? GlobalKey(),
@@ -87,13 +92,14 @@ class Html extends StatefulWidget {
     @required this.documentElement,
     this.onLinkTap,
     this.onAnchorTap,
-    this.extensions = const [],
+    List<HtmlExtension>? extensions,
     this.onCssParseError,
     this.shrinkWrap = false,
     this.doNotRenderTheseTags,
     this.onlyRenderTheseTags,
     this.style = const {},
-  })  : data = null,
+  })  : extensions = extensions ?? [],
+        data = null,
         assert(documentElement != null),
         _anchorKey = anchorKey ?? GlobalKey(),
         super(key: key);
@@ -144,6 +150,7 @@ class Html extends StatefulWidget {
 
 class _HtmlState extends State<Html> {
   late dom.Element documentElement;
+  late Map<dom.Node, int> nodeToIndex;
 
   @override
   void initState() {
@@ -151,6 +158,7 @@ class _HtmlState extends State<Html> {
     documentElement = widget.data != null
         ? HtmlParser.parseHTML(widget.data!)
         : widget.documentElement!;
+    nodeToIndex = NodeOrderProcessing.createNodeToIndexMap(documentElement);
   }
 
   @override
@@ -161,6 +169,8 @@ class _HtmlState extends State<Html> {
       documentElement = widget.data != null
           ? HtmlParser.parseHTML(widget.data!)
           : widget.documentElement!;
+      nodeToIndex.clear();
+      nodeToIndex = NodeOrderProcessing.createNodeToIndexMap(documentElement);
     }
   }
 
@@ -169,6 +179,7 @@ class _HtmlState extends State<Html> {
     return HtmlParser(
       key: widget._anchorKey,
       htmlData: documentElement,
+      nodeToIndex: nodeToIndex,
       onLinkTap: widget.onLinkTap,
       onAnchorTap: widget.onAnchorTap,
       onCssParseError: widget.onCssParseError,

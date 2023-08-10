@@ -4,10 +4,10 @@ import 'package:flutter_html/src/style.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
 
 export 'package:flutter_html/src/extension/extension_context.dart';
-export 'package:flutter_html/src/extension/helpers/tag_extension.dart';
-export 'package:flutter_html/src/extension/helpers/matcher_extension.dart';
 export 'package:flutter_html/src/extension/helpers/image_extension.dart';
 export 'package:flutter_html/src/extension/helpers/image_tap_extension.dart';
+export 'package:flutter_html/src/extension/helpers/matcher_extension.dart';
+export 'package:flutter_html/src/extension/helpers/tag_extension.dart';
 export 'package:flutter_html/src/extension/helpers/tag_wrap_extension.dart';
 
 /// The [HtmlExtension] class allows you to customize the behavior of flutter_html
@@ -39,6 +39,7 @@ abstract class HtmlExtension {
       ExtensionContext context, List<StyledElement> children) {
     return StyledElement(
       node: context.node,
+      nodeToIndex: context.nodeToIndex,
       style: Style(),
       elementClasses: context.classes.toList(),
       elementId: context.id,

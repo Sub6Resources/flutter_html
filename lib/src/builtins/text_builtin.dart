@@ -23,28 +23,31 @@ class TextBuiltIn extends HtmlExtension {
       ExtensionContext context, List<StyledElement> children) {
     if (context.elementName == "br") {
       return LinebreakContentElement(
-        style: Style(whiteSpace: WhiteSpace.pre),
+        style: Style(),
         node: context.node,
-      );
+        nodeToIndex: context.nodeToIndex);
     }
 
     if (context.node is dom.Text) {
       return TextContentElement(
-        text: context.node.text,
         style: Style(),
         element: context.node.parent,
-        node: context.node,
+        node: context.node as dom.Text,
+        nodeToIndex: context.nodeToIndex,
       );
     }
 
-    return EmptyContentElement(node: context.node);
+    return EmptyContentElement(
+      node: context.node,
+      nodeToIndex: context.nodeToIndex,
+    );
   }
 
   @override
   InlineSpan build(ExtensionContext context) {
     if (context.styledElement is LinebreakContentElement) {
-      return TextSpan(
-        text: '\n',
+      return WidgetSpan(
+        child: const SizedBox.shrink(),
         style: context.styledElement!.style.generateTextStyle(),
       );
     }

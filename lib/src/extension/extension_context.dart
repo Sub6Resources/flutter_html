@@ -4,6 +4,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_html/src/html_parser.dart';
 import 'package:flutter_html/src/style.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:html/dom.dart' as html;
 
 /// Provides information about the current element on the Html tree for
@@ -15,6 +16,13 @@ class ExtensionContext {
 
   /// The HTML node being represented as a Flutter widget.
   final html.Node node;
+
+  final ExtensionContext? parent;
+
+  final Map<dom.Node, int> nodeToIndex;
+
+  /// See [resetAllProcessing] for use.
+  bool willReprocess = false;
 
   /// Returns the reference to the Html element if this Html node represents
   /// and element. Otherwise returns null.
@@ -103,18 +111,49 @@ class ExtensionContext {
   final BuildChildrenCallback? _callbackToBuildChildren;
   Map<StyledElement, InlineSpan>? _builtChildren;
 
+  /// Removes the built children and disconnects them from the tree and sets [willReprocess] to true.
+  /// This will force [HtmlParser#_buildTreeRecursive] (where [_callbackToBuildChildren] is) to reprocess all steps for this
+  /// element and below on rebuild, since [_builtChildren] will be null for [buildChildrenMapMemoized]
+  void resetAllProcessing() {
+    if (_builtChildren != null) {
+      for (final entry in _builtChildren!.entries.toList(growable: false)) {
+        _disconnect(entry.key);
+      }
+    }
+    _builtChildren = null;
+    if (styledElement != null) {
+      for (final child in styledElement!.children.toList(growable: false)) {
+        _disconnect(child);
+      }
+    }
+    // Do not disconnect this styled element, since it will be added back (so parent is needed) in [HtmlParser#_buildTreeRecursive]
+    assert(styledElement != null && styledElement!.children.isEmpty);
+    willReprocess = true;
+  }
+
+  void _disconnect(StyledElement styledElement) {
+    // Remove from parent
+    styledElement.parent?.children.remove(styledElement);
+    styledElement.parent = null;
+    // Remove from children
+    for (final e in styledElement.children) {
+      e.parent = null;
+    }
+    styledElement.children.clear();
+  }
+
   /// A map between the original [StyledElement] children of this node and the
   /// fully built [InlineSpan] children of this node.
-  Map<StyledElement, InlineSpan>? get builtChildrenMap {
-    _builtChildren ??= _callbackToBuildChildren?.call();
+  Map<StyledElement, InlineSpan>? get buildChildrenMapMemoized {
+    _builtChildren ??= _callbackToBuildChildren?.call(this);
 
     return _builtChildren;
   }
 
   /// The [InlineSpan] version of this node's children. Constructed lazily.
   /// Guaranteed to be non-null only when `currentStep` is `building`.
-  List<InlineSpan>? get inlineSpanChildren {
-    _builtChildren ??= _callbackToBuildChildren?.call();
+  List<InlineSpan>? get buildInlineSpanChildrenMemoized {
+    _builtChildren ??= _callbackToBuildChildren?.call(this);
 
     return _builtChildren?.values.toList();
   }
@@ -128,14 +167,29 @@ class ExtensionContext {
   ExtensionContext({
     required this.currentStep,
     required this.node,
+    required this.nodeToIndex,
     required this.parser,
+    required this.parent,
     this.styledElement,
     this.buildContext,
     BuildChildrenCallback? buildChildrenCallback,
   }) : _callbackToBuildChildren = buildChildrenCallback;
+
+
+  //************************************************************************//
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) return false;
+    return other is ExtensionContext && other.node == node;
+  }
+
+  @override
+  int get hashCode => node.hashCode;
 }
 
-typedef BuildChildrenCallback = Map<StyledElement, InlineSpan> Function();
+typedef BuildChildrenCallback = Map<StyledElement,
+    InlineSpan> Function(ExtensionContext);
 
 enum CurrentStep {
   preparing,

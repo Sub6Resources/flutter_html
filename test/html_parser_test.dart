@@ -39,7 +39,6 @@ void testNewParser(BuildContext context) {
   );
 
   Style style2 = Style(
-    before: "* ",
     direction: TextDirection.rtl,
     fontStyle: FontStyle.italic,
   );

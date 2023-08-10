@@ -24,6 +24,7 @@ class RubyBuiltIn extends HtmlExtension {
         element: context.node as dom.Element,
         children: children,
         node: context.node,
+        nodeToIndex: context.nodeToIndex,
       );
     }
 
@@ -34,6 +35,7 @@ class RubyBuiltIn extends HtmlExtension {
       elementClasses: context.classes.toList(),
       name: context.elementName,
       node: context.node,
+      nodeToIndex: context.nodeToIndex,
       style: Style(),
     );
   }

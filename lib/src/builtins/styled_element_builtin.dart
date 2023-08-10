@@ -90,6 +90,7 @@ class StyledElementBuiltIn extends HtmlExtension {
       elementId: context.id,
       elementClasses: context.classes.toList(),
       node: context.node as dom.Element,
+      nodeToIndex: context.nodeToIndex,
       children: children,
       style: Style(),
     );
@@ -365,15 +366,10 @@ class StyledElementBuiltIn extends HtmlExtension {
         styledElement.style = Style(
           fontFamily: 'monospace',
           margin: Margins.symmetric(vertical: 14.0),
-          whiteSpace: WhiteSpace.pre,
           display: Display.block,
         );
         break;
       case "q":
-        styledElement.style = Style(
-          before: "\"",
-          after: "\"",
-        );
         break;
       case "s":
         continue strikeThrough;
@@ -441,7 +437,7 @@ class StyledElementBuiltIn extends HtmlExtension {
           shrinkWrap: context.parser.shrinkWrap,
           childIsReplaced: ["iframe", "img", "video", "audio"]
               .contains(context.styledElement!.name),
-          children: context.builtChildrenMap!.entries
+          children: context.buildChildrenMapMemoized!.entries
               .expandIndexed((i, child) => [
                     child.value,
                     if (context.parser.shrinkWrap &&
@@ -459,7 +455,7 @@ class StyledElementBuiltIn extends HtmlExtension {
 
     return TextSpan(
       style: context.styledElement!.style.generateTextStyle(),
-      children: context.builtChildrenMap!.entries
+      children: context.buildChildrenMapMemoized!.entries
           .expandIndexed((index, child) => [
                 child.value,
                 if (context.parser.shrinkWrap &&

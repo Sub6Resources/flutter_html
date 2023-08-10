@@ -25,6 +25,7 @@ class InteractiveElementBuiltIn extends HtmlExtension {
       ExtensionContext context, List<StyledElement> children) {
     return InteractiveElement(
       name: context.elementName,
+      parent: context.styledElement?.parent,
       children: children,
       href: context.attributes['href'],
       style: Style(
@@ -32,6 +33,7 @@ class InteractiveElementBuiltIn extends HtmlExtension {
         textDecoration: TextDecoration.underline,
       ),
       node: context.node,
+      nodeToIndex: context.nodeToIndex,
       elementId: context.id,
     );
   }
@@ -39,7 +41,7 @@ class InteractiveElementBuiltIn extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
     return TextSpan(
-      children: context.inlineSpanChildren!.map((childSpan) {
+      children: context.buildInlineSpanChildrenMemoized!.map((childSpan) {
         return _processInteractableChild(context, childSpan);
       }).toList(),
     );

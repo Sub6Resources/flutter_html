@@ -3,6 +3,7 @@ import 'package:csslib/visitor.dart' as css;
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/builtins/details_element_builtin.dart';
+import 'package:flutter_html/src/builtins/highlight_built_in.dart';
 import 'package:flutter_html/src/builtins/image_builtin.dart';
 import 'package:flutter_html/src/builtins/interactive_element_builtin.dart';
 import 'package:flutter_html/src/builtins/ruby_builtin.dart';
@@ -10,27 +11,30 @@ import 'package:flutter_html/src/builtins/styled_element_builtin.dart';
 import 'package:flutter_html/src/builtins/text_builtin.dart';
 import 'package:flutter_html/src/builtins/vertical_align_builtin.dart';
 import 'package:flutter_html/src/css_parser.dart';
-import 'package:flutter_html/src/processing/befores_afters.dart';
 import 'package:flutter_html/src/processing/lists.dart';
 import 'package:flutter_html/src/processing/margins.dart';
+import 'package:flutter_html/src/processing/node_order.dart';
 import 'package:flutter_html/src/processing/relative_sizes.dart';
-import 'package:flutter_html/src/processing/whitespace.dart';
+import 'package:html/dom.dart' as dom;
 import 'package:html/dom.dart' as html;
 import 'package:html/parser.dart' as html_parser;
 
 typedef OnTap = void Function(
-  String? url,
-  Map<String, String> attributes,
-  html.Element? element,
+    String? url,
+    Map<String, String> attributes,
+    html.Element? element,
 );
 
 typedef OnCssParseError = String? Function(
-  String css,
-  List<css_parser.Message> errors,
+    String css,
+    List<css_parser.Message> errors,
 );
 
 class HtmlParser extends StatefulWidget {
   final html.Element htmlData;
+
+  /// node to index of the node in the tree. Used for ordering. If you need to add a node see [NodeOrderProcessing.reIndexNodeToIndexMapWith]
+  final Map<dom.Node, int> nodeToIndex;
   final OnTap? onLinkTap;
   final OnTap? onAnchorTap;
   final OnCssParseError? onCssParseError;
@@ -45,6 +49,7 @@ class HtmlParser extends StatefulWidget {
   HtmlParser({
     required super.key,
     required this.htmlData,
+    required this.nodeToIndex,
     required this.onLinkTap,
     required this.onAnchorTap,
     required this.onCssParseError,
@@ -55,7 +60,7 @@ class HtmlParser extends StatefulWidget {
     required this.onlyRenderTheseTags,
     this.root,
   }) : internalOnAnchorTap = onAnchorTap ??
-            (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
+      (key != null ? _handleAnchorTap(key, onLinkTap) : onLinkTap);
 
   @override
   State<HtmlParser> createState() => _HtmlParserState();
@@ -68,6 +73,7 @@ class HtmlParser extends StatefulWidget {
     const DetailsElementBuiltIn(),
     const StyledElementBuiltIn(),
     const TextBuiltIn(),
+    const HighlightBuiltIn()
   ];
 
   /// [parseHTML] converts a string of HTML to a DOM element using the dart `html` library.
@@ -81,7 +87,7 @@ class HtmlParser extends StatefulWidget {
   }
 
   static OnTap _handleAnchorTap(Key key, OnTap? onLinkTap) =>
-      (String? url, Map<String, String> attributes, html.Element? element) {
+          (String? url, Map<String, String> attributes, html.Element? element) {
         if (url?.startsWith("#") == true) {
           final anchorContext =
               AnchorKey.forId(key, url!.substring(1))?.currentContext;
@@ -96,11 +102,10 @@ class HtmlParser extends StatefulWidget {
   /// Prepares the html node using one of the built-ins or HtmlExtensions
   /// available. If none of the extensions matches, returns an
   /// EmptyContentElement
-  StyledElement prepareFromExtension(
-    ExtensionContext extensionContext,
-    List<StyledElement> children, {
-    Set<HtmlExtension> extensionsToIgnore = const {},
-  }) {
+  StyledElement prepareFromExtension(ExtensionContext extensionContext,
+      List<StyledElement> children, {
+        Set<HtmlExtension> extensionsToIgnore = const {},
+      }) {
     // Loop through every extension and see if it can handle this node
     for (final extension in extensions) {
       if (!extensionsToIgnore.contains(extension) &&
@@ -118,14 +123,14 @@ class HtmlParser extends StatefulWidget {
     }
 
     // If no extension or built-in matches, then return an empty content element.
-    return EmptyContentElement(node: extensionContext.node);
+    return EmptyContentElement(
+        node: extensionContext.node, nodeToIndex: extensionContext.nodeToIndex);
   }
 
   /// Builds the StyledElement into an InlineSpan using one of the built-ins
   /// or HtmlExtensions available. If none of the extensions matches, returns
   /// an empty TextSpan.
-  InlineSpan buildFromExtension(
-    ExtensionContext extensionContext, {
+  InlineSpan buildFromExtension(ExtensionContext extensionContext, {
     Set<HtmlExtension> extensionsToIgnore = const {},
   }) {
     // Loop through every extension and see if it can handle this node
@@ -149,25 +154,31 @@ class HtmlParser extends StatefulWidget {
 }
 
 class _HtmlParserState extends State<HtmlParser> {
-  late StyledElement tree;
+  late StyledElement root;
 
   @override
   void didChangeDependencies() {
-    prepareTree();
+    root = StyledElement(
+        name: '[Tree Root]',
+        children: [],
+        node: widget.htmlData,
+        nodeToIndex: widget.nodeToIndex,
+        style: Style.fromTextStyle(DefaultTextStyle.of(context).style));
+    prepareTree(root);
     super.didChangeDependencies();
   }
 
-  void prepareTree() {
+  void prepareTree(StyledElement tree) {
     // Preparing Step
-    prepareHtmlTree();
+    prepareHtmlTree(tree);
 
     // Styling Step
-    beforeStyleTree(tree);
-    styleTree();
+    beforeStyleTree(tree, null);
+    styleTree(tree);
 
     // Processing Step
-    beforeProcessTree(tree);
-    processTree();
+    beforeProcessTree(tree, null);
+    processTree(tree);
   }
 
   /// As the widget [build]s, the HTML data is processed into a tree of [StyledElement]s,
@@ -176,9 +187,9 @@ class _HtmlParserState extends State<HtmlParser> {
   Widget build(BuildContext context) {
     //Rendering Step
     return CssBoxWidget.withInlineSpanChildren(
-      style: tree.style,
+      style: root.style,
       //TODO can we have buildTree return a list of InlineSpans rather than a single one.
-      children: [buildTree()],
+      children: [buildTree(root, null)],
       shrinkWrap: widget.shrinkWrap,
       top: true,
     );
@@ -192,18 +203,13 @@ class _HtmlParserState extends State<HtmlParser> {
     super.dispose();
   }
 
-  /// Converts the tree of Html nodes into a simplified StyledElement tree
-  void prepareHtmlTree() {
-    tree = StyledElement(
-      name: '[Tree Root]',
-      children: [],
-      node: widget.htmlData,
-      style: Style.fromTextStyle(DefaultTextStyle.of(context)
-          .style), //TODO this was Theme.of(context).textTheme.bodyText2!. Compare.
-    );
-
-    for (var node in widget.htmlData.nodes) {
-      tree.children.add(_prepareHtmlTreeRecursive(node));
+  /// Converts the tree of Html nodes into a StyledElement tree
+  void prepareHtmlTree(StyledElement tree) {
+    for (var node in tree.node.nodes) {
+      tree.children.add(_prepareHtmlTreeRecursive(node, null));
+      for (final e in tree.children) {
+        e.parent = tree;
+      }
     }
   }
 
@@ -226,32 +232,41 @@ class _HtmlParserState extends State<HtmlParser> {
     return false;
   }
 
-  /// Recursive helper method for [lexHtmlTree].
-  StyledElement _prepareHtmlTreeRecursive(html.Node node) {
+  /// Recursive helper method for [lexHtmlTree]. Builds from the bottom up -
+  /// children are built first, then passed to the parent for construction
+  StyledElement _prepareHtmlTreeRecursive(
+      html.Node node, ExtensionContext? parentContext) {
     // Set the extension context for this node.
     final extensionContext = ExtensionContext(
       parser: widget,
       buildContext: context,
       node: node,
+      parent: parentContext,
+      nodeToIndex: widget.nodeToIndex,
       currentStep: CurrentStep.preparing,
     );
 
     // Block the tag from rendering if it is restricted.
     if (_isTagRestricted(extensionContext)) {
-      return EmptyContentElement(node: node);
+      return EmptyContentElement(
+          node: node, nodeToIndex: extensionContext.nodeToIndex);
     }
 
     // Lex this element's children
-    final children = node.nodes.map(_prepareHtmlTreeRecursive).toList();
+    final children = node.nodes
+        .map((n) => _prepareHtmlTreeRecursive(n, extensionContext))
+        .toList();
 
     // Prepare the element from one of the extensions
     return widget.prepareFromExtension(extensionContext, children);
   }
 
   /// Called before any styling is cascaded on the tree
-  void beforeStyleTree(StyledElement tree) {
+  void beforeStyleTree(StyledElement tree, ExtensionContext? parentContext) {
     final extensionContext = ExtensionContext(
       node: tree.node,
+      parent: parentContext,
+      nodeToIndex: widget.nodeToIndex,
       parser: widget,
       styledElement: tree,
       buildContext: context,
@@ -278,12 +293,12 @@ class _HtmlParserState extends State<HtmlParser> {
     }
 
     // Do the same recursively
-    tree.children.forEach(beforeStyleTree);
+    tree.children.forEach((n) => beforeStyleTree(n, extensionContext));
   }
 
   /// [styleTree] takes the lexed [StyleElement] tree and applies external,
   /// inline, and custom CSS/Flutter styles, and then cascades the styles down the tree.
-  void styleTree() {
+  void styleTree(StyledElement tree) {
     final styleTagContents = widget.htmlData
         .getElementsByTagName("style")
         .map((e) => e.innerHtml)
@@ -306,7 +321,7 @@ class _HtmlParserState extends State<HtmlParser> {
     // Apply inline styles
     if (tree.attributes.containsKey("style")) {
       final newStyle =
-          inlineCssToStyle(tree.attributes['style'], widget.onCssParseError);
+      inlineCssToStyle(tree.attributes['style'], widget.onCssParseError);
       if (newStyle != null) {
         tree.style = tree.style.merge(newStyle);
       }
@@ -327,9 +342,11 @@ class _HtmlParserState extends State<HtmlParser> {
   }
 
   /// Called before any processing is done on the tree
-  void beforeProcessTree(StyledElement tree) {
+  void beforeProcessTree(StyledElement tree, ExtensionContext? parentContext) {
     final extensionContext = ExtensionContext(
       node: tree.node,
+      parent: parentContext,
+      nodeToIndex: tree.nodeToIndex,
       parser: widget,
       styledElement: tree,
       buildContext: context,
@@ -355,8 +372,10 @@ class _HtmlParserState extends State<HtmlParser> {
       }
     }
 
-    // Do the same recursively
-    tree.children.forEach(beforeProcessTree);
+    // Do the same recursively.[HighlightBuiltIn] modifies the tree so need to copy the list or will have concurrent modification error.
+    tree.children
+        .toList(growable: false)
+        .forEach((n) => beforeProcessTree(n, extensionContext));
   }
 
   /// [processTree] takes the now-styled [StyleElement] tree and does some final
@@ -364,25 +383,31 @@ class _HtmlParserState extends State<HtmlParser> {
   /// calculating relative values, processing list markers and counters,
   /// processing `before`/`after` generated elements, and collapsing margins
   /// according to CSS rules.
-  void processTree() {
-    tree = WhitespaceProcessing.processWhitespace(tree);
+  void processTree(StyledElement tree) {
     tree = RelativeSizesProcessing.processRelativeValues(tree);
     tree = ListProcessing.processLists(tree);
-    tree = BeforesAftersProcessing.processBeforesAfters(tree);
     tree = MarginProcessing.processMargins(tree);
   }
 
   /// [buildTree] converts a tree of [StyledElement]s to an [InlineSpan] tree.
-  InlineSpan buildTree() {
+  InlineSpan buildTree(StyledElement tree, ExtensionContext? parentContext) {
     //TODO, can't we just break tree out from parent element created in lexHtmlTree?
-    return _buildTreeRecursive(tree);
+    return _buildTreeRecursive(tree, parentContext);
   }
 
-  InlineSpan _buildTreeRecursive(StyledElement tree) {
+  InlineSpan _buildTreeRecursive(
+      StyledElement tree, ExtensionContext? parentContext) {
     // Generate a function that allows children to be built lazily
-    Map<StyledElement, InlineSpan> buildChildren() {
+    Map<StyledElement, InlineSpan> buildChildren(
+        ExtensionContext currentContext) {
+      // StyledElement children have been removed nd flag set for reprocessing
+      if (currentContext.willReprocess) {
+        assert(tree.children.isEmpty);
+        prepareTree(tree);
+        currentContext.willReprocess = false;
+      }
       return Map.fromEntries(tree.children.map((child) {
-        return MapEntry(child, _buildTreeRecursive(child));
+        return MapEntry(child, _buildTreeRecursive(child, currentContext));
       }));
     }
 
@@ -391,6 +416,8 @@ class _HtmlParserState extends State<HtmlParser> {
       parser: widget,
       buildContext: context,
       node: tree.node,
+      parent: parentContext,
+      nodeToIndex: widget.nodeToIndex,
       styledElement: tree,
       currentStep: CurrentStep.building,
       buildChildrenCallback: buildChildren,

@@ -6,9 +6,11 @@ class InteractiveElement extends StyledElement {
 
   InteractiveElement({
     required super.name,
+    required super.parent,
     required super.children,
     required super.style,
     required super.node,
+    required super.nodeToIndex,
     required super.elementId,
     required this.href,
   }) : super();

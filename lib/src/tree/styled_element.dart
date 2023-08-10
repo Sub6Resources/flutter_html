@@ -11,20 +11,32 @@ import 'package:list_counter/list_counter.dart';
 class StyledElement {
   final String name;
   final String elementId;
-  final List<String> elementClasses;
-  List<StyledElement> children;
+  late final List<String> elementClasses;
+  StyledElement? parent;
+  late final List<StyledElement> children;
   Style style;
   final dom.Node node;
+  final Map<dom.Node, int> nodeToIndex;
   final ListQueue<Counter> counters = ListQueue<Counter>();
+
+  //int globalCharacterCount;
 
   StyledElement({
     this.name = "[[No name]]",
     this.elementId = "[[No ID]]",
-    this.elementClasses = const [],
-    this.children = const [],
+    List<String>? elementClasses,
+    this.parent,
+    List<StyledElement>? children,
     required this.style,
     required this.node,
-  });
+    required this.nodeToIndex,
+  }) {
+    this.elementClasses = elementClasses ?? [];
+    this.children = children ?? [];
+    for (final e in this.children) {
+      e.parent = this;
+    }
+  }
 
   bool matchesSelector(String selector) {
     return (element != null && matches(element!, selector)) || name == selector;
@@ -51,6 +63,17 @@ class StyledElement {
     }
     return selfData;
   }
+
+  //************************************************************************//
+
+  @override
+  bool operator ==(Object other) {
+    if (other.runtimeType != runtimeType) return false;
+    return other is StyledElement && other.node == node;
+  }
+
+  @override
+  int get hashCode => node.hashCode;
 }
 
 FontSize numberToFontSize(String num) {
