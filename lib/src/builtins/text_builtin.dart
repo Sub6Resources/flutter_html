@@ -25,7 +25,7 @@ class TextBuiltIn extends HtmlExtension {
       return LinebreakContentElement(
         style: Style(),
         node: context.node,
-      );
+        nodeToIndex: context.nodeToIndex);
     }
 
     if (context.node is dom.Text) {
@@ -33,10 +33,14 @@ class TextBuiltIn extends HtmlExtension {
         style: Style(),
         element: context.node.parent,
         node: context.node as dom.Text,
+        nodeToIndex: context.nodeToIndex,
       );
     }
 
-    return EmptyContentElement(node: context.node);
+    return EmptyContentElement(
+      node: context.node,
+      nodeToIndex: context.nodeToIndex,
+    );
   }
 
   @override

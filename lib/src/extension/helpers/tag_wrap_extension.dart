@@ -63,7 +63,7 @@ class TagWrapExtension extends HtmlExtension {
   @override
   InlineSpan build(ExtensionContext context) {
     final child = CssBoxWidget.withInlineSpanChildren(
-      children: context.inlineSpanChildren!,
+      children: context.buildInlineSpanChildrenMemoized!,
       style: context.style!,
     );
 
@@ -78,7 +78,8 @@ class WrapperElement extends StyledElement {
     required StyledElement? parent,
     required StyledElement child,
   }) : super(
-    node: html.Element.tag("wrapper-element"),
+          node: html.Element.tag("wrapper-element"),
+          nodeToIndex: child.nodeToIndex,
           style: Style(),
           parent: parent,
           children: [child],

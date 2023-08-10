@@ -63,6 +63,7 @@ class ImageBuiltIn extends HtmlExtension {
       children: children,
       style: Style(),
       node: context.node,
+      nodeToIndex: context.nodeToIndex,
       elementId: context.id,
       src: context.attributes["src"]!,
       alt: context.attributes["alt"],

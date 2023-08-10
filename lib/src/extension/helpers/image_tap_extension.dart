@@ -33,6 +33,7 @@ class OnImageTapExtension extends ImageBuiltIn {
       ExtensionContext context, List<StyledElement> children) {
     return ImageTapExtensionElement(
       node: html.Element.tag("img-tap"),
+      nodeToIndex: context.nodeToIndex,
       style: Style(),
       children: [
         super.prepare(context, children),
@@ -45,7 +46,7 @@ class OnImageTapExtension extends ImageBuiltIn {
 
   @override
   InlineSpan build(ExtensionContext context) {
-    final children = context.builtChildrenMap!;
+    final children = context.buildChildrenMapMemoized!;
 
     assert(
       children.keys.isNotEmpty,
@@ -85,6 +86,7 @@ class ImageTapExtensionElement extends StyledElement {
     super.elementId,
     super.name,
     required super.node,
+    required super.nodeToIndex,
     required super.style,
   });
 }

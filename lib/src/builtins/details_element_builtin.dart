@@ -16,16 +16,16 @@ class DetailsElementBuiltIn extends HtmlExtension {
       ExtensionContext context, List<StyledElement> children) {
     return StyledElement(
       name: context.elementName,
-      parent: context.styledElement?.parent,
       children: children,
       style: Style(),
       node: context.node,
+      nodeToIndex: context.nodeToIndex,
     );
   }
 
   @override
   InlineSpan build(ExtensionContext context) {
-    final childList = context.builtChildrenMap!;
+    final childList = context.buildChildrenMapMemoized!;
     final children = childList.values;
 
     InlineSpan? firstChild = children.isNotEmpty ? children.first : null;
