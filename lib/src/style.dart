@@ -192,6 +192,12 @@ class Style {
   /// Default: Width.auto()
   Width? width;
 
+  /// CSS attribute "`max-width`"
+  ///
+  /// Inherited: no,
+  /// Default: null
+  Width? maxWidth;
+
   /// CSS attribute "`word-spacing`"
   ///
   /// Inherited: yes,
@@ -261,6 +267,7 @@ class Style {
     this.verticalAlign = VerticalAlign.baseline,
     this.whiteSpace,
     this.width,
+    this.maxWidth,
     this.wordSpacing,
     this.before,
     this.after,
@@ -353,6 +360,7 @@ class Style {
       verticalAlign: other.verticalAlign,
       whiteSpace: other.whiteSpace,
       width: other.width,
+      maxWidth: other.maxWidth,
       wordSpacing: other.wordSpacing,
       before: other.before,
       after: other.after,
@@ -438,6 +446,7 @@ class Style {
     VerticalAlign? verticalAlign,
     WhiteSpace? whiteSpace,
     Width? width,
+    Width? maxWidth,
     double? wordSpacing,
     String? before,
     String? after,
@@ -481,6 +490,7 @@ class Style {
       verticalAlign: verticalAlign ?? this.verticalAlign,
       whiteSpace: whiteSpace ?? this.whiteSpace,
       width: width ?? this.width,
+      maxWidth: maxWidth ?? this.maxWidth,
       wordSpacing: wordSpacing ?? this.wordSpacing,
       before: beforeAfterNull == true ? null : before ?? this.before,
       after: beforeAfterNull == true ? null : after ?? this.after,

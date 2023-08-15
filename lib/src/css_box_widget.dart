@@ -59,8 +59,24 @@ class CssBoxWidget extends StatelessWidget {
     final direction = _checkTextDirection(context, textDirection);
     final padding = style.padding?.resolve(direction);
 
+    Width? maxWidthCalculated;
+    if (style.maxWidth != null && style.width != null) {
+      if (style.maxWidth!.unit == Unit.percent &&
+          style.width!.unit == Unit.px) {
+        // If our max is a percentage, we want to look at the size available and not be bigger than that.
+        try {
+          double width =
+              MediaQuery.of(context).size.width * (style.maxWidth!.value / 100);
+          maxWidthCalculated = Width(width, style.width!.unit);
+        } catch (_) {}
+      } else if (style.width!.unit == style.maxWidth!.unit &&
+          style.width!.value > style.maxWidth!.value) {
+        maxWidthCalculated = Width(style.maxWidth!.value, style.maxWidth!.unit);
+      }
+    }
+
     return _CSSBoxRenderer(
-      width: style.width ?? Width.auto(),
+      width: maxWidthCalculated ?? style.width ?? Width.auto(),
       height: style.height ?? Height.auto(),
       paddingSize: padding?.collapsedSize ?? Size.zero,
       borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
