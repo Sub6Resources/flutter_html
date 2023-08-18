@@ -313,7 +313,7 @@ StyledElement parseStyledElement(
         listStyleType: element.localName == "ol"
             ? ListStyleType.decimal
             : ListStyleType.disc,
-        padding: const EdgeInsets.only(left: 40),
+        padding: EdgeInsets.only(left: styledElement.style.fontSize?.value ?? 22),
       );
       break;
     case "p":
