@@ -227,7 +227,7 @@ class WhitespaceProcessing {
   static String _removeUnnecessaryWhitespace(String text) {
     return text
         .replaceAll(RegExp(r" *(?=\n)"), "")
-        .replaceAll(RegExp(r"(?<=\n) *"), "")
+        .replaceAll(RegExp(r"(?!\n) *"), "")
         .replaceAll("\n", " ")
         .replaceAll("\t", " ")
         .replaceAll(RegExp(r" {2,}"), " ");
