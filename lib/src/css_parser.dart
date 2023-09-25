@@ -937,13 +937,19 @@ class ExpressionMapping {
                     nextExp.text == "off" ||
                     nextExp.text == "1" ||
                     nextExp.text == "0")) {
-              fontFeatures.add(FontFeature(exp.text,
+              try {
+                fontFeatures.add(FontFeature(exp.text,
                   nextExp.text == "on" || nextExp.text == "1" ? 1 : 0));
+              } catch (_) {}
             } else {
-              fontFeatures.add(FontFeature.enable(exp.text));
+              try {
+                fontFeatures.add(FontFeature.enable(exp.text));
+              } catch (_) {}
             }
           } else {
-            fontFeatures.add(FontFeature.enable(exp.text));
+            try {
+              fontFeatures.add(FontFeature.enable(exp.text));
+            } catch (_) {}
           }
         }
       }

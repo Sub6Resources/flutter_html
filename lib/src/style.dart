@@ -590,6 +590,7 @@ extension MergeBorders on Border? {
 }
 
 enum ListStyleType {
+  initial('initial'),
   arabicIndic('arabic-indic'),
   armenian('armenian'),
   lowerArmenian('lower-armenian'),
