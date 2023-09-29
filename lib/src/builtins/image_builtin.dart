@@ -199,12 +199,11 @@ class ImageBuiltIn extends HtmlExtension {
     return CssBoxWidget(
       style: imageStyle,
       childIsReplaced: true,
-      shrinkWrap: true,
       child: Image.network(
         element.src,
         width: imageStyle.width?.value,
         height: imageStyle.height?.value,
-        fit: BoxFit.fill,
+        fit: BoxFit.contain,
         headers: networkHeaders,
         errorBuilder: (ctx, error, stackTrace) {
           return Text(
