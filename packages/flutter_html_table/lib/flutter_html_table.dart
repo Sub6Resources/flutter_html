@@ -106,6 +106,7 @@ class TableHtmlExtension extends HtmlExtension {
     if (context.elementName == "table") {
       return WidgetSpan(
         child: CssBoxWidget(
+          shrinkWrap: true,
           style: context.styledElement!.style,
           child: LayoutBuilder(
             builder: (_, constraints) {
