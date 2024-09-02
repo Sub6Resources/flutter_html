@@ -13,6 +13,7 @@ export 'package:flutter_html/src/anchor.dart';
 export 'package:flutter_html/src/tree/interactable_element.dart';
 export 'package:flutter_html/src/tree/replaced_element.dart';
 export 'package:flutter_html/src/tree/styled_element.dart';
+export 'package:flutter_html/src/tree/image_element.dart';
 //export css_box_widget for use in extensions.
 export 'package:flutter_html/src/css_box_widget.dart';
 //export style api
