@@ -2,13 +2,12 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/tree/image_element.dart';
 
 class ImageBuiltIn extends HtmlExtension {
   final String? dataEncoding;
   final Set<String>? mimeTypes;
   final Map<String, String>? networkHeaders;
-  final Set<String> networkSchemas;
+  final Set<String>? networkSchemas;
   final Set<String>? networkDomains;
   final Set<String>? fileExtensions;
 
@@ -23,7 +22,7 @@ class ImageBuiltIn extends HtmlExtension {
   const ImageBuiltIn({
     this.networkHeaders,
     this.networkDomains,
-    this.networkSchemas = const {"http", "https"},
+    this.networkSchemas,
     this.fileExtensions,
     this.assetSchema = "asset:",
     this.assetBundle,
@@ -146,7 +145,7 @@ class ImageBuiltIn extends HtmlExtension {
     }
 
     return context.elementName == "img" &&
-        networkSchemas.contains(src.scheme) &&
+        (networkSchemas == null || networkSchemas!.contains(src.scheme)) &&
         !src.path.endsWith(".svg") &&
         (networkDomains == null || networkDomains!.contains(src.host)) &&
         (fileExtensions == null ||
