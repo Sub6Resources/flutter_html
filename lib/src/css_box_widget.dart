@@ -475,6 +475,12 @@ class RenderCSSBox extends RenderBox
     ).parentSize;
   }
 
+  @override
+  double? computeDryBaseline(covariant BoxConstraints constraints,
+      TextBaseline baseline) {
+    return null;
+  }
+
   _Sizes _computeSize(
       {required BoxConstraints constraints,
       required ChildLayouter layoutChild}) {
