@@ -427,27 +427,27 @@ class StyledElementBuiltIn extends HtmlExtension {
 
   @override
   InlineSpan build(ExtensionContext context) {
-    if (context.styledElement!.style.display == Display.listItem ||
-        ((context.styledElement!.style.display == Display.block ||
-                context.styledElement!.style.display == Display.inlineBlock) &&
+    final style = context.styledElement!.style;
+    final display = style.display ?? Display.inline;
+    if (display.displayListItem ||
+        ((display.isBlock || display == Display.inlineBlock) &&
             (context.styledElement!.children.isNotEmpty ||
                 context.elementName == "hr"))) {
       return WidgetSpan(
-        alignment: PlaceholderAlignment.baseline,
+        alignment: style.verticalAlign.toPlaceholderAlignment(display),
         baseline: TextBaseline.alphabetic,
         child: CssBoxWidget.withInlineSpanChildren(
           key: AnchorKey.of(context.parser.key, context.styledElement),
-          style: context.styledElement!.style,
+          style: context.style!,
           shrinkWrap: context.parser.shrinkWrap,
-          childIsReplaced: ["iframe", "img", "video", "audio"]
-              .contains(context.styledElement!.name),
+          childIsReplaced:
+              ["iframe", "img", "video", "audio"].contains(context.elementName),
           children: context.builtChildrenMap!.entries
               .expandIndexed((i, child) => [
                     child.value,
                     if (context.parser.shrinkWrap &&
                         i != context.styledElement!.children.length - 1 &&
-                        (child.key.style.display == Display.block ||
-                            child.key.style.display == Display.listItem) &&
+                        (child.key.style.display?.isBlock ?? false) &&
                         child.key.element?.localName != "html" &&
                         child.key.element?.localName != "body")
                       const TextSpan(text: "\n", style: TextStyle(fontSize: 0)),
@@ -463,7 +463,7 @@ class StyledElementBuiltIn extends HtmlExtension {
           .expandIndexed((index, child) => [
                 child.value,
                 if (context.parser.shrinkWrap &&
-                    child.key.style.display == Display.block &&
+                    (child.key.style.display?.isBlock ?? false) &&
                     index != context.styledElement!.children.length - 1 &&
                     child.key.element?.parent?.localName != "th" &&
                     child.key.element?.parent?.localName != "td" &&

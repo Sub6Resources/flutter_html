@@ -1,4 +1,4 @@
-library flutter_html_table;
+library;
 
 import 'dart:math';
 
@@ -39,7 +39,7 @@ class TableHtmlExtension extends HtmlExtension {
         elementClasses: context.classes.toList(),
         tableStructure: children,
         cellDescendants: cellDescendants,
-        style: Style(display: Display.block),
+        style: Style(display: Display.table),
         node: context.node,
       );
     }
@@ -51,9 +51,11 @@ class TableHtmlExtension extends HtmlExtension {
                 fontWeight: FontWeight.bold,
                 textAlign: TextAlign.center,
                 verticalAlign: VerticalAlign.middle,
+                display: Display.tableCell,
               )
             : Style(
                 verticalAlign: VerticalAlign.middle,
+                display: Display.tableCell,
               ),
         children: children,
         node: context.node,
@@ -71,7 +73,13 @@ class TableHtmlExtension extends HtmlExtension {
         elementId: context.id,
         elementClasses: context.classes.toList(),
         children: children,
-        style: Style(),
+        style: Style(
+          display: context.elementName == "thead"
+              ? Display.tableHeaderGroup
+              : context.elementName == "tfoot"
+                  ? Display.tableFooterGroup
+                  : Display.tableRowGroup,
+        ),
         node: context.node,
       );
     }
@@ -82,7 +90,9 @@ class TableHtmlExtension extends HtmlExtension {
         elementId: context.id,
         elementClasses: context.classes.toList(),
         children: children,
-        style: Style(),
+        style: Style(
+          display: Display.tableRow,
+        ),
         node: context.node,
       );
     }
@@ -93,7 +103,11 @@ class TableHtmlExtension extends HtmlExtension {
         elementId: context.id,
         elementClasses: context.classes.toList(),
         children: children,
-        style: Style(),
+        style: Style(
+          display: context.elementName == "col"
+              ? Display.tableColumn
+              : Display.tableColumnGroup,
+        ),
         node: context.node,
       );
     }
@@ -106,7 +120,7 @@ class TableHtmlExtension extends HtmlExtension {
     if (context.elementName == "table") {
       return WidgetSpan(
         child: CssBoxWidget(
-          style: context.styledElement!.style,
+          style: context.style!,
           child: LayoutBuilder(
             builder: (_, constraints) {
               return _layoutCells(
@@ -125,6 +139,7 @@ class TableHtmlExtension extends HtmlExtension {
       child: CssBoxWidget.withInlineSpanChildren(
         children: context.inlineSpanChildren!,
         style: Style(),
+        childIsReplaced: true,
       ),
     );
   }
@@ -185,7 +200,7 @@ Widget _layoutCells(
           .expand((element) => element)
           .toList(growable: false);
     } else if (child is TableSectionLayoutElement) {
-      rows.addAll(child.children.whereType());
+      rows.addAll(child.children.whereType<TableRowLayoutElement>());
     } else if (child is TableRowLayoutElement) {
       rows.add(child);
     }
@@ -231,28 +246,31 @@ Widget _layoutCells(
           columni +=
               columnColspanOffset[columni].clamp(1, columnMax - columni - 1);
         }
+
+        final colspan = min(child.colspan, columnMax - columni);
+        final rowspan = min(child.rowspan, rows.length - rowi);
+
         cells.add(GridPlacement(
           columnStart: columni,
-          columnSpan: min(child.colspan, columnMax - columni),
+          columnSpan: colspan,
           rowStart: rowi,
-          rowSpan: min(child.rowspan, rows.length - rowi),
+          rowSpan: rowspan,
           child: CssBoxWidget(
             style: child.style.merge(row.style),
-            child: Builder(builder: (context) {
-              final alignment =
-                  child.style.direction ?? Directionality.of(context);
-              return SizedBox.expand(
-                child: Container(
-                  alignment: _getCellAlignment(child, alignment),
-                  child: CssBoxWidget.withInlineSpanChildren(
-                    children: [
-                      parsedCells[child] ?? const TextSpan(text: "error")
-                    ],
-                    style: Style(),
-                  ),
+            child: SizedBox.expand(
+              child: Container(
+                alignment: _getCellAlignment(
+                    child,
+                    child.style.direction ??
+                        Directionality.of(context.buildContext!)),
+                child: CssBoxWidget.withInlineSpanChildren(
+                  children: [
+                    parsedCells[child] ?? const TextSpan(text: "error")
+                  ],
+                  style: Style(),
                 ),
-              );
-            }),
+              ),
+            ),
           ),
         ));
         columnRowOffset[columni] = child.rowspan - 1;
@@ -281,6 +299,9 @@ Widget _layoutCells(
     gridFit: GridFit.loose,
     columnSizes: finalColumnSizes,
     rowSizes: rowSizes,
+    // TODO add style option for border-spacing
+    // rowGap: 2,
+    // columnGap: 2,
     children: cells,
   );
 }

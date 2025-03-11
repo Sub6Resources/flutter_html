@@ -63,6 +63,19 @@ class Margins {
             blockStart?.unit == Unit.auto ? blockStart : Margin(0, Unit.px));
   }
 
+  /// The total margin in the horizontal direction.
+  double get horizontal =>
+      (left?.value ?? inlineStart?.value ?? 0) +
+      (right?.value ?? inlineEnd?.value ?? 0);
+
+  /// The total margin in the vertical direction.
+  double get vertical =>
+      (top?.value ?? blockStart?.value ?? 0) +
+      (bottom?.value ?? blockEnd?.value ?? 0);
+
+  /// The size that this [Margins] would occupy with an empty interior.
+  Size get collapsedSize => Size(horizontal, vertical);
+
   Margins copyWith({
     Margin? left,
     Margin? right,

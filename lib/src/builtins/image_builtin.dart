@@ -2,7 +2,6 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html/src/tree/image_element.dart';
 
 class ImageBuiltIn extends HtmlExtension {
   final String? dataEncoding;
@@ -93,6 +92,9 @@ class ImageBuiltIn extends HtmlExtension {
     }
 
     return WidgetSpan(
+      alignment: context.style!.verticalAlign
+          .toPlaceholderAlignment(context.style!.display),
+      baseline: TextBaseline.alphabetic,
       child: CssBoxWidget(
         style: imageStyle,
         childIsReplaced: true,

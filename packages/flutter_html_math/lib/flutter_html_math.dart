@@ -1,4 +1,4 @@
-library flutter_html_math;
+library;
 
 import 'package:html/dom.dart' as dom;
 import 'package:flutter/material.dart';
@@ -7,7 +7,7 @@ import 'package:flutter_math_fork/flutter_math.dart';
 
 export 'package:flutter_math_fork/flutter_math.dart';
 
-/// [MathHtmlExtension] adds support for the <math> tag to the flutter_html
+/// [MathHtmlExtension] adds support for the `<math>` tag to the flutter_html
 /// library.
 class MathHtmlExtension extends HtmlExtension {
   final OnMathErrorBuilder? onMathErrorBuilder;

@@ -4,18 +4,18 @@ version: 3.0.0-beta.2
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
-  flutter: '>=2.2.0'
+  sdk: '>=3.2.0 <4.0.0'
+  flutter: '>=3.0.0'
 
 dependencies:
   # Plugin for parsing html
-  html: ^0.15.3
+  html: ^0.15.5
 
   # Plugin for parsing css
-  csslib: ^0.17.2
+  csslib: ^1.0.2
 
   # Plugin for firstWhereOrNull extension on lists
-  collection: ^1.17.0
+  collection: ^1.19.0
 
   # plugin to manage lists and counting in a variety of styles
   list_counter: ^1.0.2
@@ -26,9 +26,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^2.0.1
-  meta: ^1.8.0
-  melos: ^3.0.1
+  flutter_lints: ^5.0.0
+  meta: ^1.15.0
+  melos: ^6.3.2
 
 screenshots:
   - description: 'An example of the output produced by flutter_html'
@@ -43,11 +43,10 @@ screenshots:
     path: example/screenshots/flutter_html_readme_screenshot.png
 
 funding:
-  - https://opencollective.com/flutter_html
+  - https://github.com/sponsors/Sub6Resources
 
 topics:
   - html
   - css
   - widgets
   - layout
-  - flutter_html

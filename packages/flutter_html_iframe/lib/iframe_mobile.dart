@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -9,10 +11,10 @@ class IframeWidget extends StatelessWidget {
   final ExtensionContext extensionContext;
 
   const IframeWidget({
-    Key? key,
+    super.key,
     required this.extensionContext,
     this.navigationDelegate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +22,7 @@ class IframeWidget extends StatelessWidget {
 
     final sandboxMode = extensionContext.attributes["sandbox"];
     controller.setJavaScriptMode(
-        sandboxMode == null || sandboxMode == "allow-scripts"
+        sandboxMode == null || sandboxMode.contains("allow-scripts")
             ? JavaScriptMode.unrestricted
             : JavaScriptMode.disabled);
 
@@ -34,6 +36,18 @@ class IframeWidget extends StatelessWidget {
     final givenHeight =
         double.tryParse(extensionContext.attributes['height'] ?? "");
 
+    Uri? srcUri;
+
+    if (extensionContext.attributes['srcdoc'] != null) {
+      srcUri = Uri.dataFromString(
+        extensionContext.attributes['srcdoc'] ?? '',
+        mimeType: 'text/html',
+        encoding: Encoding.getByName('utf-8'),
+      );
+    } else {
+      srcUri = Uri.tryParse(extensionContext.attributes['src'] ?? "") ?? Uri();
+    }
+
     return SizedBox(
       width: givenWidth ?? (givenHeight ?? 150) * 2,
       height: givenHeight ?? (givenWidth ?? 300) / 2,
@@ -41,10 +55,7 @@ class IframeWidget extends StatelessWidget {
         style: extensionContext.styledElement!.style,
         childIsReplaced: true,
         child: WebViewWidget(
-          controller: controller
-            ..loadRequest(
-                Uri.tryParse(extensionContext.attributes['src'] ?? "") ??
-                    Uri()),
+          controller: controller..loadRequest(srcUri),
           key: key,
           gestureRecognizers: {Factory(() => VerticalDragGestureRecognizer())},
         ),

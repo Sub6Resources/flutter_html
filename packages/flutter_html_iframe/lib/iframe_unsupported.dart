@@ -4,10 +4,10 @@ import 'package:webview_flutter/webview_flutter.dart';
 
 class IframeWidget extends StatelessWidget {
   const IframeWidget({
-    Key? key,
+    super.key,
     required ExtensionContext? extensionContext,
     NavigationDelegate? navigationDelegate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

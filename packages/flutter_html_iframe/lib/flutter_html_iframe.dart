@@ -1,4 +1,4 @@
-library flutter_html_iframe;
+library;
 
 import 'package:flutter/widgets.dart';
 import 'package:flutter_html/flutter_html.dart';

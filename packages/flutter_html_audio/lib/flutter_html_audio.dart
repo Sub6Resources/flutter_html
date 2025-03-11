@@ -1,4 +1,4 @@
-library flutter_html_audio;
+library;
 
 import 'package:chewie_audio/chewie_audio.dart';
 import 'package:flutter/material.dart';
@@ -37,10 +37,10 @@ class AudioWidget extends StatefulWidget {
   final AudioControllerCallback? callback;
 
   const AudioWidget({
-    Key? key,
+    super.key,
     required this.context,
     this.callback,
-  }) : super(key: key);
+  });
 
   @override
   State<StatefulWidget> createState() => _AudioWidgetState();
@@ -60,8 +60,8 @@ class _AudioWidgetState extends State<AudioWidget> {
     ];
 
     if (sources.isNotEmpty && sources.first != null) {
-      audioController = VideoPlayerController.network(
-        sources.first ?? "",
+      audioController = VideoPlayerController.networkUrl(
+        Uri.tryParse(sources.first ?? "") ?? Uri(),
       );
       chewieAudioController = ChewieAudioController(
         videoPlayerController: audioController!,
