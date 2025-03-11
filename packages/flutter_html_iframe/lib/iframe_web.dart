@@ -14,10 +14,10 @@ class IframeWidget extends StatelessWidget {
   final ExtensionContext extensionContext;
 
   const IframeWidget({
-    Key? key,
+    super.key,
     required this.extensionContext,
     this.navigationDelegate,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

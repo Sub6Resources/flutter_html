@@ -1,4 +1,4 @@
-library flutter_html_svg;
+library;
 
 import 'dart:convert';
 

@@ -62,9 +62,9 @@ const htmlData = r"""
       
       <h4>Margin Auto on Image</h4>
       <p>display:inline-block; margin: auto; (should not center):</p>
-      <img alt='' style="margin: auto;" width="100" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
+      <img alt='' style="margin: auto;" width="100" src="https://placehold.co/600x400/000000/FFF?text=img.png">
       <p>display:block margin: auto; (should center):</p>
-      <img alt='' style="display: block; margin: auto;" width="100" src="https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png">
+      <img alt='' style="display: block; margin: auto;" width="100" src="https://placehold.co/600x400/000000/FFF?text=img.png">
       
       <h2>Support for <code>sub</code>/<code>sup</code></h2>
       Solve for <var>x<sub>n</sub></var>: log<sub>2</sub>(<var>x</var><sup>2</sup>+<var>n</var>) = 9<sup>3</sup>
@@ -84,26 +84,26 @@ const htmlData = r"""
       
      
       <h2>Table support (With custom styling!):</h2>
-      <table>
-      <colgroup>
-        <col width="200" />
-        <col span="2" width="150" />
-      </colgroup>
-      <thead>
-      <tr><th>One</th><th>Two</th><th>Three</th></tr>
-      </thead>
-      <tbody>
-      <tr>
-        <td rowspan='2'>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan</td><td>Data</td><td>Data</td>
-      </tr>
-      <tr>
-        <td colspan="2"><img width="175" alt='xkcd' src='https://imgs.xkcd.com/comics/commemorative_plaque.png' /></td>
-      </tr>
-      </tbody>
-      <tfoot>
-      <tr><td>fData</td><td>fData</td><td>fData</td></tr>
-      </tfoot>
-      </table>
+<!--      <table>-->
+<!--      <colgroup>-->
+<!--        <col width="200" />-->
+<!--        <col span="2" width="150" />-->
+<!--      </colgroup>-->
+<!--      <thead>-->
+<!--      <tr><th>One</th><th>Two</th><th>Three</th></tr>-->
+<!--      </thead>-->
+<!--      <tbody>-->
+<!--      <tr>-->
+<!--        <td rowspan='2'>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan<br>Rowspan</td><td>Data</td><td>Data</td>-->
+<!--      </tr>-->
+<!--      <tr>-->
+<!--        <td colspan="2"><img width="175" alt='xkcd' src='https://imgs.xkcd.com/comics/commemorative_plaque.png' /></td>-->
+<!--      </tr>-->
+<!--      </tbody>-->
+<!--      <tfoot>-->
+<!--      <tr><td>fData</td><td>fData</td><td>fData</td></tr>-->
+<!--      </tfoot>-->
+<!--      </table>-->
       
       <h2>List support:</h2>
       <ol>
@@ -137,20 +137,20 @@ const htmlData = r"""
         Linking to <a href='https://github.com'>websites</a> has never been easier.
       </p>
       
-      <h2>Image support:</h2>
-      
-      <table class="second-table">
-      <tr><td>Network png</td><td><img width="200" alt='xkcd' src='https://imgs.xkcd.com/comics/commemorative_plaque.png' /></td></tr>
-      <tr><td>Local asset png</td><td><img src='asset:assets/html5.png' width='100' /></td></tr>
-      <tr><td>Local asset svg</td><td><img src='asset:assets/mac.svg' width='100' /></td></tr>
-      <tr><td>Data uri (with base64 support)</td>
-      <td><img alt='Red dot (png)' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />
-      <img alt='Green dot (base64 svg)' src='data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMzAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjE1IiBjeT0iMTAiIHI9IjEwIiBmaWxsPSJncmVlbiIvPgo8L3N2Zz4=' />
-      <img alt='Green dot (plain svg)' src='data:image/svg+xml,%3C?xml version="1.0" encoding="UTF-8"?%3E%3Csvg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="10" r="10" fill="yellow"/%3E%3C/svg%3E' />
-      </td></tr>
-      <tr><td>Custom image render</td><td><img src='https://flutter.dev/images/flutter-mono-81x100.png' /></td></tr>
-      <tr><td>Broken network image</td><td><img alt='Broken network image alt text' src='https://www.example.com/image.png' /></td></tr>
-      </table>
+<!--      <h2>Image support:</h2>-->
+<!--      -->
+<!--      <table class="second-table">-->
+<!--      <tr><td>Network png</td><td><img width="200" alt='xkcd' src='https://imgs.xkcd.com/comics/commemorative_plaque.png' /></td></tr>-->
+<!--      <tr><td>Local asset png</td><td><img src='asset:assets/html5.png' width='100' /></td></tr>-->
+<!--      <tr><td>Local asset svg</td><td><img src='asset:assets/mac.svg' width='100' /></td></tr>-->
+<!--      <tr><td>Data uri (with base64 support)</td>-->
+<!--      <td><img alt='Red dot (png)' src='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==' />-->
+<!--      <img alt='Green dot (base64 svg)' src='data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiPz4KPHN2ZyB2aWV3Qm94PSIwIDAgMzAgMjAiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxjaXJjbGUgY3g9IjE1IiBjeT0iMTAiIHI9IjEwIiBmaWxsPSJncmVlbiIvPgo8L3N2Zz4=' />-->
+<!--      <img alt='Green dot (plain svg)' src='data:image/svg+xml,%3C?xml version="1.0" encoding="UTF-8"?%3E%3Csvg viewBox="0 0 30 20" xmlns="http://www.w3.org/2000/svg"%3E%3Ccircle cx="15" cy="10" r="10" fill="yellow"/%3E%3C/svg%3E' />-->
+<!--      </td></tr>-->
+<!--      <tr><td>Custom image render</td><td><img src='https://flutter.dev/images/flutter-mono-81x100.png' /></td></tr>-->
+<!--      <tr><td>Broken network image</td><td><img alt='Broken network image alt text' src='https://www.example.com/image.png' /></td></tr>-->
+<!--      </table>-->
       
       <h2 id='middle'>SVG support:</h2>
       <svg id='svg1' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'>

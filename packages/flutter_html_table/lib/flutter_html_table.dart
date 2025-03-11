@@ -1,4 +1,4 @@
-library flutter_html_table;
+library;
 
 import 'dart:math';
 
