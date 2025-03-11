@@ -16,7 +16,7 @@ jobs:
       - name: Setup Melos
         run: flutter pub global activate melos
       - name: Bootstrap Project
-        run: flutter pub global run melos bootstrap
+        run: melos bootstrap
       - name: Run Test Suite
         run: flutter pub global run melos run test
       - name: Compile Test Coverage Report
