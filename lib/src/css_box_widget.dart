@@ -616,13 +616,15 @@ class RenderCSSBox extends RenderBox
     RenderBox? markerBox = childParentData.nextSibling;
     if (markerBox != null) {
       final markerBoxParentData = markerBox.parentData! as CSSBoxParentData;
-      final distance = (child.getDistanceToBaseline(TextBaseline.alphabetic,
-                  onlyReal: true) ??
-              0) +
-          topOffset;
-      final offsetHeight = distance -
-          (markerBox.getDistanceToBaseline(TextBaseline.alphabetic) ??
-              markerBox.size.height);
+      // final distance = (child.getDistanceToBaseline(TextBaseline.alphabetic,
+      //             onlyReal: true) ??
+      //         0) +
+      //     topOffset;
+      // final offsetHeight = distance -
+      //     (markerBox.getDistanceToBaseline(TextBaseline.alphabetic) ??
+      //         markerBox.size.height);
+      // TODO handle block children better by modifying above approach
+      final offsetHeight = topOffset;
       switch (_textDirection) {
         case TextDirection.rtl:
           markerBoxParentData.offset = Offset(
