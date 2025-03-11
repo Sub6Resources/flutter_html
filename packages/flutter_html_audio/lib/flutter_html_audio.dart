@@ -60,8 +60,8 @@ class _AudioWidgetState extends State<AudioWidget> {
     ];
 
     if (sources.isNotEmpty && sources.first != null) {
-      audioController = VideoPlayerController.network(
-        sources.first ?? "",
+      audioController = VideoPlayerController.networkUrl(
+        Uri.tryParse(sources.first ?? "") ?? Uri(),
       );
       chewieAudioController = ChewieAudioController(
         videoPlayerController: audioController!,

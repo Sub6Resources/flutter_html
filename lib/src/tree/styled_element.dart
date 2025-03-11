@@ -33,7 +33,7 @@ class StyledElement {
       return false;
     }
   }
-  
+
   bool matchesSelector(String selector) {
     return (element != null && matches(element!, selector)) || name == selector;
   }

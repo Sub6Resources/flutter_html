@@ -57,9 +57,10 @@ void main() {
         ),
       ),
     );
-    expect(find.text("Hello, world!", findRichText: true), findsOneWidget);
+    final finder = find.textRange.ofSubstring("Hello, world!");
+    expect(finder, findsOne);
     expect(tappedUrl, equals(""));
-    await tester.tap(find.text("Hello, world!", findRichText: true));
+    await tester.tapOnText(finder);
     expect(tappedUrl, equals("https://example.com"));
   });
 

@@ -80,7 +80,8 @@ class CssBoxWidget extends StatelessWidget {
           child: top
               ? child
               : MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
+                  data: MediaQuery.of(context)
+                      .copyWith(textScaler: TextScaler.linear(1.0)),
                   child: child,
                 ),
         ),
@@ -484,8 +485,8 @@ class RenderCSSBox extends RenderBox
   }
 
   @override
-  double? computeDryBaseline(covariant BoxConstraints constraints,
-      TextBaseline baseline) {
+  double? computeDryBaseline(
+      covariant BoxConstraints constraints, TextBaseline baseline) {
     return null;
   }
 
@@ -532,9 +533,15 @@ class RenderCSSBox extends RenderBox
     // `width: double.infinity` on the inner Container, but we do it here
     // to keep the infinite width from being applied if the parent's width is
     // also infinite.
-    if(display.isBlock && !shrinkWrap && !childIsReplaced && containingBlockSize.width.isFinite) {
+    if (display.isBlock &&
+        !shrinkWrap &&
+        !childIsReplaced &&
+        containingBlockSize.width.isFinite) {
       childConstraints = childConstraints.enforce(BoxConstraints(
-        maxWidth: math.max(containingBlockSize.width, childConstraints.maxWidth),
+        maxWidth: math.max(
+          containingBlockSize.width,
+          childConstraints.maxWidth,
+        ),
         minWidth: childConstraints.maxWidth,
       ));
     }
@@ -556,7 +563,9 @@ class RenderCSSBox extends RenderBox
       width = childSize.width + horizontalMargins;
       height = childSize.height + verticalMargins;
     } else if (display.isBlock) {
-      width = (shrinkWrap || childIsReplaced || containingBlockSize.width.isInfinite)
+      width = (shrinkWrap ||
+              childIsReplaced ||
+              containingBlockSize.width.isInfinite)
           ? childSize.width + horizontalMargins
           : containingBlockSize.width;
       height = childSize.height + verticalMargins;
@@ -808,7 +817,9 @@ extension Normalize on Dimension {
 
 double _calculateEmValue(Style style, BuildContext buildContext) {
   return (style.fontSize?.emValue ?? 16) *
-      (MediaQuery.maybeTextScalerOf(buildContext)?.scale(style.fontSize?.emValue ?? 16) ?? 1.0) *
+      (MediaQuery.maybeTextScalerOf(buildContext)
+              ?.scale(style.fontSize?.emValue ?? 16) ??
+          1.0) *
       MediaQuery.of(buildContext).devicePixelRatio;
 }
 

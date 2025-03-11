@@ -1,0 +1,33 @@
+name: Test flutter_html
+
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - uses: flutter-actions/setup-flutter@54feb1e258158303e041b9eaf89314dcfbf6d38a
+      - name: Setup Melos
+        run: flutter pub global activate melos
+      - name: Bootstrap Project
+        run: flutter pub global run melos bootstrap
+      - name: Run Test Suite
+        run: flutter pub global run melos run test
+      - name: Compile Test Coverage Report
+        run: flutter pub global run melos run gen_coverage
+      - name: Upload Coverage to Codecov
+        uses: codecov/codecov-action@v5
+        with:
+          files: coverage_report/lcov.info
+          disable_search: true
+          token: ${{ secrets.CODECOV_TOKEN }}
+      - name: Run Dart Analysis
+        run: flutter pub global run melos analyze --fatal-infos
+      - name: Check that `dart format` has been run on every file
+        run: dart format -o none --set-exit-if-changed
