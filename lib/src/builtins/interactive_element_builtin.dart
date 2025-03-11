@@ -62,7 +62,7 @@ class InteractiveElementBuiltIn extends HtmlExtension {
             ?.map((e) => _processInteractableChild(context, e))
             .toList(),
         recognizer: TapGestureRecognizer()..onTap = onTap,
-        style: childSpan.style,
+        style: context.styledElement?.style.generateTextStyle() ?? childSpan.style,
         semanticsLabel: childSpan.semanticsLabel,
         locale: childSpan.locale,
         mouseCursor: childSpan.mouseCursor,
