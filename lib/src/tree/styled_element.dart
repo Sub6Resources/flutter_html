@@ -4,7 +4,7 @@ import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
 //TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
 //ignore: implementation_imports
-import 'package:html/src/query_selector.dart';
+import 'package:html/src/query_selector.dart' as qs;
 import 'package:list_counter/list_counter.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -26,6 +26,14 @@ class StyledElement {
     required this.node,
   });
 
+  bool matches(dom.Element element, String selector) {
+    try {
+      return qs.matches(element, selector);
+    } catch (_) {
+      return false;
+    }
+  }
+  
   bool matchesSelector(String selector) {
     return (element != null && matches(element!, selector)) || name == selector;
   }
