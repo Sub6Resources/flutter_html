@@ -1,4 +1,4 @@
-name: Test flutter_html
+name: flutter_html tests
 
 on:
   pull_request:
