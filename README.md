@@ -1,7 +1,7 @@
 # flutter_html
 [![pub package](https://img.shields.io/pub/v/flutter_html.svg)](https://pub.dev/packages/flutter_html)
 [![codecov](https://codecov.io/gh/Sub6Resources/flutter_html/branch/master/graph/badge.svg)](https://codecov.io/gh/Sub6Resources/flutter_html)
-[![CircleCI](https://circleci.com/gh/Sub6Resources/flutter_html.svg?style=svg)](https://circleci.com/gh/Sub6Resources/flutter_html)
+[![GitHub Actions](https://github.com/Sub6Resources/flutter_html/actions/workflows/test.yml/badge.svg)](https://github.com/Sub6Resources/flutter_html/actions)
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg?style=flat)](https://github.com/Sub6Resources/flutter_html/blob/master/LICENSE)
 
 A Flutter widget for rendering HTML and CSS as Flutter widgets.
