@@ -159,10 +159,7 @@ class CssBoxWidget extends StatelessWidget {
   /// width available to it or if it should just let its inner content
   /// determine the content-box's width.
   bool _shouldExpandToFillBlock() {
-    return (style.display == Display.block ||
-            style.display == Display.listItem) &&
-        !childIsReplaced &&
-        !shrinkWrap;
+    return (style.display?.isBlock ?? false) && !childIsReplaced && !shrinkWrap;
   }
 
   TextDirection _checkTextDirection(
@@ -424,42 +421,62 @@ class RenderCSSBox extends RenderBox
     }
   }
 
-  static double getIntrinsicDimension(RenderBox? firstChild,
-      double Function(RenderBox child) mainChildSizeGetter) {
+  static double getIntrinsicDimension(
+      RenderBox? firstChild,
+      double Function(RenderBox child) mainChildSizeGetter,
+      double marginSpaceNeeded) {
     double extent = 0.0;
     RenderBox? child = firstChild;
     while (child != null) {
       final CSSBoxParentData childParentData =
           child.parentData! as CSSBoxParentData;
-      extent = math.max(extent, mainChildSizeGetter(child));
+      try {
+        extent = math.max(extent, mainChildSizeGetter(child));
+      } catch (_) {
+        // See https://github.com/flutter/flutter/issues/65895
+        debugPrint(
+            "Due to Flutter layout restrictions (see https://github.com/flutter/flutter/issues/65895), contents set to `vertical-align: baseline` within an intrinsically-sized layout may not display as expected. If content is cut off or displaying incorrectly, please try setting vertical-align to 'bottom' on the problematic elements");
+      }
       assert(child.parentData == childParentData);
       child = childParentData.nextSibling;
     }
-    return extent;
+    return extent + marginSpaceNeeded;
   }
 
   @override
   double computeMinIntrinsicWidth(double height) {
     return getIntrinsicDimension(
-        firstChild, (RenderBox child) => child.getMinIntrinsicWidth(height));
+      firstChild,
+      (RenderBox child) => child.getMinIntrinsicWidth(height),
+      _calculateIntrinsicMargins().horizontal,
+    );
   }
 
   @override
   double computeMaxIntrinsicWidth(double height) {
     return getIntrinsicDimension(
-        firstChild, (RenderBox child) => child.getMaxIntrinsicWidth(height));
+      firstChild,
+      (RenderBox child) => child.getMaxIntrinsicWidth(height),
+      _calculateIntrinsicMargins().horizontal,
+    );
   }
 
   @override
   double computeMinIntrinsicHeight(double width) {
     return getIntrinsicDimension(
-        firstChild, (RenderBox child) => child.getMinIntrinsicHeight(width));
+      firstChild,
+      (RenderBox child) => child.getMinIntrinsicHeight(width),
+      _calculateIntrinsicMargins().vertical,
+    );
   }
 
   @override
   double computeMaxIntrinsicHeight(double width) {
     return getIntrinsicDimension(
-        firstChild, (RenderBox child) => child.getMaxIntrinsicHeight(width));
+      firstChild,
+      (RenderBox child) => child.getMaxIntrinsicHeight(width),
+      _calculateIntrinsicMargins().vertical,
+    );
   }
 
   @override
@@ -521,31 +538,20 @@ class RenderCSSBox extends RenderBox
 
     //Calculate Width and Height of CSS Box
     height = childSize.height;
-    switch (display) {
-      case Display.block:
-        width = (shrinkWrap || childIsReplaced)
-            ? childSize.width + horizontalMargins
-            : containingBlockSize.width;
-        height = childSize.height + verticalMargins;
-        break;
-      case Display.inline:
-        width = childSize.width + horizontalMargins;
-        height = childSize.height;
-        break;
-      case Display.inlineBlock:
-        width = childSize.width + horizontalMargins;
-        height = childSize.height + verticalMargins;
-        break;
-      case Display.listItem:
-        width = shrinkWrap
-            ? childSize.width + horizontalMargins
-            : containingBlockSize.width;
-        height = childSize.height + verticalMargins;
-        break;
-      case Display.none:
-        width = 0;
-        height = 0;
-        break;
+    if (display.displayBox == DisplayBox.none) {
+      width = 0;
+      height = 0;
+    } else if (display == Display.inlineBlock) {
+      width = childSize.width + horizontalMargins;
+      height = childSize.height + verticalMargins;
+    } else if (display.isBlock) {
+      width = (shrinkWrap || childIsReplaced)
+          ? childSize.width + horizontalMargins
+          : containingBlockSize.width;
+      height = childSize.height + verticalMargins;
+    } else {
+      width = childSize.width + horizontalMargins;
+      height = childSize.height;
     }
 
     return _Sizes(constraints.constrain(Size(width, height)), childSize);
@@ -575,26 +581,14 @@ class RenderCSSBox extends RenderBox
 
     double leftOffset = 0;
     double topOffset = 0;
-    switch (display) {
-      case Display.block:
-        leftOffset = leftMargin;
-        topOffset = topMargin;
-        break;
-      case Display.inline:
-        leftOffset = leftMargin;
-        break;
-      case Display.inlineBlock:
-        leftOffset = leftMargin;
-        topOffset = topMargin;
-        break;
-      case Display.listItem:
-        leftOffset = leftMargin;
-        topOffset = topMargin;
-        break;
-      case Display.none:
-        //No offset
-        break;
+
+    if (display.isBlock || display == Display.inlineBlock) {
+      leftOffset = leftMargin;
+      topOffset = topMargin;
+    } else if (display.displayOutside == DisplayOutside.inline) {
+      leftOffset = leftMargin;
     }
+
     childParentData.offset = Offset(leftOffset, topOffset);
     assert(child.parentData == childParentData);
 
@@ -628,7 +622,7 @@ class RenderCSSBox extends RenderBox
 
   Margins _calculateUsedMargins(Size childSize, Size containingBlockSize) {
     //We assume that margins have already been preprocessed
-    // (i.e. they are non-null and either px units or auto.
+    // (i.e. they are non-null and either px units or auto).
     assert(margins.left != null && margins.right != null);
     assert(margins.left!.unit == Unit.px || margins.left!.unit == Unit.auto);
     assert(margins.right!.unit == Unit.px || margins.right!.unit == Unit.auto);
@@ -727,6 +721,40 @@ class RenderCSSBox extends RenderBox
 
       //Assert that all auto values have been assigned.
       assert(!marginLeftIsAuto && !marginRightIsAuto && !widthIsAuto);
+    }
+
+    return Margins(
+      left: marginLeft,
+      right: marginRight,
+      top: margins.top,
+      bottom: margins.bottom,
+    );
+  }
+
+  Margins _calculateIntrinsicMargins() {
+    //We assume that margins have already been preprocessed
+    // (i.e. they are non-null and either px units or auto).
+    assert(margins.left != null && margins.right != null);
+    assert(margins.left!.unit == Unit.px || margins.left!.unit == Unit.auto);
+    assert(margins.right!.unit == Unit.px || margins.right!.unit == Unit.auto);
+
+    Margin marginLeft = margins.left!;
+    Margin marginRight = margins.right!;
+
+    bool marginLeftIsAuto = marginLeft.unit == Unit.auto;
+    bool marginRightIsAuto = marginRight.unit == Unit.auto;
+
+    if (display.isBlock) {
+      if (marginLeftIsAuto) {
+        marginLeft = Margin(0);
+      }
+
+      if (marginRightIsAuto) {
+        marginRight = Margin(0);
+      }
+    } else {
+      marginLeft = Margin(0);
+      marginRight = Margin(0);
     }
 
     return Margins(

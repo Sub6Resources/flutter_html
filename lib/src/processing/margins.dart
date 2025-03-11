@@ -32,8 +32,10 @@ class MarginProcessing {
     //Collapsing should be depth-first.
     tree.children.forEach(_collapseMargins);
 
-    //The root boxes do not collapse.
-    if (tree.name == '[Tree Root]' || tree.name == 'html') {
+    //The root boxes and table/ruby elements do not collapse.
+    if (tree.name == '[Tree Root]' ||
+        tree.name == 'html' ||
+        tree.style.display?.displayInternal != null) {
       return tree;
     }
 
@@ -67,7 +69,8 @@ class MarginProcessing {
 
     // Handle case (3) from above.
     // Bottom margins cannot collapse if the element has padding
-    if ((tree.style.padding?.bottom ?? tree.style.padding?.blockEnd ?? 0) ==
+    if ((tree.style.padding?.bottom?.value ??
+            tree.style.padding?.blockEnd?.value) ==
         0) {
       final parentBottom = tree.style.margin?.bottom?.value ??
           tree.style.margin?.blockEnd?.value ??
