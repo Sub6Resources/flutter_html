@@ -6,12 +6,12 @@ This package renders audio elements using the [`chewie_audio`](https://pub.dev/p
 
 The package considers the attributes `controls`, `loop`, `src`, `autoplay`, `width`, and `muted` when rendering the audio widget.
 
-#### Registering the `CustomRender`:
+#### Registering the `AudioHtmlExtension`:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    audioMatcher(): audioRender(),
+  extensions: {
+    AudioHtmlExtension(),
   }
 );
 ```

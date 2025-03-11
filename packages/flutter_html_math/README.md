@@ -8,17 +8,17 @@ When rendering MathML, the package takes the MathML data within the `<math>` tag
 
 Because this package is parsing MathML to Tex, it may not support some functionalities. The current list of supported tags can be found [above](#currently-supported-html-tags), but some of these only have partial support at the moment.
 
-#### Registering the `CustomRender`:
+#### Registering the `MathHtmlExtension`:
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    mathMatcher(): mathRender(),
+  extensions: {
+    MathHtmlExtension(),
   }
 );
 ```
 
-If the parsing errors, you can use the `onMathError` property of `mathRender` to catch the error and potentially fix it on your end.
+If the parsing errors, you can use the `onMathError` property of `MathHtmlExtension` to catch the error and potentially fix it on your end.
 
 The function exposes the parsed Tex `String`, as well as the error and error with type from `flutter_math_fork` as a `String`.
 
@@ -28,8 +28,8 @@ You can analyze the error and the parsed string, and finally return a new instan
 
 ```dart
 Widget html = Html(
-  customRenders: {
-    mathMatcher(): mathRender(onMathError: (tex, exception, exceptionWithType) {
+  extensions: {
+    MathHtmlExtension(onMathError: (tex, exception, exceptionWithType) {
       print(exception);
       //optionally try and correct the Tex string here
       return Text(exception);
