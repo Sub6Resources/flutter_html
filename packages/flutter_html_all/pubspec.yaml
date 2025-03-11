@@ -1,6 +1,6 @@
 name: flutter_html_all
 description: All optional flutter_html widgets, bundled into a single package.
-version: 3.0.0-beta.2
+version: 3.0.0
 homepage: https://github.com/Sub6Resources/flutter_html
 
 environment:
@@ -10,13 +10,13 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_html: ^3.0.0-beta.2
-  flutter_html_audio: ^3.0.0-beta.2
-  flutter_html_iframe: ^3.0.0-beta.2
-  flutter_html_math: ^3.0.0-beta.2
-  flutter_html_svg: ^3.0.0-beta.2
-  flutter_html_table: ^3.0.0-beta.2
-  flutter_html_video: ^3.0.0-beta.2
+  flutter_html: ^3.0.0
+  flutter_html_audio: ^3.0.0
+  flutter_html_iframe: ^3.0.0
+  flutter_html_math: ^3.0.0
+  flutter_html_svg: ^3.0.0
+  flutter_html_table: ^3.0.0
+  flutter_html_video: ^3.0.0
 
 dev_dependencies:
   flutter_test:

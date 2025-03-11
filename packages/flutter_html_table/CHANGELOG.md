@@ -1,3 +1,7 @@
+## 3.0.0
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
 ## 3.0.0-beta.2
 
  - **FIX**: Add "display: Display.block" to table ([#1278](https://github.com/sub6resources/flutter_html/issues/1278)). ([6350f023](https://github.com/sub6resources/flutter_html/commit/6350f02354b7de601ce294123717e2051be97eee))

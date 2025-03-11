@@ -1,5 +1,12 @@
 # Change Log
 
+All notable changes to this project will be documented in this file.
+See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
+
+#### 3.0.0 *March 2025*
+
+ - Graduate package to a stable release. See pre-releases prior to this version for changelog entries.
+
 #### 3.0.0-beta.2 *May 2023*
 
  - Several Breaking Changes. See the [migration guide](https://github.com/Sub6Resources/flutter_html/wiki/Migration-Guides#300)
