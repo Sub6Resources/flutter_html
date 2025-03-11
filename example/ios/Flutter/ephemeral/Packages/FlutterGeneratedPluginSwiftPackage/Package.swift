@@ -15,13 +15,17 @@ let package = Package(
         .library(name: "FlutterGeneratedPluginSwiftPackage", type: .static, targets: ["FlutterGeneratedPluginSwiftPackage"])
     ],
     dependencies: [
-        .package(name: "video_player_avfoundation", path: "/Users/matthewwhitaker/.pub-cache/hosted/pub.dev/video_player_avfoundation-2.6.7/darwin/video_player_avfoundation")
+        .package(name: "package_info_plus", path: "/Users/matthewwhitaker/.pub-cache/hosted/pub.dev/package_info_plus-8.3.0/ios/package_info_plus"),
+        .package(name: "video_player_avfoundation", path: "/Users/matthewwhitaker/.pub-cache/hosted/pub.dev/video_player_avfoundation-2.7.0/darwin/video_player_avfoundation"),
+        .package(name: "webview_flutter_wkwebview", path: "/Users/matthewwhitaker/.pub-cache/hosted/pub.dev/webview_flutter_wkwebview-3.18.4/darwin/webview_flutter_wkwebview")
     ],
     targets: [
         .target(
             name: "FlutterGeneratedPluginSwiftPackage",
             dependencies: [
-                .product(name: "video-player-avfoundation", package: "video_player_avfoundation")
+                .product(name: "package-info-plus", package: "package_info_plus"),
+                .product(name: "video-player-avfoundation", package: "video_player_avfoundation"),
+                .product(name: "webview-flutter-wkwebview", package: "webview_flutter_wkwebview")
             ]
         )
     ]

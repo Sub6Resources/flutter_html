@@ -200,7 +200,7 @@ Widget _layoutCells(
           .expand((element) => element)
           .toList(growable: false);
     } else if (child is TableSectionLayoutElement) {
-      rows.addAll(child.children.whereType());
+      rows.addAll(child.children.whereType<TableRowLayoutElement>());
     } else if (child is TableRowLayoutElement) {
       rows.add(child);
     }
