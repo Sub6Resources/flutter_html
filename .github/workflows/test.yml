@@ -2,9 +2,9 @@ name: Test flutter_html
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   test:
