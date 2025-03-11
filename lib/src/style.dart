@@ -215,6 +215,7 @@ class Style {
   String? after;
   Border? border;
   Alignment? alignment;
+  BorderRadius? borderRadius;
 
   /// MaxLine
   ///
@@ -267,6 +268,7 @@ class Style {
     this.before,
     this.after,
     this.border,
+    this.borderRadius,
     this.alignment,
     this.maxLines,
     this.textOverflow,
@@ -359,6 +361,7 @@ class Style {
       before: other.before,
       after: other.after,
       border: border?.merge(other.border) ?? other.border,
+      borderRadius: other.borderRadius,
       alignment: other.alignment,
       maxLines: other.maxLines,
       textOverflow: other.textOverflow,
@@ -444,6 +447,7 @@ class Style {
     String? before,
     String? after,
     Border? border,
+    BorderRadius? borderRadius,
     Alignment? alignment,
     Widget? markerContent,
     int? maxLines,
@@ -487,6 +491,7 @@ class Style {
       before: beforeAfterNull == true ? null : before ?? this.before,
       after: beforeAfterNull == true ? null : after ?? this.after,
       border: border ?? this.border,
+      borderRadius: borderRadius ?? this.borderRadius,
       alignment: alignment ?? this.alignment,
       maxLines: maxLines ?? this.maxLines,
       textOverflow: textOverflow ?? this.textOverflow,
