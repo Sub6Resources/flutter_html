@@ -46,6 +46,7 @@ class TextBuiltIn extends HtmlExtension {
       return TextSpan(
         text: '\n',
         style: context.styledElement!.style.generateTextStyle(),
+        children: const [WidgetSpan(child: SizedBox.shrink())],
       );
     }
 
