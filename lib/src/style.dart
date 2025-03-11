@@ -297,7 +297,7 @@ class Style {
 
   TextStyle generateTextStyle() {
     return TextStyle(
-      backgroundColor: backgroundColor,
+      backgroundColor: (display?.isBlock ?? false) ? null : backgroundColor,
       color: color,
       decoration: textDecoration,
       decorationColor: textDecorationColor,
