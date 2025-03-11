@@ -1,7 +1,7 @@
 import 'length.dart';
 
 class FontSize extends LengthOrPercent {
-  FontSize(double size, [Unit unit = Unit.px]) : super(size, unit);
+  FontSize(super.size, [super.unit]);
 
   // These values are calculated based off of the default (`medium`)
   // being 14px.

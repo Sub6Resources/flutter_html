@@ -1,4 +1,4 @@
-library flutter_html;
+library;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/src/html_parser.dart';
@@ -48,7 +48,7 @@ class Html extends StatefulWidget {
   /// **style** Pass in the style information for the Html here.
   /// See [its wiki page](https://github.com/Sub6Resources/flutter_html/wiki/Style) for more info.
   Html({
-    Key? key,
+    super.key,
     GlobalKey? anchorKey,
     required this.data,
     this.onLinkTap,
@@ -61,13 +61,12 @@ class Html extends StatefulWidget {
     this.style = const {},
   })  : documentElement = null,
         assert(data != null),
-        _anchorKey = anchorKey ?? GlobalKey(),
-        super(key: key);
+        _anchorKey = anchorKey ?? GlobalKey();
 
   Html.fromDom({
-    Key? key,
+    super.key,
     GlobalKey? anchorKey,
-    @required dom.Document? document,
+    required dom.Document? document,
     this.onLinkTap,
     this.onAnchorTap,
     this.extensions = const [],
@@ -79,13 +78,12 @@ class Html extends StatefulWidget {
   })  : data = null,
         assert(document != null),
         documentElement = document!.documentElement,
-        _anchorKey = anchorKey ?? GlobalKey(),
-        super(key: key);
+        _anchorKey = anchorKey ?? GlobalKey();
 
   Html.fromElement({
-    Key? key,
+    super.key,
     GlobalKey? anchorKey,
-    @required this.documentElement,
+    required this.documentElement,
     this.onLinkTap,
     this.onAnchorTap,
     this.extensions = const [],
@@ -96,8 +94,7 @@ class Html extends StatefulWidget {
     this.style = const {},
   })  : data = null,
         assert(documentElement != null),
-        _anchorKey = anchorKey ?? GlobalKey(),
-        super(key: key);
+        _anchorKey = anchorKey ?? GlobalKey();
 
   /// A unique key for this Html widget to ensure uniqueness of anchors
   final GlobalKey _anchorKey;
@@ -127,7 +124,7 @@ class Html extends StatefulWidget {
 
   /// A set of the only HTML tags that should be rendered by this widget.
   ///
-  /// Note that the html parser wraps your html in an <html> and <body> tag
+  /// Note that the html parser wraps your html in an `<html>` and `<body>` tag
   /// by default, so you should include those in this set if you want any
   /// of your html to render.
   final Set<String>? onlyRenderTheseTags;

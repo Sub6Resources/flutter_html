@@ -76,12 +76,11 @@ class CssBoxWidget extends StatelessWidget {
             border: style.border,
             color: style.backgroundColor, //Colors the padding and content boxes
           ),
-          width: _shouldExpandToFillBlock() ? double.infinity : null,
           padding: padding,
           child: top
               ? child
               : MediaQuery(
-                  data: MediaQuery.of(context).copyWith(textScaleFactor: 1.0),
+                  data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(1.0)),
                   child: child,
                 ),
         ),
@@ -155,13 +154,6 @@ class CssBoxWidget extends StatelessWidget {
     return null;
   }
 
-  /// Whether or not the content-box should expand its width to fill the
-  /// width available to it or if it should just let its inner content
-  /// determine the content-box's width.
-  bool _shouldExpandToFillBlock() {
-    return (style.display?.isBlock ?? false) && !childIsReplaced && !shrinkWrap;
-  }
-
   TextDirection _checkTextDirection(
       BuildContext context, TextDirection? direction) {
     final textDirection = direction ?? Directionality.maybeOf(context);
@@ -176,8 +168,7 @@ class CssBoxWidget extends StatelessWidget {
 }
 
 class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
-  _CSSBoxRenderer({
-    Key? key,
+  const _CSSBoxRenderer({
     required super.children,
     required this.display,
     required this.margins,
@@ -189,7 +180,7 @@ class _CSSBoxRenderer extends MultiChildRenderObjectWidget {
     required this.childIsReplaced,
     required this.emValue,
     required this.shrinkWrap,
-  }) : super(key: key);
+  });
 
   /// The Display type of the element
   final Display display;
@@ -516,7 +507,7 @@ class RenderCSSBox extends RenderBox
     RenderBox? markerBoxChild = parentData.nextSibling;
 
     // Calculate child size
-    final childConstraints = constraints.copyWith(
+    BoxConstraints childConstraints = constraints.copyWith(
       maxWidth: (this.width.unit != Unit.auto)
           ? this.width.value
           : containingBlockSize.width -
@@ -530,10 +521,24 @@ class RenderCSSBox extends RenderBox
       minWidth: (this.width.unit != Unit.auto) ? this.width.value : 0,
       minHeight: (this.height.unit != Unit.auto) ? this.height.value : 0,
     );
-    final Size childSize = layoutChild(child, childConstraints);
+
     if (markerBoxChild != null) {
       layoutChild(markerBoxChild, childConstraints);
     }
+
+    // If this element is a block element and not otherwise constrained,
+    // we constrain the child Container to fill the entire width of this
+    // Widget's parent, if possible. This is equivalent to setting
+    // `width: double.infinity` on the inner Container, but we do it here
+    // to keep the infinite width from being applied if the parent's width is
+    // also infinite.
+    if(display.isBlock && !shrinkWrap && !childIsReplaced && containingBlockSize.width.isFinite) {
+      childConstraints = childConstraints.enforce(BoxConstraints(
+        maxWidth: math.max(containingBlockSize.width, childConstraints.maxWidth),
+        minWidth: childConstraints.maxWidth,
+      ));
+    }
+    final Size childSize = layoutChild(child, childConstraints);
 
     // Calculate used values of margins based on rules
     final usedMargins = _calculateUsedMargins(childSize, containingBlockSize);
@@ -551,7 +556,7 @@ class RenderCSSBox extends RenderBox
       width = childSize.width + horizontalMargins;
       height = childSize.height + verticalMargins;
     } else if (display.isBlock) {
-      width = (shrinkWrap || childIsReplaced)
+      width = (shrinkWrap || childIsReplaced || containingBlockSize.width.isInfinite)
           ? childSize.width + horizontalMargins
           : containingBlockSize.width;
       height = childSize.height + verticalMargins;
@@ -803,7 +808,7 @@ extension Normalize on Dimension {
 
 double _calculateEmValue(Style style, BuildContext buildContext) {
   return (style.fontSize?.emValue ?? 16) *
-      MediaQuery.textScaleFactorOf(buildContext) *
+      (MediaQuery.maybeTextScalerOf(buildContext)?.scale(style.fontSize?.emValue ?? 16) ?? 1.0) *
       MediaQuery.of(buildContext).devicePixelRatio;
 }
 

@@ -34,7 +34,7 @@ jobs:
           file: coverage_report/lcov.info
       - run:
           name: Run flutter analyze
-          command: melos run analyze
+          command: melos analyze --fatal-infos
       - run:
           name: Check That Flutter Code is Formatted Correctly
           command: dart format -o none --set-exit-if-changed .
