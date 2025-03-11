@@ -2,9 +2,9 @@ name: Test flutter_html
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ master ]
   push:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   test:
@@ -16,7 +16,7 @@ jobs:
       - name: Setup Melos
         run: flutter pub global activate melos
       - name: Bootstrap Project
-        run: flutter pub global run melos bootstrap
+        run: melos bootstrap
       - name: Run Test Suite
         run: flutter pub global run melos run test
       - name: Compile Test Coverage Report
@@ -30,4 +30,4 @@ jobs:
       - name: Run Dart Analysis
         run: flutter pub global run melos analyze --fatal-infos
       - name: Check that `dart format` has been run on every file
-        run: dart format -o none --set-exit-if-changed
+        run: dart format -o none --set-exit-if-changed .
