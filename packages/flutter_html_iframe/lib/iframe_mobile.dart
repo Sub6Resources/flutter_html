@@ -22,7 +22,7 @@ class IframeWidget extends StatelessWidget {
 
     final sandboxMode = extensionContext.attributes["sandbox"];
     controller.setJavaScriptMode(
-        sandboxMode == null || sandboxMode == "allow-scripts"
+        sandboxMode == null || sandboxMode.contains("allow-scripts")
             ? JavaScriptMode.unrestricted
             : JavaScriptMode.disabled);
 
