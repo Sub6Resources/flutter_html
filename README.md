@@ -143,7 +143,7 @@ Add the dependency to your pubspec.yaml:
     flutter pub add flutter_html_audio
 
 ```dart
-import 'package:flutter_html_audio/flutter_html_audio';
+import 'package:flutter_html_audio/flutter_html_audio.dart';
 
 Widget html = Html(
   data: myHtml,
@@ -168,7 +168,7 @@ Add the dependency to your pubspec.yaml:
     flutter pub add flutter_html_iframe
 
 ```dart
-import 'package:flutter_html_iframe/flutter_html_iframe';
+import 'package:flutter_html_iframe/flutter_html_iframe.dart';
 
 Widget html = Html(
   data: myHtml,
@@ -195,7 +195,7 @@ Add the dependency to your pubspec.yaml:
     flutter pub add flutter_html_math
 
 ```dart
-import 'package:flutter_html_math/flutter_html_math';
+import 'package:flutter_html_math/flutter_html_math.dart';
 
 Widget html = Html(
   data: myHtml,
@@ -256,7 +256,7 @@ Add the dependency to your pubspec.yaml:
     flutter pub add flutter_html_svg
 
 ```dart
-import 'package:flutter_html_svg/flutter_html_svg';
+import 'package:flutter_html_svg/flutter_html_svg.dart';
 
 Widget html = Html(
   data: myHtml,
@@ -279,7 +279,7 @@ Add the dependency to your pubspec.yaml:
     flutter pub add flutter_html_table
 
 ```dart
-import 'package:flutter_html_table/flutter_html_table';
+import 'package:flutter_html_table/flutter_html_table.dart';
 
 Widget html = Html(
   data: myHtml,
@@ -302,7 +302,7 @@ Add the dependency to your pubspec.yaml:
     flutter pub add flutter_html_video
 
 ```dart
-import 'package:flutter_html_video/flutter_html_video';
+import 'package:flutter_html_video/flutter_html_video.dart';
 
 Widget html = Html(
   data: myHtml,
