@@ -414,9 +414,17 @@ class StyledElementBuiltIn extends HtmlExtension {
         continue monospace;
       underline:
       case "u":
-        styledElement.style = Style(
-          textDecoration: TextDecoration.underline,
-        );
+        for (var child in styledElement.children) {
+          if (child.attributes.containsKey("style")) {
+            final newStyle = inlineCssToStyle(child.attributes["style"], null);
+            if (newStyle != null) {
+              styledElement.style = styledElement.style
+                  .merge(Style(textDecorationColor: newStyle.color));
+            }
+          }
+        }
+        styledElement.style = styledElement.style
+            .merge(Style(textDecoration: TextDecoration.underline));
         break;
       case "var":
         continue italics;

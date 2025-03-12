@@ -30,6 +30,7 @@ class InteractiveElementBuiltIn extends HtmlExtension {
       style: Style(
         color: Colors.blue,
         textDecoration: TextDecoration.underline,
+        textDecorationColor: Colors.blue,
       ),
       node: context.node,
       elementId: context.id,
