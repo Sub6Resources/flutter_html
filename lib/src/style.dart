@@ -228,6 +228,12 @@ class Style {
   ///
   TextOverflow? textOverflow;
 
+  /// CSS Attribute "`text-transform`"
+  ///
+  /// `uppercase`, `lowercase`, `capitalize`, and `none` supported.
+  ///
+  /// Inherited: yes,
+  /// Default: `none`
   TextTransform? textTransform;
 
   Style({
@@ -268,7 +274,7 @@ class Style {
     this.alignment,
     this.maxLines,
     this.textOverflow,
-    this.textTransform = TextTransform.none,
+    this.textTransform,
   }) {
     if (alignment == null && (display?.isBlock ?? false)) {
       alignment = Alignment.centerLeft;
