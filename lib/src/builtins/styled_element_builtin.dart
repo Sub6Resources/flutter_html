@@ -418,13 +418,13 @@ class StyledElementBuiltIn extends HtmlExtension {
           if (child.attributes.containsKey("style")) {
             final newStyle = inlineCssToStyle(child.attributes["style"], null);
             if (newStyle != null) {
-              styledElement.style = styledElement.style.merge(Style(textDecorationColor: newStyle.color));
+              styledElement.style = styledElement.style
+                  .merge(Style(textDecorationColor: newStyle.color));
             }
           }
         }
-        styledElement.style = styledElement.style.merge(Style(
-          textDecoration: TextDecoration.underline
-        ));
+        styledElement.style = styledElement.style
+            .merge(Style(textDecoration: TextDecoration.underline));
         break;
       case "var":
         continue italics;

@@ -405,7 +405,8 @@ class Style {
         textDecoration ?? TextDecoration.none,
       ]),
       textDecorationColor: child.textDecorationColor ?? textDecorationColor,
-      textDecorationThickness: child.textDecorationThickness ?? textDecorationThickness,
+      textDecorationThickness:
+          child.textDecorationThickness ?? textDecorationThickness,
       textDecorationStyle: child.textDecorationStyle ?? textDecorationStyle,
       textShadow: child.textShadow ?? textShadow,
       whiteSpace: child.whiteSpace ?? whiteSpace,
