@@ -203,7 +203,7 @@ class ImageBuiltIn extends HtmlExtension {
         element.src,
         width: imageStyle.width?.value,
         height: imageStyle.height?.value,
-        fit: BoxFit.fill,
+        fit: BoxFit.contain,
         headers: networkHeaders,
         errorBuilder: (ctx, error, stackTrace) {
           return Text(

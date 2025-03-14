@@ -654,6 +654,10 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           style.width =
               ExpressionMapping.expressionToWidth(value.first) ?? style.width;
           break;
+        case 'max-width':
+          style.maxWidth = ExpressionMapping.expressionToWidth(value.first) ??
+              style.maxWidth;
+          break;
       }
     }
   });
@@ -1228,6 +1232,8 @@ class ExpressionMapping {
           double.parse(value.text.replaceAll(RegExp(r'\s+(\d+\.\d+)\s+'), ''));
       Unit unit = _unitMap(value.unit);
       return LengthOrPercent(number, unit);
+    } else if (value is css.PercentageTerm) {
+      return LengthOrPercent(double.parse(value.text), Unit.percent);
     }
 
     //Ignore un-parsable input

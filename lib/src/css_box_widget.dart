@@ -60,7 +60,8 @@ class CssBoxWidget extends StatelessWidget {
     final padding = style.padding?.resolve(direction);
 
     return _CSSBoxRenderer(
-      width: style.width ?? Width.auto(),
+      width:
+          _calculateMaxedWidth(context, style) ?? style.width ?? Width.auto(),
       height: style.height ?? Height.auto(),
       paddingSize: padding?.collapsedSize ?? Size.zero,
       borderSize: style.border?.dimensions.collapsedSize ?? Size.zero,
@@ -88,6 +89,29 @@ class CssBoxWidget extends StatelessWidget {
         if (markerBox != null) Text.rich(markerBox),
       ],
     );
+  }
+
+  /// Returns the width capped with maxWidth if necessary.
+  static Width? _calculateMaxedWidth(BuildContext context, Style style) {
+    // We only need to calculate something if we have a width and it needs to be capped.
+    if (style.maxWidth == null || style.width == null) return null;
+
+    // If our max is a percentage, we want to look at the size available and not be bigger than that.
+    // TODO In the else case, we should have something to compare across different units, as for now some cases won't be handled.
+    if (style.maxWidth!.unit == Unit.percent && style.width!.unit == Unit.px) {
+      return Width(
+        MediaQuery.of(context).size.width * (style.maxWidth!.value / 100),
+        style.width!.unit,
+      );
+    } else if (style.width!.unit == style.maxWidth!.unit &&
+        style.width!.value > style.maxWidth!.value) {
+      return Width(
+        style.maxWidth!.value,
+        style.maxWidth!.unit,
+      );
+    } else {
+      return null;
+    }
   }
 
   /// Takes a list of InlineSpan children and generates a Text.rich Widget
