@@ -1,11 +1,10 @@
 import 'dart:convert';
 import 'dart:math';
+import 'dart:ui_web' as ui_web;
 
 import 'package:flutter/material.dart';
 import 'package:flutter_html/flutter_html.dart';
-import 'package:flutter_html_iframe/shims/dart_ui.dart' as ui;
 import 'package:web/web.dart' show HTMLIFrameElement;
-
 import 'package:webview_flutter/webview_flutter.dart';
 
 class IframeWidget extends StatelessWidget {
@@ -30,7 +29,7 @@ class IframeWidget extends StatelessWidget {
       ..src = extensionContext.attributes['src'] ?? ""
       ..style.border = 'none';
     final String createdViewId = _getRandString(10);
-    ui.platformViewRegistry
+    ui_web.platformViewRegistry
         .registerViewFactory(createdViewId, (int viewId) => iframe);
     return SizedBox(
       width: double.tryParse(extensionContext.attributes['width'] ?? "") ??
