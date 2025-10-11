@@ -26,7 +26,7 @@ Widget build(context) {
     style: {
       "p.fancy": Style(
         textAlign: TextAlign.center,
-        padding: const EdgeInsets.all(16),
+        padding: const HtmlPaddings.all(16),
         backgroundColor: Colors.grey,
         margin: Margins(left: Margin(50, Unit.px), right: Margin.auto()),
         width: Width(300, Unit.px),
