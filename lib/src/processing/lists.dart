@@ -38,6 +38,16 @@ class ListProcessing {
 
     // Add the counters to ol and ul types.
     if (tree.name == 'ol' || tree.name == 'ul') {
+      // respect the `start` attribute in order to begin lists at !1.
+      final startAttribute = tree.attributes['start'];
+      final offset =
+          startAttribute == null ? 1 : int.tryParse(startAttribute) ?? 1;
+
+      tree.style.counterIncrement ??= {};
+      // the counter starts at 1 so set to 0 in order to be correct after first
+      // increment
+      tree.style.counterIncrement!['list-item'] = offset - 1;
+
       tree.style.counterReset ??= {};
       if (!tree.style.counterReset!.containsKey('list-item')) {
         tree.style.counterReset!['list-item'] = 0;
