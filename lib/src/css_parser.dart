@@ -292,7 +292,7 @@ Style declarationsToStyle(Map<String, List<css.Expression>> declarations) {
           style.border = newBorder;
           break;
         case 'color':
-          style.color =
+          style.color = style.textDecorationColor =
               ExpressionMapping.expressionToColor(value.first) ?? style.color;
           break;
         case 'direction':
