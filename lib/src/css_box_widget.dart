@@ -473,6 +473,10 @@ class RenderCSSBox extends RenderBox
 
   @override
   double? computeDistanceToActualBaseline(TextBaseline baseline) {
+    if (childIsReplaced) {
+      return size.height;
+    }
+
     return firstChild?.getDistanceToActualBaseline(baseline);
   }
 
@@ -487,6 +491,10 @@ class RenderCSSBox extends RenderBox
   @override
   double? computeDryBaseline(
       covariant BoxConstraints constraints, TextBaseline baseline) {
+    if (childIsReplaced) {
+      return computeDryLayout(constraints).height;
+    }
+
     return null;
   }
 
