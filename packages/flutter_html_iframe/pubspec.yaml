@@ -15,6 +15,7 @@ dependencies:
   web: '>=1.1.1 < 2.0.0'
   webview_flutter: '>=4.0.0 <5.0.0'
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

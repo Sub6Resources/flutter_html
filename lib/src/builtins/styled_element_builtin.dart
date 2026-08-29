@@ -1,5 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/src/anchor.dart';
 import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/css_parser.dart';

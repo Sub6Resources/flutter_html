@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/src/css_box_widget.dart';
 import 'package:flutter_html/src/tree/styled_element.dart';
 import 'package:flutter_html/src/extension/html_extension.dart';

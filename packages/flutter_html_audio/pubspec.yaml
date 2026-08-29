@@ -15,6 +15,7 @@ dependencies:
   video_player: '>=2.2.8 <3.0.0'
   chewie_audio: ^1.5.0
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,6 +1,6 @@
 import 'package:csslib/parser.dart' as css_parser;
 import 'package:csslib/visitor.dart' as css;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/builtins/details_element_builtin.dart';
 import 'package:flutter_html/src/builtins/image_builtin.dart';

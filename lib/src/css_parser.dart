@@ -1,7 +1,7 @@
 import 'package:collection/collection.dart';
 import 'package:csslib/visitor.dart' as css;
 import 'package:csslib/parser.dart' as cssparser;
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html/src/utils.dart';
 

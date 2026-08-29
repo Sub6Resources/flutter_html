@@ -1,6 +1,6 @@
 library;
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/src/html_parser.dart';
 import 'package:flutter_html/src/extension/html_extension.dart';
 import 'package:flutter_html/src/style.dart';

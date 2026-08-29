@@ -1,6 +1,6 @@
 import 'package:flutter_html/src/builtins/image_builtin.dart';
 import 'package:meta/meta.dart';
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_test/flutter_test.dart';
 

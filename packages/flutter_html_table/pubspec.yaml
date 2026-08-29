@@ -15,6 +15,7 @@ dependencies:
   flutter_html: ^3.0.0
   flutter_layout_grid: '>=2.0.7 <3.0.0'
 
+  material_ui: any
 dev_dependencies:
   flutter_test:
     sdk: flutter

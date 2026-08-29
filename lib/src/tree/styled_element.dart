@@ -5,6 +5,7 @@ import 'package:html/dom.dart' as dom;
 //TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
 //ignore: implementation_imports
 import 'package:html/src/query_selector.dart' as qs;
+import 'package:csslib/parser.dart' as css;
 import 'package:list_counter/list_counter.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -28,7 +29,9 @@ class StyledElement {
 
   bool matches(dom.Element element, String selector) {
     try {
-      return qs.matches(element, selector);
+      final group = css.parseSelectorGroup(selector);
+      if (group == null) return false;
+      return qs.SelectorEvaluator().matches(element, group);
     } catch (_) {
       return false;
     }

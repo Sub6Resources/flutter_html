@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:math';
 
-import 'package:flutter/material.dart';
+import 'package:material_ui/material_ui.dart';
 import 'package:flutter_html/flutter_html.dart';
 import 'package:flutter_html_iframe/shims/dart_ui.dart' as ui;
 import 'package:web/web.dart' show HTMLIFrameElement;
