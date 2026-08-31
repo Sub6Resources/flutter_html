@@ -1,5 +1,6 @@
 import 'dart:collection';
 
+import 'package:csslib/parser.dart' as css_parser;
 import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
 //TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
@@ -28,7 +29,16 @@ class StyledElement {
 
   bool matches(dom.Element element, String selector) {
     try {
-      return qs.matches(element, selector);
+      // The selector is parsed here and matched with `SelectorEvaluator`
+      // rather than by calling the top-level `qs.matches()`, which html
+      // 0.15.7 removed — see the TODO on the import above, which this is an
+      // instance of. `SelectorEvaluator.matches` has been present and stable
+      // across html 0.15.x, so this works on either side of that removal.
+      final selectorGroup = css_parser.parseSelectorGroup(selector);
+      if (selectorGroup == null) {
+        return false;
+      }
+      return qs.SelectorEvaluator().matches(element, selectorGroup);
     } catch (_) {
       return false;
     }
