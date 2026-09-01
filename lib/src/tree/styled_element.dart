@@ -1,10 +1,8 @@
 import 'dart:collection';
 
+import 'package:flutter_html/src/css_selector_matcher.dart' as selector_matcher;
 import 'package:flutter_html/src/style.dart';
 import 'package:html/dom.dart' as dom;
-//TODO(Sub6Resources): don't use the internal code of the html package as it may change unexpectedly.
-//ignore: implementation_imports
-import 'package:html/src/query_selector.dart' as qs;
 import 'package:list_counter/list_counter.dart';
 
 /// A [StyledElement] applies a style to all of its children.
@@ -28,7 +26,7 @@ class StyledElement {
 
   bool matches(dom.Element element, String selector) {
     try {
-      return qs.matches(element, selector);
+      return selector_matcher.matches(element, selector);
     } catch (_) {
       return false;
     }
